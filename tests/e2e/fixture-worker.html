@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SSEO worker fixture harness (TEST ONLY)</title>
+</head>
+<body>
+<p>Test harness for assets/js/ai-worker/worker.js with a TINY RANDOM FIXTURE model (not Qwen3-Embedding).</p>
+<script>
+/**
+ * Starts a worker and sends messages one by one, collecting replies.
+ * Each step resolves on the first non-progress message.
+ */
+window.sseoRun = async function ( steps ) {
+	const worker = new Worker( '/plugin/assets/js/ai-worker/worker.js', { type: 'module' } );
+	const out = [];
+	const progress = [];
+	let next = null;
+	worker.onmessage = ( ev ) => {
+		if ( ev.data.type === 'progress' ) {
+			progress.push( ev.data );
+			return;
+		}
+		if ( next ) {
+			const r = next;
+			next = null;
+			r( ev.data );
+		}
+	};
+	worker.onerror = ( e ) => {
+		if ( next ) {
+			const r = next;
+			next = null;
+			r( { type: 'error', message: 'worker onerror: ' + e.message } );
+		}
+	};
+	for ( const msg of steps ) {
+		const reply = await new Promise( ( resolve ) => {
+			next = resolve;
+			worker.postMessage( msg );
+		} );
+		out.push( reply );
+		if ( reply.type === 'error' ) {
+			break;
+		}
+	}
+	worker.terminate();
+	return { out, progress };
+};
+window.sseoDecode = function ( b64 ) {
+	const bin = atob( b64 );
+	const bytes = new Uint8Array( bin.length );
+	for ( let i = 0; i < bin.length; i++ ) {
+		bytes[ i ] = bin.charCodeAt( i );
+	}
+	return Array.from( new Float32Array( bytes.buffer ) );
+};
+</script>
+</body>
+</html>

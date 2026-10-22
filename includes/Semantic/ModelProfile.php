@@ -85,11 +85,7 @@ final class ModelProfile {
 			$dtype = 'q4f16';
 		}
 		$dim   = (int) Settings::get( 'embedding_dimension', 1024 );
-		$files = array_merge( self::FILES['common'], self::FILES[ $dtype ] );
-		$bytes = 0;
-		foreach ( $files as $f ) {
-			$bytes += $f[0];
-		}
+		$files   = array_merge( self::FILES['common'], self::FILES[ $dtype ] );
 		$profile = array(
 			'model_id'           => self::MODEL_ID,
 			'revision'           => self::REVISION,
@@ -105,11 +101,49 @@ final class ModelProfile {
 			'max_tokens'         => self::MAX_TOKENS,
 			'query_task'         => self::QUERY_TASK,
 			'files'              => $files,
-			'download_bytes'     => $bytes,
 			'reference'          => self::REFERENCE,
 		);
+		/**
+		 * Developer hook (e.g. serving the same pinned files from a self-hosted mirror, or the
+		 * labelled test fixture in tests/e2e). Requires server code; the browser still verifies every
+		 * file against the size/SHA-256 pins in the returned profile, and model_key is recomputed so
+		 * vectors from different profiles are never mixed.
+		 *
+		 * @param array $profile Profile.
+		 */
+		$filtered = apply_filters( 'sseo_model_profile', $profile );
+		if ( is_array( $filtered ) && self::is_valid( $filtered ) ) {
+			$profile = $filtered;
+		}
+		$profile['download_bytes'] = 0;
+		foreach ( $profile['files'] as $f ) {
+			$profile['download_bytes'] += (int) $f[0];
+		}
 		$profile['model_key'] = self::key( $profile );
 		return $profile;
+	}
+
+	/**
+	 * Minimal structural validation of a (filtered) profile.
+	 *
+	 * @param array $p Profile.
+	 * @return bool
+	 */
+	private static function is_valid( array $p ) {
+		foreach ( array( 'model_id', 'revision', 'dtype', 'dimension', 'pooling', 'preprocess_version', 'host', 'files', 'query_task', 'max_tokens', 'reference' ) as $k ) {
+			if ( ! isset( $p[ $k ] ) ) {
+				return false;
+			}
+		}
+		if ( ! is_array( $p['files'] ) || array() === $p['files'] || 0 !== strpos( (string) $p['host'], 'http' ) ) {
+			return false;
+		}
+		foreach ( $p['files'] as $path => $pin ) {
+			if ( ! is_string( $path ) || ! is_array( $pin ) || ! isset( $pin[0], $pin[1] ) || (int) $pin[0] <= 0 ) {
+				return false;
+			}
+		}
+		return (int) $p['dimension'] > 0 && (int) $p['dimension'] <= self::MAX_DIMENSION;
 	}
 
 	/**
