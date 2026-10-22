@@ -91,8 +91,14 @@ final class JobRunner {
 				'message' => 'not claimable (leased by another worker, paused, finished or backing off)',
 			);
 		}
-		$job     = JobRepository::get( $job_id );
-		$class   = isset( self::HANDLERS[ $job['type'] ] ) ? self::HANDLERS[ $job['type'] ] : null;
+		$job = JobRepository::get( $job_id );
+		/**
+		 * Filters job handler classes (type => class with static init/step/finished).
+		 *
+		 * @param array<string,string> $handlers Handlers.
+		 */
+		$handlers = (array) apply_filters( 'sseo_job_handlers', self::HANDLERS );
+		$class    = isset( $handlers[ $job['type'] ] ) && class_exists( $handlers[ $job['type'] ] ) ? $handlers[ $job['type'] ] : null;
 		$start   = microtime( true );
 		$budget  = max( 1, (int) $budget );
 		$batches = 0;

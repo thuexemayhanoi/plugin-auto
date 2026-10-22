@@ -53,6 +53,10 @@ abstract class TestCase extends \WP_UnitTestCase {
 		foreach ( Schema::TABLES as $t ) {
 			$wpdb->query( 'TRUNCATE TABLE ' . Schema::table( $t ) ); // phpcs:ignore WordPress.DB
 		}
+		// DDL in migration tests commits implicitly; never let a leftover lock leak between tests.
+		$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE 'sseo\\_mutex\\_%'" ); // phpcs:ignore WordPress.DB
+		wp_cache_flush();
+		update_option( \SemanticSEO\Database\Migrator::VERSION_OPTION, Schema::VERSION );
 		delete_option( 'sseo_settings' );
 		delete_option( 'sseo_state' );
 		Settings::flush();

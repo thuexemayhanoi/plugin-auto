@@ -197,6 +197,8 @@ final class EmbeddingQueue {
 				$source
 			);
 			Db::query( "UPDATE {queue} SET status = 'done', lease_hash = '', lease_expires = NULL, updated_at = %s WHERE id = %d", array( Util::now(), $qid ) );
+			// Let the waiting embedding job refresh its progress on the next tick.
+			Db::query( "UPDATE {jobs} SET next_run_at = NULL WHERE id = %d AND status = 'running'", array( (int) $row['job_id'] ) );
 			++$out['stored'];
 		}
 		return $out;
