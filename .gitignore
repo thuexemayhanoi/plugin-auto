@@ -1,0 +1,9 @@
+/vendor/
+/node_modules/
+/build/
+/dist/
+/.phpunit.result.cache
+/tests/e2e/.artifacts/
+/tests/e2e/test-results/
+*.log
+.DS_Store
