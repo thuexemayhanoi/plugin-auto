@@ -8,6 +8,7 @@
 namespace SemanticSEO\Jobs;
 
 use SemanticSEO\Audit\AuditLog;
+use SemanticSEO\Database\Db;
 use SemanticSEO\Settings;
 use SemanticSEO\Support\Util;
 
@@ -116,9 +117,11 @@ final class JobRunner {
 		}
 		$batch = (int) Settings::get( 'batch_size', 25 );
 		$delay = 0;
+		Db::take_errors();
 		try {
 			if ( empty( $state['initialized'] ) ) {
-				$init                 = call_user_func( array( $class, 'init' ), $job );
+				$init = call_user_func( array( $class, 'init' ), $job );
+				self::assert_no_db_error( $job );
 				$state                = array_merge( $state, $init['state'] );
 				$state['initialized'] = true;
 				$total                = (int) $init['total'];
@@ -126,6 +129,9 @@ final class JobRunner {
 			while ( true ) {
 				$job['state'] = $state;
 				$res          = call_user_func( array( $class, 'step' ), $job, $batch );
+				// A batch whose writes failed is not progress: fail it (retry with backoff) instead of
+				// saving its state, so a lost write is redone rather than reported as done.
+				self::assert_no_db_error( $job );
 				++$batches;
 				$state = $res['state'];
 				$done += (int) $res['done'];
@@ -183,6 +189,21 @@ final class JobRunner {
 			'batches' => $batches,
 			'message' => $delay > 0 ? 'waiting for external workers' : 'time budget reached; will resume',
 		);
+	}
+
+	/**
+	 * Throws when a database error occurred since the last check.
+	 *
+	 * @param array $job Job.
+	 * @return void
+	 * @throws \RuntimeException On a database error.
+	 */
+	private static function assert_no_db_error( array $job ) {
+		$errors = Db::take_errors();
+		if ( array() !== $errors ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- stored as the job's last_error, escaped where displayed.
+			throw new \RuntimeException( sprintf( 'Database error during the %s job (%d in this batch): %s', $job['type'], count( $errors ), end( $errors ) ) );
+		}
 	}
 
 	/**
