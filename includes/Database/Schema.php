@@ -16,8 +16,11 @@ final class Schema {
 
 	/**
 	 * Bump when the schema changes; add a matching step in Migrator::steps().
+	 *
+	 * Version 4 renames embeddings.vector to vector_data: VECTOR is a keyword since MariaDB 11.7, so
+	 * the old CREATE TABLE failed there with error 1064 and the table was never created.
 	 */
-	const VERSION = 3;
+	const VERSION = 4;
 
 	const TABLES = array(
 		'documents',
@@ -50,9 +53,10 @@ final class Schema {
 	}
 
 	/**
-	 * The dbDelta() statements for every table.
+	 * The dbDelta() statements for every table, keyed by logical table name. Column names must not
+	 * be SQL keywords on any supported server (MySQL 5.7+/8/9, MariaDB 10.4+/11.x).
 	 *
-	 * @return string[]
+	 * @return array<string,string>
 	 */
 	public static function definitions() {
 		global $wpdb;
@@ -63,7 +67,7 @@ final class Schema {
 		}
 
 		return array(
-			"CREATE TABLE {$t['documents']} (
+			'documents'  => "CREATE TABLE {$t['documents']} (
 id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 object_type varchar(20) NOT NULL,
 object_id bigint(20) unsigned NOT NULL,
@@ -116,7 +120,7 @@ KEY dirty (dirty),
 KEY orphans (object_type,inbound_count,word_count),
 KEY excluded (excluded)
 ) $c;",
-			"CREATE TABLE {$t['chunks']} (
+			'chunks'     => "CREATE TABLE {$t['chunks']} (
 id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 document_id bigint(20) unsigned NOT NULL,
 chunk_index int(10) unsigned NOT NULL DEFAULT 0,
@@ -130,14 +134,14 @@ token_estimate int(10) unsigned NOT NULL DEFAULT 0,
 PRIMARY KEY  (id),
 KEY document (document_id,chunk_index)
 ) $c;",
-			"CREATE TABLE {$t['postings']} (
+			'postings'   => "CREATE TABLE {$t['postings']} (
 term varbinary(96) NOT NULL,
 document_id bigint(20) unsigned NOT NULL,
 tf float NOT NULL DEFAULT 0,
 PRIMARY KEY  (term,document_id),
 KEY document_id (document_id)
 ) $c;",
-			"CREATE TABLE {$t['links']} (
+			'links'      => "CREATE TABLE {$t['links']} (
 id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 source_id bigint(20) unsigned NOT NULL,
 target_id bigint(20) unsigned NOT NULL DEFAULT 0,
@@ -157,7 +161,7 @@ KEY source_id (source_id),
 KEY target_id (target_id),
 KEY target_hash (target_hash)
 ) $c;",
-			"CREATE TABLE {$t['embeddings']} (
+			'embeddings' => "CREATE TABLE {$t['embeddings']} (
 id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 document_id bigint(20) unsigned NOT NULL,
 chunk_id bigint(20) unsigned NOT NULL DEFAULT 0,
@@ -169,7 +173,7 @@ dimension smallint(5) unsigned NOT NULL,
 preprocess_version varchar(16) NOT NULL,
 locale varchar(20) NOT NULL DEFAULT '',
 content_hash char(64) NOT NULL,
-vector longblob NOT NULL,
+vector_data longblob NOT NULL,
 norm float NOT NULL DEFAULT 0,
 source varchar(16) NOT NULL DEFAULT '',
 created_at datetime NOT NULL,
@@ -177,7 +181,7 @@ PRIMARY KEY  (id),
 UNIQUE KEY item (document_id,chunk_id,model_key),
 KEY model_key (model_key)
 ) $c;",
-			"CREATE TABLE {$t['queue']} (
+			'queue'      => "CREATE TABLE {$t['queue']} (
 id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 job_id bigint(20) unsigned NOT NULL DEFAULT 0,
 document_id bigint(20) unsigned NOT NULL,
@@ -196,7 +200,7 @@ UNIQUE KEY item (document_id,chunk_id,model_key),
 KEY job_status (job_id,status),
 KEY status_lease (status,lease_expires)
 ) $c;",
-			"CREATE TABLE {$t['findings']} (
+			'findings'   => "CREATE TABLE {$t['findings']} (
 id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 type varchar(32) NOT NULL,
 check_id varchar(64) NOT NULL DEFAULT '',
@@ -222,7 +226,7 @@ KEY document_id (document_id),
 KEY target_id (target_id),
 KEY group_key (group_key)
 ) $c;",
-			"CREATE TABLE {$t['related']} (
+			'related'    => "CREATE TABLE {$t['related']} (
 document_id bigint(20) unsigned NOT NULL,
 related_id bigint(20) unsigned NOT NULL,
 rank_pos smallint(5) unsigned NOT NULL DEFAULT 0,
@@ -232,7 +236,7 @@ updated_at datetime NOT NULL,
 PRIMARY KEY  (document_id,related_id),
 KEY document_rank (document_id,rank_pos)
 ) $c;",
-			"CREATE TABLE {$t['clusters']} (
+			'clusters'   => "CREATE TABLE {$t['clusters']} (
 id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 locale varchar(20) NOT NULL DEFAULT '',
 parent_id bigint(20) unsigned NOT NULL DEFAULT 0,
@@ -253,7 +257,7 @@ PRIMARY KEY  (id),
 KEY locale_parent (locale,parent_id),
 KEY term (taxonomy,term_id)
 ) $c;",
-			"CREATE TABLE {$t['jobs']} (
+			'jobs'       => "CREATE TABLE {$t['jobs']} (
 id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 type varchar(32) NOT NULL,
 status varchar(16) NOT NULL DEFAULT 'queued',
@@ -279,7 +283,7 @@ PRIMARY KEY  (id),
 UNIQUE KEY idempotency_key (idempotency_key),
 KEY status_type (status,type)
 ) $c;",
-			"CREATE TABLE {$t['proposals']} (
+			'proposals'  => "CREATE TABLE {$t['proposals']} (
 id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 type varchar(32) NOT NULL,
 finding_id bigint(20) unsigned NOT NULL DEFAULT 0,
@@ -300,7 +304,7 @@ PRIMARY KEY  (id),
 KEY status (status),
 KEY object (object_type,object_id)
 ) $c;",
-			"CREATE TABLE {$t['approvals']} (
+			'approvals'  => "CREATE TABLE {$t['approvals']} (
 id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 proposal_id bigint(20) unsigned NOT NULL DEFAULT 0,
 change_id bigint(20) unsigned NOT NULL DEFAULT 0,
@@ -321,7 +325,7 @@ KEY proposal_id (proposal_id),
 KEY change_id (change_id),
 KEY status (status)
 ) $c;",
-			"CREATE TABLE {$t['changes']} (
+			'changes'    => "CREATE TABLE {$t['changes']} (
 id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 proposal_id bigint(20) unsigned NOT NULL DEFAULT 0,
 approval_id bigint(20) unsigned NOT NULL DEFAULT 0,
@@ -346,7 +350,7 @@ UNIQUE KEY idempotency_key (idempotency_key),
 KEY proposal_id (proposal_id),
 KEY object (object_type,object_id)
 ) $c;",
-			"CREATE TABLE {$t['audit']} (
+			'audit'      => "CREATE TABLE {$t['audit']} (
 id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 created_at datetime NOT NULL,
 user_id bigint(20) unsigned NOT NULL DEFAULT 0,
@@ -362,7 +366,7 @@ KEY created_at (created_at),
 KEY action (action),
 KEY user_id (user_id)
 ) $c;",
-			"CREATE TABLE {$t['locks']} (
+			'locks'      => "CREATE TABLE {$t['locks']} (
 id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 scope_type varchar(20) NOT NULL,
 scope_value varchar(191) NOT NULL,
@@ -373,7 +377,7 @@ created_at datetime NOT NULL,
 PRIMARY KEY  (id),
 UNIQUE KEY scope (scope_type,scope_value,lock_type)
 ) $c;",
-			"CREATE TABLE {$t['gsc']} (
+			'gsc'        => "CREATE TABLE {$t['gsc']} (
 id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 import_id varchar(40) NOT NULL,
 page_url text NOT NULL,

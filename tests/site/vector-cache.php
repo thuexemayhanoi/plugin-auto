@@ -28,8 +28,8 @@ $path_of = static function ( $url ) {
 if ( 'export' === $mode ) {
 	$fh = fopen( $file, 'w' );
 	$n  = 0;
-	foreach ( Db::rows( 'SELECT d.url, e.chunk_id, e.content_hash, e.vector FROM {embeddings} e JOIN {documents} d ON d.id = e.document_id WHERE e.model_key = %s', array( $profile['model_key'] ) ) as $r ) {
-		fwrite( $fh, wp_json_encode( array( 'p' => $path_of( $r['url'] ), 'c' => (int) $r['chunk_id'], 'h' => $r['content_hash'], 'k' => $profile['model_key'], 'v' => base64_encode( $r['vector'] ) ) ) . "\n" );
+	foreach ( Db::rows( 'SELECT d.url, e.chunk_id, e.content_hash, e.vector_data FROM {embeddings} e JOIN {documents} d ON d.id = e.document_id WHERE e.model_key = %s', array( $profile['model_key'] ) ) as $r ) {
+		fwrite( $fh, wp_json_encode( array( 'p' => $path_of( $r['url'] ), 'c' => (int) $r['chunk_id'], 'h' => $r['content_hash'], 'k' => $profile['model_key'], 'v' => base64_encode( $r['vector_data'] ) ) ) . "\n" );
 		++$n;
 	}
 	fclose( $fh );

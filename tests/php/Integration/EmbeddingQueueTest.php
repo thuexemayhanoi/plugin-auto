@@ -94,7 +94,7 @@ final class EmbeddingQueueTest extends TestCase {
 		$this->assertSame( ModelProfile::REVISION, $row['revision'] );
 		$this->assertSame( 'q4f16', $row['dtype'] );
 		$this->assertSame( '1024', $row['dimension'] );
-		$this->assertSame( 4096, strlen( $row['vector'] ) );
+		$this->assertSame( 4096, strlen( $row['vector_data'] ) );
 
 		// The job completes once nothing is pending.
 		wp_set_current_user( $this->admin );
