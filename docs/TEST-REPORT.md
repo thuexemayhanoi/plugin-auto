@@ -39,7 +39,7 @@ real iPhones were not measured, and WPML/other SEO plugins were not installed (�
 | Private worker e2e | `tests/e2e/private-worker.sh 7.1.3 …` | 89/89 vectors stored, max \|Δ\| vs NumPy 4.5e-8 |
 | Browser UI e2e (Playwright) | `tests/e2e/prepare-ui-site.sh` + `node tests/e2e/ui-e2e.mjs` | see §4 |
 | Relevance evaluation | `vendor/bin/phpunit --filter EvaluationTest` (lexical) and `--group real-model` (hybrid, real vectors) | see §5 and §6 |
-| Real model | workflow "Real Qwen3-Embedding-0.6B" | see §6; latest green run [39896404879](https://github.com/thuexemayhanoi/plugin-auto/actions/runs/39896404879) |
+| Real model | workflow "Real Qwen3-Embedding-0.6B" | see §6; run on the final code (commit `c790d6c`): [39949040011](https://github.com/thuexemayhanoi/plugin-auto/actions/runs/39949040011), green |
 | Real site (read-only) | workflow "Read-only site census + pilot" | see §7 |
 | Write safety, device verification, overlap rules, limits | `phpunit --filter 'ChangeExecutorSafetyTest|DeviceVerificationTest|CannibalizationRulesTest|QaTranslationScopeTest|InventoryLimitTest|LexicalSearchBudgetTest|MatrixRiskColumnsTest'` | part of the integration suite |
 | Coexistence with WooCommerce, Yoast SEO, Polylang | CI job "Coexistence…" (`tests/e2e/compat-plugins.sh`) | 22/22 (see §4) |
@@ -196,7 +196,10 @@ Apache-2.0). Transcribed results: [`evidence/real-model-ci.json`](evidence/real-
   for ranking. Weight grid with the default gate (link R@3 / related R@5 / overlap pairs): 0 →
   0.244 / 0.794 / 23; 0.2 → 0.468 / 0.903 / 27; 0.35 → 0.702 / 0.888 / 30; 0.5 → 0.723 / 0.867 / 33;
   0.7 → 0.702 / 0.867 / 34. Default 0.35. Run
-  [39896404879](https://github.com/thuexemayhanoi/plugin-auto/actions/runs/39896404879).
+  [39896404879](https://github.com/thuexemayhanoi/plugin-auto/actions/runs/39896404879); the same numbers
+  on the final 1.0.0-beta.2 code (schema 3, bounded BM25, df cache) in run
+  [39949040011](https://github.com/thuexemayhanoi/plugin-auto/actions/runs/39949040011), where the
+  private worker also passed the server-side self-test check (89/89 stored, recompute Δ 0.0).
 * **Cross-language:** translations are each other's nearest page (fp32 9/9); the possible-translation
   rule at threshold 0.70 suggested 7 pairs, 7 correct (7/9 found).
 
@@ -292,7 +295,7 @@ no labels for the real site, so their precision there is not measured.
 | AC03 Inventory discovers real Post/Page/Category records and locales | **PASS** | real WordPress objects + real Polylang and the site's real VI-EN plugin: `PipelineTest`, `NhVienLanguageTest`, smoke, http-agent; **copy of the real blog: 1,081 documents = 1,001 posts + 37 pages + 43 categories, locales from the site's VI-EN plugin, 16 page pairs from its hreflang (§7)**; census of the live site: 1,083 sitemap URLs |
 | AC04 Matrix paginates, searches, filters, exports, imports by safe preview | **PASS** | `OperationsTest` (matrix query, CSV/XLSX export, import preview/apply/conflicts), http-agent cursor pagination, `wp sseo export`, UI matrix page |
 | AC05 Lexical mode useful without a model | **PASS** | §5 evaluation (all lexical), golden cases in `PipelineTest` |
-| AC06 Real Qwen embedding demonstrated or clearly blocked | **PASS** | real pinned model in GitHub Actions (§6): model-card self-test (fp32 exact), browser worker downloading from huggingface.co with vectors equal to Python, private worker over REST, hybrid evaluation through the plugin queue; runs 39884170101, 39888434060, 39891925814, 39896404879; `evidence/real-model-ci.json` |
+| AC06 Real Qwen embedding demonstrated or clearly blocked | **PASS** | real pinned model in GitHub Actions (§6): model-card self-test (fp32 exact), browser worker downloading from huggingface.co with vectors equal to Python, private worker over REST, hybrid evaluation through the plugin queue; runs 39884170101, 39888434060, 39891925814, 39896404879, 39914360572 and, on the final code, 39949040011; `evidence/real-model-ci.json` |
 | AC07 Unsupported WebGPU/mobile handled without fatal failure | **PASS** | UI test "unsupported device"; iOS warning (emulated UA); JS `chooseDevice` tests. No real iPhone tested |
 | AC08 M1–M6 outputs with evidence, provenance, review workflow | **PASS** | findings carry evidence components, algorithm version, label, confidence; `url_analysis` provenance; review/dismiss/accept, locks; UI screenshots |
 | AC09 VI–EN translations not flagged as cannibalization | **PASS** | 0 cross-locale pairs (evaluation, `PipelineTest`), control pairs `vi-pillar`/`en-pillar`, `vi-ngay`/`en-daily` not reported |

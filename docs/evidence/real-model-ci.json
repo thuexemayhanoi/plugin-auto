@@ -7,7 +7,8 @@
   "39888434060": "first full green run: browser, hybrid grid (calibrated everywhere vs raw), private worker over REST",
   "39891925814": "final scoring (raw ranking, calibrated overlap gate): browser, hybrid grid, private worker over REST — all green",
   "39896404879": "site-baseline overlap gate (default): browser, hybrid grid incl. model-floor-only and raw comparisons, private worker over REST — all green",
-  "39914360572": "1.0.0-beta.2 code (commit 2135d5d): server-side self-test check in the hybrid test (real q4f16 vectors) and in the private worker over REST; browser A1–A5/B1/C/D; hybrid grid — all green"
+  "39914360572": "1.0.0-beta.2 code (commit 2135d5d): server-side self-test check in the hybrid test (real q4f16 vectors) and in the private worker over REST; browser A1–A5/B1/C/D; hybrid grid — all green",
+  "39949040011": "final 1.0.0-beta.2 code (commit c790d6c: schema 3, bounded BM25, df cache, Max documents, tier order): fp32 model card exact; browser q4f16 A1–A5/B1 (min cosine vs Python 0.99937), fp16, q8 and WebGPU-SwiftShader scenarios; hybrid at weight 0.35: link recall@3 0.702, related recall@5 0.888, overlap 30 pairs, 0 false positives on 7 controls, 3/3 expected, 0 cross-language; private worker over REST after the server-side self-test check: 89/89 stored, recompute Δ 0.0 — all green"
  },
  "pins": "every plugin pin (3 common files + q4f16 + fp16 graphs and external data) matched the Hub metadata of the pinned revision; every downloaded byte verified (SHA-256, git blob SHA-1 for small JSON files)",
  "selftest_vs_model_card_onnxruntime_cpu": {
