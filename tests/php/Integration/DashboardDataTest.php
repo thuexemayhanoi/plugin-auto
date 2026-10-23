@@ -106,7 +106,12 @@ final class DashboardDataTest extends TestCase {
 		fclose( $out ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 		$this->assertSame( PriorityQueue::items( array( 'limit' => 1 ) )['total'], $n );
 		$this->assertStringStartsWith( "\xEF\xBB\xBF", $csv, 'BOM for Excel' );
-		$rows = array_map( 'str_getcsv', array_filter( explode( "\n", trim( substr( $csv, 3 ) ) ) ) );
+		$rows = array_map(
+			static function ( $line ) {
+				return str_getcsv( $line, ',', '"', '\\' ); // Explicit escape: PHP 8.4 deprecates the default.
+			},
+			array_filter( explode( "\n", trim( substr( $csv, 3 ) ) ) )
+		);
 		$this->assertSame( 'priority', $rows[0][0] );
 		$this->assertStringNotContainsString( ',=HYPERLINK', $csv, 'a cell never starts with a formula' );
 		$this->assertStringContainsString( "'=HYPERLINK", $csv );
