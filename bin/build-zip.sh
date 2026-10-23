@@ -4,14 +4,18 @@
 # Composer vendor, docs sources) are never included. Model weights are never included.
 #
 # Usage: bin/build-zip.sh            (expects `npm ci` to have been run for the browser runtime)
+#
+# Reproducible: entries are added in byte order with fixed permissions and one fixed timestamp
+# (SOURCE_DATE_EPOCH, default: the last commit's time), so two builds of the same commit give the
+# same SHA-256. DIST_DIR / BUILD_DIR override the output folders (used by the reproducibility check).
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SLUG="semantic-seo-engine-vi-en"
 VERSION="$(sed -n 's/^ \* Version:[[:space:]]*//p' "$ROOT/$SLUG.php" | head -1 | tr -d '\r')"
 STABLE="$(sed -n 's/^Stable tag:[[:space:]]*//p' "$ROOT/readme.txt" | head -1 | tr -d '\r')"
-BUILD="$ROOT/build"
-DIST="$ROOT/dist"
+BUILD="${BUILD_DIR:-$ROOT/build}"
+DIST="${DIST_DIR:-$ROOT/dist}"
 OUT="$DIST/$SLUG-$VERSION.zip"
 
 if [ -z "$VERSION" ]; then
@@ -57,7 +61,11 @@ fi
 find "$BUILD/$SLUG" -name '*.php' -print0 | xargs -0 -n1 php -l >/dev/null
 
 rm -f "$OUT"
-( cd "$BUILD" && zip -qr -X "$OUT" "$SLUG" )
+EPOCH="${SOURCE_DATE_EPOCH:-$(git -C "$ROOT" log -1 --format=%ct 2>/dev/null || echo 315532800)}"
+find "$BUILD/$SLUG" -type d -exec chmod 755 {} +
+find "$BUILD/$SLUG" -type f -exec chmod 644 {} +
+find "$BUILD/$SLUG" -exec touch -h -d "@$EPOCH" {} +
+( cd "$BUILD" && find "$SLUG" -type f -print | LC_ALL=C sort | TZ=UTC zip -q -X -D -@ "$OUT" )
 ( cd "$DIST" && sha256sum "$(basename "$OUT")" > "$(basename "$OUT").sha256" )
 
 ROOTS="$(unzip -Z1 "$OUT" | cut -d/ -f1 | sort -u)"

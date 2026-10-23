@@ -160,6 +160,16 @@ jobs:
       - run: node bin/build-vendor.mjs
       - name: Build ZIP
         run: bin/build-zip.sh
+      - name: Reproducible build (a second build of this commit has the same SHA-256)
+        run: |
+          DIST_DIR="$RUNNER_TEMP/zip2" BUILD_DIR="$RUNNER_TEMP/build2" bin/build-zip.sh
+          cmp dist/semantic-seo-engine-vi-en-*.zip "$RUNNER_TEMP"/zip2/semantic-seo-engine-vi-en-*.zip
+          echo "identical: $(cut -d' ' -f1 dist/*.sha256)"
+      - name: Licenses of the bundled libraries are shipped
+        run: |
+          for f in LICENSE assets/vendor/transformers/LICENSE-transformers.js.txt assets/vendor/transformers/LICENSE-onnxruntime-web.txt assets/vendor/transformers/THIRD-PARTY-NOTICES.txt; do
+            unzip -Z1 dist/semantic-seo-engine-vi-en-*.zip | grep -qx "semantic-seo-engine-vi-en/$f" || { echo "missing $f"; exit 1; }
+          done
       - name: Grant the test user database creation rights
         run: mysql -h127.0.0.1 -uroot -proot -e "GRANT ALL PRIVILEGES ON *.* TO 'wp'@'%'; FLUSH PRIVILEGES;"
       - name: Install/activate/deactivate/uninstall smoke test from the ZIP (WordPress 6.5.13 and 7.1.3)
@@ -176,3 +186,42 @@ jobs:
             dist/*.zip
             dist/*.sha256
             tests/e2e/artifacts/
+
+  compat:
+    name: Coexistence with WooCommerce, Yoast SEO and Polylang (WP 7.1.3)
+    needs: [ package ]
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mariadb:10.11
+        env:
+          MARIADB_ROOT_PASSWORD: root
+          MARIADB_USER: wp
+          MARIADB_PASSWORD: wp
+        ports: [ '3306:3306' ]
+        options: --health-cmd="healthcheck.sh --connect --innodb_initialized" --health-interval=5s --health-timeout=5s --health-retries=20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, intl, mysqli, zip
+          tools: wp-cli
+          coverage: none
+      - run: npm ci --ignore-scripts && node bin/build-vendor.mjs && bin/build-zip.sh
+      - name: Grant the test user database creation rights
+        run: mysql -h127.0.0.1 -uroot -proot -e "GRANT ALL PRIVILEGES ON *.* TO 'wp'@'%'; FLUSH PRIVILEGES;"
+      - name: Install next to WooCommerce, Yoast SEO and Polylang; front end unchanged; analysis; deactivation
+        run: |
+          mkdir -p "$RUNNER_TEMP/wp-src"
+          curl -fsSL "https://wordpress.org/wordpress-7.1.3.tar.gz" | tar -xz -C "$RUNNER_TEMP/wp-src" --strip-components=1
+          WP_SOURCE="$RUNNER_TEMP/wp-src" SITES_DIR="$RUNNER_TEMP/sites" tests/e2e/compat-plugins.sh 7.1.3 8090
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: compat-plugins
+          path: tests/e2e/artifacts/compat-plugins.json
