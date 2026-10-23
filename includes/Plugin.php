@@ -76,7 +76,14 @@ final class Plugin {
 	 * @return void
 	 */
 	public static function load_textdomain() {
-		load_plugin_textdomain( 'semantic-seo-engine-vi-en', false, dirname( plugin_basename( SSEO_FILE ) ) . '/languages' );
+		$domain = 'semantic-seo-engine-vi-en';
+		$locale = apply_filters( 'plugin_locale', determine_locale(), $domain ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- core hook.
+		// Site-installed translations (wp-content/languages/plugins) win over the bundled ones.
+		$site = WP_LANG_DIR . '/plugins/' . $domain . '-' . $locale . '.mo';
+		$file = is_readable( $site ) ? $site : SSEO_DIR . 'languages/' . $domain . '-' . $locale . '.mo';
+		if ( is_readable( $file ) ) {
+			load_textdomain( $domain, $file, $locale );
+		}
 	}
 
 	/**

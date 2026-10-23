@@ -305,4 +305,20 @@ final class AdminUiTest extends TestCase {
 		list( , , $loc ) = $this->post_action( 'job_control', array( 'job_id' => 999, 'op' => 'tick', '_sseo_back' => 'https://evil.example/phish' ) );
 		$this->assertStringStartsWith( admin_url(), $loc );
 	}
+
+	public function test_vietnamese_admin_translation_is_loaded_by_default_and_english_on_request() {
+		$this->as_admin_screen();
+		unload_textdomain( 'semantic-seo-engine-vi-en' );
+		\SemanticSEO\Plugin::load_textdomain();
+		$this->assertSame( 'Đã lưu cài đặt.', __( 'Settings saved.', 'semantic-seo-engine-vi-en' ) );
+		$this->assertSame( 'Nhật ký / Hoàn tác', __( 'Audit / Undo / Rollback', 'semantic-seo-engine-vi-en' ) );
+		$html = $this->render_page( 'sseo-audit' );
+		$this->assertStringContainsString( 'Nhật ký / Hoàn tác', $html );
+
+		Settings::update( array( 'ui_language' => 'en' ) );
+		unload_textdomain( 'semantic-seo-engine-vi-en' );
+		\SemanticSEO\Plugin::load_textdomain();
+		$this->assertSame( 'Settings saved.', __( 'Settings saved.', 'semantic-seo-engine-vi-en' ) );
+		unload_textdomain( 'semantic-seo-engine-vi-en' );
+	}
 }

@@ -170,23 +170,23 @@
 				var pick = chooseDevice( caps, cfg.profile.dtype );
 				run.device = pick.device;
 				el.facts.textContent = '';
-				fact( 'WebGPU', caps.webgpu ? ( caps.shaderF16 ? 'yes (shader-f16)' : 'yes (no shader-f16)' ) : 'no' );
-				fact( 'WebAssembly SIMD', caps.simd ? 'yes' : 'no' );
-				fact( 'Threads', caps.isolated ? String( caps.threads ) : '1 (page not cross-origin isolated)' );
+				fact( 'WebGPU', caps.webgpu ? t.yes + ( caps.shaderF16 ? ' (shader-f16)' : ' (' + t.noF16 + ')' ) : t.no );
+				fact( 'WebAssembly SIMD', caps.simd ? t.yes : t.no );
+				fact( t.threads, caps.isolated ? String( caps.threads ) : t.oneThread );
 				if ( caps.memory ) {
-					fact( 'Device memory', '≈' + caps.memory + ' GB' );
+					fact( t.memory, '≈' + caps.memory + ' GB' );
 				}
 				if ( caps.ios ) {
-					fact( 'iOS / iPadOS', 'yes — may be too slow or run out of memory; keep the screen on' );
+					fact( 'iOS / iPadOS', t.iosNote );
 				}
 				if ( ! cfg.vendorReady ) {
 					setStatus( t.noVendor );
 				} else if ( ! pick.device ) {
 					setStatus( t.unsupported );
 				} else {
-					setStatus( pick.device === 'webgpu' ? 'WebGPU' : 'WebAssembly (CPU) — slower' );
+					setStatus( pick.device === 'webgpu' ? 'WebGPU' : t.wasmSlower );
 					if ( pick.device === 'wasm' && /f16/.test( cfg.profile.dtype ) ) {
-						log( 'WASM with ' + cfg.profile.dtype + ' may be slow or fail on this device; q8 precision is recommended for CPU-only devices (Settings → Semantic).', 'warning' );
+						log( t.f16OnWasm.replace( '%s', cfg.profile.dtype ), 'warning' );
 					}
 				}
 				setButtons();
@@ -233,7 +233,7 @@
 		var m = ev.data || {};
 		if ( m.type === 'progress' ) {
 			var pct = m.total ? Math.floor( ( m.loaded / m.total ) * 100 ) : 0;
-			setStatus( t.loading + ' ' + m.file + ' ' + pct + '%' + ( m.cached ? ' (cache)' : '' ) );
+			setStatus( t.loading + ' ' + m.file + ' ' + pct + '%' + ( m.cached ? ' (' + t.cached + ')' : '' ) );
 			return;
 		}
 		if ( m.type === 'ready' ) {
@@ -280,7 +280,7 @@
 				run.worker = new Worker( cfg.workerUrl, { type: 'module' } );
 				run.worker.onmessage = onWorker;
 				run.worker.onerror = function ( e ) {
-					log( 'Worker error: ' + ( e.message || 'unknown' ), 'error' );
+					log( t.workerError + ' ' + ( e.message || '' ), 'error' );
 				};
 				el.btn.load.disabled = true;
 				setStatus( t.loading );
@@ -348,7 +348,7 @@
 			.then( function ( claim ) {
 				if ( claim.profile.model_key !== cfg.profile.model_key ) {
 					run.lease = claim.lease_token;
-					throw new Error( 'The model profile changed on the server; reload this page.' );
+					throw new Error( t.profileChanged );
 				}
 				if ( ! claim.items.length ) {
 					log( t.idle );
@@ -370,7 +370,7 @@
 						results: r.results,
 					} ).then( function ( res ) {
 						run.stored += res.stored;
-						log( res.stored + ' stored, ' + res.rejected.length + ' rejected (' + Math.round( r.ms ) + ' ms) — total ' + run.stored );
+						log( t.batchDone.replace( '%1$d', res.stored ).replace( '%2$d', res.rejected.length ).replace( '%3$d', Math.round( r.ms ) ).replace( '%4$d', run.stored ) );
 						res.rejected.forEach( function ( x ) {
 							log( '#' + x.queue_id + ': ' + x.reason, 'warning' );
 						} );
@@ -420,6 +420,7 @@
 		run.paused = false;
 		run.active = false;
 		release( 'stopped by user' );
+		log( t.stopped );
 		setButtons();
 	}
 
