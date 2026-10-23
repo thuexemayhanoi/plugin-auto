@@ -60,8 +60,24 @@ Thông tin dưới đây lấy từ các repo của chủ website và được �
 * **Yoast SEO** là nguồn duy nhất của schema, meta và canonical. Plugin không thêm và không thay đổi
   các dữ liệu này.
 * **Nguyen Ha VI-EN Core** quản lý `/en/`, hreflang và cặp bản dịch. Plugin không bao giờ tự tạo cặp
-  bản dịch. Bài VI chưa có bản EN chỉ được ghi nhận là *gợi ý* ("thiếu bản dịch"), vì blog chủ
-  trương chỉ dịch khi search intent tương ứng.
+  bản dịch. Trên website thật (đọc hreflang công khai ngày 23/10/2026), **chỉ 16 cặp trang** khai báo
+  bản tiếng Việt tương ứng. **500 bài tiếng Anh là bài độc lập**, không bài nào ghép cặp với bài tiếng
+  Việt. Vì vậy plugin chỉ gợi ý "thiếu bản dịch" cho loại nội dung mà website có ghép cặp (ở đây là
+  trang), không gợi ý cho bài viết. Model chỉ thấy vài cặp bài VI/EN có thể là bản dịch của nhau (9 cặp
+  ở ngưỡng 0,70), đều là gợi ý để người kiểm tra; plugin không tự ghép cặp.
+
+### Số liệu từ bản sao chỉ-đọc của blog (23/10/2026)
+
+Đây là con số tổng hợp trên **bản sao tạm** của nội dung công khai, không phải trên website thật. Cài
+plugin lên staging sẽ cho đúng danh sách từng trang.
+
+* 1.083 URL trong sitemap: 1.001 bài viết, 37 trang, 43 chuyên mục.
+* 881 bài/trang **không có mô tả meta** trong đầu ra công khai của Yoast.
+* 579 bài **không có liên kết đến từ nội dung** bài khác (chưa tính menu, widget, footer).
+* 54 bài thông tin dài (≥ 600 từ) **không trích nguồn bên ngoài** nào (gợi ý E-E-A-T).
+* Gợi ý liên kết nội bộ: 830 (chỉ từ vựng), 2.908 (khi có vector của model).
+* Rà soát chồng lấn: 99 nhóm (chỉ từ vựng), 898 nhóm (khi có vector; xem mục 3 về thứ tự duyệt).
+  Không cặp bản dịch VI–EN nào bị coi là chồng lấn.
 * **Multi AI SEO Content Factory** (repo `wp-plugin`) là sản phẩm khác: nó viết bài nháp bằng AI. Hai
   plugin không trùng tên, bảng hay route. Plugin này không đọc và không ghi meta `_masf_*`.
 
@@ -91,13 +107,20 @@ Trước khi gửi bất kỳ vector nào, mỗi thiết bị phải qua **tự 
 đồng chuẩn và so với giá trị đã đo cho đúng độ chính xác đó. Nếu tự kiểm tra thất bại, thiết bị không
 được gửi vector.
 
-**Vì sao báo cáo chồng lấn không tăng vọt khi bật model.** Blog chỉ nói về một chủ đề (thuê xe máy,
-du lịch bằng xe máy), nên với model hầu như trang nào cũng "liên quan" đến trang nào. Trên bản sao blog
-(chỉ đọc), nếu dùng độ tương đồng thô thì số nhóm chồng lấn tăng từ 99 (chỉ từ vựng) lên 2.323. Vì vậy
-plugin đo **mức giống nhau thông thường giữa các trang cùng ngôn ngữ của chính website** (trung vị)
-sau mỗi lần phân tích toàn site. Khi xét rủi ro chồng lấn, plugin chỉ tính phần giống nhau vượt trên
-mức đó. Gợi ý liên kết và bài liên quan vẫn dùng độ tương đồng thô để xếp hạng. Mỗi phát hiện chồng
-lấn ghi rõ mức nền đã dùng (*Bằng chứng → calibration*).
+**Báo cáo chồng lấn khi bật model.** Với độ tương đồng thô, mọi trang đều "hơi giống" nhau. Trên bản sao
+blog (chỉ đọc), số nhóm chồng lấn tăng từ 99 (chỉ từ vựng) lên 2.323. Vì vậy khi xét rủi ro
+chồng lấn, plugin chỉ tính phần giống nhau **vượt trên một mức sàn**. Mức sàn mặc định là 0,40, đo trên
+bộ dữ liệu có nhãn. Nếu các trang của chính website giống nhau hơn mức đó (trung vị đo lại sau mỗi lần
+phân tích toàn site), mức sàn được nâng lên bằng trung vị ấy. Trên blog, trung vị là 0,38 (VI) và 0,36
+(EN), nên dùng mức 0,40. Kết quả còn 898 nhóm, đều thuộc khoảng 1% cặp trang giống nhau nhất của blog.
+
+Gợi ý liên kết và bài liên quan vẫn dùng độ tương đồng thô để xếp hạng. Mỗi phát hiện chồng lấn ghi rõ
+mức sàn đã dùng (*Bằng chứng → calibration*).
+
+**Nên duyệt theo thứ tự:** *Có thể cạnh tranh cùng truy vấn* (96 cặp trên bản sao; 54 cặp độ tin cậy
+trung bình) và *trùng lặp / gần trùng lặp* trước. Sau đó đến *khía cạnh riêng*. Nhóm *cần xem xét thủ
+công* (563 cặp) chỉ là giả thuyết dựa trên ngữ nghĩa, không có bằng chứng ở tiêu đề. *Khác ý định*
+(212 cặp) thường là bài bổ trợ cho nhau, không phải cạnh tranh.
 
 ## 4. Thiết lập và dùng trên điện thoại (iPhone, iPad, Android)
 

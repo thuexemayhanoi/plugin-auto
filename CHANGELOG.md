@@ -32,10 +32,13 @@ First beta. Release notes: [docs/RELEASE-NOTES-1.0.0-beta.1.md](docs/RELEASE-NOT
   benchmark harness and labelled evaluation.
 - Precision chosen from real-model measurements: q4f16 default, fp16 option (q8 removed); each
   precision's self-test is compared with its own measured matrix.
-- Overlap-risk gate calibration: raw cosine for ranking; for the overlap gate the similarity above
-  the model floor, raised to the site's own median similarity per language (`sseo_similarity_baseline`,
-  re-measured at every site-wide analysis). Found on a copy of a one-topic blog, where nearly every
-  pair of pages looks "related" to the model.
+- Overlap-risk gate calibration: raw cosine for ranking; for the overlap gate only the similarity
+  above the model floor (0.40) counts, raised to the site's own median similarity per language when
+  that is higher (`sseo_similarity_baseline`, re-measured at every site-wide analysis). On a copy of
+  the blog the overlap report went from 2,323 groups (raw cosine) to 898 (median there 0.38/0.36, so
+  the model floor applied).
+- "Missing translation" only for content types the site translates as linked pairs (the blog's
+  English posts are standalone articles: 1,006 suggestions on its copy were noise).
 - Read-only adapter for the "Nguyen Ha VI-EN Core" language plugin; cross-language "possible
   translation, not linked yet" suggestions (never linked automatically); E-E-A-T source heuristic.
 

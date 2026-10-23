@@ -177,13 +177,34 @@ published, so this was not investigated further.
 | Hybrid re-analysis with **raw cosine** (old scoring) | 651 s; link suggestions 2,910 for 1,016 sources; related rows 1,552 → 5,195; **overlap groups 99 → 2,323** (manual review 19 → 1,560, same topic/different intent 28 → 529); 0 cross-language pairs |
 | Front end of the copy | no plugin asset and no model runtime on the home page |
 
-Finding: on a one-topic site almost every pair of pages is similar for the model, so raw cosine made
-the overlap report unusable. Fix: the overlap gate now only counts similarity above the site's own
-median same-language similarity (ARCHITECTURE §5); link and related ranking keep the raw cosine.
+Finding: with raw cosine almost every pair of pages looked similar enough to report. (Run 1 used the
+scoring from before the overlap-gate calibration.)
 
-**Pilot run 2** (commit `4d3d257`: site baseline, VI-EN pairs read from the site's hreflang tags, a
-comparison run with the model floor only): *in progress* — run
-[39896404986](https://github.com/thuexemayhanoi/plugin-auto/actions/runs/39896404986).
+**Pilot run 2** (run [39896404986](https://github.com/thuexemayhanoi/plugin-auto/actions/runs/39896404986),
+commit `4d3d257`; aggregates: [`evidence/site-pilot-run2.json`](evidence/site-pilot-run2.json)). WordPress'
+sample content removed; VI-EN pairs read from the site's own hreflang tags (519 English pages read,
+0 errors):
+
+| Item | Result |
+| --- | --- |
+| Copy | 1,081 documents = 1,001 posts + 37 pages + 43 categories, all published and indexable; locales from the VI-EN plugin (1,076 by its post/term registry, 5 by path) |
+| Translation pairs announced by the site | **16 page pairs, 0 post pairs**: the 500 English posts are standalone articles in the VI-EN plugin |
+| Lexical analysis | 663 s; 830 link suggestions (492 sources); 99 overlap groups; 0 cross-language pairs; 881 missing meta descriptions; 579 posts without inbound content links; 54 long informational posts without any outside source |
+| Embedding | 3,197 items in 4,944 s (q4f16, private worker, 4 vCPU) |
+| Site similarity baseline (median of 20,000 sampled same-language pairs) | VI 0.378 (p90 0.524, p99 0.678), EN 0.361 (p99 0.649) — **below the model floor 0.40**, so the site baseline changes nothing on this blog (the model-floor and default runs are identical) |
+| Hybrid, calibrated overlap gate | 655 s; overlap groups **898** (vs 2,323 with raw cosine in run 1, 99 lexical): potential competition 96 (54 medium confidence), distinct facet 42, pillar + supporting 53, same topic/different intent 212, manual review 563; 0 cross-language pairs. Reported pairs have cosine p10 0.68 / median 0.75, i.e. they are among the site's ~1% most similar pairs. 69% of posts appear in at least one hypothesis (lexical: 17%) |
+| Hybrid links and related | 2,908 link suggestions (1,014 sources); related rows 1,553 → 5,190 |
+| Cross-language rule vs the 16 announced page pairs | at 0.70: 14 suggested — 4 announced pairs, 1 contradicting an announced pair, 9 not announced (possible unlinked translations, for human review); recall of announced pairs 0.25 (pages here are separately written, not translations). At 0.60: 51 suggested, 6 announced, 1 contradicting |
+| Front end of the copy | no plugin asset and no model runtime |
+
+Consequences: (1) the calibrated gate is what removed most of the overlap noise; the site baseline is
+kept as a safeguard for sites whose pages are more alike than the fixture (fixture VI median 0.42 →
+30 instead of 31 pairs), and its rationale in the code was corrected. (2) "Missing translation" was
+suggested for 1,006 documents because the blog does not pair posts; it is now limited to content types
+the site translates as pairs (`QaTranslationScopeTest`), which on this blog leaves only the unpaired
+pages. That change was made after run 2 and is covered by tests, not by a new pilot run. (3) The
+overlap report needs triage on this blog: start with potential competition and near-duplicates;
+"manual review" pairs are semantic-only hypotheses (ADMIN-GUIDE §3).
 
 ## 8. Acceptance matrix (README §20)
 
@@ -191,7 +212,7 @@ comparison run with the model floor only): *in progress* — run
 | --- | --- | --- |
 | AC01 ZIP installs/activates without fatal error on declared versions | **PASS** | `evidence/smoke-7.1.3.json`, `smoke-6.9.10.json`, `smoke-6.5.13.json`; CI "Build release ZIP + install smoke test" (WP 6.5.13 + 7.1.3); PHP 7.4 via CI integration job (PHP 7.4 + WP 6.5.13) |
 | AC02 Activation read-only | **PASS** | smoke checks: posts/meta/terms/users/roles/options/rewrite rules hashes identical; front-end HTML byte-identical (control run proves determinism); `ActivationMigrationTest` |
-| AC03 Inventory discovers real Post/Page/Category records and locales | **PASS** | real WordPress objects + real Polylang and the site's real VI-EN plugin: `PipelineTest`, `NhVienLanguageTest`, smoke, http-agent; **copy of the real blog: 1,083 documents = 1,001 posts + 37 pages + 43 categories (+ WP sample post/page), locales from the VI-EN plugin (§7)**; census of the live site: 1,083 sitemap URLs |
+| AC03 Inventory discovers real Post/Page/Category records and locales | **PASS** | real WordPress objects + real Polylang and the site's real VI-EN plugin: `PipelineTest`, `NhVienLanguageTest`, smoke, http-agent; **copy of the real blog: 1,081 documents = 1,001 posts + 37 pages + 43 categories, locales from the site's VI-EN plugin, 16 page pairs from its hreflang (§7)**; census of the live site: 1,083 sitemap URLs |
 | AC04 Matrix paginates, searches, filters, exports, imports by safe preview | **PASS** | `OperationsTest` (matrix query, CSV/XLSX export, import preview/apply/conflicts), http-agent cursor pagination, `wp sseo export`, UI matrix page |
 | AC05 Lexical mode useful without a model | **PASS** | §5 evaluation (all lexical), golden cases in `PipelineTest` |
 | AC06 Real Qwen embedding demonstrated or clearly blocked | **PASS** | real pinned model in GitHub Actions (§6): model-card self-test (fp32 exact), browser worker downloading from huggingface.co with vectors equal to Python, private worker over REST, hybrid evaluation through the plugin queue; runs 39884170101, 39888434060, 39891925814, 39896404879; `evidence/real-model-ci.json` |

@@ -135,8 +135,8 @@ final class Scorer {
 		$w_sem    = (float) Settings::get( 'w_semantic', 0.35 );
 		// Ranking (links, related, candidate order) uses the raw cosine: measured better on the labelled
 		// fixture with the real model. The overlap-risk gate uses the calibrated value, which keeps the
-		// cosine floor of unrelated pages — and, on a one-topic site, the similarity every page shares
-		// with every other — from turning every pair into a "risk" (ModelProfile::CALIBRATION, SimilarityBaseline).
+		// cosine floor of unrelated pages — and, on a site whose pages are unusually alike, the similarity
+		// they all share — from turning every pair into a "risk" (ModelProfile::CALIBRATION, SimilarityBaseline).
 		$topic     = null === $semantic ? $lexical : ( $w_lex * $lexical + $w_sem * $semantic ) / max( 0.0001, $w_lex + $w_sem );
 		$topic_cal = null === $sem_cal ? $lexical : ( $w_lex * $lexical + $w_sem * $sem_cal ) / max( 0.0001, $w_lex + $w_sem );
 

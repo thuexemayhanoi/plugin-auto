@@ -22,7 +22,7 @@ defined( 'ABSPATH' ) || exit;
  */
 final class QaChecker {
 
-	const VERSION = 'qa-2';
+	const VERSION = 'qa-3';
 
 	const CHECKS = array(
 		'missing_title'              => 'Missing title',
@@ -121,9 +121,15 @@ final class QaChecker {
 		foreach ( Db::rows( "SELECT l.target_id, COUNT(DISTINCT l.source_id) AS n FROM {links} l JOIN {documents} d ON d.id = l.target_id WHERE d.indexable = 0 AND d.status = 'publish' AND l.resolution = 'resolved' GROUP BY l.target_id" ) as $r ) {
 			$noindex_inbound[ (int) $r['target_id'] ] = (int) $r['n'];
 		}
+		// Content types the site actually translates as linked pairs (e.g. pages but not posts).
+		$translated = array();
+		foreach ( Db::col( "SELECT DISTINCT subtype FROM {documents} WHERE status = 'publish' AND object_type = 'post' AND translation_group <> ''" ) as $subtype ) {
+			$translated[ (string) $subtype ] = true;
+		}
 		return array(
 			'titles'          => $titles,
 			'descriptions'    => $descs,
+			'translated'      => $translated,
 			'near'            => $near,
 			'noindex_inbound' => $noindex_inbound,
 			'languages'       => LanguageResolver::languages(),
@@ -313,7 +319,11 @@ final class QaChecker {
 
 		// Translations (only when a mapping can be verified). A missing translation is a suggestion for
 		// human review, not a warning: many bilingual sites translate selectively, by search intent.
-		if ( $is_post && $ctx['mapping'] && count( $ctx['languages'] ) > 1 ) {
+		// Only for content types the site translates as linked pairs at all: the read-only pilot on a
+		// copy of the blog found its English posts written as standalone articles (no post pair), so
+		// every post would otherwise be "missing" a translation.
+		$translated_type = ! isset( $ctx['translated'] ) || isset( $ctx['translated'][ $p['subtype'] ] );
+		if ( $is_post && $translated_type && $ctx['mapping'] && count( $ctx['languages'] ) > 1 ) {
 			$tr      = isset( $s['translations'] ) ? array_keys( (array) $s['translations'] ) : array();
 			$missing = array_values( array_diff( $ctx['languages'], $tr, array( $p['locale'] ) ) );
 			if ( array() !== $missing ) {

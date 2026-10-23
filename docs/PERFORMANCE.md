@@ -92,7 +92,7 @@ Real pages are much longer than the synthetic benchmark (average 2,139 words, 17
 | --- | ---: |
 | Inventory of 1,083 documents | 49 s |
 | Lexical analysis (all modules) | 642 s (≈ 0.6 s per document) |
-| Embedding 3,201 queue items (summary + first 2 body chunks per page), private worker, q4f16, ONNX Runtime CPU 4 threads, over REST | 5,130 s (≈ 1.6 s per item, ≈ 85 min) |
+| Embedding 3,201 queue items (summary + first 2 body chunks per page), private worker, q4f16, ONNX Runtime CPU 4 threads, over REST | 5,130 s (≈ 1.6 s per item, ≈ 85 min); run 2: 3,197 items in 4,944 s |
 | Hybrid re-analysis with vectors | 651 s |
 
 For the owner this means: the first full embedding of the blog takes about 1.5 hours on a 4-core

@@ -13,12 +13,13 @@ use SemanticSEO\Support\Util;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * On a site about one subject every page is "about the same thing": the real-model pilot on a copy
- * of a one-topic blog showed most same-language pairs far above the fixed calibration floor, so the
- * semantic part alone pushed thousands of ordinary pairs into the overlap report. The baseline is
- * the median cosine of same-language page pairs of this site; the overlap gate counts only the
- * similarity above it (Scorer::calibrate). It is measured on a deterministic sample of pairs at
- * every site-wide analysis and stored with the model key it was measured with.
+ * The model's fixed calibration floor (0.40) was measured on the labelled fixture. On a site whose
+ * pages are more alike than that (one narrow subject), ordinary pairs would sit above the floor and
+ * the semantic part alone would push them into the overlap report. The baseline is the median cosine
+ * of same-language page pairs of this site; when it is above the model floor, the overlap gate counts
+ * only the similarity above it (Scorer::calibration). Measured medians: labelled fixture VI 0.42; copy
+ * of blog.rentbikehanoi.com VI 0.38 / EN 0.36 (below the floor, so no change there). It is measured on
+ * a deterministic sample of pairs at every site-wide analysis and stored with its model key.
  */
 final class SimilarityBaseline {
 
