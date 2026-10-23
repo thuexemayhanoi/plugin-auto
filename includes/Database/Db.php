@@ -261,7 +261,7 @@ final class Db {
 		return (string) preg_replace_callback(
 			'/\{([a-z_]+)\}/',
 			static function ( $m ) {
-				if ( 'posts' === $m[1] || 'term_taxonomy' === $m[1] || 'terms' === $m[1] || 'options' === $m[1] ) {
+				if ( 'posts' === $m[1] || 'postmeta' === $m[1] || 'term_taxonomy' === $m[1] || 'terms' === $m[1] || 'options' === $m[1] ) {
 					global $wpdb;
 					return $wpdb->{$m[1]};
 				}
