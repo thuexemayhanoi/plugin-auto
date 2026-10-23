@@ -67,7 +67,8 @@ AUDIT="$($WP db query "SELECT COUNT(*) FROM wp_sseo_audit WHERE action = 'embedd
 # Independent check of one stored vector (fixture: NumPy reference; real model: a second process).
 ROW="$($WP eval '
 global $wpdb;
-$r = $wpdb->get_row( "SELECT e.vector, c.text FROM {$wpdb->prefix}sseo_embeddings e JOIN {$wpdb->prefix}sseo_chunks c ON c.document_id = e.document_id AND c.chunk_index = e.chunk_id ORDER BY e.id ASC LIMIT 1", ARRAY_A );
+$r = $wpdb->get_row( "SELECT e.vector_data AS vector, c.text FROM {$wpdb->prefix}sseo_embeddings e JOIN {$wpdb->prefix}sseo_chunks c ON c.document_id = e.document_id AND c.chunk_index = e.chunk_id ORDER BY e.id ASC LIMIT 1", ARRAY_A );
+if ( ! $r ) { fwrite( STDERR, "no stored vector: " . $wpdb->last_error . "\n" ); exit( 1 ); }
 echo wp_json_encode( array( "text" => $r["text"], "vector" => base64_encode( $r["vector"] ) ) );')"
 if [ -n "$REAL" ]; then
 	# Independent check: recompute the stored vector in a separate process (tests/real-model/embed_items.py).

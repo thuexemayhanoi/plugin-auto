@@ -37,7 +37,10 @@ final class DashboardDataTest extends TestCase {
 		$this->assertTrue( $o['read_only'] );
 		$this->assertNotEmpty( $o['permissions']['allowed'] );
 		$this->assertContains( 'Create 301 redirects', $o['permissions']['not_allowed'] );
-		$this->assertSame( 'not_enabled', $o['qwen']['state'] );
+		// The browser runtime is bundled by the release build (npm run build:vendor), not in every test checkout.
+		$bundled = file_exists( SSEO_DIR . 'assets/vendor/transformers/transformers.min.js' );
+		$this->assertSame( $bundled, $o['qwen']['runtime_bundled'] );
+		$this->assertSame( $bundled ? 'not_enabled' : 'unavailable', $o['qwen']['state'] );
 	}
 
 	public function test_priority_queue_is_ordered_explained_and_filterable() {

@@ -402,8 +402,19 @@ final class AdminUiTest extends TestCase {
 		remove_filter( 'query', array( $this, '_create_temporary_tables' ) );
 		remove_filter( 'query', array( $this, '_drop_temporary_tables' ) );
 		global $wpdb;
-		$wpdb->query( 'DROP TABLE IF EXISTS ' . \SemanticSEO\Database\Schema::table( 'embeddings' ) ); // phpcs:ignore WordPress.DB
+		$table = \SemanticSEO\Database\Schema::table( 'embeddings' );
+		$wpdb->query( 'DROP TABLE IF EXISTS ' . $table ); // phpcs:ignore WordPress.DB
+		$read = array();
+		$spy  = static function ( $q ) use ( $table, &$read ) {
+			if ( false !== stripos( $q, 'FROM ' . $table ) ) {
+				$read[] = $q;
+			}
+			return $q;
+		};
+		add_filter( 'query', $spy );
 		$html = $this->render_page( 'sseo' );
+		remove_filter( 'query', $spy );
+		$this->assertSame( array(), $read, 'the dashboard never reads the missing table (no SQL error on an incomplete database)' );
 		$this->assertStringContainsString( 'sseo-health--error', $html );
 		$this->assertStringContainsString( 'Missing: embeddings', $html );
 		$this->assertStringContainsString( 'value="sseo_repair_db"', $html );

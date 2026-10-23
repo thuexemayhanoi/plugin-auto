@@ -140,7 +140,7 @@ final class HealthReport {
 				. ( $cron_off ? __( 'WP-Cron is disabled: scans advance while this page is open or through WP-CLI.', 'semantic-seo-engine-vi-en' ) : __( 'Scans run in the background through WP-Cron in short batches.', 'semantic-seo-engine-vi-en' ) ),
 		);
 
-		$qwen     = self::qwen();
+		$qwen     = self::qwen( $db['ready'] );
 		$checks[] = array(
 			'id'     => 'model',
 			'level'  => 'ok',
@@ -161,11 +161,18 @@ final class HealthReport {
 	/**
 	 * State of the optional Qwen3 embedding model.
 	 *
+	 * @param bool|null $db_ready Whether every plugin table exists (null = check). The embeddings table
+	 *                            is the one MariaDB 11.7+ refused before schema 4, so it is not queried
+	 *                            while the schema is incomplete.
 	 * @return array{state:string,label:string,detail:string,runtime_bundled:bool,vectors:int,documents_with_vector:int,device_verified:bool}
 	 */
-	public static function qwen() {
+	public static function qwen( $db_ready = null ) {
+		$db_ready = null === $db_ready ? Environment::db_schema()['ready'] : (bool) $db_ready;
 		$profile  = ModelProfile::active();
-		$stats    = EmbeddingRepository::stats( $profile['model_key'] );
+		$stats    = $db_ready ? EmbeddingRepository::stats( $profile['model_key'] ) : array(
+			'vectors_current_model' => 0,
+			'documents_with_vector' => 0,
+		);
 		$bundled  = file_exists( SSEO_DIR . 'assets/vendor/transformers/transformers.min.js' );
 		$verified = DeviceVerification::is_verified( get_current_user_id(), $profile['model_key'] );
 		if ( ! $bundled ) {
@@ -239,7 +246,7 @@ final class HealthReport {
 			'last_pilot'   => ScanHistory::latest( 'pilot' ),
 			'diff'         => $db['ready'] ? ScanHistory::diff( 10 ) : null,
 			'estimate'     => ScanHistory::estimate( (int) $scope['total'] ),
-			'qwen'         => self::qwen(),
+			'qwen'         => self::qwen( $db['ready'] ),
 			'permissions'  => self::permissions(),
 			'read_only'    => true,
 			'generated_at' => gmdate( 'c' ),

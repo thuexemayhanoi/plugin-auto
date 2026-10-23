@@ -107,7 +107,12 @@ final class Api {
 			'link_coverage'   => LinkGraph::coverage(),
 			'findings'        => FindingRepository::summary(),
 			'semantic'        => array_merge(
-				EmbeddingRepository::stats( $profile['model_key'] ),
+				// MariaDB 11.7+ refused the embeddings table before schema 4: report zero, not a SQL error.
+				in_array( 'embeddings', $env['db_schema']['missing'], true ) ? array(
+					'vectors_current_model' => 0,
+					'documents_with_vector' => 0,
+					'vectors_other_models'  => 0,
+				) : EmbeddingRepository::stats( $profile['model_key'] ),
 				array(
 					'model_id'  => $profile['model_id'],
 					'revision'  => $profile['revision'],

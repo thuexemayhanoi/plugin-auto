@@ -56,7 +56,7 @@ URL1="$($WP eval 'global $wpdb; echo $wpdb->get_var( "SELECT url FROM {$wpdb->pr
 LAT="$(node -e '
 const [base, user, pass, url1] = process.argv.slice(1);
 const auth = "Basic " + Buffer.from(user + ":" + pass).toString("base64");
-const eps = { status: "/status", inventory_20: "/inventory?limit=20", inventory_search: "/inventory?limit=20&search=xe", url_analysis: "/analysis?url=" + encodeURIComponent(url1), links_20: "/suggestions/links?limit=20", cannibalization_20: "/cannibalization?limit=20", qa_20: "/qa?limit=20" };
+const eps = { status: "/status", inventory_20: "/inventory?limit=20", inventory_search: "/inventory?limit=20&search=xe", url_analysis: "/analysis?url=" + encodeURIComponent(url1), links_20: "/suggestions/links?limit=20", cannibalization_20: "/cannibalization?limit=20", qa_20: "/qa?limit=20", health: "/health", priorities_25: "/priorities?limit=25", scans: "/scans" };
 (async () => {
   const out = {};
   for (const [k, p] of Object.entries(eps)) {
