@@ -181,13 +181,15 @@ Chưa làm, hoặc chỉ có trên giao diện thiết kế:
 
 ### Trên máy local (container 4 vCPU)
 
+Bằng chứng của lần chạy cuối, trên code cuối, nằm trong [`evidence/beta4/`](evidence/beta4/).
+
 | Bộ test | Kết quả | Môi trường |
 | --- | --- | --- |
 | Unit PHPUnit | 22/22 | PHP 8.3 |
 | Integration PHPUnit (WordPress thật) | **145/145** (2–3 skipped có điều kiện) | WP 7.1.3 test lib + MariaDB **10.11.14**, **11.8.9**, MySQL **8.4** |
 | Nâng cấp MariaDB (`upgrade-mariadb.sh`) | **34/34** | beta.3 → beta.4 trên MariaDB 11.8.9 và 10.11.14 |
-| Dashboard trong Chromium (`dashboard-e2e.mjs`) | **9/9** | WP 7.1.3, MariaDB 11.8.9. Thử 20 bài 8,5 s; toàn site 10,0 s có tạm dừng/tiếp tục; CSV 82 dòng; iPhone 13 giả lập 390 px; axe 0 lỗi |
-| Smoke cài ZIP | **26/26** × 3 | WP 7.1.3, 6.9.10, 6.5.13 |
+| Dashboard trong Chromium (`dashboard-e2e.mjs`) | **10/10** | WP 7.1.3, MariaDB 11.8.9. Thử 20 bài 8,7 s; toàn site 10,3 s có tạm dừng/tiếp tục; CSV 82 dòng, khớp số mục đang lọc; iPhone 13 giả lập 390 px; axe 0 lỗi |
+| Smoke cài ZIP | **27/27**, **27/27**, **26/26** | WP 7.1.3, 6.9.10 (có Polylang), 6.5.13 |
 | HTTP agent / bảo mật | **26/26**, **26/26**, **22/22** | WP 7.1.3 và 6.9.10 (có MCP Adapter 0.7.1); 6.5.13 (không có Abilities API) |
 | UI 12 trang (Playwright) | **11/11** | WP 7.1.3, axe 0 lỗi, iPhone 13 giả lập |
 | Private worker (mô hình fixture) | 89/89 vector; chênh lệch 4,47e-08 | WP 7.1.3 |
