@@ -1,0 +1,5 @@
+ChatGPT GitHub write permission test
+Date: 2026-10-23
+Repository: thuexemayhanoi/plugin-auto
+Purpose: verify connected GitHub app can create a harmless file on an isolated branch.
+This file has no executable code and does not modify production.
