@@ -1,11 +1,11 @@
 {
- "when": "2026-10-23T00:56:10.478Z",
+ "when": "2026-10-23T11:51:46.258Z",
  "browser": "chromium",
  "results": [
   {
    "name": "worker loads bundled runtime + fixture model on WASM",
    "ok": true,
-   "detail": "wasm 865 ms"
+   "detail": "wasm 2385 ms"
   },
   {
    "name": "self-test gate passes against NumPy reference",
@@ -15,12 +15,12 @@
   {
    "name": "embeddings (left padding, query instruction, MRL 32, base64) match NumPy",
    "ok": true,
-   "detail": "max |Δ| 8.94e-8, unit norm true, 4 ms"
+   "detail": "max |Δ| 8.94e-8, unit norm true, 3 ms"
   },
   {
    "name": "model files downloaded with verification progress",
    "ok": true,
-   "detail": "4 progress events"
+   "detail": "8 progress events"
   },
   {
    "name": "second load re-verifies files from the browser cache (no re-download)",

@@ -1,12 +1,12 @@
 {
  "wordpress": "7.1.3",
  "browser": "chromium (Playwright)",
- "when": "2026-10-23T01:01:57.325Z",
+ "when": "2026-10-23T11:56:19.033Z",
  "results": [
   {
    "name": "all 12 admin pages render (desktop) without PHP notices or JS errors",
    "ok": true,
-   "detail": "sseo 752ms, sseo-matrix 580ms, sseo-semantic 473ms, sseo-links 523ms, sseo-cannibalization 551ms, sseo-clusters 465ms, sseo-qa 500ms, sseo-related 480ms, sseo-jobs 401ms, sseo-agents 421ms, sseo-settings 469ms, sseo-audit 500ms"
+   "detail": "sseo 1235ms, sseo-matrix 720ms, sseo-semantic 529ms, sseo-links 528ms, sseo-cannibalization 476ms, sseo-clusters 481ms, sseo-qa 459ms, sseo-related 479ms, sseo-jobs 577ms, sseo-agents 450ms, sseo-settings 442ms, sseo-audit 506ms"
   },
   {
    "name": "axe-core: no critical or serious WCAG 2.1 A/AA violations inside the plugin UI",
