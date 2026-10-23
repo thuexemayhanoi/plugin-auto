@@ -51,6 +51,7 @@ foreach ( $sseo_corpus['categories'] as $c ) {
 
 $sseo_posts  = array();
 $sseo_groups = array();
+$sseo_types  = array();
 $sseo_index  = 0;
 foreach ( $sseo_corpus['docs'] as $d ) {
 	$sseo_status = isset( $d['status'] ) ? $d['status'] : 'publish';
@@ -75,8 +76,9 @@ foreach ( $sseo_corpus['docs'] as $d ) {
 	$sseo_posts[ $d['key'] ] = $sseo_id;
 	if ( $sseo_pll ) {
 		pll_set_post_language( $sseo_id, $d['lang'] );
-		$sseo_groups[ $d['group'] ][ $d['lang'] ] = $sseo_id;
 	}
+	$sseo_groups[ $d['group'] ][ $d['lang'] ] = $sseo_id;
+	$sseo_types[ $sseo_id ]                   = $d['type'];
 	if ( 'post' === $d['type'] && array() !== $d['cats'] ) {
 		wp_set_post_categories(
 			$sseo_id,
@@ -90,6 +92,40 @@ foreach ( $sseo_corpus['docs'] as $d ) {
 	}
 	if ( ! empty( $d['focus'] ) ) {
 		update_post_meta( $sseo_id, '_yoast_wpseo_focuskw', $d['focus'] );
+	}
+}
+// The real "Nguyen Ha VI-EN Core" plugin (used by the blog) when active: its own storage format,
+// as its admin screen writes it — Vietnamese → English pairs and English categories.
+if ( ! $sseo_pll && class_exists( 'NH_VIEN_Links' ) ) {
+	$sseo_pairs = array();
+	$sseo_pages = array();
+	foreach ( $sseo_groups as $sseo_members ) {
+		if ( isset( $sseo_members['vi'], $sseo_members['en'] ) ) {
+			if ( 'page' === $sseo_types[ $sseo_members['vi'] ] ) {
+				$sseo_pages[ $sseo_members['vi'] ] = $sseo_members['en'];
+			} else {
+				$sseo_pairs[ $sseo_members['vi'] ] = $sseo_members['en'];
+			}
+		}
+	}
+	$sseo_en_cats = array();
+	$sseo_en_solo = array();
+	foreach ( $sseo_corpus['categories'] as $c ) {
+		if ( 'en' === $c['lang'] ) {
+			$sseo_en_cats[] = $sseo_cats[ $c['key'] ];
+		}
+	}
+	foreach ( $sseo_groups as $sseo_members ) {
+		if ( isset( $sseo_members['en'] ) && ! isset( $sseo_members['vi'] ) && 'post' === $sseo_types[ $sseo_members['en'] ] ) {
+			$sseo_en_solo[] = $sseo_members['en'];
+		}
+	}
+	update_option( 'nh_vien_translation_pairs_v1', $sseo_pairs, false );
+	update_option( 'nh_vien_page_pairs_v1', $sseo_pages, false );
+	update_option( 'nh_vien_english_categories_v1', $sseo_en_cats, false );
+	update_option( 'nh_vien_independent_en_posts_v1', $sseo_en_solo, false );
+	if ( method_exists( 'NH_VIEN_Links', 'flush_cache' ) ) {
+		NH_VIEN_Links::flush_cache();
 	}
 }
 if ( $sseo_pll ) {

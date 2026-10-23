@@ -75,7 +75,7 @@
 .sseo-steps { list-style: none; margin-left: 0; padding-left: 0; }
 .sseo-steps > li { margin-bottom: 1.2em; }
 .sseo-checks { list-style: none; padding: 0; }
-.sseo-ok span { color: #00a32a; font-weight: 700; } .sseo-warn span { color: #dba617; font-weight: 700; }
+.sseo-ok > span[aria-hidden], .sseo-ok span:first-child { color: #00a32a; font-weight: 700; } .sseo-warn > span[aria-hidden], .sseo-warn span:first-child { color: #dba617; font-weight: 700; }
 .sseo-wizard { background: #fff; border: 1px solid #2271b1; padding: 12px 16px; margin: 16px 0; }
 .sseo-log { max-height: 16em; overflow: auto; background: #1d2327; color: #f0f0f1; font-family: monospace; font-size: 12px; padding: 8px; white-space: pre-wrap; }
 .sseo-log:empty { display: none; }
@@ -95,7 +95,9 @@
 .sseo-step--todo { border-color: #dcdcde; }
 .sseo-step details summary { cursor: pointer; color: #2271b1; }
 .sseo-checks li { margin: .5em 0; }
-.sseo-error span { color: #d63638; font-weight: 700; }
+.sseo-error > span[aria-hidden] { color: #d63638; font-weight: 700; }
+.sseo-checks .description { color: #50575e; font-weight: 400; }
+.sseo-priorities td a, .sseo-card a, .sseo-result a { text-decoration: underline; }
 .sseo-jobbox { background: #f6f7f7; border: 1px solid #dcdcde; border-radius: 4px; padding: 8px 12px; margin: 8px 0; }
 .sseo-progress--wide { width: min(420px, 100%); height: 16px; }
 .sseo-actions { margin: 6px 0; }

@@ -16,8 +16,8 @@ defined( 'ABSPATH' ) || exit;
  * Fingerprints the WordPress-owned data a scan reads (posts, their meta and their terms) before
  * the scan and compares it afterwards. A difference means the content changed during the scan —
  * by a person editing, another plugin or a scheduled post — and the posts that changed are listed;
- * the scan itself never writes there. Editor lock meta (_edit_lock, _edit_last) is ignored because
- * opening a post in the editor changes it.
+ * the scan itself never writes there. Meta that WordPress changes on its own (editor locks, ping
+ * queue flags) is ignored.
  */
 final class ReadOnlyProof {
 
@@ -27,9 +27,10 @@ final class ReadOnlyProof {
 	const PER_POST_MAX = 100;
 
 	/**
-	 * Meta keys that change when someone merely opens the editor.
+	 * Meta keys WordPress itself changes without any content change: editor locks (opening a post)
+	 * and the ping/enclosure queue flags that WP-Cron removes after publishing.
 	 */
-	const IGNORED_META = array( '_edit_lock', '_edit_last' );
+	const IGNORED_META = array( '_edit_lock', '_edit_last', '_pingme', '_encloseme' );
 
 	/**
 	 * Fingerprint of the posts in scope (or of the given posts).

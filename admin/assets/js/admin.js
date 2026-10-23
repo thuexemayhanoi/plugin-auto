@@ -78,8 +78,10 @@
 		var pending = active.length;
 		active.forEach( function ( el ) {
 			var id = el.getAttribute( 'data-sseo-job' );
-			// Without WP-Cron, the open page advances the job in short bounded ticks.
-			var req = cfg.cronOff ? api( '/jobs/' + id + '/tick', 'POST' ) : api( '/jobs/' + id );
+			// Without WP-Cron, and on the dashboard, the open page advances the job in short bounded
+			// ticks (WP-Cron may wait a minute between runs on a quiet site; leases prevent double work).
+			var drive = cfg.cronOff || el.getAttribute( 'data-sseo-reload' );
+			var req = drive ? api( '/jobs/' + id + '/tick', 'POST' ) : api( '/jobs/' + id );
 			req.then( function ( res ) {
 				if ( ! res || ! res.ok ) {
 					return;

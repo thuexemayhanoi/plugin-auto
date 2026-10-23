@@ -764,7 +764,9 @@ final class Api {
 	 * @return array|\WP_Error
 	 */
 	public static function job_control( $job_id, $op ) {
-		$g = Guard::check( Capabilities::ANALYZE, 'analyze', 'job_' . $op );
+		// A tick only advances an existing job within a bounded time budget (one worker at a time per
+		// job through its lease): it uses the read quota so an open page can drive a scan.
+		$g = Guard::check( Capabilities::ANALYZE, 'tick' === $op ? 'read' : 'analyze', 'job_' . $op );
 		if ( is_wp_error( $g ) ) {
 			return $g;
 		}

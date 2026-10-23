@@ -13,6 +13,11 @@ DIR="$3"
 SRC="${WP_SOURCE:-/opt/wp/wp-$V}"
 # SSEO_DB_NAME lets a long benchmark use its own database next to the e2e sites.
 DB="${SSEO_DB_NAME:-sseo_e2e_${V//./_}}"
+# SSEO_DB_HOST=host:port runs the site on another database server (e.g. MariaDB 11.8 on :3318).
+DBHOST="${SSEO_DB_HOST:-127.0.0.1}"
+DBH="${DBHOST%%:*}"
+DBP="3306"
+[ "$DBHOST" != "$DBH" ] && DBP="${DBHOST##*:}"
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 WP="wp --allow-root --path=$DIR"
 
@@ -21,9 +26,9 @@ pkill -f "php -S 127.0.0.1:$PORT" 2>/dev/null || true
 rm -rf "$DIR"
 mkdir -p "$(dirname "$DIR")"
 cp -R "$SRC" "$DIR"
-mysql -uwp -pwp -h127.0.0.1 -e "DROP DATABASE IF EXISTS $DB; CREATE DATABASE $DB CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
+mysql -uwp -pwp -h"$DBH" -P"$DBP" -e "DROP DATABASE IF EXISTS $DB; CREATE DATABASE $DB CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
 
-$WP config create --dbname="$DB" --dbuser=wp --dbpass=wp --dbhost=127.0.0.1 --skip-check --force --extra-php <<'PHP'
+$WP config create --dbname="$DB" --dbuser=wp --dbpass=wp --dbhost="$DBHOST" --skip-check --force --extra-php <<'PHP'
 define( 'WP_ENVIRONMENT_TYPE', 'local' );
 define( 'WP_DEBUG', true );
 define( 'WP_DEBUG_LOG', true );
