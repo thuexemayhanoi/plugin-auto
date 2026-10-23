@@ -82,7 +82,7 @@ jobs:
           $WP eval '\SemanticSEO\Settings::update( array( "default_locale" => "vi" ) );'
           $WP plugin list --fields=name,status,version
       - name: Import the copy (links rewritten to the copy; English = published below /en/)
-        run: SSEO_SITE_EXPORT="$RUNNER_TEMP/site.json" wp --allow-root --path="$RUNNER_TEMP/pilot" eval-file tests/site/import-public.php
+        run: mkdir -p tests/e2e/artifacts && SSEO_SITE_EXPORT="$RUNNER_TEMP/site.json" wp --allow-root --path="$RUNNER_TEMP/pilot" eval-file tests/site/import-public.php
       - name: Inventory + analysis (lexical tier), timed
         run: |
           WP="wp --allow-root --path=$RUNNER_TEMP/pilot"
@@ -120,6 +120,12 @@ jobs:
             echo "plugin assets or model runtime found on the front page"; exit 1
           fi
           echo "front page has no plugin assets or model runtime"
+      - name: Summary (aggregates only)
+        if: always()
+        run: |
+          for f in tests/e2e/artifacts/site-census.json tests/e2e/artifacts/site-pilot-lexical.json tests/e2e/artifacts/site-pilot-hybrid.json; do
+            [ -f "$f" ] && { echo "== $f"; python -c "import json,sys; d=json.load(open(sys.argv[1])); d.pop('sitemaps', None); print(json.dumps(d, separators=(',', ':')))" "$f"; }
+          done
       - uses: actions/upload-artifact@v4
         if: always()
         with:

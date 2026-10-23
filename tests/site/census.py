@@ -11,6 +11,7 @@ Usage: python -I tests/site/census.py --site https://blog.rentbikehanoi.com --ou
 import argparse
 import collections
 import json
+import os
 import re
 import sys
 import time
@@ -110,6 +111,7 @@ def main():
         rest[coll] = {"status": status, "total": int(h["x-wp-total"]) if "x-wp-total" in h else None}
     out["rest_totals"] = rest
 
+    os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)
     with open(args.out, "w") as f:
         json.dump(out, f, indent=1)
     print(json.dumps({k: out[k] for k in ("site", "when", "robots_txt_status", "sitemap_urls_total", "sitemap_urls_by_type_and_language", "sitemap_urls_by_language", "rest_totals")}, indent=1))
