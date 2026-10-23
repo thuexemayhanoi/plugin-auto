@@ -281,11 +281,25 @@ lease và tiếp tục được sau khi bị dừng.
 
 ## 7. Commit cuối và trạng thái PR / merge
 
-Được điền khi PR và CI xong; xem PR trên GitHub.
+| Mục | Trạng thái |
+| --- | --- |
+| PR #3 — 1.0.0-beta.4 (sửa bảng embeddings trên MariaDB 11.7+, dashboard tiếng Việt, hàng việc ưu tiên) | **Đã merge** vào `main` tại `a1fa36d`. CI xanh trên commit cuối `720b298`; hai lượt review độc lập và review của Codex, mọi thread đã xử lý và resolve. |
+| PR #4 — cho phép chạy tay workflow release từ `main`, từ chối tag đã trỏ sang commit khác | **Đã merge** vào `main` tại `9ea4298`; mọi check xanh. |
+| CI trên `main` sau merge (run `40022704892`, commit `9ea4298`) | 21/21 job xanh, gồm MariaDB 11.8, MySQL 8.4, site giống production, chạy chung với WooCommerce/Yoast/Polylang, build ZIP + smoke test. |
+
+Không bỏ qua branch protection, không force-push.
 
 ## 8. Link ZIP
 
-Được đăng qua GitHub Release `v1.0.0-beta.4` kèm SHA-256 (workflow `release.yml`); xem mục cuối của PR.
+- Release (pre-release): <https://github.com/thuexemayhanoi/plugin-auto/releases/tag/v1.0.0-beta.4>
+  — tag `v1.0.0-beta.4` trên commit `9ea4298`, tạo bởi workflow `release.yml` (run `40022713051`).
+- ZIP cài đặt: <https://github.com/thuexemayhanoi/plugin-auto/releases/download/v1.0.0-beta.4/semantic-seo-engine-vi-en-1.0.0-beta.4.zip>
+  (11.003.425 byte, 116 file runtime, một thư mục gốc `semantic-seo-engine-vi-en/`).
+- SHA-256: `412858f48bcc9a914c725520703aadb4441cbee11d8be3e913894f0eaa587426`
+  (file kèm theo: `semantic-seo-engine-vi-en-1.0.0-beta.4.zip.sha256`).
+- Workflow build ZIP hai lần và so sánh từng byte. Bản build trên máy kiểm thử cho cùng SHA-256, nên
+  build tái lập được. Smoke test cài từ chính ZIP này trên WordPress 7.1.3 + MariaDB 11.8 đã đạt
+  trước khi đăng.
 
 ---
 
