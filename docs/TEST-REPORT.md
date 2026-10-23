@@ -29,7 +29,7 @@ real iPhones were not measured, and WPML/other SEO plugins were not installed (Â
 | Suite | Command | Result |
 | --- | --- | --- |
 | PHP unit | `vendor/bin/phpunit -c phpunit-unit.xml.dist` | 14 tests, 68 assertions, OK |
-| WordPress integration | `vendor/bin/phpunit -c phpunit.xml.dist` | 65 tests OK locally (WP 7.1.3 test library; skipped: the real-model test, which runs in its own workflow, and the VI-EN plugin test when `NH_VIEN_PLUGIN_DIR` is unset); CI on PHP 7.4 + WP 6.5.13, 8.1 + 6.9.10, 8.3/8.4 + 7.1.3 |
+| WordPress integration | `vendor/bin/phpunit -c phpunit.xml.dist` | 66 tests, 1,218 assertions, OK locally (WP 7.1.3 test library, with the VI-EN plugin; skipped: the real-model test, which runs in its own workflow); CI on PHP 7.4 + WP 6.5.13, 8.1 + 6.9.10, 8.3/8.4 + 7.1.3 |
 | Real VI-EN language plugin | `NH_VIEN_PLUGIN_DIR=â€¦ phpunit --filter NhVienLanguageTest` | real `NH_VIEN_Links` class (pinned commit of the owner's repo): locales, pairs, standalone English posts, page pairs, English categories, read-only |
 | Coding standards | `vendor/bin/phpcs` (WordPress + PHPCompatibilityWP 7.4-) | 0 errors, 0 warnings |
 | JS unit | `node --test tests/js/*.test.mjs` | 19 tests, OK |
