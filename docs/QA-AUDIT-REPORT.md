@@ -254,7 +254,7 @@ Môi trường: 4 vCPU, 16 GB RAM, MariaDB 10.11.14, PHP 8.3.6, WP 7.1.3. Tái l
 | Bộ kiểm thử | Nơi chạy | Kết quả |
 | --- | --- | --- |
 | PHP unit | cục bộ | **ĐẠT** 22/22 (93 assertion) |
-| PHP integration | cục bộ, WP 7.1.3 + MariaDB | **ĐẠT** 114 test, 1.745 assertion. 2 test bỏ qua cục bộ (`HybridEvaluationTest` cần mô hình thật; `NhVienLanguageTest` cần plugin ngôn ngữ), cả hai chạy trong CI |
+| PHP integration | cục bộ, WP 7.1.3 + MariaDB | **ĐẠT** 117 test, 1.816 assertion (chạy lại trên `cd58851`). 2 test bỏ qua cục bộ (`HybridEvaluationTest` cần mô hình thật; `NhVienLanguageTest` cần plugin ngôn ngữ), cả hai chạy trong CI |
 | phpcs (WPCS + PHPCompatibilityWP) | cục bộ + CI | **ĐẠT**: 0 lỗi, 0 cảnh báo |
 | JS (node:test) | cục bộ + CI | **ĐẠT** 21/21 |
 | Worker fixture (Chromium, WASM) | cục bộ | **ĐẠT** 10/10 |
@@ -263,8 +263,8 @@ Môi trường: 4 vCPU, 16 GB RAM, MariaDB 10.11.14, PHP 8.3.6, WP 7.1.3. Tái l
 | Worker Python riêng | cục bộ | **ĐẠT** 89/89 vector, Δ 4,5e-8 |
 | Giao diện quản trị (Playwright, axe, giả lập mobile) | cục bộ | **ĐẠT** 11/11 |
 | Probe đồng thời qua HTTP | cục bộ | **ĐẠT** (§5) |
-| CI 18 job (lint ×6, unit ×4, integration ×4, WPCS, JS, ZIP, coexistence) | GitHub Actions | **ĐẠT** 18/18 trên `609999b` và `01bd4bc`. Trên `7a310b4`, job WPCS báo lỗi định dạng ở `ClusterBuilder` (`count()` trong điều kiện vòng lặp) và đã sửa ở commit cuối; kết quả cuối xem các check của PR #2 |
-| Mô hình Qwen3 thật (run 39962364490) | GitHub Actions | **ĐẠT** (9/9 kiểm tra trình duyệt, hybrid, worker riêng 89/89) |
+| CI 18 job (lint ×6, unit ×4, integration ×4, WPCS, JS, ZIP, coexistence) | GitHub Actions | **ĐẠT** 18/18 trên `609999b` và `01bd4bc`. Trên `7a310b4`, job WPCS báo lỗi định dạng ở `ClusterBuilder` (`count()` trong điều kiện vòng lặp) và đã sửa ở `349e94d`. Trên `cd58851` (code cuối): **ĐẠT 18/18** (run 39969369466) |
+| Mô hình Qwen3 thật (run 39962364490) | GitHub Actions | **ĐẠT** (9/9 kiểm tra trình duyệt, hybrid, worker riêng 89/89). Chạy lại trên `cd58851` (run 39969369444): **ĐẠT** |
 | Benchmark 20.000 bài chạy trọn | — | **CHƯA CHẠY TRỌN** (dừng chủ động, §6) |
 | GPU thật, iPhone thật, ChatGPT/MCP client thật, staging của site thật | — | **CHƯA KIỂM CHỨNG** |
 
