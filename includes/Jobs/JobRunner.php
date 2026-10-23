@@ -202,6 +202,11 @@ final class JobRunner {
 			if ( 'queued' === $last['status'] ) {
 				break; // Backing off after an error.
 			}
+			// One long process (WP-CLI) would otherwise keep every post, term and meta row it read in
+			// WordPress' in-memory object cache: peak 329 MB for 6,000 synthetic posts.
+			if ( wp_cache_supports( 'flush_runtime' ) ) {
+				wp_cache_flush_runtime();
+			}
 		}
 		return $last;
 	}
