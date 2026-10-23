@@ -4,10 +4,11 @@
 
 | Environment | What ran | Result |
 | --- | --- | --- |
-| WordPress 7.1.3, PHP 8.3.6, MariaDB 10.11 (local) | PHPUnit integration (58 tests), ZIP smoke (27 checks), HTTP agent/security (26), private worker e2e, browser UI e2e (11), Chromium worker fixture (10) | pass |
+| WordPress 7.1.3, PHP 8.3.6, MariaDB 10.11 (local) | PHPUnit integration (81 tests), ZIP smoke (27 checks), HTTP agent/security (26), private worker e2e, browser UI e2e (11), Chromium worker fixture (10) | pass |
 | WordPress 6.9.10, PHP 8.3.6 (local) | PHPUnit integration, ZIP smoke (27), HTTP agent/security incl. Abilities + MCP Adapter 0.7.1 (26) | pass |
 | WordPress 6.5.13, PHP 8.3.6 (local) | PHPUnit integration (4 Abilities tests skipped: API absent before 6.9), ZIP smoke (26), HTTP agent/security (22, Abilities/MCP version-gated) | pass |
-| GitHub Actions (ubuntu-latest, MariaDB 10.11 service) | `php -l` on PHP 7.4/8.0/8.1/8.2/8.3/8.4; unit on 7.4/8.1/8.3/8.4; integration on PHP 7.4 + WP 6.5.13, 8.1 + 6.9.10, 8.3 + 7.1.3, 8.4 + 7.1.3; JS + Chromium; ZIP build + install smoke on WP 6.5.13 and 7.1.3 | see the PR checks / [run 39880430340](https://github.com/thuexemayhanoi/plugin-auto/actions/runs/39880430340) (all 17 jobs green) |
+| GitHub Actions (ubuntu-latest, MariaDB 10.11 service) | `php -l` on PHP 7.4/8.0/8.1/8.2/8.3/8.4; unit on 7.4/8.1/8.3/8.4; integration on PHP 7.4 + WP 6.5.13, 8.1 + 6.9.10, 8.3 + 7.1.3, 8.4 + 7.1.3; JS + Chromium; reproducible ZIP build + licenses + install smoke on WP 6.5.13 and 7.1.3; coexistence job | see the PR checks / [run 39915814573](https://github.com/thuexemayhanoi/plugin-auto/actions/runs/39915814573) (all 18 jobs green) |
+| GitHub Actions, WordPress 7.1.3 + WooCommerce + Yoast SEO + Polylang (from wordpress.org) | `tests/e2e/compat-plugins.sh`: activation, public pages (home, post, page, product, shop) identical with this plugin on/off, full analysis, debug.log, deactivation | 22/22 ([run 39915814573](https://github.com/thuexemayhanoi/plugin-auto/actions/runs/39915814573)) |
 | Static | WordPress Coding Standards 3 + PHPCompatibilityWP (testVersion 7.4-) | 0 errors, 0 warnings |
 
 PHP 7.4 was exercised in CI only (the local sandbox has PHP 8.3 only).
@@ -47,8 +48,11 @@ PHP 7.4 was exercised in CI only (the local sandbox has PHP 8.3 only).
 
 Yoast SEO, Rank Math, SEOPress, The SEO Framework, All in One SEO: title, description, focus
 keyword, canonical, robots/noindex are read from their documented post meta keys; nothing is ever
-written. Tested with Yoast-style meta (`_yoast_wpseo_focuskw`) in fixtures; the real plugins were
-**not installed** in this build. The core fallback uses WordPress' own title and `blog_public`.
+written. Yoast SEO was installed for real in the coexistence job (with WooCommerce and Polylang,
+22/22) and in the read-only pilot copy of the blog; Rank Math, SEOPress, The SEO Framework and All in
+One SEO were tested only through their documented meta keys in fixtures (**not installed**). The core
+fallback uses WordPress' own title and `blog_public`. WooCommerce products are outside the default
+inventory scope (posts and pages); shop and product pages are unchanged by this plugin.
 
 ## Browsers (Tier 1 inference)
 

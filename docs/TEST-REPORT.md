@@ -42,7 +42,7 @@ real iPhones were not measured, and WPML/other SEO plugins were not installed (�
 | Real model | workflow "Real Qwen3-Embedding-0.6B" | see §6; latest green run [39896404879](https://github.com/thuexemayhanoi/plugin-auto/actions/runs/39896404879) |
 | Real site (read-only) | workflow "Read-only site census + pilot" | see §7 |
 | Write safety, device verification, overlap rules | `phpunit --filter 'ChangeExecutorSafetyTest|DeviceVerificationTest|CannibalizationRulesTest|QaTranslationScopeTest'` | part of the integration suite |
-| Coexistence with WooCommerce, Yoast SEO, Polylang | CI job "Coexistence…" (`tests/e2e/compat-plugins.sh`) | see §8 |
+| Coexistence with WooCommerce, Yoast SEO, Polylang | CI job "Coexistence…" (`tests/e2e/compat-plugins.sh`) | 22/22 (see §4) |
 | Reproducible ZIP + licenses | CI "Build release ZIP" job; locally two builds | identical SHA-256 |
 | Performance | `tests/bench/run-bench.sh 10|100|1000|6000` | see [PERFORMANCE.md](PERFORMANCE.md) |
 | CI | GitHub Actions run [39896590578](https://github.com/thuexemayhanoi/plugin-auto/actions/runs/39896590578) (commit `5a9cf4d`) | 17/17 jobs green (lint ×6, WPCS, unit ×4, integration ×4 incl. the site's VI-EN plugin, JS, ZIP + smoke) |
@@ -110,6 +110,17 @@ Found and fixed in the final audit (1.0.0-beta.2):
 * Unsupported device (no WebAssembly/WebGPU): clear message, loading disabled, lexical pages work.
 * Front end with related content enabled: all requests same-origin; no model, worker, admin script
   or `.onnx` request; related list rendered.
+
+### Coexistence with widely used plugins (CI, WordPress 7.1.3)
+
+`tests/e2e/compat-plugins.sh` in the CI job "Coexistence with WooCommerce, Yoast SEO and Polylang"
+(run [39915814573](https://github.com/thuexemayhanoi/plugin-auto/actions/runs/39915814573)), plugins
+installed from wordpress.org: **22/22 checks passed**. The plugin activates next to them. The home
+page, a post, a page, a WooCommerce product and the shop page are byte-identical with this plugin on
+and off, compared at the same moment after warming the site, both right after activation and after a
+full inventory + analysis. Products are not inventoried by default; posts and pages are. There is
+no PHP error, warning, notice or deprecation from this plugin in `debug.log`. Deactivation leaves
+the three plugins active and none of this plugin's output.
 
 ## 5. Relevance evaluation (labelled fixture, lexical tier)
 
@@ -252,7 +263,7 @@ overlap report needs triage on this blog: start with potential competition and n
 | AC15 Agent cannot self-approve or use privileged endpoints with read-only credentials | **PASS** | http-agent reader 403s, no approve route, admin Application Password treated as agent, editor refused |
 | AC16 No frontend model load or hidden paid AI API | **PASS** | UI front-end request audit; worker allow-list test (no CDN); code has no AI API client |
 | AC17 Jobs resume, cancel, avoid duplicates, honest progress | **PASS** | `OperationsTest` (cancel/pause/resume with honest progress, resume after a crashed worker via expired lease, backoff then fail, post deleted/updated mid-job, idempotent retry under quota), `RestApiTest::test_job_start_is_idempotent_and_deduplicated`, http-agent duplicate 429, UI inference pause/resume/stop |
-| AC18 Existing SEO/theme/language/canonical behaviour unchanged by default | **PASS** | front-end byte-identical incl. Polylang `/en/` pages, home, category, search, feed; SEO plugins only read; Yoast SEO and the site's VI-EN plugin installed for real in the pilot copy (§7), front page of the copy without plugin assets |
+| AC18 Existing SEO/theme/language/canonical behaviour unchanged by default | **PASS** | front-end byte-identical incl. Polylang `/en/` pages, home, category, search, feed; SEO plugins only read; Yoast SEO, WooCommerce and Polylang installed for real in the coexistence job (22/22, §4) and Yoast SEO + the site's VI-EN plugin in the pilot copy (§7) |
 | AC19 Performance, test results, artifacts, screenshots are real | **PASS** | this report, `docs/evidence/*.json`, `docs/screenshots/*`, CI run link |
 | AC20 README, docs, CI, ZIP, PR, install guide match implementation | **PASS** | README status block + docs set, CI workflow, `bin/build-zip.sh` (artifact in CI), PR from this branch |
 
@@ -262,7 +273,7 @@ overlap report needs triage on this blog: start with potential competition and n
 * Installation on a staging copy of blog.rentbikehanoi.com by the owner (production is out of scope).
 * Relevance labels exist only for the fixture; on the real-site copy (§7) only counts and the agreement
   with the site's own hreflang pairs are measured, not the precision of link/overlap suggestions.
-* WPML, Rank Math/SEOPress/TSF/AIOSEO as installed plugins (Yoast SEO was installed only in the
-  pilot copy); real iPhone/Safari; a real MCP client application or ChatGPT (only the adapter's
+* WPML, Rank Math/SEOPress/TSF/AIOSEO as installed plugins (Yoast SEO, WooCommerce and Polylang
+  were installed for real); real iPhone/Safari; a real MCP client application or ChatGPT (only the adapter's
   JSON-RPC endpoint was exercised).
 * PHP 7.4 ran in CI only (unit + integration), not in the local e2e suites.
