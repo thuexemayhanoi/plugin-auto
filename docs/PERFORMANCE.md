@@ -63,14 +63,24 @@ was byte-identical before and after activation and after a full analysis
 (object cache group `sseo_related`) with no extra requests (verified: all front-end requests
 same-origin, no model, worker or admin script).
 
-## Browser inference (Tier 1)
+## Real Qwen3-Embedding-0.6B inference (measured in GitHub Actions)
 
-Not benchmarked with the real model: Qwen3-Embedding-0.6B weights could not be downloaded in the
-build environment (see TEST-REPORT, AC06). With the tiny fixture model, the full browser pipeline
-(download + SHA-256 verification + ONNX Runtime Web init on WASM) took ≈ 0.8 s and 5 texts were
-embedded in 3–4 ms in headless Chromium; these numbers say nothing about Qwen3 speed. Expect the
-real model's first download to be ≈ 579 MB (q4f16) and inference to be much faster on WebGPU than
-on WASM.
+Runner: GitHub-hosted `ubuntu-latest` (4 vCPU, 16 GB RAM, no GPU), workflow
+"Real Qwen3-Embedding-0.6B". Texts are the labelled fixture documents (titles + paragraphs, up to
+512 tokens) and the model-card self-test sentences.
+
+| Path | Precision | Measured |
+| --- | --- | --- |
+| Download of the pinned files from huggingface.co (runner network) + SHA-256 | q4f16 (567 MB) | ≈ 3 s download + verification |
+| Browser worker, Chromium headless, **WASM, 1 thread** (page not cross-origin isolated) | q4f16 | first load incl. download + verification + runtime init 8.2 s; reload from the verified browser cache 4.2 s (no download); self-test + 8 texts (4 of them long) ≈ 51 s → **several seconds per long text on CPU** |
+| Browser worker, WASM, 1 thread | fp16 (1.2 GB) | self-test + 8 texts ≈ 63 s |
+| Browser worker, WebGPU through SwiftShader (software adapter, no GPU) | q4 | runs and passes the self-test, but a software GPU is not representative; **real GPU speed not measured** |
+| Python private worker, ONNX Runtime CPU (4 threads), one text at a time in batches of 4 | q4f16 | 0.39–0.77 s per fixture document; 89 queued chunks embedded and stored over REST in 80 s (incl. model load and self-test) |
+| Same | fp16 / fp32 | ≈ 0.39–1.24 s per document (fp16 ≈ fp32 on CPU) |
+
+Practical consequence: on a CPU-only browser, embedding a 1,000-post site (several chunks per
+post) takes hours; a desktop browser with a real WebGPU GPU or the private worker is the
+practical choice for large sites. Lexical analysis never waits for embeddings.
 
 ## Tuning
 
