@@ -231,21 +231,31 @@ final class HybridEvaluationTest extends TestCase {
 		}
 		Settings::update( array( 'translation_min_similarity' => 0.70 ) );
 
-		// Hybrid analysis for a grid of semantic weights (0 = lexical topic score with vectors stored).
+		// Hybrid analysis for a grid of semantic weights (0 = lexical topic score with vectors stored),
+		// with the per-precision calibration (default) and, for comparison, raw cosine.
 		$grid = array();
 		$by_w = array();
-		foreach ( array( 0.0, 0.2, 0.35, 0.5, 0.7 ) as $w ) {
+		$raw  = static function () {
+			return null;
+		};
+		foreach ( array( array( 0.0, true ), array( 0.2, true ), array( 0.35, true ), array( 0.5, true ), array( 0.7, true ), array( 0.35, false ), array( 0.5, false ) ) as $run ) {
+			list( $w, $calibrated ) = $run;
+			if ( ! $calibrated ) {
+				add_filter( 'sseo_semantic_calibration', $raw );
+			}
 			Settings::update( array( 'w_semantic' => $w ) );
 			$this->reanalyze();
-			$m          = $this->measure( $labels );
-			$grid[]     = array(
+			$m      = $this->measure( $labels );
+			$grid[] = array(
 				'w_semantic' => $w,
+				'calibrated' => $calibrated,
 				'links'      => $m['links'],
 				'related'    => $m['related'],
 				'overlap'    => array_diff_key( $m['overlap'], array( 'pairs' => 1 ) ),
 				'pairs'      => $m['overlap']['pairs'],
 			);
-			$by_w[ (string) $w ] = $m;
+			$by_w[ ( $calibrated ? 'cal-' : 'raw-' ) . $w ] = $m;
+			remove_filter( 'sseo_semantic_calibration', $raw );
 		}
 		Settings::update( array( 'w_semantic' => 0.35 ) );
 
@@ -277,11 +287,11 @@ final class HybridEvaluationTest extends TestCase {
 		self::write_artifact( 'evaluation-hybrid.json', $report );
 		fwrite( STDERR, "\nHYBRID " . wp_json_encode( array_diff_key( $report, array( 'hybrid_grid' => 1 ) ) ) . "\n" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite
 		foreach ( $grid as $g ) {
-			fwrite( STDERR, 'w_semantic=' . $g['w_semantic'] . ' ' . wp_json_encode( array( 'links' => $g['links'], 'related' => $g['related'], 'overlap' => $g['overlap'] ) ) . "\n" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite
+			fwrite( STDERR, 'w_semantic=' . $g['w_semantic'] . ( $g['calibrated'] ? ' calibrated ' : ' raw ' ) . wp_json_encode( array( 'links' => $g['links'], 'related' => $g['related'], 'overlap' => $g['overlap'] ) ) . "\n" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite
 		}
 
 		// Product guarantees that must hold with real vectors at the default weight.
-		$default = $by_w['0.35'];
+		$default = $by_w['cal-0.35'];
 		$this->assertSame( 0, $default['overlap']['cross_locale_pairs_compared'], 'Translations are never compared.' );
 		$this->assertSame( 0, $default['overlap']['false_positives_on_controls'], 'No false positives on must-not-compete controls with real vectors.' );
 	}

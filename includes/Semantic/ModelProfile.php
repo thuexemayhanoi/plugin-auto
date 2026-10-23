@@ -86,6 +86,50 @@ final class ModelProfile {
 	);
 
 	/**
+	 * Score calibration of raw cosine similarity, per precision. Qwen3 vectors of unrelated pages in
+	 * the same language are not orthogonal: on the labelled fixture with the real q4f16 model, the
+	 * document summary vectors gave 0.42 on average for unrelated same-language pairs and 0.62 for
+	 * related pairs (fp16/fp32: 0.43 / 0.64). Without calibration that floor is added to every pair
+	 * and lexical thresholds are crossed by unrelated pages. The calibrated value
+	 * (cosine − floor) / (ceiling − floor), clipped to 0..1, is what the scores use; the raw cosine
+	 * stays in the evidence.
+	 */
+	const CALIBRATION = array(
+		'q4f16' => array(
+			'floor'   => 0.40,
+			'ceiling' => 0.90,
+		),
+		'fp16'  => array(
+			'floor'   => 0.40,
+			'ceiling' => 0.90,
+		),
+	);
+
+	/**
+	 * Calibration of the active profile (filterable; null disables it).
+	 *
+	 * @param string $dtype Precision.
+	 * @return array{floor: float, ceiling: float}|null
+	 */
+	public static function calibration( $dtype ) {
+		$cal = isset( self::CALIBRATION[ $dtype ] ) ? self::CALIBRATION[ $dtype ] : null;
+		/**
+		 * Filters the semantic score calibration (null = use raw cosine).
+		 *
+		 * @param array|null $cal   {floor, ceiling}.
+		 * @param string     $dtype Precision.
+		 */
+		$cal = apply_filters( 'sseo_semantic_calibration', $cal, $dtype );
+		if ( ! is_array( $cal ) || ! isset( $cal['floor'], $cal['ceiling'] ) || (float) $cal['ceiling'] <= (float) $cal['floor'] ) {
+			return null;
+		}
+		return array(
+			'floor'   => (float) $cal['floor'],
+			'ceiling' => (float) $cal['ceiling'],
+		);
+	}
+
+	/**
 	 * Active profile from settings.
 	 *
 	 * @return array

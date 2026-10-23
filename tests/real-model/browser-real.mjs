@@ -10,7 +10,7 @@
  *      embed; vectors compared with the Python ONNX Runtime vectors of the same inputs
  *      (tests/real-model/verify_model.py). Required to pass.
  *   B. Second load is served from the verified browser cache (no model download). Required.
- *   C. fp16 (offered) and q8/q4/bnb4 (not offered) on WASM, each compared with Python: recorded.
+ *   C. fp16 (offered) and q8 (not offered) on WASM, each compared with Python: recorded.
  *   D. WebGPU through SwiftShader (software adapter) if Chromium exposes one: recorded.
  * Variants the plugin does not offer use the Hub-metadata pins from the manifest of fetch_verify.py.
  */
@@ -166,7 +166,7 @@ try {
 	await A.close();
 
 	// C. Other precisions on WASM (measured, not required).
-	for ( const dtype of [ 'fp16', 'q8', 'q4', 'bnb4' ].filter( ( d ) => prof.files[ d ] || manifest.files[ d ] ) ) {
+	for ( const dtype of [ 'fp16', 'q8' ].filter( ( d ) => prof.files[ d ] || manifest.files[ d ] ) ) {
 		const C = await openPage( [] );
 		const c = await runVariant( C, dtype, 'wasm' );
 		info[ dtype + '_wasm' ] = c;

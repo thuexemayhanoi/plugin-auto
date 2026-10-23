@@ -11,6 +11,7 @@ use SemanticSEO\Extractor\ContentExtractor;
 use SemanticSEO\Language\TextNormalizer;
 use SemanticSEO\Lexical\LexicalIndex;
 use SemanticSEO\Lexical\Tokenizer;
+use SemanticSEO\Semantic\ModelProfile;
 use SemanticSEO\Semantic\VectorMath;
 use SemanticSEO\Settings;
 
@@ -22,7 +23,7 @@ defined( 'ABSPATH' ) || exit;
  */
 final class Scorer {
 
-	const VERSION = 'score-1';
+	const VERSION = 'score-2';
 
 	/**
 	 * Decodes a document row into an analysis profile.
@@ -120,9 +121,10 @@ final class Scorer {
 	public static function features( array $a, array $b, $vec_a = null, $vec_b = null, $gsc_overlap = 0, $gsc_available = false ) {
 		$lexical  = LexicalIndex::cosine( $a['lexvec'], $b['lexvec'] );
 		$semantic = ( is_array( $vec_a ) && is_array( $vec_b ) && array() !== $vec_a && array() !== $vec_b ) ? max( 0.0, VectorMath::dot( $vec_a, $vec_b ) ) : null;
+		$sem_cal  = null === $semantic ? null : self::calibrate( $semantic );
 		$w_lex    = (float) Settings::get( 'w_lexical', 0.45 );
 		$w_sem    = (float) Settings::get( 'w_semantic', 0.35 );
-		$topic    = null === $semantic ? $lexical : ( $w_lex * $lexical + $w_sem * $semantic ) / max( 0.0001, $w_lex + $w_sem );
+		$topic    = null === $sem_cal ? $lexical : ( $w_lex * $lexical + $w_sem * $sem_cal ) / max( 0.0001, $w_lex + $w_sem );
 
 		$only_a = array_values( array_diff( $a['title_set'], $b['title_set'] ) );
 		$only_b = array_values( array_diff( $b['title_set'], $a['title_set'] ) );
@@ -132,27 +134,52 @@ final class Scorer {
 			&& TextNormalizer::normalize( $a['focus_keyword'] ) === TextNormalizer::normalize( $b['focus_keyword'] );
 
 		return array(
-			'lexical'           => round( $lexical, 4 ),
-			'semantic'          => null === $semantic ? null : round( $semantic, 4 ),
-			'topic'             => round( $topic, 4 ),
-			'title_overlap'     => round( self::jaccard( $a['title_set'], $b['title_set'] ), 4 ),
-			'title_containment' => round( self::containment( $a['title_set'], $b['title_set'] ), 4 ),
-			'heading_overlap'   => round( self::jaccard( $a['heading_set'], $b['heading_set'] ), 4 ),
-			'near_duplicate'    => round( ContentExtractor::minhash_similarity( $a['minhash'], $b['minhash'] ), 4 ),
-			'same_intent'       => $a['intent'] === $b['intent'] && 'unknown' !== $a['intent'],
-			'intents'           => array( $a['intent'], $b['intent'] ),
-			'intent_conf'       => array( $a['intent_confidence'], $b['intent_confidence'] ),
-			'focus_same'        => $focus_same,
-			'shared_terms'      => LexicalIndex::shared_terms( $a['lexvec'], $b['lexvec'], 8 ),
-			'title_shared'      => $shared,
-			'title_only_a'      => $only_a,
-			'title_only_b'      => $only_b,
-			'same_cluster'      => $a['cluster_id'] > 0 && $a['cluster_id'] === $b['cluster_id'],
-			'roles'             => array( $a['cluster_role'], $b['cluster_role'] ),
-			'gsc_overlap'       => (int) $gsc_overlap,
-			'gsc_available'     => (bool) $gsc_available,
-			'exact_duplicate'   => '' !== $a['content_hash'] && $a['content_hash'] === $b['content_hash'] && $a['word_count'] > 20,
+			'lexical'             => round( $lexical, 4 ),
+			'semantic'            => null === $semantic ? null : round( $semantic, 4 ),
+			'semantic_calibrated' => null === $sem_cal ? null : round( $sem_cal, 4 ),
+			'topic'               => round( $topic, 4 ),
+			'title_overlap'       => round( self::jaccard( $a['title_set'], $b['title_set'] ), 4 ),
+			'title_containment'   => round( self::containment( $a['title_set'], $b['title_set'] ), 4 ),
+			'heading_overlap'     => round( self::jaccard( $a['heading_set'], $b['heading_set'] ), 4 ),
+			'near_duplicate'      => round( ContentExtractor::minhash_similarity( $a['minhash'], $b['minhash'] ), 4 ),
+			'same_intent'         => $a['intent'] === $b['intent'] && 'unknown' !== $a['intent'],
+			'intents'             => array( $a['intent'], $b['intent'] ),
+			'intent_conf'         => array( $a['intent_confidence'], $b['intent_confidence'] ),
+			'focus_same'          => $focus_same,
+			'shared_terms'        => LexicalIndex::shared_terms( $a['lexvec'], $b['lexvec'], 8 ),
+			'title_shared'        => $shared,
+			'title_only_a'        => $only_a,
+			'title_only_b'        => $only_b,
+			'same_cluster'        => $a['cluster_id'] > 0 && $a['cluster_id'] === $b['cluster_id'],
+			'roles'               => array( $a['cluster_role'], $b['cluster_role'] ),
+			'gsc_overlap'         => (int) $gsc_overlap,
+			'gsc_available'       => (bool) $gsc_available,
+			'exact_duplicate'     => '' !== $a['content_hash'] && $a['content_hash'] === $b['content_hash'] && $a['word_count'] > 20,
 		);
+	}
+
+	/**
+	 * Calibrated semantic score (raw cosine when the active profile has no calibration).
+	 *
+	 * @param float $cosine Raw cosine.
+	 * @return float 0..1
+	 */
+	public static function calibrate( $cosine ) {
+		$cal = ModelProfile::calibration( (string) Settings::get( 'model_dtype', 'q4f16' ) );
+		if ( null === $cal ) {
+			return (float) $cosine;
+		}
+		return max( 0.0, min( 1.0, ( (float) $cosine - $cal['floor'] ) / ( $cal['ceiling'] - $cal['floor'] ) ) );
+	}
+
+	/**
+	 * Semantic component of a feature set (calibrated when available).
+	 *
+	 * @param array $features Pair features.
+	 * @return float
+	 */
+	private static function semantic_component( array $features ) {
+		return isset( $features['semantic_calibrated'] ) ? (float) $features['semantic_calibrated'] : (float) $features['semantic'];
 	}
 
 	/**
@@ -188,17 +215,18 @@ final class Scorer {
 		);
 		$sum   = max( 0.0001, array_sum( $w ) );
 		$total = ( $w['lexical'] * min( 1.0, $features['lexical'] * 2.0 )
-			+ $w['semantic'] * ( null === $features['semantic'] ? 0.0 : $features['semantic'] )
+			+ $w['semantic'] * ( null === $features['semantic'] ? 0.0 : self::semantic_component( $features ) )
 			+ $w['anchor'] * $anchor
 			+ $w['graph'] * $graph ) / $sum;
 		return array(
 			'score'      => round( $total, 4 ),
 			'components' => array(
-				'lexical'  => $features['lexical'],
-				'semantic' => $features['semantic'],
-				'anchor'   => round( $anchor, 4 ),
-				'graph'    => round( $graph, 4 ),
-				'weights'  => $w,
+				'lexical'             => $features['lexical'],
+				'semantic'            => $features['semantic'],
+				'semantic_calibrated' => isset( $features['semantic_calibrated'] ) ? $features['semantic_calibrated'] : null,
+				'anchor'              => round( $anchor, 4 ),
+				'graph'               => round( $graph, 4 ),
+				'weights'             => $w,
 			),
 		);
 	}

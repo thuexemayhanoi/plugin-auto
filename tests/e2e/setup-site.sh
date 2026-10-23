@@ -18,6 +18,7 @@ WP="wp --allow-root --path=$DIR"
 [ -d "$SRC" ] || { echo "WordPress $V not found in $SRC" >&2; exit 1; }
 pkill -f "php -S 127.0.0.1:$PORT" 2>/dev/null || true
 rm -rf "$DIR"
+mkdir -p "$(dirname "$DIR")"
 cp -R "$SRC" "$DIR"
 mysql -uwp -pwp -h127.0.0.1 -e "DROP DATABASE IF EXISTS $DB; CREATE DATABASE $DB CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
 

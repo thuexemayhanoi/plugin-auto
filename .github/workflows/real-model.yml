@@ -45,8 +45,9 @@ jobs:
     env:
       WP_TESTS_DB_HOST: 127.0.0.1
       MODEL_CACHE: /home/runner/.cache/sseo-worker
-      # "all": every ONNX variant of the pinned revision is measured (quantization survey).
-      REAL_MODEL_DTYPES: all
+      # Offered precisions, the fp32 baseline, q8 (not offered: kept as evidence) and q4 (WebGPU check).
+      # Use "all" to re-run the full quantization survey (int8, uint8, bnb4 too).
+      REAL_MODEL_DTYPES: q4f16,fp16,fp32,q8,q4
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
