@@ -24,6 +24,13 @@ defined( 'ABSPATH' ) || exit;
  */
 final class LinkSuggester {
 
+	/**
+	 * Request cache of title counts per locale and phrase.
+	 *
+	 * @var array<string,int>
+	 */
+	private static $title_freq = array();
+
 	const VERSION = 'links-2';
 
 	/**
@@ -189,10 +196,26 @@ final class LinkSuggester {
 	 * @return int
 	 */
 	public static function title_frequency( $phrase, $locale ) {
-		return (int) \SemanticSEO\Database\Db::value(
-			"SELECT COUNT(*) FROM {documents} WHERE status = 'publish' AND locale = %s AND title LIKE %s",
-			array( (string) $locale, '%' . \SemanticSEO\Database\Db::esc_like_prefix( (string) $phrase ) )
-		);
+		$key = $locale . '|' . $phrase;
+		if ( ! isset( self::$title_freq[ $key ] ) ) {
+			if ( count( self::$title_freq ) > 5000 ) {
+				self::$title_freq = array();
+			}
+			self::$title_freq[ $key ] = (int) \SemanticSEO\Database\Db::value(
+				"SELECT COUNT(*) FROM {documents} WHERE status = 'publish' AND locale = %s AND title LIKE %s",
+				array( (string) $locale, '%' . \SemanticSEO\Database\Db::esc_like_prefix( (string) $phrase ) )
+			);
+		}
+		return self::$title_freq[ $key ];
+	}
+
+	/**
+	 * Forgets cached title counts (start of an analysis run; titles may have changed).
+	 *
+	 * @return void
+	 */
+	public static function flush_cache() {
+		self::$title_freq = array();
 	}
 
 	/**

@@ -147,6 +147,7 @@ final class AnalysisRunner {
 				break;
 
 			case 'clusters':
+				LinkSuggester::flush_cache();
 				if ( empty( $params['doc_ids'] ) ) {
 					// Site-wide run: re-measure how similar this site's pages usually are (scoped runs reuse it).
 					$baseline                   = SimilarityBaseline::compute( ModelProfile::active()['model_key'] );

@@ -83,7 +83,7 @@ final class RelatedContent {
 		Db::delete( 'related', array( 'document_id' => (int) $source['id'] ) );
 		$rows = array();
 		foreach ( $selected as $rank => $s ) {
-			$row = array(
+			$row    = array(
 				'document_id' => (int) $source['id'],
 				'related_id'  => (int) $s['profile']['id'],
 				'rank_pos'    => $rank + 1,
@@ -100,9 +100,9 @@ final class RelatedContent {
 				),
 				'updated_at'  => Util::now(),
 			);
-			Db::insert( 'related', $row );
 			$rows[] = $row;
 		}
+		Db::insert_many( 'related', $rows );
 		wp_cache_delete( 'doc_' . (int) $source['id'], self::CACHE_GROUP );
 		return $rows;
 	}

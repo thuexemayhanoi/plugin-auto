@@ -144,6 +144,39 @@ final class Db {
 	}
 
 	/**
+	 * Inserts several rows with one statement (columns of the first row).
+	 *
+	 * @param string $table Logical table.
+	 * @param array  $rows  Rows with the same keys.
+	 * @return int Affected rows (-1 on error).
+	 */
+	public static function insert_many( $table, array $rows ) {
+		if ( array() === $rows ) {
+			return 0;
+		}
+		$cols = array_keys( reset( $rows ) );
+		self::assert_columns( $cols );
+		$ph   = '(' . implode( ',', array_fill( 0, count( $cols ), '%s' ) ) . ')';
+		$args = array();
+		foreach ( $rows as $r ) {
+			foreach ( $cols as $c ) {
+				$args[] = (string) $r[ $c ];
+			}
+		}
+		return self::query( 'INSERT INTO {' . $table . '} (' . implode( ',', $cols ) . ') VALUES ' . implode( ',', array_fill( 0, count( $rows ), $ph ) ), $args );
+	}
+
+	/**
+	 * ID of the last inserted (or, with LAST_INSERT_ID(id), last upserted) row.
+	 *
+	 * @return int
+	 */
+	public static function insert_id() {
+		global $wpdb;
+		return (int) $wpdb->insert_id;
+	}
+
+	/**
 	 * Builds an IN() placeholder list.
 	 *
 	 * @param array  $values Values.

@@ -50,25 +50,38 @@ final class EmbeddingQueue {
 		$args[] = (int) $batch;
 		$docs   = Db::rows( $sql, $args );
 		$count  = 0;
-		$cursor = (int) $after;
-		foreach ( $docs as $d ) {
-			$cursor = (int) $d['id'];
-			$rows   = Db::rows( 'SELECT chunk_index, kind, content_hash FROM {chunks} WHERE document_id = %d AND chunk_index <= %d ORDER BY chunk_index ASC', array( $cursor, $chunks ) );
-			foreach ( $rows as $c ) {
-				$have = Db::value(
-					'SELECT id FROM {embeddings} WHERE document_id = %d AND chunk_id = %d AND model_key = %s AND content_hash = %s',
-					array( $cursor, (int) $c['chunk_index'], $profile['model_key'], $c['content_hash'] )
-				);
-				if ( null !== $have ) {
-					continue;
-				}
-				Db::query(
-					"INSERT INTO {queue} (job_id, document_id, chunk_id, model_key, content_hash, status, attempts, updated_at) VALUES (%d, %d, %d, %s, %s, 'pending', 0, %s)
-					ON DUPLICATE KEY UPDATE attempts = IF(status = 'done' OR status = 'failed', 0, attempts), status = IF(status = 'leased' AND content_hash = VALUES(content_hash), status, 'pending'), job_id = VALUES(job_id), content_hash = VALUES(content_hash), last_error = '', updated_at = VALUES(updated_at)",
-					array( (int) $job_id, $cursor, (int) $c['chunk_index'], $profile['model_key'], $c['content_hash'], Util::now() )
-				);
-				++$count;
+		$cursor = array() === $docs ? (int) $after : (int) end( $docs )['id'];
+		if ( array() === $docs ) {
+			return array(
+				'cursor'    => $cursor,
+				'documents' => 0,
+				'enqueued'  => 0,
+			);
+		}
+		// Three queries per batch (chunks, current vectors, queue insert) instead of two per chunk.
+		$ids   = array_map( 'intval', array_column( $docs, 'id' ) );
+		$chunk = Db::rows( 'SELECT document_id, chunk_index, content_hash FROM {chunks} WHERE document_id IN (' . Db::in( $ids ) . ') AND chunk_index <= %d ORDER BY document_id ASC, chunk_index ASC', array_merge( $ids, array( $chunks ) ) );
+		$have  = array();
+		foreach ( Db::rows( 'SELECT document_id, chunk_id, content_hash FROM {embeddings} WHERE model_key = %s AND document_id IN (' . Db::in( $ids ) . ')', array_merge( array( $profile['model_key'] ), $ids ) ) as $e ) {
+			$have[ $e['document_id'] . ':' . $e['chunk_id'] . ':' . $e['content_hash'] ] = true;
+		}
+		$values = array();
+		$vargs  = array();
+		$now    = Util::now();
+		foreach ( $chunk as $c ) {
+			if ( isset( $have[ $c['document_id'] . ':' . $c['chunk_index'] . ':' . $c['content_hash'] ] ) ) {
+				continue;
 			}
+			$values[] = "(%d, %d, %d, %s, %s, 'pending', 0, %s)";
+			array_push( $vargs, (int) $job_id, (int) $c['document_id'], (int) $c['chunk_index'], $profile['model_key'], $c['content_hash'], $now );
+			++$count;
+		}
+		if ( array() !== $values ) {
+			Db::query(
+				'INSERT INTO {queue} (job_id, document_id, chunk_id, model_key, content_hash, status, attempts, updated_at) VALUES ' . implode( ', ', $values ) . "
+				ON DUPLICATE KEY UPDATE attempts = IF(status = 'done' OR status = 'failed', 0, attempts), status = IF(status = 'leased' AND content_hash = VALUES(content_hash), status, 'pending'), job_id = VALUES(job_id), content_hash = VALUES(content_hash), last_error = '', updated_at = VALUES(updated_at)",
+				$vargs
+			);
 		}
 		return array(
 			'cursor'    => $cursor,

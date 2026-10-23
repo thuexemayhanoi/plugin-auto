@@ -45,13 +45,13 @@ final class FindingRepository {
 	 * @return int Finding ID.
 	 */
 	public static function upsert( array $f, $run_id ) {
-		$type     = (string) $f['type'];
-		$check    = isset( $f['check_id'] ) ? (string) $f['check_id'] : '';
-		$doc      = isset( $f['document_id'] ) ? (int) $f['document_id'] : 0;
-		$target   = isset( $f['target_id'] ) ? (int) $f['target_id'] : 0;
-		$fp       = self::fingerprint( $type, $check, $doc, $target );
-		$now      = Util::now();
-		$data     = array(
+		$type   = (string) $f['type'];
+		$check  = isset( $f['check_id'] ) ? (string) $f['check_id'] : '';
+		$doc    = isset( $f['document_id'] ) ? (int) $f['document_id'] : 0;
+		$target = isset( $f['target_id'] ) ? (int) $f['target_id'] : 0;
+		$fp     = self::fingerprint( $type, $check, $doc, $target );
+		$now    = Util::now();
+		$data   = array(
 			'type'              => $type,
 			'check_id'          => substr( $check, 0, 64 ),
 			'document_id'       => $doc,
@@ -67,18 +67,24 @@ final class FindingRepository {
 			'run_id'            => (int) $run_id,
 			'updated_at'        => $now,
 		);
-		$existing = Db::row( 'SELECT id, status FROM {findings} WHERE fingerprint = %s', array( $fp ) );
-		if ( null !== $existing ) {
-			if ( 'resolved' === $existing['status'] ) {
-				$data['status'] = 'open';
-			}
-			Db::update( 'findings', $data, array( 'id' => (int) $existing['id'] ) );
-			return (int) $existing['id'];
-		}
+		// One statement: insert, or refresh the row with the same fingerprint (a human decision —
+		// dismissed/accepted — is kept; a resolved finding that reappears is open again).
 		$data['fingerprint'] = $fp;
 		$data['status']      = 'open';
 		$data['created_at']  = $now;
-		return Db::insert( 'findings', $data );
+		$cols                = array_keys( $data );
+		$update              = array( 'id = LAST_INSERT_ID(id)' );
+		foreach ( $cols as $c ) {
+			if ( ! in_array( $c, array( 'fingerprint', 'status', 'created_at' ), true ) ) {
+				$update[] = $c . ' = VALUES(' . $c . ')';
+			}
+		}
+		$update[] = "status = IF(status = 'resolved', 'open', status)";
+		$n        = Db::query(
+			'INSERT INTO {findings} (' . implode( ',', $cols ) . ') VALUES (' . implode( ',', array_fill( 0, count( $cols ), '%s' ) ) . ') ON DUPLICATE KEY UPDATE ' . implode( ', ', $update ),
+			array_map( 'strval', array_values( $data ) )
+		);
+		return $n < 0 ? 0 : Db::insert_id();
 	}
 
 	/**

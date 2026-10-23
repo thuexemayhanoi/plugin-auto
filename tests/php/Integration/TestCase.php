@@ -65,6 +65,7 @@ abstract class TestCase extends \WP_UnitTestCase {
 		Settings::install_defaults();
 		LockService::flush();
 		LexicalIndex::flush_cache();
+		\SemanticSEO\Links\LinkSuggester::flush_cache();
 		\SemanticSEO\Tests\Integration\PolylangDouble::reset();
 		$this->set_permalink_structure( '/%postname%/' );
 		$this->admin = self::factory()->user->create( array( 'role' => 'administrator' ) );
