@@ -82,6 +82,23 @@ Practical consequence: on a CPU-only browser, embedding a 1,000-post site (sever
 post) takes hours; a desktop browser with a real WebGPU GPU or the private worker is the
 practical choice for large sites. Lexical analysis never waits for embeddings.
 
+## Copy of the real blog (1,083 URLs, measured in GitHub Actions)
+
+Read-only pilot on a disposable copy of blog.rentbikehanoi.com's public content (TEST-REPORT §7;
+same 4-vCPU runner, WordPress 7.1.3 + Yoast SEO + the site's VI-EN plugin, PHP 8.3, MariaDB 10.11).
+Real pages are much longer than the synthetic benchmark (average 2,139 words, 17,944 chunks).
+
+| Step | Time |
+| --- | ---: |
+| Inventory of 1,083 documents | 49 s |
+| Lexical analysis (all modules) | 642 s (≈ 0.6 s per document) |
+| Embedding 3,201 queue items (summary + first 2 body chunks per page), private worker, q4f16, ONNX Runtime CPU 4 threads, over REST | 5,130 s (≈ 1.6 s per item, ≈ 85 min) |
+| Hybrid re-analysis with vectors | 651 s |
+
+For the owner this means: the first full embedding of the blog takes about 1.5 hours on a 4-core
+computer running the private worker (a desktop browser with a real GPU was not measured); after that
+only new or edited pages are re-embedded and re-analysed (content hash).
+
 ## Tuning
 
 * *Batch size* and *time budget per background tick* (Settings → Operations) bound each tick.

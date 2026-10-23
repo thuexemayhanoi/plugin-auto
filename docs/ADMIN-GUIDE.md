@@ -91,6 +91,14 @@ Trước khi gửi bất kỳ vector nào, mỗi thiết bị phải qua **tự 
 đồng chuẩn và so với giá trị đã đo cho đúng độ chính xác đó. Nếu tự kiểm tra thất bại, thiết bị không
 được gửi vector.
 
+**Vì sao báo cáo chồng lấn không tăng vọt khi bật model.** Blog chỉ nói về một chủ đề (thuê xe máy,
+du lịch bằng xe máy), nên với model hầu như trang nào cũng "liên quan" đến trang nào. Trên bản sao blog
+(chỉ đọc), nếu dùng độ tương đồng thô thì số nhóm chồng lấn tăng từ 99 (chỉ từ vựng) lên 2.323. Vì vậy
+plugin đo **mức giống nhau thông thường giữa các trang cùng ngôn ngữ của chính website** (trung vị)
+sau mỗi lần phân tích toàn site. Khi xét rủi ro chồng lấn, plugin chỉ tính phần giống nhau vượt trên
+mức đó. Gợi ý liên kết và bài liên quan vẫn dùng độ tương đồng thô để xếp hạng. Mỗi phát hiện chồng
+lấn ghi rõ mức nền đã dùng (*Bằng chứng → calibration*).
+
 ## 4. Thiết lập và dùng trên điện thoại (iPhone, iPad, Android)
 
 Giao diện quản trị của plugin dùng được trên màn hình nhỏ: bảng chuyển thành thẻ, nút đủ lớn để chạm.

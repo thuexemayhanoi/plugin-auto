@@ -141,10 +141,44 @@ Apache-2.0). Transcribed results: [`evidence/real-model-ci.json`](evidence/real-
 
 ## 7. Read-only census and pilot of blog.rentbikehanoi.com
 
-*In progress:* GitHub Actions run
-[39885301378](https://github.com/thuexemayhanoi/plugin-auto/actions/runs/39885301378) (census, export
-and lexical pilot finished; real-model embedding of the copy still running). Numbers are added here
-when the run ends.
+Workflow "Read-only site census + pilot" (GitHub Actions; the sandbox cannot reach the site). Public
+GET requests only, one at a time with a 1-second pause and an identifying User-Agent: robots.txt,
+the XML sitemaps, the public REST collections and (from run 2) the HTML head of the English pages for
+their hreflang tags. Nothing is written to the site. The content is analysed in a **disposable copy**
+(WordPress 7.1.3 + Yoast SEO + the site's own "Nguyen Ha VI-EN Core" at a pinned commit + this
+plugin) that is discarded with the runner; only aggregate numbers are published (no titles, URLs or
+per-page findings). Aggregates of run 1: [`evidence/site-pilot-run1.json`](evidence/site-pilot-run1.json).
+
+**Census (actual URL count, 2026-10-23 01:41 UTC, run [39885301378](https://github.com/thuexemayhanoi/plugin-auto/actions/runs/39885301378)):**
+
+| Source | Count |
+| --- | --- |
+| URLs in the XML sitemaps (Yoast `sitemap_index.xml`, declared in robots.txt) | **1,083** — Vietnamese 543, English 540 |
+| … by type | posts 1,002 (VI 502, EN 500), pages 37 (VI 18, EN 19), categories 43 (VI 22, EN 21), author 1 |
+| REST API totals (published, public) | posts **1,001**, pages **37**, categories **43**, tags 4 |
+
+The sitemaps list one post URL more than the REST API returns posts; per-URL lists are not
+published, so this was not investigated further.
+
+**Pilot run 1** (commit `65ed645`, i.e. *before* the overlap-gate calibration; q4f16):
+
+| Step | Result |
+| --- | --- |
+| Copy | 1,001 posts, 37 pages, 43 categories imported; links in 823 contents rewritten to the copy. The copy also held WordPress' sample post/page and **no VI-EN pairs** (not public in REST), fixed in run 2 |
+| Inventory + lexical analysis | 1,083 documents (all published, indexable); inventory 49 s, analysis 642 s on 4 vCPU; average 2,139 words (max 16,789); 17,944 chunks |
+| Link graph | 6,756 resolved internal links, 14 unresolved, 4,400 external |
+| Lexical findings | 832 link suggestions for 493 source pages; 161 overlap pairs in 99 groups (potential competition 89, same topic/different intent 28, distinct facet 23, manual review 19, pillar + supporting 2); **0 cross-language pairs**; 580 posts with no inbound link observed in content (menus/widgets not observed); 883 pages without a meta description in Yoast's public output |
+| Embedding (real model, private worker over REST + Application Password) | 3,201 queue items (summary + first 2 body chunks per page) embedded and stored in 5,130 s (≈ 1.6 s per item, 4 vCPU, no GPU) |
+| Hybrid re-analysis with **raw cosine** (old scoring) | 651 s; link suggestions 2,910 for 1,016 sources; related rows 1,552 → 5,195; **overlap groups 99 → 2,323** (manual review 19 → 1,560, same topic/different intent 28 → 529); 0 cross-language pairs |
+| Front end of the copy | no plugin asset and no model runtime on the home page |
+
+Finding: on a one-topic site almost every pair of pages is similar for the model, so raw cosine made
+the overlap report unusable. Fix: the overlap gate now only counts similarity above the site's own
+median same-language similarity (ARCHITECTURE §5); link and related ranking keep the raw cosine.
+
+**Pilot run 2** (commit `4d3d257`: site baseline, VI-EN pairs read from the site's hreflang tags, a
+comparison run with the model floor only): *in progress* — run
+[39896404986](https://github.com/thuexemayhanoi/plugin-auto/actions/runs/39896404986).
 
 ## 8. Acceptance matrix (README §20)
 
@@ -152,7 +186,7 @@ when the run ends.
 | --- | --- | --- |
 | AC01 ZIP installs/activates without fatal error on declared versions | **PASS** | `evidence/smoke-7.1.3.json`, `smoke-6.9.10.json`, `smoke-6.5.13.json`; CI "Build release ZIP + install smoke test" (WP 6.5.13 + 7.1.3); PHP 7.4 via CI integration job (PHP 7.4 + WP 6.5.13) |
 | AC02 Activation read-only | **PASS** | smoke checks: posts/meta/terms/users/roles/options/rewrite rules hashes identical; front-end HTML byte-identical (control run proves determinism); `ActivationMigrationTest` |
-| AC03 Inventory discovers real Post/Page/Category records and locales | **PASS (fixtures)** | real WordPress objects + real Polylang languages/translations: `PipelineTest`, smoke (`wp sseo status`), http-agent inventory total 38; not run on the authorized target site |
+| AC03 Inventory discovers real Post/Page/Category records and locales | **PASS** | real WordPress objects + real Polylang and the site's real VI-EN plugin: `PipelineTest`, `NhVienLanguageTest`, smoke, http-agent; **copy of the real blog: 1,083 documents = 1,001 posts + 37 pages + 43 categories (+ WP sample post/page), locales from the VI-EN plugin (§7)**; census of the live site: 1,083 sitemap URLs |
 | AC04 Matrix paginates, searches, filters, exports, imports by safe preview | **PASS** | `OperationsTest` (matrix query, CSV/XLSX export, import preview/apply/conflicts), http-agent cursor pagination, `wp sseo export`, UI matrix page |
 | AC05 Lexical mode useful without a model | **PASS** | §5 evaluation (all lexical), golden cases in `PipelineTest` |
 | AC06 Real Qwen embedding demonstrated or clearly blocked | **PASS** | real pinned model in GitHub Actions (§6): model-card self-test (fp32 exact), browser worker downloading from huggingface.co with vectors equal to Python, private worker over REST, hybrid evaluation through the plugin queue; runs 39884170101, 39888434060, 39891925814; `evidence/real-model-ci.json` |
@@ -167,7 +201,7 @@ when the run ends.
 | AC15 Agent cannot self-approve or use privileged endpoints with read-only credentials | **PASS** | http-agent reader 403s, no approve route, admin Application Password treated as agent, editor refused |
 | AC16 No frontend model load or hidden paid AI API | **PASS** | UI front-end request audit; worker allow-list test (no CDN); code has no AI API client |
 | AC17 Jobs resume, cancel, avoid duplicates, honest progress | **PASS** | `OperationsTest` (cancel/pause/resume with honest progress, resume after a crashed worker via expired lease, backoff then fail, post deleted/updated mid-job, idempotent retry under quota), `RestApiTest::test_job_start_is_idempotent_and_deduplicated`, http-agent duplicate 429, UI inference pause/resume/stop |
-| AC18 Existing SEO/theme/language/canonical behaviour unchanged by default | **PASS** | front-end byte-identical incl. Polylang `/en/` pages, home, category, search, feed; SEO plugins only read (not installed as real plugins in tests) |
+| AC18 Existing SEO/theme/language/canonical behaviour unchanged by default | **PASS** | front-end byte-identical incl. Polylang `/en/` pages, home, category, search, feed; SEO plugins only read; Yoast SEO and the site's VI-EN plugin installed for real in the pilot copy (§7), front page of the copy without plugin assets |
 | AC19 Performance, test results, artifacts, screenshots are real | **PASS** | this report, `docs/evidence/*.json`, `docs/screenshots/*`, CI run link |
 | AC20 README, docs, CI, ZIP, PR, install guide match implementation | **PASS** | README status block + docs set, CI workflow, `bin/build-zip.sh` (artifact in CI), PR from this branch |
 
@@ -175,7 +209,9 @@ when the run ends.
 
 * Real-GPU (WebGPU) speed: CI has no GPU; only a software adapter (SwiftShader) was exercised.
 * Installation on a staging copy of blog.rentbikehanoi.com by the owner (production is out of scope).
-* Relevance labels exist only for the fixture; the real-site pilot (§7) reports counts, not precision.
-* WPML, Yoast/Rank Math/SEOPress/TSF/AIOSEO as installed plugins; real iPhone/Safari; a real MCP
-  client application (only the adapter's JSON-RPC endpoint was exercised).
+* Relevance labels exist only for the fixture; on the real-site copy (§7) only counts and the agreement
+  with the site's own hreflang pairs are measured, not the precision of link/overlap suggestions.
+* WPML, Rank Math/SEOPress/TSF/AIOSEO as installed plugins (Yoast SEO was installed only in the
+  pilot copy); real iPhone/Safari; a real MCP client application or ChatGPT (only the adapter's
+  JSON-RPC endpoint was exercised).
 * PHP 7.4 ran in CI only (unit + integration), not in the local e2e suites.

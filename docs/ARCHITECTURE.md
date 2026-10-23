@@ -23,7 +23,7 @@ includes/
   Compatibility/                SEO plugin adapters (Yoast, Rank Math, SEOPress, TSF, AIOSEO, core) + environment detection
   Extractor/                    HtmlScanner (offset-preserving text segments), ContentExtractor (headings, links, chunks, MinHash)
   Lexical/                      Tokenizer (syllable unigrams, accent-folded tokens, bigrams), LexicalIndex (BM25F-lite postings)
-  Semantic/                     ModelProfile (pinned Qwen3 revision + hashes, per-precision self-test matrices), VectorMath, EmbeddingRepository, EmbeddingQueue (leases), CrossLanguage (mutual-nearest possible translations)
+  Semantic/                     ModelProfile (pinned Qwen3 revision + hashes, per-precision self-test matrices), VectorMath, EmbeddingRepository, EmbeddingQueue (leases), CrossLanguage (mutual-nearest possible translations), SimilarityBaseline (site median similarity per language)
   Inventory/                    InventoryScanner (cursor batches over posts/pages/CPT/terms), DocumentRepository
   Graph/                        LinkGraph (edge resolution, inbound/outbound, orphans with coverage)
   Analysis/                     IntentClassifier, Scorer (per-task features), FindingRepository, AnalysisRunner (phased, resumable)
@@ -125,6 +125,7 @@ Each task returns separate components plus `algorithm_version`:
 
 * **Link relevance** = locale gate × crawl validity gate × (lexical cosine, BM25 rank, semantic cosine when available, anchor quality, graph usefulness [low inbound / orphan target / supporting→pillar]).
 * **Cannibalization** = same-locale gate; classification by MinHash near-duplicate score, title/heading overlap, lexical and semantic similarity, intent agreement, explicit focus keyword, cluster roles, distinct facet modifiers (e.g. *theo ngày* vs *theo tháng*), and real GSC query overlap when imported. Ambiguous pairs → `manual_review`.
+* **Semantic similarity in two forms.** Ranking (link candidates, related content) uses the raw cosine. The overlap-risk gate uses a *calibrated* value: only the similarity above a floor counts, `(cos − floor) / (ceiling − floor)`. The floor is the model's own (0.40, measured on the labelled fixture) raised to the **site's median same-language similarity** when that is higher (`Semantic\SimilarityBaseline`, re-measured on a deterministic sample of ≤ 20,000 pairs per language at every site-wide analysis, bound to the model key). Reason: on a site about one subject every page is "related" to every other in the model's eyes; the read-only pilot on a copy of the blog showed the overlap report growing from 99 groups (lexical) to 2,323 with raw cosine. Every overlap finding records the calibration it used (`evidence.calibration`).
 * **Classification** = taxonomy anchors (existing categories) + lexical/semantic centroid similarity + editorial intent.
 * **Related content** = locale gate + topical relevance + cluster bonus + MMR diversity + exclusion/canonical/noindex rules.
 
