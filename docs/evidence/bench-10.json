@@ -1,0 +1,68 @@
+{
+ "fixture": "SYNTHETIC BENCHMARK FIXTURE (tests/bench/generate.php), not real content",
+ "posts": 10,
+ "wordpress": "7.1.3",
+ "php": "8.3.6",
+ "machine": "4 vCPU, 16091 MB RAM (container), MariaDB 10.11.14-MariaDB",
+ "one_tick": {
+  "seconds": 0.18,
+  "peak_mb": 57.3
+ },
+ "full_run_seconds": 0.7,
+ "full_run_max_rss_mb": 88.8,
+ "index": {
+  "documents": 20,
+  "postings": 2112,
+  "links": 5,
+  "findings": 88,
+  "related": 41,
+  "chunks": 42,
+  "tables_mb": 1.14,
+  "jobs": [
+   {
+    "id": "1",
+    "type": "inventory",
+    "status": "completed",
+    "progress_done": "20",
+    "progress_total": "20"
+   },
+   {
+    "id": "2",
+    "type": "analyze",
+    "status": "completed",
+    "progress_done": "63",
+    "progress_total": "63"
+   }
+  ]
+ },
+ "rest_latency": {
+  "status": {
+   "median_ms": 34,
+   "p95_ms": 49
+  },
+  "inventory_20": {
+   "median_ms": 32,
+   "p95_ms": 39
+  },
+  "inventory_search": {
+   "median_ms": 30,
+   "p95_ms": 40
+  },
+  "url_analysis": {
+   "median_ms": 31,
+   "p95_ms": 53
+  },
+  "links_20": {
+   "median_ms": 28,
+   "p95_ms": 32
+  },
+  "cannibalization_20": {
+   "median_ms": 28,
+   "p95_ms": 32
+  },
+  "qa_20": {
+   "median_ms": 26,
+   "p95_ms": 28
+  }
+ }
+}

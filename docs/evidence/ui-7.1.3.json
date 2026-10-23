@@ -1,0 +1,76 @@
+{
+ "wordpress": "7.1.3",
+ "browser": "chromium (Playwright)",
+ "when": "2026-10-23T14:21:10.311Z",
+ "results": [
+  {
+   "name": "all 12 admin pages render (desktop) without PHP notices or JS errors",
+   "ok": true,
+   "detail": "sseo 757ms, sseo-matrix 499ms, sseo-semantic 540ms, sseo-links 587ms, sseo-cannibalization 483ms, sseo-clusters 607ms, sseo-qa 470ms, sseo-related 421ms, sseo-jobs 428ms, sseo-agents 421ms, sseo-settings 537ms, sseo-audit 472ms"
+  },
+  {
+   "name": "axe-core: no critical or serious WCAG 2.1 A/AA violations inside the plugin UI",
+   "ok": true,
+   "detail": "0 moderate/minor findings recorded"
+  },
+  {
+   "name": "admin UI is in Vietnamese by default",
+   "ok": true,
+   "detail": "Nhật ký / Hoàn tác"
+  },
+  {
+   "name": "keyboard: every inference control is reachable with Tab and shows a focus indicator",
+   "ok": true,
+   "detail": "consent, detect, load"
+  },
+  {
+   "name": "Human Mode via UI: create preview → approve (with confirmation) → apply (readback) → rollback restores content",
+   "ok": true,
+   "detail": "post #16 restored byte-identical"
+  },
+  {
+   "name": "browser inference loop on the Jobs page (TEST FIXTURE model, WASM): load → self-test → pause/resume → page reload releases the lease → stop → finish",
+   "ok": true,
+   "detail": "90/90 vectors stored; paused at 8; reload during upload released the lease at 8; reload during claim: 0 item(s) waited for lease expiry; stopped at 16"
+  },
+  {
+   "name": "unsupported device (no WebAssembly, no WebGPU): clear message, model loading disabled, lexical pages still work",
+   "ok": true,
+   "detail": "Thiết bị này không hỗ trợ: không dùng được WebGPU lẫn WebAssembly. Tầng từ vựng vẫn hoạt động."
+  },
+  {
+   "name": "emulated iPhone 13 viewport (Chromium emulation, not a real iPhone): 12 pages, no horizontal page overflow",
+   "ok": true,
+   "detail": "390px wide"
+  },
+  {
+   "name": "iOS detection on the inference panel (emulated UA) warns about speed/memory and screen lock",
+   "ok": true,
+   "detail": "WebGPU: khôngWebAssembly SIMD: cóLuồng: 1 (trang không ở chế độ cross-origin isolated)Bộ nhớ thiết bị: ≈8 GBiOS / iPadOS: có — có thể quá chậm hoặc hết bộ nhớ; hãy giữ màn hình luôn sáng"
+  },
+  {
+   "name": "front end never loads a model, worker, admin script or third-party request (related block enabled)",
+   "ok": true,
+   "detail": "24 requests, all same-origin; related items: 5"
+  },
+  {
+   "name": "no PHP notices from the plugin in debug.log during the UI session",
+   "ok": true,
+   "detail": ""
+  }
+ ],
+ "axe": {
+  "sseo": [],
+  "sseo-matrix": [],
+  "sseo-semantic": [],
+  "sseo-links": [],
+  "sseo-cannibalization": [],
+  "sseo-clusters": [],
+  "sseo-qa": [],
+  "sseo-related": [],
+  "sseo-jobs": [],
+  "sseo-agents": [],
+  "sseo-settings": [],
+  "sseo-audit": []
+ }
+}

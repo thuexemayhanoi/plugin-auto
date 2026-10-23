@@ -1,0 +1,195 @@
+# tests 21
+# pass 21
+# fail 0
+### exit 0: node --test /home/user/plugin-auto/tests/js/embedder-core.test.mjs
+PASS worker loads bundled runtime + fixture model on WASM — wasm 781 ms
+PASS self-test gate passes against NumPy reference — max Δ 2.78e-8
+PASS embeddings (left padding, query instruction, MRL 32, base64) match NumPy — max |Δ| 8.94e-8, unit norm true, 3 ms
+PASS model files downloaded with verification progress — 7 progress events
+PASS second load re-verifies files from the browser cache (no re-download) — tokenizer.json, tokenizer_config.json, config.json, onnx/model.onnx
+PASS tampered model file is rejected (SHA-256 mismatch) — Integrity check failed for onnx/model.onnx: sha256 mismatch
+PASS embedding refused before self-test — Self-test has not passed; refusing to embed.
+PASS failed self-test blocks embedding — Self-test has not passed; refusing to embed.
+PASS no request leaves the allow-list (no CDN, no unpinned files) — external: 0, unpinned model paths: 
+PASS no page errors
+### exit 0: node /home/user/plugin-auto/tests/e2e/worker-fixture.mjs
+PASS disposable WordPress 7.1.3 site created — 7.1.3
+PASS real Polylang activated — 3.9.1
+PASS fixture corpus loaded — 28 posts
+PASS baseline snapshot taken 
+PASS baseline front-end pages reachable — / f19aaa490565613b /thue-xe-may-ha-noi/ 327a163a835b940a /en/motorbike-rental-hanoi/ 32cc8a631bc650e8 /category/thue-xe-may/ d963bee2757dec8b /lien-he/ ac48c8779bfc8e40 /?s=xe+may e168ba74e12d4f0a /feed/ eec3aeb0c1326fa0 
+PASS control: front-end output is deterministic without changes (comparison is meaningful) 
+PASS ZIP installs (one root folder) — semantic-seo-engine-vi-en-1.0.0-beta.3.zip
+PASS activation without fatal error — Plugin 'semantic-seo-engine-vi-en' activated.
+PASS no PHP notices/warnings from the plugin in debug.log after activation 
+PASS activation is read-only (posts, meta, terms, users, roles, options, rewrite rules unchanged) — identical
+PASS front-end HTML byte-identical after activation (home, posts, category, page, search, feed) — 7 URLs
+PASS 16 plugin tables created — 16
+PASS schema version recorded — sseo_db_version=3, expected 3
+PASS wp sseo status — {     "plugin_version": "1.0.0-beta.3",     "api_version": "1",     "mode": {         "read_only_default": true,         "proposals_enabled": true,         "agents_may_apply": false,         "related_
+PASS wp sseo start inventory --then-analyze --run completes —     "next_run_at": null,     "reused": false } 
+PASS wp sseo report cannibalization returns JSON — {
+PASS wp sseo export writes a CSV — 39 lines
+PASS full analysis wrote no content, meta, terms, users, roles or rewrite rules 
+PASS front-end HTML unchanged after analysis (related output off by default) 
+PASS no PHP notices/warnings from the plugin after a full analysis 
+PASS deactivation without error 
+PASS deactivation clears the plugin's cron events 
+PASS deactivation keeps data — 16 tables
+PASS re-activation 
+PASS uninstall (default policy: preserve) 
+PASS uninstall preserves analysis data by default — 16 tables kept
+PASS site content identical after the whole lifecycle 
+27/27 checks passed on WordPress 7.1.3
+### exit 0: /home/user/plugin-auto/tests/e2e/smoke-zip.sh 7.1.3 8071
+PASS disposable WordPress 6.9.10 site created — 6.9.10
+PASS real Polylang activated — 3.9.1
+PASS fixture corpus loaded — 28 posts
+PASS baseline snapshot taken 
+PASS baseline front-end pages reachable — / 62e60f0c00fabbe8 /thue-xe-may-ha-noi/ 233a88b93fc381c9 /en/motorbike-rental-hanoi/ b3eb7acda93039e2 /category/thue-xe-may/ 061a4b1dc4e40418 /lien-he/ ade591a58fabe8ae /?s=xe+may de91a995cd30ce9c /feed/ 6ad8e14290faf9ec 
+PASS control: front-end output is deterministic without changes (comparison is meaningful) 
+PASS ZIP installs (one root folder) — semantic-seo-engine-vi-en-1.0.0-beta.3.zip
+PASS activation without fatal error — Plugin 'semantic-seo-engine-vi-en' activated.
+PASS no PHP notices/warnings from the plugin in debug.log after activation 
+PASS activation is read-only (posts, meta, terms, users, roles, options, rewrite rules unchanged) — identical
+PASS front-end HTML byte-identical after activation (home, posts, category, page, search, feed) — 7 URLs
+PASS 16 plugin tables created — 16
+PASS schema version recorded — sseo_db_version=3, expected 3
+PASS wp sseo status — {     "plugin_version": "1.0.0-beta.3",     "api_version": "1",     "mode": {         "read_only_default": true,         "proposals_enabled": true,         "agents_may_apply": false,         "related_
+PASS wp sseo start inventory --then-analyze --run completes —     "next_run_at": null,     "reused": false } 
+PASS wp sseo report cannibalization returns JSON — {
+PASS wp sseo export writes a CSV — 39 lines
+PASS full analysis wrote no content, meta, terms, users, roles or rewrite rules 
+PASS front-end HTML unchanged after analysis (related output off by default) 
+PASS no PHP notices/warnings from the plugin after a full analysis 
+PASS deactivation without error 
+PASS deactivation clears the plugin's cron events 
+PASS deactivation keeps data — 16 tables
+PASS re-activation 
+PASS uninstall (default policy: preserve) 
+PASS uninstall preserves analysis data by default — 16 tables kept
+PASS site content identical after the whole lifecycle 
+27/27 checks passed on WordPress 6.9.10
+### exit 0: /home/user/plugin-auto/tests/e2e/smoke-zip.sh 6.9.10 8069
+PASS disposable WordPress 6.5.13 site created — 6.5.13
+PASS fixture corpus loaded — 28 posts
+PASS baseline snapshot taken 
+PASS baseline front-end pages reachable — / 637585fbd919d401 /thue-xe-may-ha-noi/ 35510836e8aad110 /motorbike-rental-hanoi/ 9b517574ebf13418 /category/thue-xe-may/ a890bbd1434fdf53 /lien-he/ 3e54025b244f455e /?s=xe+may 8540db0135f24383 /feed/ 72d1f19401ff4e31 
+PASS control: front-end output is deterministic without changes (comparison is meaningful) 
+PASS ZIP installs (one root folder) — semantic-seo-engine-vi-en-1.0.0-beta.3.zip
+PASS activation without fatal error — Plugin 'semantic-seo-engine-vi-en' activated.
+PASS no PHP notices/warnings from the plugin in debug.log after activation 
+PASS activation is read-only (posts, meta, terms, users, roles, options, rewrite rules unchanged) — identical
+PASS front-end HTML byte-identical after activation (home, posts, category, page, search, feed) — 7 URLs
+PASS 16 plugin tables created — 16
+PASS schema version recorded — sseo_db_version=3, expected 3
+PASS wp sseo status — {     "plugin_version": "1.0.0-beta.3",     "api_version": "1",     "mode": {         "read_only_default": true,         "proposals_enabled": true,         "agents_may_apply": false,         "related_
+PASS wp sseo start inventory --then-analyze --run completes —     "next_run_at": null,     "reused": false } 
+PASS wp sseo report cannibalization returns JSON — {
+PASS wp sseo export writes a CSV — 38 lines
+PASS full analysis wrote no content, meta, terms, users, roles or rewrite rules 
+PASS front-end HTML unchanged after analysis (related output off by default) 
+PASS no PHP notices/warnings from the plugin after a full analysis 
+PASS deactivation without error 
+PASS deactivation clears the plugin's cron events 
+PASS deactivation keeps data — 16 tables
+PASS re-activation 
+PASS uninstall (default policy: preserve) 
+PASS uninstall preserves analysis data by default — 16 tables kept
+PASS site content identical after the whole lifecycle 
+26/26 checks passed on WordPress 6.5.13
+### exit 0: env -u POLYLANG_DIR /home/user/plugin-auto/tests/e2e/smoke-zip.sh 6.5.13 8065
+PASS guest is refused (401) on every read route — 5 routes
+PASS wrong Application Password is refused — 401
+PASS cookie session without REST nonce is treated as a guest
+PASS reader (Application Password) reads status, inventory with pagination, URL analysis — total 38
+PASS schema validation rejects invalid parameters (400)
+PASS reader cannot start jobs, preview, apply or claim embeddings (403)
+PASS WordPress editor without plugin capabilities is refused
+PASS analyst starts a bounded job; duplicate active job is refused; agent quota enforced — job #3, duplicate → 429
+PASS analyst can create an exact-diff preview (proposal), which writes nothing — proposal #1, diff_hash ea36e69b3cb0
+PASS no REST route exists to approve (agents can never approve)
+PASS operator cannot apply while "agents may apply" is off; forged approval refused
+PASS administrator over Application Password is treated as an agent (cannot apply/approve)
+PASS with "agents may apply" on, operator still needs a human approval (forged/unknown IDs refused) — 409 sseo_not_approved
+PASS SSRF: external or metadata URLs are not fetched and not accepted as targets
+PASS SQL injection strings are inert
+PASS XSS payloads are returned as JSON-escaped data, never as HTML
+PASS oversized payload is rejected (413)
+PASS embedding lease: claim → wrong model rejected → replay rejected → release — 2 items leased
+PASS rate limiting returns 429 with Retry-After — Retry-After 2
+PASS audit log records agent actions without secrets; agents only see their own entries — 3 own entries
+PASS Abilities: registered but not exposed over REST until opted in — registered: 15, exposed over REST: 0
+PASS Abilities REST (opted in): reader runs read abilities, write abilities refused — 3 exposed
+PASS MCP: unauthenticated client is refused
+PASS MCP: no Semantic SEO tool is exposed by default (opt-in) — 3 tools (adapter meta-tools only)
+PASS MCP (opted in): only selected read-only abilities exposed; execution works; writes never exposed — exposed: semantic-seo/get-site-status, semantic-seo/list-urls | tools: mcp-adapter-discover-abilities, mcp-adapter-get-ability-info, mcp-adapter-execute-ability
+PASS MCP: editor without plugin capabilities cannot execute even exposed abilities
+26/26 passed on WordPress 7.1.3
+### exit 0: node /home/user/plugin-auto/tests/e2e/http-agent.mjs /tmp/claude-0/-home-user-plugin-auto/009d8007-0030-5be0-a388-c18cf079ec0a/scratchpad/sites/agent-7.1.3
+PASS guest is refused (401) on every read route — 5 routes
+PASS wrong Application Password is refused — 401
+PASS cookie session without REST nonce is treated as a guest
+PASS reader (Application Password) reads status, inventory with pagination, URL analysis — total 38
+PASS schema validation rejects invalid parameters (400)
+PASS reader cannot start jobs, preview, apply or claim embeddings (403)
+PASS WordPress editor without plugin capabilities is refused
+PASS analyst starts a bounded job; duplicate active job is refused; agent quota enforced — job #3, duplicate → 429
+PASS analyst can create an exact-diff preview (proposal), which writes nothing — proposal #1, diff_hash 4c66ff0fa164
+PASS no REST route exists to approve (agents can never approve)
+PASS operator cannot apply while "agents may apply" is off; forged approval refused
+PASS administrator over Application Password is treated as an agent (cannot apply/approve)
+PASS with "agents may apply" on, operator still needs a human approval (forged/unknown IDs refused) — 409 sseo_not_approved
+PASS SSRF: external or metadata URLs are not fetched and not accepted as targets
+PASS SQL injection strings are inert
+PASS XSS payloads are returned as JSON-escaped data, never as HTML
+PASS oversized payload is rejected (413)
+PASS embedding lease: claim → wrong model rejected → replay rejected → release — 2 items leased
+PASS rate limiting returns 429 with Retry-After — Retry-After 39
+PASS audit log records agent actions without secrets; agents only see their own entries — 3 own entries
+PASS Abilities: registered but not exposed over REST until opted in — registered: 15, exposed over REST: 0
+PASS Abilities REST (opted in): reader runs read abilities, write abilities refused — 3 exposed
+PASS MCP: unauthenticated client is refused
+PASS MCP: no Semantic SEO tool is exposed by default (opt-in) — 3 tools (adapter meta-tools only)
+PASS MCP (opted in): only selected read-only abilities exposed; execution works; writes never exposed — exposed: semantic-seo/get-site-status, semantic-seo/list-urls | tools: mcp-adapter-discover-abilities, mcp-adapter-get-ability-info, mcp-adapter-execute-ability
+PASS MCP: editor without plugin capabilities cannot execute even exposed abilities
+26/26 passed on WordPress 6.9.10
+### exit 0: node /home/user/plugin-auto/tests/e2e/http-agent.mjs /tmp/claude-0/-home-user-plugin-auto/009d8007-0030-5be0-a388-c18cf079ec0a/scratchpad/sites/agent-6.9.10
+PASS guest is refused (401) on every read route — 5 routes
+PASS wrong Application Password is refused — 401
+PASS cookie session without REST nonce is treated as a guest
+PASS reader (Application Password) reads status, inventory with pagination, URL analysis — total 37
+PASS schema validation rejects invalid parameters (400)
+PASS reader cannot start jobs, preview, apply or claim embeddings (403)
+PASS WordPress editor without plugin capabilities is refused
+PASS analyst starts a bounded job; duplicate active job is refused; agent quota enforced — job #3, duplicate → 429
+PASS analyst can create an exact-diff preview (proposal), which writes nothing — proposal #1, diff_hash 37ce50e07359
+PASS no REST route exists to approve (agents can never approve)
+PASS operator cannot apply while "agents may apply" is off; forged approval refused
+PASS administrator over Application Password is treated as an agent (cannot apply/approve)
+PASS with "agents may apply" on, operator still needs a human approval (forged/unknown IDs refused) — 409 sseo_not_approved
+PASS SSRF: external or metadata URLs are not fetched and not accepted as targets
+PASS SQL injection strings are inert
+PASS XSS payloads are returned as JSON-escaped data, never as HTML
+PASS oversized payload is rejected (413)
+PASS embedding lease: claim → wrong model rejected → replay rejected → release — 2 items leased
+PASS rate limiting returns 429 with Retry-After — Retry-After 18
+PASS audit log records agent actions without secrets; agents only see their own entries — 3 own entries
+PASS Abilities API absent on WordPress 6.5.13: version-gated, REST still works
+PASS MCP Adapter not installed: status reports it explicitly
+22/22 passed on WordPress 6.5.13
+### exit 0: node /home/user/plugin-auto/tests/e2e/http-agent.mjs /tmp/claude-0/-home-user-plugin-auto/009d8007-0030-5be0-a388-c18cf079ec0a/scratchpad/sites/agent-6.5.13
+### exit 0: /home/user/plugin-auto/tests/e2e/private-worker.sh 7.1.3 8271 8272 /tmp/claude-0/-home-user-plugin-auto/009d8007-0030-5be0-a388-c18cf079ec0a/scratchpad/venv/bin/python
+PASS all 12 admin pages render (desktop) without PHP notices or JS errors — sseo 757ms, sseo-matrix 499ms, sseo-semantic 540ms, sseo-links 587ms, sseo-cannibalization 483ms, sseo-clusters 607ms, sseo-qa 470ms, sseo-related 421ms, sseo-jobs 428ms, sseo-agents 421ms, sseo-settings 537ms, sseo-audit 472ms
+PASS axe-core: no critical or serious WCAG 2.1 A/AA violations inside the plugin UI — 0 moderate/minor findings recorded
+PASS admin UI is in Vietnamese by default — Nhật ký / Hoàn tác
+PASS keyboard: every inference control is reachable with Tab and shows a focus indicator — consent, detect, load
+PASS Human Mode via UI: create preview → approve (with confirmation) → apply (readback) → rollback restores content — post #16 restored byte-identical
+PASS browser inference loop on the Jobs page (TEST FIXTURE model, WASM): load → self-test → pause/resume → page reload releases the lease → stop → finish — 90/90 vectors stored; paused at 8; reload during upload released the lease at 8; reload during claim: 0 item(s) waited for lease expiry; stopped at 16
+PASS unsupported device (no WebAssembly, no WebGPU): clear message, model loading disabled, lexical pages still work — Thiết bị này không hỗ trợ: không dùng được WebGPU lẫn WebAssembly. Tầng từ vựng vẫn hoạt động.
+PASS emulated iPhone 13 viewport (Chromium emulation, not a real iPhone): 12 pages, no horizontal page overflow — 390px wide
+PASS iOS detection on the inference panel (emulated UA) warns about speed/memory and screen lock — WebGPU: khôngWebAssembly SIMD: cóLuồng: 1 (trang không ở chế độ cross-origin isolated)Bộ nhớ thiết bị: ≈8 GBiOS / iPadOS: có — có thể quá chậm hoặc hết bộ nhớ; hãy giữ màn hình luôn sáng
+PASS front end never loads a model, worker, admin script or third-party request (related block enabled) — 24 requests, all same-origin; related items: 5
+PASS no PHP notices from the plugin in debug.log during the UI session
+11/11 passed on WordPress 7.1.3
+### exit 0: node /home/user/plugin-auto/tests/e2e/ui-e2e.mjs /tmp/claude-0/-home-user-plugin-auto/009d8007-0030-5be0-a388-c18cf079ec0a/scratchpad/sites/ui-7.1.3

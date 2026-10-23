@@ -1,0 +1,20 @@
+{
+  "name": "semantic-seo-engine-vi-en",
+  "version": "1.0.0-beta.3",
+  "private": true,
+  "description": "Build and test tooling for the Semantic SEO Engine VI-EN WordPress plugin (browser worker runtime, JS tests, e2e).",
+  "license": "GPL-2.0-or-later",
+  "type": "module",
+  "scripts": {
+    "build:vendor": "node bin/build-vendor.mjs",
+    "test:js": "node --test tests/js/*.test.mjs",
+    "test:e2e": "bash tests/e2e/run-all.sh",
+    "lint:js": "node --check assets/js/ai-worker/embedder-core.js && node --check assets/js/ai-worker/worker.js && node --check admin/assets/js/inference.js && node --check admin/assets/js/admin.js"
+  },
+  "devDependencies": {
+    "@huggingface/transformers": "4.3.1",
+    "axe-core": "^4.10.3",
+    "onnxruntime-web": "1.31.0-dev.20260914-8d85527a0",
+    "playwright": "^1.56.1"
+  }
+}

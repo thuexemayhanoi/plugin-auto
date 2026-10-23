@@ -1,0 +1,174 @@
+{
+ "note": "Aggregates only, transcribed from GitHub Actions run 39909374968 (workflow_dispatch, embed=false, commit 94a939f: 'missing translation' limited to content types the site pairs). Lexical tier only. The run is marked failed only because the summary step's shell loop returned 1 for the absent hybrid files (workflow bug fixed afterwards); every analysis step succeeded and the aggregates below were printed.",
+ "run": "https://github.com/thuexemayhanoi/plugin-auto/actions/runs/39909374968",
+ "requests": {
+  "hreflang": "519 English pages read, 17 with a Vietnamese alternate, 0 errors"
+ },
+ "census": {
+  "site": "https://blog.rentbikehanoi.com",
+  "when": "2026-10-23T06:05:31Z",
+  "method": "public GET only: robots.txt, XML sitemaps, REST collection totals",
+  "robots_txt_status": 200,
+  "robots_sitemaps": [
+   "https://blog.rentbikehanoi.com/sitemap_index.xml"
+  ],
+  "sitemap_urls_total": 1083,
+  "sitemap_urls_by_type_and_language": {
+   "author/vi": 1,
+   "category/en": 21,
+   "category/vi": 22,
+   "page/en": 19,
+   "page/vi": 18,
+   "post/en": 500,
+   "post/vi": 502
+  },
+  "sitemap_urls_by_language": {
+   "vi": 543,
+   "en": 540
+  },
+  "rest_totals": {
+   "posts": {
+    "status": 200,
+    "total": 1001
+   },
+   "pages": {
+    "status": 200,
+    "total": 37
+   },
+   "categories": {
+    "status": 200,
+    "total": 43
+   },
+   "tags": {
+    "status": 200,
+    "total": 4
+   }
+  }
+ },
+ "pilot_lexical": {
+  "documents_by_type_locale": {
+   "post/page/en": 19,
+   "post/page/vi": 18,
+   "post/post/en": 500,
+   "post/post/vi": 501,
+   "term/category/en": 21,
+   "term/category/vi": 22
+  },
+  "documents_by_status": {
+   "publish": 1081
+  },
+  "locale_sources": {
+   "nh_vien": 1076,
+   "nh_vien_path": 5
+  },
+  "indexable": {
+   "1": 1081
+  },
+  "word_count": {
+   "min": "365",
+   "avg": "2143",
+   "max": "16789"
+  },
+  "chunks": 17940,
+  "links": {
+   "external/external": 4400,
+   "internal/resolved": 6768,
+   "internal/unresolved": 13
+  },
+  "orphans_published_posts": 579,
+  "findings_by_type_check": {
+   "qa/missing_meta_description/warning": 881,
+   "link/internal_link/suggestion": 830,
+   "qa/orphan/warning": 582,
+   "qa/few_cluster_links/suggestion": 499,
+   "qa/title_length/suggestion": 139,
+   "cannibalization/potential_competition/risk_hypothesis": 89,
+   "qa/no_external_sources/suggestion": 54,
+   "cannibalization/same_topic_different_intent/risk_hypothesis": 28,
+   "cannibalization/distinct_facet/risk_hypothesis": 23,
+   "cannibalization/manual_review/risk_hypothesis": 19,
+   "qa/unresolved_internal_link/warning": 8,
+   "qa/missing_translation/suggestion": 5,
+   "classification/suggested_category/suggestion": 4,
+   "cannibalization/pillar_supporting/info": 2
+  },
+  "link_suggestion_sources": 492,
+  "cannibalization_groups": 99,
+  "cross_locale_overlaps": 0,
+  "clusters": {
+   "": 80,
+   "hub": 31,
+   "supporting": 970
+  },
+  "cluster_count": 42,
+  "related_rows": 1553,
+  "embeddings": 0,
+  "jobs": [
+   {
+    "type": "inventory",
+    "status": "completed",
+    "progress_done": "1081",
+    "progress_total": "1081",
+    "seconds": "53"
+   },
+   {
+    "type": "analyze",
+    "status": "completed",
+    "progress_done": "3246",
+    "progress_total": "3246",
+    "seconds": "710"
+   }
+  ],
+  "translation_pairs": {
+   "post_pairs": 0,
+   "page_pairs": 16,
+   "standalone_en": 500,
+   "documents_in_pair": 32
+  },
+  "semantic_baseline": [],
+  "cannibalization_by_category_confidence": {
+   "potential_competition/low": 89,
+   "same_topic_different_intent/medium": 28,
+   "distinct_facet/manual_review": 23,
+   "manual_review/manual_review": 19,
+   "pillar_supporting/medium": 2
+  },
+  "peak_memory_mb_this_process": 63.3,
+  "cannibalization_per_document": {
+   "documents_with_any": 176,
+   "share_of_posts": 0.17,
+   "findings_per_document": {
+    "n": 176,
+    "p10": 1,
+    "p50": 1,
+    "p90": 3,
+    "max": 11
+   }
+  },
+  "cannibalization_evidence": {
+   "semantic": null,
+   "semantic_calibrated_gate": null,
+   "lexical": {
+    "n": 161,
+    "p10": 0.005,
+    "p50": 0.036,
+    "p90": 0.093,
+    "max": 0.239
+   },
+   "title_overlap": {
+    "n": 161,
+    "p10": 0.308,
+    "p50": 0.5,
+    "p90": 0.75,
+    "max": 1
+   },
+   "topic_calibrated": {
+    "n": 161,
+    "p10": 0.005,
+    "p50": 0.036,
+    "p90": 0.093,
+    "max": 0.239
+   }
+  }
+ }
+}

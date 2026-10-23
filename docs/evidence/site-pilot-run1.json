@@ -1,0 +1,220 @@
+{
+ "note": "Aggregates only, transcribed from the 'Summary (aggregates only)' step of GitHub Actions run 39885301378 (commit 65ed645, i.e. BEFORE the overlap-gate calibration and the site baseline). Public GET requests only; the copy was analysed on the runner and discarded. No titles, URLs or per-page findings.",
+ "run": "https://github.com/thuexemayhanoi/plugin-auto/actions/runs/39885301378",
+ "timings_seconds": {
+  "census_requests": 18,
+  "export_rest_requests": 36,
+  "import_copy": 30,
+  "inventory_plus_lexical_analysis": 693,
+  "embedding_private_worker_q4f16_4vcpu": 5130,
+  "hybrid_reanalysis": 651
+ },
+ "copy_note": "The copy also contained WordPress' own sample post and page (removed from later runs) and no VI-EN pairs (pairs are not public in REST; later runs read them from the site's hreflang tags), so 'missing_translation' counts here are not meaningful.",
+ "census": {
+  "site": "https://blog.rentbikehanoi.com",
+  "when": "2026-10-23T01:41:35Z",
+  "method": "public GET only: robots.txt, XML sitemaps, REST collection totals",
+  "robots_txt_status": 200,
+  "robots_sitemaps": [
+   "https://blog.rentbikehanoi.com/sitemap_index.xml"
+  ],
+  "sitemap_urls_total": 1083,
+  "sitemap_urls_by_type_and_language": {
+   "author/vi": 1,
+   "category/en": 21,
+   "category/vi": 22,
+   "page/en": 19,
+   "page/vi": 18,
+   "post/en": 500,
+   "post/vi": 502
+  },
+  "sitemap_urls_by_language": {
+   "vi": 543,
+   "en": 540
+  },
+  "rest_totals": {
+   "posts": {
+    "status": 200,
+    "total": 1001
+   },
+   "pages": {
+    "status": 200,
+    "total": 37
+   },
+   "categories": {
+    "status": 200,
+    "total": 43
+   },
+   "tags": {
+    "status": 200,
+    "total": 4
+   }
+  }
+ },
+ "pilot_lexical": {
+  "documents_by_type_locale": {
+   "post/page/en": 19,
+   "post/page/vi": 19,
+   "post/post/en": 500,
+   "post/post/vi": 502,
+   "term/category/en": 21,
+   "term/category/vi": 22
+  },
+  "documents_by_status": {
+   "publish": 1083
+  },
+  "locale_sources": {
+   "nh_vien": 1045,
+   "nh_vien_path": 38
+  },
+  "indexable": {
+   "1": 1083
+  },
+  "word_count": {
+   "min": "15",
+   "avg": "2139",
+   "max": "16789"
+  },
+  "chunks": 17944,
+  "links": {
+   "external/external": 4400,
+   "internal/resolved": 6756,
+   "internal/unresolved": 14
+  },
+  "orphans_published_posts": 580,
+  "findings_by_type_check": {
+   "qa/missing_translation/suggestion": 1040,
+   "qa/missing_meta_description/warning": 883,
+   "link/internal_link/suggestion": 832,
+   "qa/orphan/warning": 584,
+   "qa/few_cluster_links/suggestion": 499,
+   "qa/title_length/suggestion": 141,
+   "cannibalization/potential_competition/risk_hypothesis": 89,
+   "cannibalization/same_topic_different_intent/risk_hypothesis": 28,
+   "cannibalization/distinct_facet/risk_hypothesis": 23,
+   "cannibalization/manual_review/risk_hypothesis": 19,
+   "qa/unresolved_internal_link/warning": 9,
+   "classification/suggested_category/suggestion": 4,
+   "qa/language_mismatch/warning": 2,
+   "cannibalization/pillar_supporting/info": 2
+  },
+  "link_suggestion_sources": 493,
+  "cannibalization_groups": 99,
+  "cross_locale_overlaps": 0,
+  "clusters": {
+   "": 82,
+   "hub": 31,
+   "supporting": 970
+  },
+  "cluster_count": 42,
+  "related_rows": 1552,
+  "embeddings": 0,
+  "jobs": [
+   {
+    "type": "inventory",
+    "status": "completed",
+    "progress_done": "1083",
+    "progress_total": "1083",
+    "seconds": "49"
+   },
+   {
+    "type": "analyze",
+    "status": "completed",
+    "progress_done": "3252",
+    "progress_total": "3252",
+    "seconds": "642"
+   }
+  ],
+  "peak_memory_mb_this_process": 63.3
+ },
+ "pilot_hybrid_raw_cosine_scoring": {
+  "documents_by_type_locale": {
+   "post/page/en": 19,
+   "post/page/vi": 19,
+   "post/post/en": 500,
+   "post/post/vi": 502,
+   "term/category/en": 21,
+   "term/category/vi": 22
+  },
+  "documents_by_status": {
+   "publish": 1083
+  },
+  "locale_sources": {
+   "nh_vien": 1045,
+   "nh_vien_path": 38
+  },
+  "indexable": {
+   "1": 1083
+  },
+  "word_count": {
+   "min": "15",
+   "avg": "2139",
+   "max": "16789"
+  },
+  "chunks": 17944,
+  "links": {
+   "external/external": 4400,
+   "internal/resolved": 6756,
+   "internal/unresolved": 14
+  },
+  "orphans_published_posts": 580,
+  "findings_by_type_check": {
+   "link/internal_link/suggestion": 2910,
+   "cannibalization/manual_review/risk_hypothesis": 1560,
+   "qa/missing_translation/suggestion": 1040,
+   "qa/missing_meta_description/warning": 883,
+   "qa/orphan/warning": 584,
+   "cannibalization/same_topic_different_intent/risk_hypothesis": 529,
+   "qa/few_cluster_links/suggestion": 499,
+   "qa/title_length/suggestion": 141,
+   "cannibalization/pillar_supporting/info": 138,
+   "cannibalization/potential_competition/risk_hypothesis": 99,
+   "cannibalization/distinct_facet/risk_hypothesis": 65,
+   "qa/unresolved_internal_link/warning": 9,
+   "classification/suggested_category/suggestion": 4,
+   "qa/language_mismatch/warning": 2
+  },
+  "link_suggestion_sources": 1016,
+  "cannibalization_groups": 2323,
+  "cross_locale_overlaps": 0,
+  "clusters": {
+   "": 82,
+   "hub": 31,
+   "supporting": 970
+  },
+  "cluster_count": 42,
+  "related_rows": 5195,
+  "embeddings": 3201,
+  "jobs": [
+   {
+    "type": "inventory",
+    "status": "completed",
+    "progress_done": "1083",
+    "progress_total": "1083",
+    "seconds": "49"
+   },
+   {
+    "type": "analyze",
+    "status": "completed",
+    "progress_done": "3252",
+    "progress_total": "3252",
+    "seconds": "642"
+   },
+   {
+    "type": "embed",
+    "status": "completed",
+    "progress_done": "3201",
+    "progress_total": "3201",
+    "seconds": "5152"
+   },
+   {
+    "type": "analyze",
+    "status": "completed",
+    "progress_done": "3252",
+    "progress_total": "3252",
+    "seconds": "651"
+   }
+  ],
+  "peak_memory_mb_this_process": 63.3
+ }
+}

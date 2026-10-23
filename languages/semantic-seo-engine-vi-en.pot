@@ -1,0 +1,3477 @@
+# Copyright (C) 2026 thuexemayhanoi
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Semantic SEO Engine VI–EN 1.0.0-beta.2\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/semantic-seo-engine-vi-en\n"
+"POT-Creation-Date: 2026-10-23T13:27:42+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Domain: semantic-seo-engine-vi-en\n"
+"X-Generator: WP-CLI 2.12.0\n"
+
+#. Plugin Name of the plugin
+#: semantic-seo-engine-vi-en.php admin/controllers/OverviewPage.php:79
+msgid "Semantic SEO Engine VI–EN"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: semantic-seo-engine-vi-en.php
+msgid "https://github.com/thuexemayhanoi/plugin-auto"
+msgstr ""
+
+#. Description of the plugin
+#: semantic-seo-engine-vi-en.php
+msgid ""
+"Hybrid lexical + optional Qwen3 embedding SEO operations for bilingual "
+"(Vietnamese/English) WordPress sites: inventory, internal links, "
+"cannibalization risk, topic clusters, content QA and related content, with "
+"human approval, rollback and a permissioned agent API. Read-only by default."
+msgstr ""
+
+#. Author of the plugin
+#: semantic-seo-engine-vi-en.php
+msgid "thuexemayhanoi"
+msgstr ""
+
+#: admin/controllers/Actions.php:54
+msgid "Unknown action."
+msgstr ""
+
+#: admin/controllers/Actions.php:58 includes/REST/RestController.php:242
+#: includes/Services/Guard.php:44
+msgid "You do not have permission for this action."
+msgstr ""
+
+#. translators: 1: job id, 2: job type
+#: admin/controllers/Actions.php:115
+#, php-format
+msgid "Job #%1$d (%2$s) queued. Progress is shown under Jobs."
+msgstr ""
+
+#: admin/controllers/Actions.php:126
+msgid "Job updated."
+msgstr ""
+
+#: admin/controllers/Actions.php:136
+msgid "Review saved."
+msgstr ""
+
+#: admin/controllers/Actions.php:153
+msgid ""
+"Preview created. Review the exact diff under Audit / Undo / Rollback → "
+"Proposals before approving."
+msgstr ""
+
+#: admin/controllers/Actions.php:163
+msgid "Tick the confirmation box after reviewing the exact diff."
+msgstr ""
+
+#: admin/controllers/Actions.php:166
+msgid ""
+"Approved. The change can now be applied (by you, or by an agent if you "
+"allowed it)."
+msgstr ""
+
+#: admin/controllers/Actions.php:183
+msgid "Proposal rejected."
+msgstr ""
+
+#: admin/controllers/Actions.php:183
+msgid "Proposal cannot be rejected in its current state."
+msgstr ""
+
+#. translators: %d: change id
+#: admin/controllers/Actions.php:203
+#, php-format
+msgid "Change #%d applied and verified by readback."
+msgstr ""
+
+#: admin/controllers/Actions.php:213
+msgid "Confirm the rollback first."
+msgstr ""
+
+#. translators: %s: exact|surgical
+#: admin/controllers/Actions.php:220
+#, php-format
+msgid "Rolled back (%s) and verified."
+msgstr ""
+
+#. translators: %d: approval id
+#: admin/controllers/Actions.php:231
+#, php-format
+msgid "Rollback approval #%d issued (single use, expiring)."
+msgstr ""
+
+#: admin/controllers/Actions.php:248
+msgid "Approval revoked."
+msgstr ""
+
+#: admin/controllers/Actions.php:248
+msgid "Approval is not active."
+msgstr ""
+
+#: admin/controllers/Actions.php:258
+msgid "Lock saved. It applies to WP Admin and agents alike."
+msgstr ""
+
+#: admin/controllers/Actions.php:268
+msgid "Lock removed."
+msgstr ""
+
+#: admin/controllers/Actions.php:283
+msgid "Cluster unlocked."
+msgstr ""
+
+#: admin/controllers/Actions.php:295
+msgid "Locked."
+msgstr ""
+
+#: admin/controllers/Actions.php:316
+msgid ""
+"Editorial settings saved (plugin data only; WordPress content unchanged)."
+msgstr ""
+
+#: admin/controllers/Actions.php:357
+msgid ""
+"To choose \"delete all data on uninstall\", type DELETE in the confirmation "
+"field."
+msgstr ""
+
+#: admin/controllers/Actions.php:381
+msgid "Settings saved."
+msgstr ""
+
+#: admin/controllers/Actions.php:400
+msgid "Agent roles are available."
+msgstr ""
+
+#: admin/controllers/Actions.php:420
+msgid "User not found."
+msgstr ""
+
+#: admin/controllers/Actions.php:423
+msgid ""
+"Use a dedicated, low-privilege account for agents — administrators and your "
+"own account cannot become agent accounts."
+msgstr ""
+
+#: admin/controllers/Actions.php:429
+msgid "Agent role removed (user is now a subscriber)."
+msgstr ""
+
+#: admin/controllers/Actions.php:432
+msgid "Create the agent roles first."
+msgstr ""
+
+#: admin/controllers/Actions.php:437
+msgid ""
+"Agent role assigned. Create an Application Password on that user’s profile "
+"and give it only to the agent."
+msgstr ""
+
+#: admin/controllers/Actions.php:493
+msgid "Upload failed."
+msgstr ""
+
+#: admin/controllers/Actions.php:497
+msgid "Only .csv files are accepted."
+msgstr ""
+
+#: admin/controllers/Actions.php:500 includes/Matrix/CsvReader.php:32
+msgid "The file is larger than 5 MB."
+msgstr ""
+
+#: admin/controllers/Actions.php:545
+msgid "Preview ready below. Nothing has been written yet."
+msgstr ""
+
+#. translators: %d: number of rows
+#: admin/controllers/Actions.php:565
+#, php-format
+msgid "Import applied to %d documents (plugin fields only)."
+msgstr ""
+
+#. translators: 1: valid rows, 2: total rows, 3: matched rows
+#: admin/controllers/Actions.php:593
+#, php-format
+msgid "%1$d of %2$d rows valid, %3$d matched to inventoried URLs."
+msgstr ""
+
+#: admin/controllers/Actions.php:594
+msgid "Dry run only:"
+msgstr ""
+
+#: admin/controllers/Actions.php:594
+msgid "Imported:"
+msgstr ""
+
+#: admin/controllers/Actions.php:609
+msgid "Import deleted."
+msgstr ""
+
+#: admin/controllers/Actions.php:621
+msgid "Scope saved."
+msgstr ""
+
+#: admin/controllers/Actions.php:637
+msgid "No published posts in scope."
+msgstr ""
+
+#. translators: %d: number of posts
+#: admin/controllers/Actions.php:647
+#, php-format
+msgid "Read-only pilot started on the %d most recently updated posts."
+msgstr ""
+
+#: admin/controllers/Actions.php:655
+msgid ""
+"Setup finished. Read-only mode stays on; nothing changes on the site without"
+" your approval."
+msgstr ""
+
+#: admin/controllers/Actions.php:657
+msgid "Unknown step."
+msgstr ""
+
+#: admin/controllers/AgentsPage.php:29 admin/controllers/Menu.php:38
+msgid "Agent Connections / Permissions"
+msgstr ""
+
+#: admin/controllers/AgentsPage.php:29
+msgid ""
+"Agents use the same rules as humans, with less power: they can read, analyze"
+" and propose, but never approve. Installing this plugin does not connect any"
+" AI service."
+msgstr ""
+
+#: admin/controllers/AgentsPage.php:32
+msgid "1. Dedicated agent identity"
+msgstr ""
+
+#: admin/controllers/AgentsPage.php:34
+msgid "not created yet"
+msgstr ""
+
+#: admin/controllers/AgentsPage.php:36
+msgid ""
+"Agent accounts can never review/approve, manage settings, edit users or "
+"change roles — enforced by the capability filter for every transport. Any "
+"Application-Password session (even an administrator’s) is treated as an "
+"agent."
+msgstr ""
+
+#: admin/controllers/AgentsPage.php:37
+msgid "Create / update agent roles"
+msgstr ""
+
+#: admin/controllers/AgentsPage.php:52 admin/controllers/AgentsPage.php:79
+msgid "User"
+msgstr ""
+
+#: admin/controllers/AgentsPage.php:53
+msgid "(remove agent role)"
+msgstr ""
+
+#: admin/controllers/AgentsPage.php:57
+msgid "Agent role"
+msgstr ""
+
+#: admin/controllers/AgentsPage.php:58
+msgid "Assign"
+msgstr ""
+
+#: admin/controllers/AgentsPage.php:60
+msgid ""
+"Create a dedicated, non-administrator user for each agent first (Users → Add"
+" New)."
+msgstr ""
+
+#: admin/controllers/AgentsPage.php:73
+msgid "Application Passwords"
+msgstr ""
+
+#: admin/controllers/AgentsPage.php:77
+msgid "Agent accounts"
+msgstr ""
+
+#: admin/controllers/AgentsPage.php:80 admin/controllers/ClustersPage.php:131
+#: admin/controllers/ClustersPage.php:148 admin/controllers/MatrixPage.php:152
+msgid "Role"
+msgstr ""
+
+#: admin/controllers/AgentsPage.php:81
+msgid "Credentials"
+msgstr ""
+
+#: admin/controllers/AgentsPage.php:84
+msgid "No agent accounts yet."
+msgstr ""
+
+#: admin/controllers/AgentsPage.php:90
+msgid "2. Credentials (Application Passwords)"
+msgstr ""
+
+#: admin/controllers/AgentsPage.php:91
+msgid ""
+"Open the agent user’s profile → Application Passwords, name it after the "
+"agent, create it and copy it once. WordPress stores only a hash; it is never"
+" shown here."
+msgstr ""
+
+#: admin/controllers/AgentsPage.php:92
+msgid ""
+"Use HTTPS. Give the password only to that agent; revoke it on the same "
+"screen at any time (each use is logged there with last-used IP and date)."
+msgstr ""
+
+#: admin/controllers/AgentsPage.php:93
+msgid "Test the connection (replace the placeholders):"
+msgstr ""
+
+#: admin/controllers/AgentsPage.php:95
+msgid ""
+"Application Passwords are unavailable on this site (usually because it is "
+"not served over HTTPS or they were disabled)."
+msgstr ""
+
+#: admin/controllers/AgentsPage.php:102
+msgid "3. Abilities & MCP exposure (opt-in)"
+msgstr ""
+
+#: admin/controllers/AgentsPage.php:103
+msgid "WordPress Abilities API: available."
+msgstr ""
+
+#: admin/controllers/AgentsPage.php:103
+msgid ""
+"WordPress Abilities API: unavailable (needs WordPress 6.9+). Agents can "
+"still use the REST API."
+msgstr ""
+
+#. translators: %s: version
+#: admin/controllers/AgentsPage.php:103
+#, php-format
+msgid "Official MCP Adapter detected (version %s)."
+msgstr ""
+
+#. translators: %s: version
+#: admin/controllers/AgentsPage.php:103
+msgid "Official MCP Adapter not installed: no MCP client can connect."
+msgstr ""
+
+#: admin/controllers/AgentsPage.php:116
+msgid "never (writes)"
+msgstr ""
+
+#: admin/controllers/AgentsPage.php:120
+msgid "Abilities"
+msgstr ""
+
+#: admin/controllers/AgentsPage.php:122
+msgid "Ability"
+msgstr ""
+
+#: admin/controllers/AgentsPage.php:123
+msgid "Access level"
+msgstr ""
+
+#: admin/controllers/AgentsPage.php:124
+msgid "Expose via Abilities REST"
+msgstr ""
+
+#: admin/controllers/AgentsPage.php:125
+msgid "Expose via MCP"
+msgstr ""
+
+#: admin/controllers/AgentsPage.php:129
+msgid "Enable MCP exposure for the selected read-only abilities"
+msgstr ""
+
+#: admin/controllers/AgentsPage.php:130
+msgid ""
+"Allow agent accounts with the operator role to execute changes that a human "
+"already approved (still single-use, hash-bound and logged)"
+msgstr ""
+
+#: admin/controllers/AgentsPage.php:131
+msgid "Save exposure settings"
+msgstr ""
+
+#: admin/controllers/AgentsPage.php:148 admin/controllers/AgentsPage.php:150
+msgid "Recent agent activity"
+msgstr ""
+
+#: admin/controllers/AgentsPage.php:152 admin/controllers/AuditPage.php:280
+msgid "When (UTC)"
+msgstr ""
+
+#: admin/controllers/AgentsPage.php:153
+msgid "Agent"
+msgstr ""
+
+#: admin/controllers/AgentsPage.php:154 admin/controllers/AuditPage.php:282
+msgid "Action"
+msgstr ""
+
+#: admin/controllers/AgentsPage.php:155 admin/controllers/AuditPage.php:257
+#: admin/controllers/AuditPage.php:284
+msgid "Result"
+msgstr ""
+
+#: admin/controllers/AgentsPage.php:158
+msgid "No agent activity recorded."
+msgstr ""
+
+#: admin/controllers/AuditPage.php:27 admin/controllers/Menu.php:40
+msgid "Audit / Undo / Rollback"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:27
+msgid ""
+"Every change is an exact, hash-bound diff: preview → human approval → apply "
+"with readback verification → rollback if needed."
+msgstr ""
+
+#: admin/controllers/AuditPage.php:30
+msgid "Proposals"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:31 admin/controllers/AuditPage.php:190
+msgid "Applied changes"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:32 admin/controllers/AuditPage.php:222
+msgid "Approvals"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:33 admin/controllers/AuditPage.php:278
+msgid "Audit log"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:35
+msgid "Sections"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:76 admin/controllers/AuditPage.php:194
+#: admin/controllers/AuditPage.php:227
+#: admin/controllers/CannibalizationPage.php:71
+#: admin/controllers/JobsPage.php:126 admin/controllers/LinksPage.php:74
+#: admin/controllers/RelatedPage.php:29 admin/controllers/SemanticPage.php:85
+#: admin/controllers/SemanticPage.php:250
+msgid "Status"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:77 admin/controllers/AuditPage.php:258
+#: admin/controllers/CannibalizationPage.php:74
+#: admin/controllers/ClustersPage.php:38 admin/controllers/LinksPage.php:77
+#: admin/controllers/MatrixPage.php:186 admin/controllers/QaPage.php:71
+msgid "Filter"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:90
+msgid ""
+"No proposals in this state. Create previews from link or classification "
+"suggestions."
+msgstr ""
+
+#. translators: 1: id, 2: type
+#: admin/controllers/AuditPage.php:95
+#, php-format
+msgid "Proposal #%1$d — %2$s"
+msgstr ""
+
+#. translators: 1: id, 2: type
+#: admin/controllers/AuditPage.php:96
+msgid "Object:"
+msgstr ""
+
+#. translators: 1: id, 2: type
+#: admin/controllers/AuditPage.php:96
+msgid "created via"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:97
+msgid "Why:"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:101
+msgid "low"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:102
+msgid "medium"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:103
+msgid "high"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:105
+msgid "URL:"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:105 admin/controllers/RelatedPage.php:49
+msgid "Post ID"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:105
+msgid "Risk:"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:110
+msgid "Before:"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:110
+msgid "After:"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:112
+msgid "Unchanged:"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:118
+msgid "I reviewed this exact change and approve it for this single object."
+msgstr ""
+
+#: admin/controllers/AuditPage.php:119
+msgid "Note (optional)"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:120
+msgid "Approve"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:121
+msgid "Reject"
+msgstr ""
+
+#. translators: 1: id, 2: expiry
+#: admin/controllers/AuditPage.php:131
+#, php-format
+msgid "Approval #%1$d active until %2$s UTC."
+msgstr ""
+
+#: admin/controllers/AuditPage.php:141
+msgid "Apply now"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:147
+msgid "Revoke approval"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:173
+msgid "Confirm"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:173
+msgid "Roll back"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:176
+msgid "Authorize an agent rollback"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:184
+msgid "readback verified"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:184
+msgid "rollback:"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:192
+msgid "Change"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:193 admin/controllers/AuditPage.php:283
+msgid "Object"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:195
+msgid "Verification"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:196
+msgid "Applied via"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:197
+msgid "Undo"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:200
+msgid "No changes have been applied by this plugin."
+msgstr ""
+
+#. translators: %d: id
+#: admin/controllers/AuditPage.php:215
+#, php-format
+msgid "proposal #%d"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:224
+msgid "Approval"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:225
+msgid "Target"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:226
+msgid "Approved by"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:228
+msgid "Expires (UTC)"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:231
+msgid "No approvals yet."
+msgstr ""
+
+#: admin/controllers/AuditPage.php:248
+msgid "Action starts with"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:251
+#: admin/controllers/CannibalizationPage.php:54
+#: admin/controllers/ClustersPage.php:32 admin/controllers/LinksPage.php:43
+#: admin/controllers/LinksPage.php:55 admin/controllers/MatrixPage.php:120
+#: admin/controllers/MatrixPage.php:131 admin/controllers/MatrixPage.php:146
+#: admin/controllers/QaPage.php:63
+msgid "All"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:281
+msgid "Who / via"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:285
+msgid "Details (redacted)"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:288
+msgid "The audit log is empty."
+msgstr ""
+
+#: admin/controllers/AuditPage.php:302
+msgid "Older ›"
+msgstr ""
+
+#: admin/controllers/CannibalizationPage.php:26 admin/controllers/Menu.php:33
+msgid "Cannibalization Review"
+msgstr ""
+
+#: admin/controllers/CannibalizationPage.php:26
+msgid ""
+"Risk hypotheses between pages of the same language. Translations are never "
+"compared. Without imported Search Console data nothing here proves ranking "
+"competition."
+msgstr ""
+
+#: admin/controllers/CannibalizationPage.php:28
+msgid "All categories"
+msgstr ""
+
+#: admin/controllers/CannibalizationPage.php:49
+msgid "Category"
+msgstr ""
+
+#: admin/controllers/CannibalizationPage.php:59
+#: admin/controllers/ClustersPage.php:37 admin/controllers/LinksPage.php:48
+#: admin/controllers/LinksPage.php:172 admin/controllers/MatrixPage.php:75
+#: admin/controllers/MatrixPage.php:126 admin/controllers/QaPage.php:68
+#: admin/controllers/SemanticPage.php:51 admin/controllers/SemanticPage.php:86
+msgid "Locale"
+msgstr ""
+
+#: admin/controllers/CannibalizationPage.php:82
+msgid "No overlap hypotheses for these filters."
+msgstr ""
+
+#. translators: %s: group
+#: admin/controllers/CannibalizationPage.php:90
+#, php-format
+msgid "Overlap group %s"
+msgstr ""
+
+#: admin/controllers/CannibalizationPage.php:101
+msgid "Topic"
+msgstr ""
+
+#: admin/controllers/CannibalizationPage.php:101
+#: admin/controllers/LinksPage.php:124
+msgid "Lexical"
+msgstr ""
+
+#: admin/controllers/CannibalizationPage.php:101
+#: admin/controllers/LinksPage.php:124
+msgid "Semantic"
+msgstr ""
+
+#: admin/controllers/CannibalizationPage.php:101
+msgid "Title overlap"
+msgstr ""
+
+#: admin/controllers/CannibalizationPage.php:101
+msgid "Shingle overlap"
+msgstr ""
+
+#. translators: 1: intents, 2: shared terms
+#: admin/controllers/CannibalizationPage.php:102
+#, php-format
+msgid "Intents: %1$s · Shared terms: %2$s"
+msgstr ""
+
+#: admin/controllers/CannibalizationPage.php:112
+msgid "Confirm as issue to fix editorially"
+msgstr ""
+
+#: admin/controllers/CannibalizationPage.php:119
+msgid "Not a problem"
+msgstr ""
+
+#: admin/controllers/CannibalizationPage.php:139
+#: admin/controllers/QaPage.php:130
+msgid "More ›"
+msgstr ""
+
+#: admin/controllers/ClustersPage.php:26 admin/controllers/Menu.php:34
+msgid "Pillar–Hub–Silo Clusters"
+msgstr ""
+
+#: admin/controllers/ClustersPage.php:26
+msgid ""
+"Built from your existing categories. Roles are editorial recommendations you"
+" can override and lock; no category is created or changed without an "
+"approved diff."
+msgstr ""
+
+#: admin/controllers/ClustersPage.php:47
+msgid ""
+"No clusters yet. Run an analysis; clusters come from categories in scope."
+msgstr ""
+
+#. translators: %d: count
+#: admin/controllers/ClustersPage.php:50
+#, php-format
+msgid ""
+"%d published posts are not in any cluster (see classification suggestions "
+"below)."
+msgstr ""
+
+#: admin/controllers/ClustersPage.php:71
+msgid "No category — suggested"
+msgstr ""
+
+#: admin/controllers/ClustersPage.php:71
+msgid "Possibly miscategorized"
+msgstr ""
+
+#: admin/controllers/ClustersPage.php:73
+msgid "Preview category assignment"
+msgstr ""
+
+#: admin/controllers/ClustersPage.php:79 admin/controllers/LinksPage.php:117
+#: admin/controllers/QaPage.php:99
+msgid "Dismiss"
+msgstr ""
+
+#: admin/controllers/ClustersPage.php:84 admin/controllers/ClustersPage.php:86
+msgid "Classification suggestions"
+msgstr ""
+
+#: admin/controllers/ClustersPage.php:88
+#: admin/controllers/ClustersPage.php:147 admin/controllers/LinksPage.php:171
+#: admin/controllers/LinksPage.php:194 admin/controllers/MatrixPage.php:74
+#: admin/controllers/QaPage.php:109 admin/controllers/RelatedPage.php:69
+#: admin/controllers/SemanticPage.php:50
+#: admin/controllers/SemanticPage.php:216
+msgid "Page"
+msgstr ""
+
+#: admin/controllers/ClustersPage.php:89
+msgid "Finding"
+msgstr ""
+
+#: admin/controllers/ClustersPage.php:90
+msgid "Closest existing category (similarity)"
+msgstr ""
+
+#: admin/controllers/ClustersPage.php:91 admin/controllers/LinksPage.php:135
+#: admin/controllers/MatrixPage.php:306 admin/controllers/QaPage.php:112
+#: admin/controllers/SettingsPage.php:171
+msgid "Actions"
+msgstr ""
+
+#: admin/controllers/ClustersPage.php:94
+msgid "No classification suggestions."
+msgstr ""
+
+#. translators: %d: members
+#: admin/controllers/ClustersPage.php:113
+#, php-format
+msgid "%d page"
+msgid_plural "%d pages"
+msgstr[0] ""
+msgstr[1] ""
+
+#: admin/controllers/ClustersPage.php:134
+msgid "Lock"
+msgstr ""
+
+#: admin/controllers/ClustersPage.php:134 admin/controllers/RelatedPage.php:37
+#: admin/controllers/SemanticPage.php:174
+msgid "Save"
+msgstr ""
+
+#: admin/controllers/ClustersPage.php:138
+msgid "Recommended main page"
+msgstr ""
+
+#: admin/controllers/ClustersPage.php:149 admin/controllers/LinksPage.php:195
+msgid "Inbound"
+msgstr ""
+
+#: admin/controllers/ClustersPage.php:150
+msgid "Override"
+msgstr ""
+
+#: admin/controllers/ClustersPage.php:153
+msgid "No member pages."
+msgstr ""
+
+#: admin/controllers/ClustersPage.php:156
+msgid "Main-page recommendation:"
+msgstr ""
+
+#: admin/controllers/ClustersPage.php:166
+msgid "Unlock cluster"
+msgstr ""
+
+#: admin/controllers/ClustersPage.php:166
+msgid "Lock cluster membership"
+msgstr ""
+
+#: admin/controllers/JobsPage.php:28 admin/controllers/Menu.php:37
+#: admin/controllers/OverviewPage.php:139
+msgid "Jobs & Inference Device"
+msgstr ""
+
+#: admin/controllers/JobsPage.php:28
+msgid ""
+"Background work runs in small resumable batches. The embedding model never "
+"runs on the server or for visitors — only in this browser when you start it."
+msgstr ""
+
+#: admin/controllers/JobsPage.php:36
+msgid "Start a job"
+msgstr ""
+
+#: admin/controllers/JobsPage.php:44
+msgid "Inventory + analysis"
+msgstr ""
+
+#: admin/controllers/JobsPage.php:48
+msgid "Analysis only"
+msgstr ""
+
+#: admin/controllers/JobsPage.php:49
+msgid "Queue embeddings"
+msgstr ""
+
+#: admin/controllers/JobsPage.php:50
+msgid "Verify internal link HTTP status"
+msgstr ""
+
+#: admin/controllers/JobsPage.php:53
+msgid "Targeted run: post IDs (max 200, comma separated)"
+msgstr ""
+
+#: admin/controllers/JobsPage.php:53
+msgid "Analyze these posts"
+msgstr ""
+
+#: admin/controllers/JobsPage.php:55
+msgid ""
+"WP-Cron is disabled on this site: running jobs advance while this page stays"
+" open (or run `wp sseo run`)."
+msgstr ""
+
+#: admin/controllers/JobsPage.php:72
+msgid "Advance now"
+msgstr ""
+
+#. translators: %s: size
+#: admin/controllers/JobsPage.php:80 admin/controllers/JobsPage.php:163
+msgid "Pause"
+msgstr ""
+
+#: admin/controllers/JobsPage.php:90
+msgid "Resume"
+msgstr ""
+
+#: admin/controllers/JobsPage.php:100
+msgid "Cancel"
+msgstr ""
+
+#: admin/controllers/JobsPage.php:102
+msgid "Cancel this job?"
+msgstr ""
+
+#. translators: %d: count
+#: admin/controllers/JobsPage.php:112
+#, php-format
+msgid "%d object-level errors (see summary)"
+msgstr ""
+
+#: admin/controllers/JobsPage.php:117 admin/controllers/JobsPage.php:127
+msgid "Progress"
+msgstr ""
+
+#: admin/controllers/JobsPage.php:121 admin/controllers/JobsPage.php:123
+msgid "Jobs"
+msgstr ""
+
+#: admin/controllers/JobsPage.php:125
+msgid "Job"
+msgstr ""
+
+#: admin/controllers/JobsPage.php:128
+msgid "Controls"
+msgstr ""
+
+#: admin/controllers/JobsPage.php:131
+msgid "No jobs yet."
+msgstr ""
+
+#: admin/controllers/JobsPage.php:146
+msgid "Inference device (Tier 1 — browser)"
+msgstr ""
+
+#: admin/controllers/JobsPage.php:149
+msgid "Model"
+msgstr ""
+
+#: admin/controllers/JobsPage.php:149
+msgid "base"
+msgstr ""
+
+#: admin/controllers/JobsPage.php:150
+msgid "Precision / dimension"
+msgstr ""
+
+#: admin/controllers/JobsPage.php:150
+msgid "pooling"
+msgstr ""
+
+#: admin/controllers/JobsPage.php:151
+msgid "Initial download"
+msgstr ""
+
+#: admin/controllers/JobsPage.php:151
+msgid ""
+"from huggingface.co (pinned revision, SHA-256 verified, cached by this "
+"browser)"
+msgstr ""
+
+#: admin/controllers/JobsPage.php:152
+msgid "Privacy"
+msgstr ""
+
+#: admin/controllers/JobsPage.php:152
+msgid ""
+"Only model files are downloaded from Hugging Face. Your post text is "
+"processed inside this browser and the vectors are sent only to this "
+"WordPress site."
+msgstr ""
+
+#: admin/controllers/JobsPage.php:153
+msgid "Devices"
+msgstr ""
+
+#: admin/controllers/JobsPage.php:153
+msgid ""
+"Desktop Chrome/Edge with WebGPU is fastest; WASM works but is slower; many "
+"phones (including iPhones) may be unsupported or too slow — the lexical tier"
+" keeps working."
+msgstr ""
+
+#: admin/controllers/JobsPage.php:154
+msgid "Queue"
+msgstr ""
+
+#. translators: 1: pending, 2: leased, 3: done, 4: failed
+#: admin/controllers/JobsPage.php:154
+#, php-format
+msgid "%1$d pending · %2$d in progress · %3$d done · %4$d failed"
+msgstr ""
+
+#: admin/controllers/JobsPage.php:160
+msgid "This device:"
+msgstr ""
+
+#: admin/controllers/JobsPage.php:160
+msgid "Not tested"
+msgstr ""
+
+#. translators: %s: size
+#: admin/controllers/JobsPage.php:162
+#, php-format
+msgid ""
+"I understand about %s will be downloaded to this browser from "
+"huggingface.co."
+msgstr ""
+
+#. translators: %s: size
+#: admin/controllers/JobsPage.php:163
+msgid "Check this device"
+msgstr ""
+
+#. translators: %s: size
+#: admin/controllers/JobsPage.php:163
+msgid "Load model & run self-test"
+msgstr ""
+
+#. translators: %s: size
+#: admin/controllers/JobsPage.php:163
+msgid "Process embedding queue"
+msgstr ""
+
+#. translators: %s: size
+#: admin/controllers/JobsPage.php:163
+msgid "Stop & release"
+msgstr ""
+
+#: admin/controllers/JobsPage.php:164
+msgid ""
+"Keep this tab open and the device awake; closing the tab or locking an "
+"iPhone interrupts processing (claimed items return to the queue "
+"automatically)."
+msgstr ""
+
+#: admin/controllers/JobsPage.php:166
+msgid "You do not have the capability to process embeddings."
+msgstr ""
+
+#: admin/controllers/LinksPage.php:27 admin/controllers/Menu.php:32
+msgid "Link Suggestions & Graph"
+msgstr ""
+
+#: admin/controllers/LinksPage.php:27
+msgid ""
+"Suggestions only: no link is inserted until you create a preview, review the"
+" exact diff and approve it."
+msgstr ""
+
+#: admin/controllers/LinksPage.php:61
+msgid "Confidence"
+msgstr ""
+
+#. translators: 1: anchor source, 2: byte offset
+#: admin/controllers/LinksPage.php:103
+#, php-format
+msgid "anchor from %1$s, byte offset %2$d"
+msgstr ""
+
+#. translators: 1: anchor source, 2: byte offset
+#: admin/controllers/LinksPage.php:104
+msgid "No natural anchor — editorial insertion needed"
+msgstr ""
+
+#: admin/controllers/LinksPage.php:108
+msgid "Create preview"
+msgstr ""
+
+#: admin/controllers/LinksPage.php:124
+msgid "Anchor"
+msgstr ""
+
+#: admin/controllers/LinksPage.php:124 admin/controllers/LinksPage.php:180
+msgid "Graph"
+msgstr ""
+
+#: admin/controllers/LinksPage.php:129
+msgid "Internal link suggestions"
+msgstr ""
+
+#: admin/controllers/LinksPage.php:131
+msgid "Source → target"
+msgstr ""
+
+#: admin/controllers/LinksPage.php:132
+msgid "Anchor in source"
+msgstr ""
+
+#: admin/controllers/LinksPage.php:133 admin/controllers/MatrixPage.php:259
+#: admin/controllers/SettingsPage.php:170
+#: admin/controllers/SettingsPage.php:189
+msgid "Reason"
+msgstr ""
+
+#: admin/controllers/LinksPage.php:134 admin/controllers/QaPage.php:111
+#: admin/controllers/SemanticPage.php:249
+msgid "Evidence"
+msgstr ""
+
+#: admin/controllers/LinksPage.php:138
+msgid "No suggestions match these filters."
+msgstr ""
+
+#: admin/controllers/LinksPage.php:154
+msgid "More suggestions ›"
+msgstr ""
+
+#: admin/controllers/LinksPage.php:159 admin/controllers/LinksPage.php:169
+#: admin/controllers/MatrixPage.php:183
+msgid "Orphan candidates"
+msgstr ""
+
+#. translators: 1: docs, 2: not observed
+#: admin/controllers/LinksPage.php:159
+#, php-format
+msgid ""
+"Based on links observed by the scanner in %1$d documents. Not observed: "
+"%2$s."
+msgstr ""
+
+#: admin/controllers/LinksPage.php:173 admin/controllers/SemanticPage.php:92
+msgid "Words"
+msgstr ""
+
+#: admin/controllers/LinksPage.php:176
+msgid "No orphan candidates among scanned documents."
+msgstr ""
+
+#. translators: 1: links, 2: resolved, 3: unresolved
+#: admin/controllers/LinksPage.php:190
+#, php-format
+msgid ""
+"%1$d internal links observed, %2$d resolved to inventoried pages, %3$d "
+"unresolved or broken."
+msgstr ""
+
+#: admin/controllers/LinksPage.php:192
+msgid "Most linked pages"
+msgstr ""
+
+#: admin/controllers/LinksPage.php:196
+msgid "Outbound"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:30 admin/controllers/Menu.php:30
+msgid "URL Inventory / SEO Matrix"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:30
+msgid ""
+"Every row is a real WordPress object from your database. Filters, sorting "
+"and pagination run on the server."
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:59
+msgid "editorial"
+msgstr ""
+
+#. translators: %d: suggestions
+#: admin/controllers/MatrixPage.php:61
+#, php-format
+msgid "+%d suggested"
+msgstr ""
+
+#. translators: %d: suggestions
+#: admin/controllers/MatrixPage.php:62
+msgid "Focus:"
+msgstr ""
+
+#. translators: %d: total
+#: admin/controllers/MatrixPage.php:70
+#, php-format
+msgid "%d URL"
+msgid_plural "%d URLs"
+msgstr[0] ""
+msgstr[1] ""
+
+#: admin/controllers/MatrixPage.php:72
+msgid "SEO Matrix"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:76 admin/controllers/MatrixPage.php:139
+#: admin/controllers/SemanticPage.php:158
+msgid "Intent"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:77
+msgid "Cluster / role"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:78
+msgid "Links in / out"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:79
+msgid "Robots / focus"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:80
+msgid "QA"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:81 admin/controllers/MatrixPage.php:161
+msgid "Overlap risk"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:82
+msgid "Review"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:83
+msgid "Last analyzed"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:86
+msgid "No URLs match. Run an inventory from the Overview page first."
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:125
+msgid "Search title or URL"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:159
+msgid "Inventory order"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:160
+msgid "Title"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:162 admin/controllers/QaPage.php:106
+#: admin/controllers/SemanticPage.php:200
+msgid "QA issues"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:163
+msgid "Inbound links"
+msgstr ""
+
+#. translators: 1: scanned docs, 2: links
+#: admin/controllers/MatrixPage.php:164 admin/controllers/OverviewPage.php:133
+msgid "Link suggestions"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:165
+msgid "Word count"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:166
+msgid "Modified"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:169
+msgid "Sort"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:176
+msgid "Ascending"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:177
+msgid "Descending"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:180
+msgid "Order"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:184
+msgid "Has QA issues"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:185
+msgid "Has overlap risk"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:196
+msgid "Export"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:196
+msgid ""
+"CSV is UTF-8 with BOM (opens correctly in Excel). XLSX is a genuine Office "
+"Open XML workbook."
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:199
+msgid "XLSX needs the PHP zip extension, which is not available here."
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:206
+msgid "Download CSV"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:206
+msgid "Download XLSX"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:217
+msgid "Import editorial fields"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:217
+msgid ""
+"Only this plugin’s editorial fields can be imported (editorial intent, "
+"review state, cluster role, cluster lock, exclusion). Empty cells mean “no "
+"change”. WordPress content, SEO plugin data and URLs are never touched."
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:220
+msgid "Preview (nothing written yet)"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:234
+msgid "Changes to apply"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:236 admin/controllers/MatrixPage.php:258
+msgid "CSV row"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:237
+msgid "Document"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:238
+msgid "Changes"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:241
+msgid "No changes."
+msgstr ""
+
+#. translators: %d: count
+#: admin/controllers/MatrixPage.php:245
+#, php-format
+msgid ""
+"%d values were not changed because the field already has a value. Tick "
+"“Allow overwriting existing values” and preview again to replace them."
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:256
+msgid "Isolated invalid rows"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:266
+msgid "Apply these changes"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:270
+msgid ""
+"CSV file (exported from this matrix or with columns document_id or url plus "
+"fields)"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:271
+msgid "Allow overwriting existing values"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:272
+msgid "Columns are mapped automatically by header name:"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:273
+msgid "Upload and preview"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:282
+msgid "Search Console data (optional)"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:282
+msgid ""
+"Upload a genuine page × query export (columns: page, query, clicks, "
+"impressions, optional ctr, position). Metrics are shown only after an "
+"authorized import, always with the period and source. Without it, overlap "
+"reports stay hypotheses."
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:284
+msgid "CSV file"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:285
+msgid "Period start"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:285
+msgid "Period end"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:285 admin/controllers/MatrixPage.php:304
+msgid "Source"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:286
+msgid "Import (leave unticked for a dry run)"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:286
+msgid "Upload"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:296
+msgid "Delete"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:296
+msgid "Delete this import?"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:300
+msgid "Imports"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:302
+msgid "Import"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:303
+msgid "Period"
+msgstr ""
+
+#: admin/controllers/MatrixPage.php:305
+msgid "Rows / matched"
+msgstr ""
+
+#: admin/controllers/Menu.php:29
+msgid "Overview & Setup"
+msgstr ""
+
+#: admin/controllers/Menu.php:31 admin/controllers/SemanticPage.php:26
+msgid "Semantic Analysis"
+msgstr ""
+
+#: admin/controllers/Menu.php:35 admin/controllers/OverviewPage.php:123
+#: admin/controllers/QaPage.php:28
+msgid "Content QA"
+msgstr ""
+
+#: admin/controllers/Menu.php:36 admin/controllers/RelatedPage.php:27
+msgid "Related Content Output"
+msgstr ""
+
+#: admin/controllers/Menu.php:39 admin/controllers/SettingsPage.php:28
+msgid "Settings & Diagnostics"
+msgstr ""
+
+#: admin/controllers/Menu.php:63 admin/controllers/Menu.php:64
+#: includes/Abilities/AbilitiesRegistrar.php:50
+msgid "Semantic SEO"
+msgstr ""
+
+#: admin/controllers/Menu.php:85
+msgid "You do not have permission to view this page."
+msgstr ""
+
+#: admin/controllers/Menu.php:112
+msgid "Are you sure?"
+msgstr ""
+
+#: admin/controllers/Menu.php:113
+msgid "Processing…"
+msgstr ""
+
+#: admin/controllers/Menu.php:114 admin/controllers/Ui.php:138
+msgid "Completed"
+msgstr ""
+
+#: admin/controllers/Menu.php:115 admin/controllers/Ui.php:139
+msgid "Failed"
+msgstr ""
+
+#: admin/controllers/Menu.php:116
+msgid "Job finished — reload to see results."
+msgstr ""
+
+#: admin/controllers/Menu.php:117
+msgid "Copied to clipboard."
+msgstr ""
+
+#: admin/controllers/Menu.php:118
+msgid "Network error; will retry."
+msgstr ""
+
+#: admin/controllers/Menu.php:136
+msgid ""
+"Unsupported on this device: neither WebGPU nor WebAssembly is usable here. "
+"The lexical tier keeps working."
+msgstr ""
+
+#: admin/controllers/Menu.php:137
+msgid "Please confirm the download first."
+msgstr ""
+
+#: admin/controllers/Menu.php:138
+msgid "Downloading and verifying model files…"
+msgstr ""
+
+#: admin/controllers/Menu.php:139
+msgid "Model loaded"
+msgstr ""
+
+#: admin/controllers/Menu.php:140
+msgid ""
+"Self-test passed: similarities match the model card reference within "
+"tolerance."
+msgstr ""
+
+#: admin/controllers/Menu.php:141
+msgid ""
+"Self-test failed: results differ from the reference; vectors will not be "
+"uploaded."
+msgstr ""
+
+#: admin/controllers/Menu.php:142
+msgid "checked by the server, max Δ"
+msgstr ""
+
+#: admin/controllers/Menu.php:143
+msgid "Queue empty — nothing to embed."
+msgstr ""
+
+#: admin/controllers/Menu.php:144
+msgid ""
+"Keep this tab open and the device awake; closing the tab or locking an "
+"iPhone interrupts processing (claimed items are returned to the queue "
+"automatically)."
+msgstr ""
+
+#: admin/controllers/Menu.php:145
+msgid ""
+"The browser runtime files are not bundled in this build; browser inference "
+"is unavailable."
+msgstr ""
+
+#: admin/controllers/Menu.php:146 admin/controllers/SemanticPage.php:87
+msgid "yes"
+msgstr ""
+
+#: admin/controllers/Menu.php:147 admin/controllers/SemanticPage.php:87
+msgid "no"
+msgstr ""
+
+#: admin/controllers/Menu.php:148
+msgid "no shader-f16"
+msgstr ""
+
+#: admin/controllers/Menu.php:149
+msgid "Threads"
+msgstr ""
+
+#: admin/controllers/Menu.php:150
+msgid "1 (page is not cross-origin isolated)"
+msgstr ""
+
+#: admin/controllers/Menu.php:151
+msgid "Device memory"
+msgstr ""
+
+#: admin/controllers/Menu.php:152
+msgid "yes — may be too slow or run out of memory; keep the screen on"
+msgstr ""
+
+#: admin/controllers/Menu.php:153
+msgid "WebAssembly (CPU) — slower"
+msgstr ""
+
+#. translators: %s: precision such as q4f16
+#: admin/controllers/Menu.php:155
+#, php-format
+msgid ""
+"No WebGPU with 16-bit shaders on this device: %s runs on the CPU "
+"(WebAssembly), which is slower. For many pages, a desktop browser with "
+"WebGPU or the private worker is faster."
+msgstr ""
+
+#: admin/controllers/Menu.php:156
+msgid "Worker error:"
+msgstr ""
+
+#: admin/controllers/Menu.php:157
+msgid "The model profile changed on the server; reload this page."
+msgstr ""
+
+#. translators: 1: stored, 2: rejected, 3: milliseconds, 4: running total
+#: admin/controllers/Menu.php:159
+#, php-format
+msgid "%1$d stored, %2$d rejected (%3$d ms) — total %4$d"
+msgstr ""
+
+#: admin/controllers/Menu.php:160
+msgid "from cache"
+msgstr ""
+
+#. translators: 1: free browser storage, 2: model download size
+#: admin/controllers/Menu.php:162
+#, php-format
+msgid ""
+"Browser storage has %1$s free but the model needs %2$s: it will work, but "
+"may be downloaded again next time."
+msgstr ""
+
+#: admin/controllers/Menu.php:163
+msgid "Stopped; claimed items were returned to the queue."
+msgstr ""
+
+#: admin/controllers/Menu.php:181
+msgid ""
+"Agent-native WordPress Abilities are unavailable on this WordPress version "
+"(6.9+ required). The REST API and all modules still work."
+msgstr ""
+
+#: admin/controllers/Menu.php:183
+msgid ""
+"MCP exposure is enabled but the official MCP Adapter plugin is not active, "
+"so no MCP client can connect."
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:52
+msgid "Not configured: no inventory yet. Run the read-only pilot below."
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:55
+msgid "Processing: a job is queued or running."
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:58
+msgid "Paused: a job is waiting to be resumed."
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:61
+msgid "Failed: the last job failed; see Jobs for the error."
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:68
+msgid "Needs review: findings are waiting for a human decision."
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:70
+msgid "Ready (lexical): analysis is up to date."
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:79
+msgid ""
+"Read-only by default: the plugin analyzes and proposes; nothing on your site"
+" changes without an exact diff that a human approves."
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:87
+msgid "Current state"
+msgstr ""
+
+#. translators: 1: limit, 2: number of objects
+#: admin/controllers/OverviewPage.php:93
+#, php-format
+msgid ""
+"The inventory reached the Max documents limit (%1$s): %2$s objects in scope "
+"are not inventoried or analyzed. Raise the limit in Settings to include "
+"them."
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:116 admin/controllers/Ui.php:176
+msgid "Inventory"
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:116
+msgid "published URLs analyzed (posts, pages, category archives)"
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:120
+msgid "Open SEO Matrix"
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:127
+msgid "Review QA issues"
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:131
+msgid "Links & overlap"
+msgstr ""
+
+#. translators: %s: number
+#: admin/controllers/OverviewPage.php:131
+#, php-format
+msgid "%s open internal-link suggestions"
+msgstr ""
+
+#. translators: %s: number
+#: admin/controllers/OverviewPage.php:131
+#, php-format
+msgid "%s same-locale overlap hypotheses"
+msgstr ""
+
+#. translators: 1: scanned docs, 2: links
+#: admin/controllers/OverviewPage.php:132
+#, php-format
+msgid ""
+"Coverage: %1$d documents scanned, %2$d internal links observed in content "
+"(menus/widgets/templates not observed)."
+msgstr ""
+
+#. translators: 1: scanned docs, 2: links
+#: admin/controllers/OverviewPage.php:133
+msgid "Overlap review"
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:135
+msgid "Compute tiers"
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:136
+msgid "Tier 0 — lexical:"
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:136
+msgid "Ready (works on this server, no model)."
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:137
+msgid "Tier 1 — browser model:"
+msgstr ""
+
+#. translators: %d: vectors
+#: admin/controllers/OverviewPage.php:137
+#, php-format
+msgid ""
+"optional, started by an administrator in a supported browser; %d vectors "
+"stored for the pinned model."
+msgstr ""
+
+#. translators: %d: vectors
+#: admin/controllers/OverviewPage.php:138
+msgid "Tier 2 — private worker:"
+msgstr ""
+
+#. translators: %d: vectors
+#: admin/controllers/OverviewPage.php:138
+msgid "optional, not configured unless you set one up."
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:143
+msgid "Run analysis"
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:143
+msgid ""
+"Inventory and analysis are read-only and run in small background batches. "
+"Large sites take several minutes."
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:151
+msgid "Full inventory + analysis"
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:155
+msgid "Re-run analysis only"
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:170
+msgid "Quick-start wizard"
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:173
+msgid "1. Compatibility check"
+msgstr ""
+
+#. translators: 1: WP, 2: PHP
+#: admin/controllers/OverviewPage.php:175
+#, php-format
+msgid "WordPress %1$s, PHP %2$s"
+msgstr ""
+
+#. translators: 1: WP, 2: PHP
+#: admin/controllers/OverviewPage.php:176
+msgid "Plugin database tables"
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:177
+msgid "intl extension (Unicode normalization)"
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:177
+msgid "intl missing — the built-in Vietnamese normalizer is used"
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:178
+msgid "WordPress Abilities API available"
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:178
+msgid "Abilities API unavailable (WordPress 6.9+); REST still works"
+msgstr ""
+
+#. translators: %s: framework
+#: admin/controllers/OverviewPage.php:179
+#, php-format
+msgid "Language framework: %s"
+msgstr ""
+
+#. translators: %s: plugin
+#: admin/controllers/OverviewPage.php:180
+#, php-format
+msgid "SEO metadata source: %s (read-only)"
+msgstr ""
+
+#. translators: %s: plugin
+#: admin/controllers/OverviewPage.php:181
+msgid ""
+"WP-Cron disabled — jobs advance while the Jobs page is open, or via WP-CLI"
+msgstr ""
+
+#. translators: %s: plugin
+#: admin/controllers/OverviewPage.php:181
+msgid "WP-Cron available for background batches"
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:189
+msgid "2. Compute tiers"
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:189
+msgid ""
+"Tier 0 (lexical) is available now on this hosting. Tier 1 runs the Qwen3 "
+"embedding model in your browser only when you start it; Tier 2 is an "
+"optional private worker. Site visitors never load a model."
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:192
+msgid "3. Scope"
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:196
+msgid "Content types"
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:203
+msgid "Exclude URL path fragments (one per line)"
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:204
+#: admin/controllers/SettingsPage.php:46
+msgid "Batch size"
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:204
+#: admin/controllers/SettingsPage.php:48
+msgid "Max documents"
+msgstr ""
+
+#. translators: 1: posts, 2: terms
+#: admin/controllers/OverviewPage.php:205
+#, php-format
+msgid ""
+"In scope now: %1$d posts/pages and %2$d category archives (real database "
+"counts)."
+msgstr ""
+
+#. translators: 1: posts, 2: terms
+#: admin/controllers/OverviewPage.php:206
+msgid "Save scope"
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:209
+msgid "4. Read-only pilot"
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:209
+msgid ""
+"Analyze a small sample first and check the counts and coverage before "
+"running the whole site."
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:211
+msgid "Pilot size"
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:211
+msgid "Start pilot"
+msgstr ""
+
+#. translators: 1: documents, 2: links
+#: admin/controllers/OverviewPage.php:213
+#, php-format
+msgid "Pilot result so far: %1$d documents, %2$d internal links observed."
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:218
+msgid "5. Finish"
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:220
+msgid "Finish setup"
+msgstr ""
+
+#: admin/controllers/QaPage.php:28
+msgid ""
+"Verified errors are objective facts; warnings are rules needing judgement; "
+"suggestions are heuristic hints. No quality score and no fact-checking are "
+"produced."
+msgstr ""
+
+#: admin/controllers/QaPage.php:29
+msgid "All checks"
+msgstr ""
+
+#: admin/controllers/QaPage.php:49
+msgid "All labels"
+msgstr ""
+
+#: admin/controllers/QaPage.php:55 admin/controllers/QaPage.php:108
+#: admin/controllers/SemanticPage.php:247
+msgid "Label"
+msgstr ""
+
+#: admin/controllers/QaPage.php:58 admin/controllers/QaPage.php:110
+#: admin/controllers/SemanticPage.php:248
+msgid "Check"
+msgstr ""
+
+#. translators: %d: total
+#: admin/controllers/QaPage.php:104
+#, php-format
+msgid "%d open issues"
+msgstr ""
+
+#: admin/controllers/QaPage.php:115
+msgid "No QA issues for these filters."
+msgstr ""
+
+#: admin/controllers/RelatedPage.php:27
+msgid ""
+"Precomputed, same-language related articles. Rendered only where you place "
+"the shortcode or block (or call the PHP function) and only after you enable "
+"output."
+msgstr ""
+
+#: admin/controllers/RelatedPage.php:29
+msgid "Frontend output is enabled."
+msgstr ""
+
+#: admin/controllers/RelatedPage.php:29
+msgid ""
+"Frontend output is disabled (default). Shortcodes and blocks render nothing."
+msgstr ""
+
+#: admin/controllers/RelatedPage.php:33
+msgid "Enable related content output"
+msgstr ""
+
+#: admin/controllers/RelatedPage.php:34 assets/js/related-block.js:29
+msgid "Number of items"
+msgstr ""
+
+#: admin/controllers/RelatedPage.php:35
+msgid "Default heading"
+msgstr ""
+
+#: admin/controllers/RelatedPage.php:35
+#: includes/Recommendations/Frontend.php:116
+msgid "Related articles"
+msgstr ""
+
+#: admin/controllers/RelatedPage.php:36
+msgid "Print the tiny default stylesheet (disable to style it in your theme)"
+msgstr ""
+
+#: admin/controllers/RelatedPage.php:41
+msgid "How to place it"
+msgstr ""
+
+#: admin/controllers/RelatedPage.php:42
+msgid "Shortcode:"
+msgstr ""
+
+#: admin/controllers/RelatedPage.php:43
+msgid "Block:"
+msgstr ""
+
+#: admin/controllers/RelatedPage.php:43
+msgid ""
+"“Related content (Semantic SEO)” in the block inserter (server-rendered)."
+msgstr ""
+
+#: admin/controllers/RelatedPage.php:44
+msgid "PHP:"
+msgstr ""
+
+#: admin/controllers/RelatedPage.php:44
+msgid "and the filter"
+msgstr ""
+
+#: admin/controllers/RelatedPage.php:45
+msgid "Template override:"
+msgstr ""
+
+#: admin/controllers/RelatedPage.php:46
+msgid ""
+"Only published, indexable, same-language posts are listed; near-duplicates "
+"and translations are excluded. Lists are cached and refreshed when posts "
+"change. No model or analysis runs on page views."
+msgstr ""
+
+#: admin/controllers/RelatedPage.php:49
+msgid "Preview"
+msgstr ""
+
+#: admin/controllers/RelatedPage.php:66
+msgid "Related preview"
+msgstr ""
+
+#: admin/controllers/RelatedPage.php:70
+msgid "Shared topic terms"
+msgstr ""
+
+#: admin/controllers/RelatedPage.php:71 admin/controllers/SemanticPage.php:217
+msgid "Score"
+msgstr ""
+
+#: admin/controllers/RelatedPage.php:74
+msgid "No related content computed for this post yet."
+msgstr ""
+
+#: admin/controllers/SemanticPage.php:26
+msgid ""
+"Facts are measured from the page; inferences are heuristics or model signals"
+" with their evidence. They are shown separately on purpose."
+msgstr ""
+
+#: admin/controllers/SemanticPage.php:29
+msgid "Find a page (title or URL)"
+msgstr ""
+
+#: admin/controllers/SemanticPage.php:29
+msgid "Search"
+msgstr ""
+
+#: admin/controllers/SemanticPage.php:48
+msgid "Search results"
+msgstr ""
+
+#: admin/controllers/SemanticPage.php:54
+msgid "No matching page in the inventory."
+msgstr ""
+
+#: admin/controllers/SemanticPage.php:66
+msgid "Search for a page above, or open one from the SEO Matrix."
+msgstr ""
+
+#: admin/controllers/SemanticPage.php:83
+msgid "Facts (measured)"
+msgstr ""
+
+#: admin/controllers/SemanticPage.php:87
+msgid "Indexable"
+msgstr ""
+
+#: admin/controllers/SemanticPage.php:88
+msgid "Robots"
+msgstr ""
+
+#: admin/controllers/SemanticPage.php:89
+msgid "Canonical"
+msgstr ""
+
+#: admin/controllers/SemanticPage.php:90
+msgid "SEO metadata source"
+msgstr ""
+
+#: admin/controllers/SemanticPage.php:91
+msgid "Focus keyword"
+msgstr ""
+
+#: admin/controllers/SemanticPage.php:91
+msgid "none set"
+msgstr ""
+
+#: admin/controllers/SemanticPage.php:93
+msgid "Internal links in / out"
+msgstr ""
+
+#: admin/controllers/SemanticPage.php:94
+msgid "Images without alt"
+msgstr ""
+
+#: admin/controllers/SemanticPage.php:101
+msgid "Translations (from the language plugin)"
+msgstr ""
+
+#: admin/controllers/SemanticPage.php:107
+msgid "Heading outline"
+msgstr ""
+
+#: admin/controllers/SemanticPage.php:115
+msgid "Inferences (heuristic or model signals)"
+msgstr ""
+
+#: admin/controllers/SemanticPage.php:116
+msgid "Search intent:"
+msgstr ""
+
+#. translators: 1: cue, 2: field, 3: intent
+#: admin/controllers/SemanticPage.php:120
+#, php-format
+msgid "“%1$s” in %2$s → %3$s"
+msgstr ""
+
+#: admin/controllers/SemanticPage.php:124
+msgid "Topic terms:"
+msgstr ""
+
+#: admin/controllers/SemanticPage.php:125
+msgid "Candidate entities:"
+msgstr ""
+
+#: admin/controllers/SemanticPage.php:138
+msgid "Detected text language:"
+msgstr ""
+
+#: admin/controllers/SemanticPage.php:140
+msgid "Semantic vector:"
+msgstr ""
+
+#: admin/controllers/SemanticPage.php:142
+msgid "Cluster:"
+msgstr ""
+
+#: admin/controllers/SemanticPage.php:146
+msgid "Editorial override (plugin data only)"
+msgstr ""
+
+#: admin/controllers/SemanticPage.php:151
+msgid "(use heuristic)"
+msgstr ""
+
+#: admin/controllers/SemanticPage.php:171
+msgid "Review state"
+msgstr ""
+
+#: admin/controllers/SemanticPage.php:184
+msgid "Lock this URL (no proposals)"
+msgstr ""
+
+#: admin/controllers/SemanticPage.php:193
+#: admin/controllers/SettingsPage.php:183
+msgid "Exclude from suggestions"
+msgstr ""
+
+#: admin/controllers/SemanticPage.php:201
+msgid "Link suggestions from this page"
+msgstr ""
+
+#: admin/controllers/SemanticPage.php:202
+msgid "Overlap risks"
+msgstr ""
+
+#: admin/controllers/SemanticPage.php:211
+msgid "Precomputed related content"
+msgstr ""
+
+#: admin/controllers/SemanticPage.php:213
+msgid "Related"
+msgstr ""
+
+#: admin/controllers/SemanticPage.php:221
+msgid "Provenance (raw)"
+msgstr ""
+
+#: admin/controllers/SemanticPage.php:253
+msgid "None."
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:32
+#: admin/controllers/SettingsPage.php:168
+msgid "Scope"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:33
+msgid "Post types (comma separated)"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:34
+msgid "Taxonomies used as cluster backbone"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:35
+msgid ""
+"Include drafts/private posts in analysis (never shown to agents or on the "
+"frontend)"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:36
+msgid "Default language (when no language plugin applies)"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:41
+msgid ""
+"URL prefix rules (one per line, e.g. en=/en/) — used only when no language "
+"plugin (Polylang, WPML, Nguyen Ha VI-EN Core) is detected"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:42
+msgid "Excluded post IDs"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:43
+msgid "Excluded URL path fragments (one per line)"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:45
+msgid "Operations"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:47
+msgid "Time budget per background tick (seconds)"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:49
+msgid "Approval validity (hours)"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:50
+msgid "Rate limit: reads per minute per user"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:51
+msgid "Rate limit: job starts per minute"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:52
+msgid "Rate limit: writes per minute"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:53
+msgid "Audit log retention (days)"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:54
+msgid "Re-index changed posts automatically (after the first inventory)"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:55
+msgid "Allow change previews (approval is always required to apply)"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:56
+msgid ""
+"Allow HTTP verification of internal link targets (same host only, no "
+"redirects followed)"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:63
+msgid "Follow WordPress profile language"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:66
+msgid "Plugin admin language"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:71
+msgid "Expert panel (tested defaults — change only with evaluation data)"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:73
+msgid "Weight: lexical"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:74
+msgid "Weight: semantic"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:75
+msgid "Weight: anchor quality"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:76
+msgid "Weight: graph usefulness"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:77
+msgid "Minimum link score"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:78
+msgid "Minimum related score"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:79
+msgid "Overlap topic threshold"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:80
+msgid "Near-duplicate threshold (MinHash)"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:81
+msgid "Possible-translation threshold (cross-language similarity)"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:85
+msgid "Candidates per page (BM25 top-k)"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:86
+msgid "Max link suggestions per page"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:95
+msgid "Model precision"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:108
+msgid "Vector dimension"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:111
+msgid "Body chunks embedded per page"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:112
+msgid ""
+"Changing precision or dimension changes the model key: existing vectors are "
+"kept but ignored until you re-run embeddings."
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:114
+msgid "Uninstall policy"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:119
+msgid "Preserve all plugin data (default)"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:120
+msgid "Delete all plugin data when the plugin is deleted"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:123
+msgid "When the plugin is deleted"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:126
+msgid "Type DELETE to confirm the delete policy"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:127
+msgid ""
+"Deleting plugin data also deletes the change log and rollback snapshots. "
+"WordPress posts are never deleted."
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:128
+msgid "Save settings"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:155
+msgid "Locks & exclusions"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:155
+msgid "Enforced by the shared service layer for humans and agents alike."
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:162
+msgid "Remove"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:166
+msgid "Locks"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:169
+#: admin/controllers/SettingsPage.php:186
+msgid "Type"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:174
+msgid "No locks."
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:177
+msgid "Lock a URL path fragment"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:182
+msgid "Lock (no proposals)"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:189
+msgid "Add"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:199
+msgid "Diagnostics"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:203
+msgid "Migration log"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:204
+msgid "Copy diagnostics JSON"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:204
+msgid "Diagnostics JSON"
+msgstr ""
+
+#: admin/controllers/Ui.php:119
+msgid "Verified error"
+msgstr ""
+
+#: admin/controllers/Ui.php:120
+msgid "Warning"
+msgstr ""
+
+#: admin/controllers/Ui.php:121
+msgid "Suggestion"
+msgstr ""
+
+#: admin/controllers/Ui.php:122
+msgid "Risk hypothesis"
+msgstr ""
+
+#: admin/controllers/Ui.php:123
+msgid "Info"
+msgstr ""
+
+#: admin/controllers/Ui.php:124
+msgid "Error"
+msgstr ""
+
+#: admin/controllers/Ui.php:125
+msgid "High confidence"
+msgstr ""
+
+#: admin/controllers/Ui.php:126
+msgid "Medium confidence"
+msgstr ""
+
+#: admin/controllers/Ui.php:127
+msgid "Low confidence"
+msgstr ""
+
+#: admin/controllers/Ui.php:128
+msgid "Manual review"
+msgstr ""
+
+#: admin/controllers/Ui.php:129
+msgid "Editorial"
+msgstr ""
+
+#: admin/controllers/Ui.php:130
+msgid "Open"
+msgstr ""
+
+#: admin/controllers/Ui.php:131
+msgid "Dismissed"
+msgstr ""
+
+#: admin/controllers/Ui.php:132
+msgid "Accepted"
+msgstr ""
+
+#: admin/controllers/Ui.php:133
+msgid "Proposed"
+msgstr ""
+
+#: admin/controllers/Ui.php:134
+msgid "Resolved"
+msgstr ""
+
+#: admin/controllers/Ui.php:135
+msgid "Queued"
+msgstr ""
+
+#: admin/controllers/Ui.php:136
+msgid "Processing"
+msgstr ""
+
+#: admin/controllers/Ui.php:137
+msgid "Paused"
+msgstr ""
+
+#: admin/controllers/Ui.php:140
+msgid "Cancelled"
+msgstr ""
+
+#: admin/controllers/Ui.php:141
+msgid "Awaiting approval"
+msgstr ""
+
+#: admin/controllers/Ui.php:142
+msgid "Approved"
+msgstr ""
+
+#: admin/controllers/Ui.php:143
+msgid "Applied"
+msgstr ""
+
+#: admin/controllers/Ui.php:144
+msgid "Rolled back"
+msgstr ""
+
+#: admin/controllers/Ui.php:145
+msgid "Rejected"
+msgstr ""
+
+#: admin/controllers/Ui.php:146
+msgid "Stale"
+msgstr ""
+
+#: admin/controllers/Ui.php:147
+msgid "Rollback failed"
+msgstr ""
+
+#: admin/controllers/Ui.php:148
+msgid "Active"
+msgstr ""
+
+#: admin/controllers/Ui.php:149
+msgid "Used"
+msgstr ""
+
+#: admin/controllers/Ui.php:150
+msgid "Expired"
+msgstr ""
+
+#: admin/controllers/Ui.php:151
+msgid "Revoked"
+msgstr ""
+
+#: admin/controllers/Ui.php:152
+msgid "Invalidated"
+msgstr ""
+
+#: admin/controllers/Ui.php:153
+msgid "Pillar"
+msgstr ""
+
+#: admin/controllers/Ui.php:154
+msgid "Hub"
+msgstr ""
+
+#: admin/controllers/Ui.php:155
+msgid "Silo"
+msgstr ""
+
+#: admin/controllers/Ui.php:156
+msgid "Supporting"
+msgstr ""
+
+#: admin/controllers/Ui.php:157
+msgid "Informational"
+msgstr ""
+
+#: admin/controllers/Ui.php:158
+msgid "Transactional"
+msgstr ""
+
+#: admin/controllers/Ui.php:159
+msgid "Commercial investigation"
+msgstr ""
+
+#: admin/controllers/Ui.php:160
+msgid "Navigational"
+msgstr ""
+
+#: admin/controllers/Ui.php:161
+msgid "Unknown"
+msgstr ""
+
+#: admin/controllers/Ui.php:162
+msgid "Exact duplicate"
+msgstr ""
+
+#: admin/controllers/Ui.php:163
+msgid "Near duplicate"
+msgstr ""
+
+#: admin/controllers/Ui.php:164
+msgid "Potential same-query competition"
+msgstr ""
+
+#: admin/controllers/Ui.php:165
+msgid "Same topic, different intent"
+msgstr ""
+
+#: admin/controllers/Ui.php:166
+msgid "Distinct facet (e.g. daily vs monthly)"
+msgstr ""
+
+#: admin/controllers/Ui.php:167
+msgid "Pillar + supporting page"
+msgstr ""
+
+#: admin/controllers/Ui.php:168
+msgid "Translation mapping conflict"
+msgstr ""
+
+#: admin/controllers/Ui.php:169
+msgid "Unreviewed"
+msgstr ""
+
+#: admin/controllers/Ui.php:170
+msgid "Needs review"
+msgstr ""
+
+#: admin/controllers/Ui.php:171
+msgid "Reviewed"
+msgstr ""
+
+#: admin/controllers/Ui.php:172
+msgid "Approved plan"
+msgstr ""
+
+#: admin/controllers/Ui.php:173
+msgid "Published"
+msgstr ""
+
+#: admin/controllers/Ui.php:174
+msgid "Draft"
+msgstr ""
+
+#: admin/controllers/Ui.php:175
+msgid "Private"
+msgstr ""
+
+#: admin/controllers/Ui.php:177
+msgid "Analysis"
+msgstr ""
+
+#: admin/controllers/Ui.php:178
+msgid "Embeddings"
+msgstr ""
+
+#: admin/controllers/Ui.php:179
+msgid "Incremental update"
+msgstr ""
+
+#: admin/controllers/Ui.php:180
+msgid "Link verification"
+msgstr ""
+
+#: admin/controllers/Ui.php:196
+msgid "Nothing to show yet."
+msgstr ""
+
+#: admin/controllers/Ui.php:327
+msgid "Pagination"
+msgstr ""
+
+#. translators: 1: current page, 2: total pages, 3: total items
+#: admin/controllers/Ui.php:329
+#, php-format
+msgid "Page %1$d of %2$d (%3$d items)"
+msgstr ""
+
+#: admin/controllers/Ui.php:331
+msgid "‹ Previous"
+msgstr ""
+
+#: admin/controllers/Ui.php:334
+msgid "Next ›"
+msgstr ""
+
+#: admin/controllers/Ui.php:384
+msgid "n/a"
+msgstr ""
+
+#: admin/controllers/Ui.php:399
+msgid "(no title)"
+msgstr ""
+
+#: admin/controllers/Ui.php:432
+msgid "Before"
+msgstr ""
+
+#: admin/controllers/Ui.php:432
+msgid "After"
+msgstr ""
+
+#: includes/Abilities/AbilitiesRegistrar.php:51
+msgid ""
+"Inspect inventory and SEO analyses, run bounded jobs, preview and (with "
+"human approval) apply reversible changes."
+msgstr ""
+
+#: includes/Abilities/AbilitiesRegistrar.php:64
+msgid "Get Semantic SEO site status"
+msgstr ""
+
+#: includes/Abilities/AbilitiesRegistrar.php:65
+msgid ""
+"Returns plugin version, read-only mode, available compute tiers, index "
+"counts, link-scan coverage, findings summary and diagnostics. Use first to "
+"test the connection."
+msgstr ""
+
+#: includes/Abilities/AbilitiesRegistrar.php:74
+msgid "List inventoried URLs"
+msgstr ""
+
+#: includes/Abilities/AbilitiesRegistrar.php:75
+msgid ""
+"Paginated SEO Matrix rows (locale, status, intent, cluster role, link "
+"counts, QA and risk counts) with provenance. Filter by locale/type/intent; "
+"use next_cursor to page."
+msgstr ""
+
+#: includes/Abilities/AbilitiesRegistrar.php:81
+msgid "Get URL analysis"
+msgstr ""
+
+#: includes/Abilities/AbilitiesRegistrar.php:82
+msgid ""
+"Structured evidence for one URL: facts (headings, links, counts) separated "
+"from inferences (heuristic intent, topics, pattern entities), QA issues, "
+"link suggestions, overlap risks and provenance."
+msgstr ""
+
+#: includes/Abilities/AbilitiesRegistrar.php:88
+msgid "Get internal link suggestions"
+msgstr ""
+
+#: includes/Abilities/AbilitiesRegistrar.php:89
+msgid ""
+"Ranked source→target internal link candidates with reasons, anchor text, "
+"exact location and evidence components, plus orphan candidates with scan "
+"coverage. Suggestions only."
+msgstr ""
+
+#: includes/Abilities/AbilitiesRegistrar.php:95
+msgid "Get cannibalization risk report"
+msgstr ""
+
+#: includes/Abilities/AbilitiesRegistrar.php:96
+msgid ""
+"Same-locale overlap pairs classified as duplicate, potential competition, "
+"different intent, distinct facet, pillar/supporting or manual review, with "
+"evidence and uncertainty. Risk hypotheses, not verdicts."
+msgstr ""
+
+#: includes/Abilities/AbilitiesRegistrar.php:102
+msgid "Get topic clusters"
+msgstr ""
+
+#: includes/Abilities/AbilitiesRegistrar.php:103
+msgid ""
+"Taxonomy-based Pillar/Hub/Silo tree per locale with members, recommended "
+"pillar pages and evidence. Editorial recommendations."
+msgstr ""
+
+#: includes/Abilities/AbilitiesRegistrar.php:109
+msgid "Get content QA issues"
+msgstr ""
+
+#: includes/Abilities/AbilitiesRegistrar.php:110
+msgid ""
+"QA checks labelled verified_error, warning or suggestion (never conflated), "
+"filterable by severity, label, check and URL."
+msgstr ""
+
+#: includes/Abilities/AbilitiesRegistrar.php:116
+msgid "Get job status"
+msgstr ""
+
+#: includes/Abilities/AbilitiesRegistrar.php:117
+msgid ""
+"Status (queued/running/paused/failed/completed/cancelled), phase and honest "
+"progress of a job."
+msgstr ""
+
+#: includes/Abilities/AbilitiesRegistrar.php:125
+msgid "Get audit log"
+msgstr ""
+
+#: includes/Abilities/AbilitiesRegistrar.php:126
+msgid "Redacted action history. Agents only receive their own entries."
+msgstr ""
+
+#: includes/Abilities/AbilitiesRegistrar.php:132
+msgid "Start a bounded analysis job"
+msgstr ""
+
+#: includes/Abilities/AbilitiesRegistrar.php:133
+msgid ""
+"Starts an inventory, analysis, embedding or link-verification job (max 200 "
+"target posts, one active job per type, idempotency key supported). Read-only"
+" with respect to site content."
+msgstr ""
+
+#: includes/Abilities/AbilitiesRegistrar.php:139
+msgid "Cancel a job"
+msgstr ""
+
+#: includes/Abilities/AbilitiesRegistrar.php:140
+msgid "Requests cancellation of a job; it stops at the next batch boundary."
+msgstr ""
+
+#: includes/Abilities/AbilitiesRegistrar.php:148
+msgid "Rebuild the derived index"
+msgstr ""
+
+#: includes/Abilities/AbilitiesRegistrar.php:149
+msgid ""
+"Re-indexes lexical data or re-queues embeddings for the pinned model "
+"(confirm=true required). Never modifies posts."
+msgstr ""
+
+#: includes/Abilities/AbilitiesRegistrar.php:155
+msgid "Create change previews"
+msgstr ""
+
+#: includes/Abilities/AbilitiesRegistrar.php:156
+msgid ""
+"Turns 1–10 findings into exact, hash-bound diff previews. Nothing is "
+"written; a human must approve in WP Admin."
+msgstr ""
+
+#: includes/Abilities/AbilitiesRegistrar.php:162
+msgid "Apply a human-approved change"
+msgstr ""
+
+#: includes/Abilities/AbilitiesRegistrar.php:163
+msgid ""
+"Applies a proposal that a human approved in WP Admin. Requires the approval "
+"ID and an idempotency key; rejects stale, expired, mismatched or reused "
+"approvals; returns readback verification."
+msgstr ""
+
+#: includes/Abilities/AbilitiesRegistrar.php:169
+msgid "Roll back a change"
+msgstr ""
+
+#: includes/Abilities/AbilitiesRegistrar.php:170
+msgid ""
+"Restores a change made by this plugin. Non-interactive callers need a "
+"separate human-issued rollback approval."
+msgstr ""
+
+#: includes/Approval/ApprovalService.php:39
+#: includes/Approval/ChangeExecutor.php:84
+msgid "Proposal not found."
+msgstr ""
+
+#: includes/Approval/ApprovalService.php:42
+msgid "Only previewed proposals can be approved."
+msgstr ""
+
+#: includes/Approval/ApprovalService.php:55
+msgid ""
+"The content changed after this preview was created. Create a new preview."
+msgstr ""
+
+#: includes/Approval/ApprovalService.php:113
+#: includes/Rollback/RollbackService.php:52
+#: includes/Rollback/RollbackService.php:79
+msgid "Only applied changes can be rolled back."
+msgstr ""
+
+#: includes/Approval/ApprovalService.php:176
+msgid "Approval not found."
+msgstr ""
+
+#: includes/Approval/ApprovalService.php:180
+msgid "The approval does not match this change."
+msgstr ""
+
+#: includes/Approval/ApprovalService.php:183
+msgid "The approval was already used, revoked or invalidated."
+msgstr ""
+
+#: includes/Approval/ApprovalService.php:187
+msgid "The approval has expired; approve again."
+msgstr ""
+
+#: includes/Approval/ApprovalService.php:194
+msgid "The approval was already used."
+msgstr ""
+
+#: includes/Approval/ApprovalService.php:253
+msgid "Approvals can only be given by a human administrator in WP Admin."
+msgstr ""
+
+#: includes/Approval/ApprovalService.php:257
+msgid "You do not have permission to approve changes."
+msgstr ""
+
+#: includes/Approval/ChangeExecutor.php:62
+msgid "You do not have permission to apply changes."
+msgstr ""
+
+#: includes/Approval/ChangeExecutor.php:66
+msgid "An idempotency key (8–64 characters) is required."
+msgstr ""
+
+#: includes/Approval/ChangeExecutor.php:72
+msgid "This idempotency key was already used for another change."
+msgstr ""
+
+#: includes/Approval/ChangeExecutor.php:87
+msgid "This proposal has no active human approval."
+msgstr ""
+
+#: includes/Approval/ChangeExecutor.php:92
+msgid "The approval does not belong to this proposal."
+msgstr ""
+
+#: includes/Approval/ChangeExecutor.php:96
+msgid "The approval scope does not match."
+msgstr ""
+
+#: includes/Approval/ChangeExecutor.php:99
+msgid "This URL is locked by an administrator."
+msgstr ""
+
+#: includes/Approval/ChangeExecutor.php:103
+#: includes/Rollback/RollbackService.php:73
+msgid "Another change to this object is in progress."
+msgstr ""
+
+#: includes/Approval/ChangeExecutor.php:133
+msgid ""
+"The content changed after approval; nothing was written. Create a new "
+"preview."
+msgstr ""
+
+#: includes/Approval/ChangeExecutor.php:136
+msgid "The post is no longer published; nothing was written."
+msgstr ""
+
+#: includes/Approval/ChangeExecutor.php:140
+msgid ""
+"The linked page is no longer published at the approved URL; nothing was "
+"written. Create a new preview."
+msgstr ""
+
+#: includes/Approval/ChangeExecutor.php:148
+msgid ""
+"The computed result does not match the approved diff; nothing was written."
+msgstr ""
+
+#: includes/Approval/ChangeExecutor.php:157
+msgid ""
+"The permalink structure now contains this taxonomy: applying could change "
+"the post URL; nothing was written."
+msgstr ""
+
+#: includes/Approval/ChangeExecutor.php:160
+msgid "The term no longer exists; nothing was written."
+msgstr ""
+
+#: includes/Approval/ChangeExecutor.php:249
+msgid "A concurrent apply with the same idempotency key is in progress."
+msgstr ""
+
+#: includes/Approval/ChangeExecutor.php:359
+msgid ""
+"The post was edited at the same moment; nothing was written. Create a new "
+"preview."
+msgstr ""
+
+#: includes/Approval/ChangeExecutor.php:368
+msgid "The write failed before anything was changed (see change log)."
+msgstr ""
+
+#: includes/Approval/ChangeExecutor.php:444
+msgid "The write could not be verified and was reverted automatically."
+msgstr ""
+
+#: includes/Approval/ChangeExecutor.php:444
+msgid ""
+"The write could not be verified and the automatic revert also failed: manual"
+" recovery is needed (see change log)."
+msgstr ""
+
+#: includes/Approval/Operations.php:42
+msgid "The anchor text is not at the recorded position."
+msgstr ""
+
+#: includes/Approval/Operations.php:52 includes/Approval/Operations.php:68
+msgid ""
+"The position is inside a heading, link, shortcode, code or other protected "
+"element."
+msgstr ""
+
+#: includes/Approval/Operations.php:88
+msgid ""
+"The inserted link is no longer present; nothing to revert automatically."
+msgstr ""
+
+#: includes/Approval/Operations.php:89
+msgid ""
+"The inserted link markup occurs several times; automatic revert would be "
+"ambiguous."
+msgstr ""
+
+#: includes/Approval/ProposalService.php:42
+msgid "Change proposals are disabled in Settings (read-only mode)."
+msgstr ""
+
+#: includes/Approval/ProposalService.php:46
+msgid "Finding not found."
+msgstr ""
+
+#: includes/Approval/ProposalService.php:53
+msgid ""
+"This finding type cannot be turned into an automatic change; it needs "
+"editorial work."
+msgstr ""
+
+#: includes/Approval/ProposalService.php:109
+msgid "Source or target document no longer exists."
+msgstr ""
+
+#: includes/Approval/ProposalService.php:116
+msgid "The target page is not published, not indexable or excluded."
+msgstr ""
+
+#: includes/Approval/ProposalService.php:120
+msgid "The target URL is not an internal URL of this site."
+msgstr ""
+
+#: includes/Approval/ProposalService.php:126
+msgid ""
+"No natural anchor text was found; this suggestion needs manual editorial "
+"insertion."
+msgstr ""
+
+#: includes/Approval/ProposalService.php:146
+msgid ""
+"The anchor text is no longer present in an editable position; re-run the "
+"analysis."
+msgstr ""
+
+#: includes/Approval/ProposalService.php:215 includes/Services/Api.php:1021
+msgid "Document not found."
+msgstr ""
+
+#: includes/Approval/ProposalService.php:224
+msgid ""
+"Category proposals are disabled because the permalink structure contains "
+"this taxonomy: assigning a term could change the post URL."
+msgstr ""
+
+#: includes/Approval/ProposalService.php:228
+msgid ""
+"The suggested term does not exist or is out of scope. Terms are never "
+"created by this plugin."
+msgstr ""
+
+#: includes/Approval/ProposalService.php:234
+msgid "The post already has this term."
+msgstr ""
+
+#: includes/Approval/ProposalService.php:302
+msgid "Only published posts can receive proposals."
+msgstr ""
+
+#: includes/Approval/ProposalService.php:305
+msgid "This URL is locked or excluded by an administrator."
+msgstr ""
+
+#: includes/Capabilities.php:133
+msgid "SEO Agent (read-only)"
+msgstr ""
+
+#: includes/Capabilities.php:134
+msgid "SEO Agent (read + analyze)"
+msgstr ""
+
+#: includes/Capabilities.php:135
+msgid "SEO Agent (may execute human-approved changes)"
+msgstr ""
+
+#: includes/Capabilities.php:136
+msgid "SEO Embedding Worker"
+msgstr ""
+
+#: includes/Gsc/GscRepository.php:37
+msgid "A valid reporting period (start ≤ end) is required."
+msgstr ""
+
+#. translators: %s: column list
+#: includes/Gsc/GscRepository.php:59
+#, php-format
+msgid "Missing required columns. Required: %s."
+msgstr ""
+
+#: includes/Jobs/JobRepository.php:70 includes/Services/Api.php:595
+msgid "Unknown job type."
+msgstr ""
+
+#: includes/Jobs/JobRepository.php:79
+msgid "Another job is being created; retry shortly."
+msgstr ""
+
+#: includes/Jobs/JobRepository.php:86
+msgid "A job of this type is already queued or running."
+msgstr ""
+
+#: includes/Jobs/JobRepository.php:112
+msgid "Could not create the job."
+msgstr ""
+
+#: includes/Language/LanguageResolver.php:82
+msgid "URL prefix rules"
+msgstr ""
+
+#: includes/Language/LanguageResolver.php:83
+msgid "Site default language only"
+msgstr ""
+
+#: includes/Locks/LockService.php:43
+msgid "Invalid lock scope or type."
+msgstr ""
+
+#: includes/Locks/LockService.php:47
+msgid "Invalid lock target."
+msgstr ""
+
+#: includes/Matrix/CsvReader.php:28 includes/Matrix/CsvReader.php:36
+msgid "The uploaded file could not be read."
+msgstr ""
+
+#: includes/Matrix/CsvReader.php:53
+msgid "The file must be UTF-8 encoded."
+msgstr ""
+
+#: includes/Matrix/CsvReader.php:71
+msgid "The file has no header row."
+msgstr ""
+
+#: includes/Matrix/MatrixExporter.php:57
+msgid "XLSX export needs the PHP zip extension; use CSV instead."
+msgstr ""
+
+#: includes/Matrix/MatrixExporter.php:81
+msgid "Could not create the XLSX file."
+msgstr ""
+
+#: includes/Matrix/MatrixImporter.php:68
+msgid "Map a document_id or url column to identify rows."
+msgstr ""
+
+#: includes/Matrix/MatrixImporter.php:72
+msgid "Map at least one importable field."
+msgstr ""
+
+#: includes/Matrix/MatrixImporter.php:188
+msgid ""
+"The import preview expired or does not belong to you. Upload the file again."
+msgstr ""
+
+#: includes/Quality/QaChecker.php:64
+msgid "Missing title"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:65
+msgid "Title length outside 15–65 characters (heuristic)"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:66
+msgid "Duplicate title in the same locale"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:67
+msgid "Missing meta description (SEO plugin active)"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:68
+msgid "Duplicate meta description in the same locale"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:69
+msgid "H1 heading inside content"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:70
+msgid "Heading level skipped"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:71
+msgid "Long content without H2 subheadings"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:72
+msgid "Internal link to a non-public or deleted object"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:73
+msgid "Internal link not matched to an inventoried URL"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:74
+msgid "Internal link returned an HTTP error when verified"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:75
+msgid "Internal link points to an old URL that redirects"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:76
+msgid "Missing translation in another site language"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:77
+msgid ""
+"Possible translation in another language, not linked yet (cross-language "
+"semantic similarity)"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:78
+msgid "Canonical points to a different URL"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:79
+msgid "Canonical points to a page in another locale"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:80
+msgid "Noindex page receives internal links"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:81
+msgid "Detected text language differs from assigned locale"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:82
+msgid "Near-duplicate content (same locale)"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:83
+msgid "Excessively repeated phrase"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:84
+msgid "Short content relative to heuristic intent"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:85
+msgid "No observed inbound internal links"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:86
+msgid "Few links to pages in the same topic cluster"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:87
+msgid "Possible duplicate structured data"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:88
+msgid "Images without alt text"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:89
+msgid ""
+"Long informational article without any outside source (E-E-A-T heuristic)"
+msgstr ""
+
+#: includes/REST/RestController.php:240 includes/Services/Guard.php:31
+msgid "Authentication required."
+msgstr ""
+
+#: includes/REST/RestController.php:335
+msgid "Request body too large."
+msgstr ""
+
+#: includes/REST/RestController.php:340
+msgid "Internal error; see the audit log."
+msgstr ""
+
+#: includes/Rollback/RollbackService.php:41
+msgid "You do not have permission to roll back changes."
+msgstr ""
+
+#: includes/Rollback/RollbackService.php:45
+msgid "Change not found."
+msgstr ""
+
+#: includes/Rollback/RollbackService.php:56
+msgid ""
+"A separate rollback approval issued by a human in WP Admin is required."
+msgstr ""
+
+#: includes/Rollback/RollbackService.php:60
+msgid "The rollback approval does not belong to this change."
+msgstr ""
+
+#: includes/Rollback/RollbackService.php:69
+msgid "Original proposal missing; manual recovery required."
+msgstr ""
+
+#: includes/Rollback/RollbackService.php:113
+msgid ""
+"The post was edited at the same moment; nothing was changed. Try the "
+"rollback again."
+msgstr ""
+
+#: includes/Rollback/RollbackService.php:115
+msgid ""
+"The rollback failed before anything was changed; the change is still applied"
+" (see change log)."
+msgstr ""
+
+#: includes/Rollback/RollbackService.php:120
+msgid ""
+"Rollback could not be verified; manual recovery is needed (the before "
+"snapshot is in the change log)."
+msgstr ""
+
+#: includes/Semantic/DeviceVerification.php:48
+msgid "The self-test was computed with a different model profile."
+msgstr ""
+
+#: includes/Semantic/DeviceVerification.php:54
+msgid "Send one vector per reference query and per reference document."
+msgstr ""
+
+#. translators: 1: queries/documents, 2: index, 3: reason.
+#: includes/Semantic/DeviceVerification.php:69
+#, php-format
+msgid "Invalid self-test vector (%1$s %2$d): %3$s"
+msgstr ""
+
+#: includes/Semantic/EmbeddingQueue.php:177
+msgid ""
+"Vectors were produced with a different model profile and were rejected."
+msgstr ""
+
+#: includes/Semantic/EmbeddingQueue.php:181
+msgid ""
+"This device has no valid server-checked self-test for the current model "
+"profile; send the reference vectors to /embeddings/selftest first."
+msgstr ""
+
+#: includes/Services/Api.php:209
+msgid "Only URLs of this site are accepted."
+msgstr ""
+
+#: includes/Services/Api.php:213
+msgid "Provide post_id, document_id or url."
+msgstr ""
+
+#: includes/Services/Api.php:216 includes/Services/Api.php:219
+msgid "This URL is not in the inventory (run an inventory first)."
+msgstr ""
+
+#: includes/Services/Api.php:559 includes/Services/Api.php:671
+msgid "Job not found."
+msgstr ""
+
+#. translators: %d: max
+#: includes/Services/Api.php:601
+#, php-format
+msgid "At most %d targets per request."
+msgstr ""
+
+#: includes/Services/Api.php:608
+msgid "None of these posts is in the inventory yet; run an inventory first."
+msgstr ""
+
+#: includes/Services/Api.php:625
+msgid "Agents may run one job at a time."
+msgstr ""
+
+#: includes/Services/Api.php:674
+msgid "Agents can only control their own jobs."
+msgstr ""
+
+#: includes/Services/Api.php:712
+msgid ""
+"Set confirm=true to rebuild. Derived data is recomputed in the background; "
+"WordPress content is not modified."
+msgstr ""
+
+#: includes/Services/Api.php:716
+msgid ""
+"model_version must match the active pinned profile (model key or revision)."
+msgstr ""
+
+#: includes/Services/Api.php:745
+msgid "Provide 1–10 finding IDs."
+msgstr ""
+
+#: includes/Services/Api.php:972
+msgid "Provide lease_token or all_mine=true."
+msgstr ""
+
+#: includes/Services/Api.php:994
+msgid "Invalid finding or status."
+msgstr ""
+
+#: includes/Services/Api.php:1043
+msgid "No valid fields."
+msgstr ""
+
+#: includes/Services/Guard.php:51
+msgid "Too many requests; slow down."
+msgstr ""
+
+#: includes/Services/Guard.php:71
+msgid ""
+"This action can only be performed by a human administrator in WP Admin (not "
+"via Application Passwords, agents or the API)."
+msgstr ""
+
+#. translators: 1: required PHP version, 2: current PHP version.
+#: semantic-seo-engine-vi-en.php:36
+#, php-format
+msgid "PHP %1$s or newer is required (current: %2$s)."
+msgstr ""
+
+#. translators: 1: required WordPress version, 2: current WordPress version.
+#: semantic-seo-engine-vi-en.php:41
+#, php-format
+msgid "WordPress %1$s or newer is required (current: %2$s)."
+msgstr ""
+
+#: semantic-seo-engine-vi-en.php:44
+msgid "The PHP mbstring extension is required."
+msgstr ""
+
+#: semantic-seo-engine-vi-en.php:58
+msgid "The plugin is inactive until these requirements are met."
+msgstr ""
+
+#: assets/js/related-block.js:27
+msgid "Related content"
+msgstr ""
+
+#: assets/js/related-block.js:36
+msgid "Heading (optional)"
+msgstr ""
+
+#: assets/js/related-block.js:46
+msgid ""
+"No related content to show (output disabled in Semantic SEO settings, or "
+"this post has not been analyzed yet)."
+msgstr ""
+
+#: blocks/related-content/block.json
+msgctxt "block title"
+msgid "Related content (Semantic SEO)"
+msgstr ""
+
+#: blocks/related-content/block.json
+msgctxt "block description"
+msgid ""
+"Precomputed related articles from Semantic SEO Engine VI–EN. Renders nothing"
+" until related content output is enabled in the plugin settings."
+msgstr ""

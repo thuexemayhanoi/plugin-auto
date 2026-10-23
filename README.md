@@ -1,8 +1,18 @@
 # Semantic SEO Engine VI–EN — WordPress Plugin
 ## Master Engineering Specification / README for Claude & AI Coding Agents
 
-> **Status: SPECIFICATION ONLY — NOT IMPLEMENTED.**
-> This repository currently contains the development brief. Do not claim that the plugin, model inference, WordPress integration, ZIP, tests, or production deployment already exists.
+> **Status: IMPLEMENTED AS 1.0.0-beta.3 (independent audit fixes on branch `claude/independent-audit`, see [docs/QA-AUDIT-REPORT.md](docs/QA-AUDIT-REPORT.md)) — BETA.**
+> The plugin, tests, CI and installable ZIP exist and were verified on disposable WordPress 6.5.13 / 6.9.10 / 7.1.3 sites and in CI. The real Qwen3-Embedding-0.6B model (pinned revision, SHA-256-verified files) runs in GitHub Actions: model-card self-test, browser worker (Chromium, WASM), private worker over REST and the hybrid evaluation (AC06 PASS). A read-only census and pilot of blog.rentbikehanoi.com ran on a disposable copy of its public content. Nothing has been installed on any live site; it stays a beta until the owner tries it on a staging copy. Evidence: [docs/TEST-REPORT.md](docs/TEST-REPORT.md).
+>
+> | Documentation | |
+> | --- | --- |
+> | Install / build | [docs/INSTALLATION.md](docs/INSTALLATION.md) · [readme.txt](readme.txt) · [CHANGELOG.md](CHANGELOG.md) · [release notes](docs/RELEASE-NOTES-1.0.0-beta.2.md) |
+> | Human guides | [Tiếng Việt](docs/USER-GUIDE-VI.md) · [English](docs/USER-GUIDE-EN.md) |
+> | Agents | [docs/AI-AGENT-INTEGRATION.md](docs/AI-AGENT-INTEGRATION.md) · [private worker](tools/private-worker/README.md) |
+> | Engineering | [architecture](docs/ARCHITECTURE.md) · [data schema & migrations](docs/DATA-SCHEMA.md) · [security / threat model](docs/SECURITY.md) · [operations & troubleshooting](docs/OPERATIONS.md) |
+> | Evidence | [test report (AC01–AC20)](docs/TEST-REPORT.md) · [performance](docs/PERFORMANCE.md) · [compatibility](docs/COMPATIBILITY.md) · [raw results](docs/evidence/) · [screenshots](docs/screenshots/) |
+>
+> The specification below is unchanged and remains the binding brief.
 >
 > **Repository (sole write scope):** https://github.com/thuexemayhanoi/plugin-auto  
 > **Primary target (read-only until separately authorized):** https://blog.rentbikehanoi.com/ and https://blog.rentbikehanoi.com/en/  

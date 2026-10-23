@@ -1,0 +1,8 @@
+{
+ "fixture": "SYNTHETIC BENCHMARK FIXTURE, 20,000 posts (tests/bench/generate.php), 20,010 documents, 7 clusters",
+ "step": "ClusterBuilder::build() (one step of the analysis job)",
+ "before": {"code": "1.0.0-beta.2 / 981904c", "wp_cli_unlimited_memory": {"seconds": 158.8, "peak_mb": 759}, "cron_like_request_memory_limit_256M": "FATAL: Allowed memory size of 268435456 bytes exhausted (class-wpdb.php:2353), exit 255", "link_count_queries": "2 per cluster member"},
+ "after": {"code": "this commit", "cron_like_request_memory_limit_256M": {"seconds": 10.7, "peak_mb": 156}, "link_count_queries": "2 per cluster per 1,000 members"},
+ "equivalence_on_20000_posts": {"clusters (id, member_count, recommended pillar, parent, role)": "identical MD5", "documents (cluster_id, cluster_role) for 20,010 documents": "identical MD5", "cluster evidence JSON (inbound/outbound/centrality/score of candidates)": "identical MD5"},
+ "reproduce": "php -d memory_limit=256M cluster-256.php (bootstraps wp-load.php with DOING_CRON, calls ClusterBuilder::build) on the bench site"
+}
