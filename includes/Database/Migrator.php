@@ -114,6 +114,7 @@ final class Migrator {
 	 * @return array<int,callable>
 	 */
 	private static function steps() {
+		// Version 2 only adds the findings.target_id index, which dbDelta() creates: no data step.
 		return array(
 			1 => array( __CLASS__, 'step_1_backfill_hashes' ),
 		);

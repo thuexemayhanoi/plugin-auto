@@ -17,7 +17,7 @@ final class Schema {
 	/**
 	 * Bump when the schema changes; add a matching step in Migrator::steps().
 	 */
-	const VERSION = 1;
+	const VERSION = 2;
 
 	const TABLES = array(
 		'documents',
@@ -217,6 +217,7 @@ PRIMARY KEY  (id),
 UNIQUE KEY fingerprint (fingerprint),
 KEY type_status (type,status),
 KEY document_id (document_id),
+KEY target_id (target_id),
 KEY group_key (group_key)
 ) $c;",
 			"CREATE TABLE {$t['related']} (

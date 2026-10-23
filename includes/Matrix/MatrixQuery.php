@@ -27,7 +27,7 @@ final class MatrixQuery {
 		'modified'    => 'd.modified_at',
 		'analyzed'    => 'd.analyzed_at',
 		'qa'          => 'qa_count',
-		'risk'        => 'risk_score',
+		'risk'        => 'GREATEST(COALESCE(risk_doc, -1), COALESCE(risk_target, -1))',
 		'suggestions' => 'link_count',
 	);
 
@@ -86,12 +86,34 @@ final class MatrixQuery {
 	 * @return string
 	 */
 	private static function aggregates() {
+		// A document is on either side of an overlap pair. Each side is looked up through its own
+		// index: one `document_id = d.id OR target_id = d.id` condition scanned every open overlap
+		// finding for each row (measured: 459 ms for 20 rows at 1,000 synthetic posts).
+		$risk  = "SELECT MAX(c.score) FROM {findings} c WHERE c.%s = d.id AND c.type = 'cannibalization' AND c.status = 'open' AND c.label = 'risk_hypothesis'";
+		$group = "SELECT c2.group_key FROM {findings} c2 WHERE c2.%s = d.id AND c2.type = 'cannibalization' AND c2.status = 'open' AND LEFT(c2.group_key, 3) = 'cg-' LIMIT 1";
 		return "(SELECT COUNT(*) FROM {findings} q WHERE q.document_id = d.id AND q.type = 'qa' AND q.status = 'open') AS qa_count,
 			(SELECT COUNT(*) FROM {findings} l WHERE l.document_id = d.id AND l.type = 'link' AND l.status IN ('open','proposed')) AS link_count,
-			(SELECT MAX(c.score) FROM {findings} c WHERE (c.document_id = d.id OR c.target_id = d.id) AND c.type = 'cannibalization' AND c.status = 'open' AND c.label = 'risk_hypothesis') AS risk_score,
-			(SELECT c2.group_key FROM {findings} c2 WHERE (c2.document_id = d.id OR c2.target_id = d.id) AND c2.type = 'cannibalization' AND c2.status = 'open' AND LEFT(c2.group_key, 3) = 'cg-' LIMIT 1) AS risk_group,
+			(" . sprintf( $risk, 'document_id' ) . ') AS risk_doc,
+			(' . sprintf( $risk, 'target_id' ) . ') AS risk_target,
+			COALESCE((' . sprintf( $group, 'document_id' ) . '), (' . sprintf( $group, 'target_id' ) . ')) AS risk_group,
 			(SELECT k.label FROM {clusters} k WHERE k.id = d.cluster_id) AS cluster_label,
-			(SELECT COUNT(*) FROM {gsc} g WHERE g.document_id = d.id) AS gsc_rows";
+			(SELECT COUNT(*) FROM {gsc} g WHERE g.document_id = d.id) AS gsc_rows';
+	}
+
+	/**
+	 * Highest open overlap risk on either side of a pair, or null.
+	 *
+	 * @param array $r Row with risk_doc and risk_target.
+	 * @return float|null
+	 */
+	private static function risk( array $r ) {
+		$values = array_filter(
+			array( $r['risk_doc'], $r['risk_target'] ),
+			static function ( $v ) {
+				return null !== $v;
+			}
+		);
+		return array() === $values ? null : round( max( array_map( 'floatval', $values ) ), 3 );
 	}
 
 	/**
@@ -133,7 +155,7 @@ final class MatrixQuery {
 			$w[] = "EXISTS (SELECT 1 FROM {findings} q WHERE q.document_id = d.id AND q.type = 'qa' AND q.status = 'open')";
 		}
 		if ( ! empty( $f['has_risk'] ) ) {
-			$w[] = "EXISTS (SELECT 1 FROM {findings} c WHERE (c.document_id = d.id OR c.target_id = d.id) AND c.type = 'cannibalization' AND c.status = 'open' AND c.label = 'risk_hypothesis')";
+			$w[] = "(EXISTS (SELECT 1 FROM {findings} c WHERE c.document_id = d.id AND c.type = 'cannibalization' AND c.status = 'open' AND c.label = 'risk_hypothesis') OR EXISTS (SELECT 1 FROM {findings} c WHERE c.target_id = d.id AND c.type = 'cannibalization' AND c.status = 'open' AND c.label = 'risk_hypothesis'))";
 		}
 		if ( isset( $f['excluded'] ) && '' !== (string) $f['excluded'] ) {
 			$w[]    = 'd.excluded = %d';
@@ -193,7 +215,7 @@ final class MatrixQuery {
 			'link_scan_coverage' => 'post content only',
 			'proposed_links'     => (int) $r['link_count'],
 			'overlap_group'      => (string) $r['risk_group'],
-			'overlap_risk'       => null === $r['risk_score'] ? null : round( (float) $r['risk_score'], 3 ),
+			'overlap_risk'       => self::risk( $r ),
 			'qa_issues'          => (int) $r['qa_count'],
 			'word_count'         => (int) $r['word_count'],
 			'content_hash'       => substr( (string) $r['content_hash'], 0, 12 ),

@@ -113,6 +113,19 @@ final class ActivationMigrationTest extends TestCase {
 		$this->assertSame( 0, end( $log )['from'] );
 	}
 
+	public function test_upgrade_from_schema_1_adds_the_findings_target_index() {
+		$this->real_ddl();
+		global $wpdb;
+		$table = Schema::table( 'findings' );
+		$wpdb->query( "ALTER TABLE {$table} DROP INDEX target_id" ); // phpcs:ignore
+		update_option( Migrator::VERSION_OPTION, 1 );
+		$res = Migrator::maybe_upgrade();
+		$this->assertSame( '', $res['error'] );
+		$this->assertSame( 2, Migrator::installed_version() );
+		$keys = $wpdb->get_col( "SHOW INDEX FROM {$table}", 2 ); // phpcs:ignore
+		$this->assertContains( 'target_id', $keys );
+	}
+
 	public function test_interrupted_upgrade_is_resumed_after_stale_lock() {
 		$this->real_ddl();
 		update_option( Migrator::VERSION_OPTION, 0 );
