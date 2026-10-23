@@ -1,0 +1,46 @@
+{
+ "base_commit_before_fixes": "2cdd005 (1.0.0-beta.2)",
+ "method": "each test was run against the code before its fix (git show <commit>^:file) and failed; it passes after the fix",
+ "tests": [
+  {
+   "test": "tests/php/Integration/DatabaseFailureTest.php",
+   "failing_before": "2/2",
+   "fix": "981904c"
+  },
+  {
+   "test": "MatrixRiskColumnsTest::test_exact_duplicates_count_as_overlap_risk",
+   "failing_before": "1/1",
+   "fix": "99d2ddf"
+  },
+  {
+   "test": "tests/js/embedder-core.test.mjs (restoreEndToken, truncated row keeps end token)",
+   "failing_before": "n/a: tests a new function; the defect itself (truncated row lost its end-of-text token, unlike the Python reference) is checked against the real model on a long text in the real-model workflow (long_text)",
+   "fix": "47da7f3"
+  },
+  {
+   "test": "tests/php/Integration/WriteIntegrityTest.php",
+   "failing_before": "12/12",
+   "fix": "722c875"
+  },
+  {
+   "test": "tests/php/Unit/AnchorSafetyTest.php",
+   "failing_before": "6/7 (+ caption case 1/1 on 104c792)",
+   "fix": "104c792, c9f46bf"
+  },
+  {
+   "test": "tests/php/Integration/JobRecoveryTest.php",
+   "failing_before": "6/6",
+   "fix": "609999b"
+  },
+  {
+   "test": "tests/php/Integration/PrivacyScopeTest.php",
+   "failing_before": "2/2",
+   "fix": "e020a4f"
+  },
+  {
+   "test": "tests/php/Integration/SeoLogicTest.php",
+   "failing_before": "4/4",
+   "fix": "c9f46bf"
+  }
+ ]
+}

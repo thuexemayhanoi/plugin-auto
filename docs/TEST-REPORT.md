@@ -1,5 +1,11 @@
 # Test report — Semantic SEO Engine VI–EN 1.0.0-beta.2
 
+> **Superseded for 1.0.0-beta.3 by the independent audit: [QA-AUDIT-REPORT.md](QA-AUDIT-REPORT.md).**
+> The audit proved 31 defects in 1.0.0-beta.2 (8 P0, 14 P1, 6 P2, 3 P3), among them P0 issues of the
+> approved-change write path (URL/slug or status changed, concurrent edits overwritten), and fixed
+> all of them with regression tests. Do not apply changes with 1.0.0-beta.2. The beta.2 numbers below
+> are kept as history.
+
 Date: 2026-10-23. Branch `claude/semantic-seo-engine-vi-en`. Every number below comes from a
 command that was actually run; raw results are in [`docs/evidence/`](evidence/) and screenshots in
 [`docs/screenshots/`](screenshots/). Nothing was installed on, or written to, any live site; the
