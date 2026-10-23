@@ -192,7 +192,7 @@ final class AnalysisRunner {
 						$state['counts']['qa'] = ( isset( $state['counts']['qa'] ) ? $state['counts']['qa'] : 0 ) + 1;
 					}
 				}
-				FindingRepository::resolve_stale( array( 'link', 'cannibalization', 'qa', 'classification' ), $run_id, $scope );
+				$state['resolved'] = FindingRepository::resolve_stale( array( 'link', 'cannibalization', 'qa', 'classification' ), $run_id, $scope );
 				self::group_cannibalization();
 				if ( array() === $scope ) {
 					Db::query( "UPDATE {documents} SET analyzed_at = %s WHERE status = 'publish'", array( Util::now() ) );

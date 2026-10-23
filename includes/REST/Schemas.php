@@ -233,6 +233,7 @@ final class Schemas {
 						),
 						'locale'          => $locale,
 						'then_analyze'    => array( 'type' => 'boolean' ),
+						'pilot'           => array( 'type' => 'boolean' ),
 						'idempotency_key' => array(
 							'type'      => 'string',
 							'minLength' => 8,

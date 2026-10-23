@@ -85,7 +85,11 @@ final class InventoryJob {
 					array_map( 'intval', $ids )
 				);
 			}
-			JobRepository::create( 'analyze', $params, (int) $job['owner_id'], 'chain' );
+			$params['source_job'] = (int) $job['id'];
+			if ( ! empty( $job['params']['pilot'] ) ) {
+				$params['pilot'] = true;
+			}
+			JobRepository::chain_analysis( $params, (int) $job['owner_id'] );
 			JobRunner::schedule();
 		}
 	}

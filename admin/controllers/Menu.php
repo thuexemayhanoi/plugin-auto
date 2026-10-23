@@ -15,7 +15,7 @@ use SemanticSEO\Settings;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Registers the 12 admin pages. Assets load only on these pages.
+ * Registers the 13 admin pages. Assets load only on these pages.
  */
 final class Menu {
 
@@ -26,7 +26,8 @@ final class Menu {
 	 */
 	public static function pages() {
 		return array(
-			'sseo'                 => array( __( 'Overview & Setup', 'semantic-seo-engine-vi-en' ), Capabilities::READ, OverviewPage::class ),
+			'sseo'                 => array( __( 'SEO Dashboard', 'semantic-seo-engine-vi-en' ), Capabilities::READ, OverviewPage::class ),
+			'sseo-priorities'      => array( __( 'What to do first', 'semantic-seo-engine-vi-en' ), Capabilities::READ, PrioritiesPage::class ),
 			'sseo-matrix'          => array( __( 'URL Inventory / SEO Matrix', 'semantic-seo-engine-vi-en' ), Capabilities::READ, MatrixPage::class ),
 			'sseo-semantic'        => array( __( 'Semantic Analysis', 'semantic-seo-engine-vi-en' ), Capabilities::READ, SemanticPage::class ),
 			'sseo-links'           => array( __( 'Link Suggestions & Graph', 'semantic-seo-engine-vi-en' ), Capabilities::READ, LinksPage::class ),
@@ -116,6 +117,12 @@ final class Menu {
 					'reload'       => __( 'Job finished — reload to see results.', 'semantic-seo-engine-vi-en' ),
 					'copied'       => __( 'Copied to clipboard.', 'semantic-seo-engine-vi-en' ),
 					'networkError' => __( 'Network error; will retry.', 'semantic-seo-engine-vi-en' ),
+					'deviceGpu'    => __( 'Suitable: WebGPU is available, the model can run fast in this browser.', 'semantic-seo-engine-vi-en' ),
+					'deviceWasm'   => __( 'Works but slowly: no usable WebGPU, the model would run on the CPU (WebAssembly). Fine for a few pages; for the whole site use a desktop browser with WebGPU.', 'semantic-seo-engine-vi-en' ),
+					'deviceNone'   => __( 'Not compatible: this browser supports neither WebGPU nor WebAssembly. The SEO analysis still works without the model.', 'semantic-seo-engine-vi-en' ),
+					'deviceIos'    => __( 'iPhone/iPad: possible but slow and limited by memory; keep the screen on.', 'semantic-seo-engine-vi-en' ),
+					'deviceMemory' => __( 'Device memory', 'semantic-seo-engine-vi-en' ),
+					'deviceCores'  => __( 'CPU threads', 'semantic-seo-engine-vi-en' ),
 				),
 			)
 		);

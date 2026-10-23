@@ -8,6 +8,8 @@
 namespace SemanticSEO\Services;
 
 use SemanticSEO\Analysis\FindingRepository;
+use SemanticSEO\Analysis\PriorityQueue;
+use SemanticSEO\Analysis\ScanHistory;
 use SemanticSEO\Approval\ApprovalService;
 use SemanticSEO\Approval\ChangeExecutor;
 use SemanticSEO\Approval\ProposalService;
@@ -25,6 +27,7 @@ use SemanticSEO\Matrix\MatrixQuery;
 use SemanticSEO\Plugin;
 use SemanticSEO\Rollback\RollbackService;
 use SemanticSEO\Security\AuthContext;
+use SemanticSEO\Security\ReadOnlyProof;
 use SemanticSEO\Security\UrlGuard;
 use SemanticSEO\Semantic\DeviceVerification;
 use SemanticSEO\Semantic\EmbeddingQueue;
@@ -594,6 +597,17 @@ final class Api {
 		if ( ! in_array( $type, array( 'inventory', 'analyze', 'embed', 'verify_links' ), true ) ) {
 			return new \WP_Error( 'sseo_invalid_job_type', __( 'Unknown job type.', 'semantic-seo-engine-vi-en' ), array( 'status' => 400 ) );
 		}
+		$schema = Environment::db_schema();
+		if ( ! $schema['ready'] ) {
+			return new \WP_Error(
+				'sseo_db_not_ready',
+				__( 'The plugin database is incomplete, so no scan can run. Repair it from the dashboard (Settings & Diagnostics shows the SQL error).', 'semantic-seo-engine-vi-en' ),
+				array(
+					'status'  => 503,
+					'missing' => array_merge( $schema['missing'], $schema['missing_columns'] ),
+				)
+			);
+		}
 		$params = array();
 		if ( ! empty( $args['post_ids'] ) ) {
 			$ids = array_values( array_unique( array_filter( array_map( 'intval', (array) $args['post_ids'] ) ) ) );
@@ -614,6 +628,14 @@ final class Api {
 		}
 		if ( ! empty( $args['then_analyze'] ) ) {
 			$params['then_analyze'] = true;
+		}
+		if ( 'inventory' === $type ) {
+			// A trial on a few posts, and evidence that the scan changed nothing: the posts, their
+			// meta and their terms are fingerprinted now and compared when the analysis finishes.
+			if ( ! empty( $args['pilot'] ) && ! empty( $params['post_ids'] ) ) {
+				$params['pilot'] = true;
+			}
+			$params['readonly_snapshot'] = ReadOnlyProof::snapshot( isset( $params['post_ids'] ) ? $params['post_ids'] : array() );
 		}
 		$idempotency_key = isset( $args['idempotency_key'] ) ? substr( (string) $args['idempotency_key'], 0, 64 ) : '';
 		// A retried request returns the original job, before any quota applies.
@@ -642,6 +664,86 @@ final class Api {
 			)
 		);
 		return JobRepository::to_public( $job );
+	}
+
+	/**
+	 * SEO health dashboard (semantic-seo/get-health): system check, scan state, counts, model
+	 * state, permissions, last scan, difference with the previous scan and the measured estimate.
+	 *
+	 * @return array|\WP_Error
+	 */
+	public static function health() {
+		$g = Guard::check( Capabilities::READ, 'read', 'health' );
+		if ( is_wp_error( $g ) ) {
+			return $g;
+		}
+		return array_merge(
+			HealthReport::overview(),
+			array( 'system_check' => HealthReport::system_check() )
+		);
+	}
+
+	/**
+	 * SEO priority queue (semantic-seo/get-priorities).
+	 *
+	 * @param array $args locale, category, priority, search, limit, offset.
+	 * @return array|\WP_Error
+	 */
+	public static function priorities( array $args ) {
+		$g = Guard::check( Capabilities::READ, 'read', 'priorities' );
+		if ( is_wp_error( $g ) ) {
+			return $g;
+		}
+		$filters = array(
+			'locale'   => isset( $args['locale'] ) ? sanitize_key( (string) $args['locale'] ) : '',
+			'category' => isset( $args['category'] ) ? sanitize_key( (string) $args['category'] ) : '',
+			'priority' => isset( $args['priority'] ) ? (int) $args['priority'] : 0,
+			'search'   => isset( $args['search'] ) ? sanitize_text_field( (string) $args['search'] ) : '',
+		);
+		$res     = PriorityQueue::items(
+			array_merge(
+				$filters,
+				array(
+					'limit'  => isset( $args['limit'] ) ? (int) $args['limit'] : 20,
+					'offset' => isset( $args['offset'] ) ? (int) $args['offset'] : 0,
+				)
+			)
+		);
+		foreach ( $res['items'] as &$item ) {
+			$item['detail_url'] = add_query_arg( array_merge( array( 'page' => $item['detail']['page'] ), $item['detail']['args'] ), admin_url( 'admin.php' ) );
+			unset( $item['detail'] );
+			if ( ! self::can_see_private() && '' !== $item['url'] ) {
+				$doc = DocumentRepository::get( (int) $item['document_id'] );
+				if ( null !== $doc && 'publish' !== $doc['status'] ) {
+					$item['url']        = '';
+					$item['page_title'] = '';
+				}
+			}
+		}
+		unset( $item );
+		return array(
+			'items'   => $res['items'],
+			'total'   => $res['total'],
+			'counts'  => PriorityQueue::counts( $filters ),
+			'filters' => $filters,
+			'notice'  => __( 'A work plan ordered by verified errors first, then likely problems, linking work and editorial improvements. It predicts no ranking.', 'semantic-seo-engine-vi-en' ),
+		);
+	}
+
+	/**
+	 * Scan history and the difference between the last two site-wide scans.
+	 *
+	 * @return array|\WP_Error
+	 */
+	public static function scans() {
+		$g = Guard::check( Capabilities::READ, 'read', 'scans' );
+		if ( is_wp_error( $g ) ) {
+			return $g;
+		}
+		return array(
+			'history' => array_reverse( ScanHistory::all() ),
+			'diff'    => ScanHistory::diff( 50 ),
+		);
 	}
 
 	/**
@@ -677,6 +779,10 @@ final class Api {
 		switch ( $op ) {
 			case 'cancel':
 				$ok = JobRepository::cancel( (int) $job_id );
+				// A pending analysis waits for no cancelled job.
+				if ( $ok && JobRepository::start_pending_analysis() > 0 ) {
+					JobRunner::schedule();
+				}
 				break;
 			case 'pause':
 				$ok = JobRepository::pause( (int) $job_id );

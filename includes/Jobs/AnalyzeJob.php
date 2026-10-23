@@ -8,6 +8,7 @@
 namespace SemanticSEO\Jobs;
 
 use SemanticSEO\Analysis\AnalysisRunner;
+use SemanticSEO\Analysis\ScanHistory;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -23,7 +24,10 @@ final class AnalyzeJob {
 	 * @return array{state:array,total:int}
 	 */
 	public static function init( array $job ) {
-		return AnalysisRunner::init( $job['params'] );
+		$init = AnalysisRunner::init( $job['params'] );
+		// Findings created by this run have a higher ID: the scan comparison counts them as new.
+		$init['state']['findings_max_id'] = (int) \SemanticSEO\Database\Db::value( 'SELECT COALESCE(MAX(id), 0) FROM {findings}' );
+		return $init;
 	}
 
 	/**
@@ -44,6 +48,10 @@ final class AnalyzeJob {
 	 * @return void
 	 */
 	public static function finished( array $job ) {
-		unset( $job );
+		ScanHistory::record( $job );
+		// An analysis requested while this one was active (e.g. a full scan after a pilot).
+		if ( JobRepository::start_pending_analysis() > 0 ) {
+			JobRunner::schedule();
+		}
 	}
 }

@@ -25,6 +25,37 @@
 		}
 	} );
 
+	// Device check for the optional model: reads browser capabilities only, downloads nothing.
+	var deviceBtn = document.getElementById( 'sseo-device-check' );
+	if ( deviceBtn ) {
+		deviceBtn.addEventListener( 'click', function () {
+			var out = document.getElementById( 'sseo-device-result' );
+			var i18n = cfg.i18n || {};
+			var wasm = typeof WebAssembly === 'object' && typeof WebAssembly.instantiate === 'function';
+			var ios = /iPad|iPhone|iPod/.test( navigator.userAgent ) || ( navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1 );
+			var gpu = navigator.gpu && typeof navigator.gpu.requestAdapter === 'function' ? navigator.gpu.requestAdapter().catch( function () {
+				return null;
+			} ) : Promise.resolve( null );
+			out.textContent = i18n.processing || '…';
+			gpu.then( function ( adapter ) {
+				var kind = adapter ? 'webgpu' : ( wasm ? 'wasm' : 'none' );
+				var msg = { webgpu: i18n.deviceGpu, wasm: i18n.deviceWasm, none: i18n.deviceNone }[ kind ];
+				var extra = [];
+				if ( navigator.deviceMemory ) {
+					extra.push( i18n.deviceMemory + ': ' + navigator.deviceMemory + ' GB' );
+				}
+				if ( navigator.hardwareConcurrency ) {
+					extra.push( i18n.deviceCores + ': ' + navigator.hardwareConcurrency );
+				}
+				if ( ios && kind !== 'none' ) {
+					extra.push( i18n.deviceIos );
+				}
+				out.textContent = msg + ( extra.length ? ' (' + extra.join( ' · ' ) + ')' : '' );
+				out.setAttribute( 'data-sseo-device', kind );
+			} );
+		} );
+	}
+
 	function api( path, method ) {
 		return fetch( cfg.rest + path, {
 			method: method || 'GET',
@@ -65,6 +96,13 @@
 				if ( [ 'completed', 'failed', 'cancelled' ].indexOf( job.status ) !== -1 ) {
 					el.textContent = job.status === 'completed' ? cfg.i18n.completed : cfg.i18n.failed;
 					el.setAttribute( 'data-sseo-status', job.status );
+					// The dashboard shows the next step (analysis after inventory) and the results.
+					if ( el.getAttribute( 'data-sseo-reload' ) ) {
+						window.setTimeout( function () {
+							window.location.reload();
+						}, 1500 );
+						return;
+					}
 					var note = document.createElement( 'p' );
 					note.className = 'sseo-notice';
 					note.textContent = cfg.i18n.reload;

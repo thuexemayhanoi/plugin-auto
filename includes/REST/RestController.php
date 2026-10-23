@@ -27,12 +27,49 @@ final class RestController {
 	 * @return void
 	 */
 	public static function register_routes() {
+		add_filter( 'rest_post_dispatch', array( __CLASS__, 'no_cache' ), 10, 3 );
 		$read    = self::cap( Capabilities::READ );
 		$analyze = self::cap( Capabilities::ANALYZE );
 		$apply   = self::cap( Capabilities::APPLY );
 		$embed   = self::cap( Capabilities::EMBED );
 
 		self::get( '/status', array( Api::class, 'status' ), $read, array(), 'get-site-status', false );
+		self::get( '/health', array( Api::class, 'health' ), $read, array(), '', false );
+		self::get( '/scans', array( Api::class, 'scans' ), $read, array(), '', false );
+		self::get(
+			'/priorities',
+			array( Api::class, 'priorities' ),
+			$read,
+			array(
+				'locale'   => array(
+					'type'      => 'string',
+					'maxLength' => 20,
+				),
+				'category' => array(
+					'type' => 'string',
+					'enum' => array( 'technical', 'links', 'overlap', 'content', 'translation', 'structure' ),
+				),
+				'priority' => array(
+					'type'    => 'integer',
+					'minimum' => 1,
+					'maximum' => 4,
+				),
+				'search'   => array(
+					'type'      => 'string',
+					'maxLength' => 200,
+				),
+				'limit'    => array(
+					'type'    => 'integer',
+					'minimum' => 1,
+					'maximum' => 100,
+				),
+				'offset'   => array(
+					'type'    => 'integer',
+					'minimum' => 0,
+				),
+			),
+			''
+		);
 		self::get( '/inventory', array( Api::class, 'list_urls' ), $read, Schemas::rest_args( 'list-urls' ), 'list-urls' );
 		self::get( '/analysis', array( Api::class, 'url_analysis' ), $read, Schemas::rest_args( 'get-url-analysis' ), 'get-url-analysis' );
 		self::get( '/suggestions/links', array( Api::class, 'link_suggestions' ), $read, Schemas::rest_args( 'get-link-suggestions' ), 'get-link-suggestions' );
@@ -351,6 +388,27 @@ final class RestController {
 				200
 			);
 		};
+	}
+
+	/**
+	 * Answers of this API are per-user and change with every scan: never let a page cache (LiteSpeed
+	 * Cache, a CDN, a proxy) store them, even for a request it believes anonymous.
+	 *
+	 * @param mixed            $response Response.
+	 * @param \WP_REST_Server  $server   Server.
+	 * @param \WP_REST_Request $request  Request.
+	 * @return mixed
+	 */
+	public static function no_cache( $response, $server, $request ) {
+		unset( $server );
+		if ( ! $response instanceof \WP_REST_Response || ! $request instanceof \WP_REST_Request || 0 !== strpos( (string) $request->get_route(), '/' . self::NS ) ) {
+			return $response;
+		}
+		$response->header( 'Cache-Control', 'no-store, no-cache, must-revalidate, private' );
+		$response->header( 'X-LiteSpeed-Cache-Control', 'no-cache' );
+		/** LiteSpeed Cache's documented API to exclude the current response (no-op without it). */
+		do_action( 'litespeed_control_set_nocache', 'semantic-seo REST API' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- LiteSpeed Cache hook.
+		return $response;
 	}
 
 	/**

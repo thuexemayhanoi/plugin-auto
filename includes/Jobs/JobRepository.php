@@ -18,10 +18,11 @@ defined( 'ABSPATH' ) || exit;
  */
 final class JobRepository {
 
-	const TYPES    = array( 'inventory', 'analyze', 'embed', 'incremental', 'verify_links' );
-	const ACTIVE   = array( 'queued', 'running', 'paused' );
-	const FINISHED = array( 'completed', 'failed', 'cancelled' );
-	const CRASHED  = 'The previous run stopped without finishing its batch (PHP fatal error, timeout, memory limit or killed worker).';
+	const TYPES          = array( 'inventory', 'analyze', 'embed', 'incremental', 'verify_links' );
+	const PENDING_OPTION = 'sseo_pending_analysis';
+	const ACTIVE         = array( 'queued', 'running', 'paused' );
+	const FINISHED       = array( 'completed', 'failed', 'cancelled' );
+	const CRASHED        = 'The previous run stopped without finishing its batch (PHP fatal error, timeout, memory limit or killed worker).';
 
 	/**
 	 * Job previously created by the same owner with the same idempotency key, if any.
@@ -83,7 +84,7 @@ final class JobRepository {
 			if ( null !== $active ) {
 				return new \WP_Error(
 					'sseo_job_exists',
-					__( 'A job of this type is already queued or running.', 'semantic-seo-engine-vi-en' ),
+					__( 'A job of this type is already queued, running or paused.', 'semantic-seo-engine-vi-en' ),
 					array(
 						'status' => 409,
 						'job_id' => (int) $active['id'],
@@ -235,13 +236,77 @@ final class JobRepository {
 	 * @param int    $id    Job ID.
 	 * @param string $owner Owner.
 	 * @param array  $state Final state.
-	 * @return void
+	 * @return bool Whether this call completed the job.
 	 */
 	public static function complete( $id, $owner, array $state ) {
-		Db::query(
-			"UPDATE {jobs} SET status = 'completed', state = %s, progress_done = progress_total, lease_owner = '', lease_expires = NULL, finished_at = %s, updated_at = %s, last_error = NULL WHERE id = %d AND lease_owner = %s",
+		// Only the lease holder of a still-running job completes it: a cancel or pause that landed
+		// during the last batch wins, and the caller must not run the completion hook.
+		return 1 === Db::query(
+			"UPDATE {jobs} SET status = 'completed', state = %s, progress_done = progress_total, lease_owner = '', lease_expires = NULL, finished_at = %s, updated_at = %s, last_error = NULL WHERE id = %d AND lease_owner = %s AND status = 'running'",
 			array( Util::json( $state ), Util::now(), Util::now(), (int) $id, $owner )
 		);
+	}
+
+	/**
+	 * Queues an analysis after an inventory. When another analysis is already active, a narrower
+	 * one (a pilot) that is not running yet is replaced by a site-wide one, which covers its pages;
+	 * otherwise the request is kept as pending and started when no analysis is active any more —
+	 * never silently dropped.
+	 *
+	 * @param array $params   Analysis parameters (doc_ids empty = site-wide).
+	 * @param int   $owner_id Owner.
+	 * @return array|null The created job, or null when it was left pending.
+	 */
+	public static function chain_analysis( array $params, $owner_id ) {
+		$job = self::create( 'analyze', $params, (int) $owner_id, 'chain' );
+		if ( ! is_wp_error( $job ) ) {
+			return $job;
+		}
+		$data     = (array) $job->get_error_data();
+		$existing = 'sseo_job_exists' === $job->get_error_code() && isset( $data['job_id'] ) ? self::get( (int) $data['job_id'] ) : null;
+		if ( null !== $existing && empty( $params['doc_ids'] ) && ! empty( $existing['params']['doc_ids'] ) && in_array( $existing['status'], array( 'queued', 'paused' ), true ) && self::cancel( (int) $existing['id'] ) ) {
+			$job = self::create( 'analyze', $params, (int) $owner_id, 'chain' );
+			if ( ! is_wp_error( $job ) ) {
+				return $job;
+			}
+		}
+		$pending = get_option( self::PENDING_OPTION, array() );
+		if ( is_array( $pending ) && isset( $pending['params'] ) ) {
+			if ( empty( $pending['params']['doc_ids'] ) || empty( $params['doc_ids'] ) ) {
+				// One of them is site-wide: it covers the other.
+				unset( $params['doc_ids'], $params['pilot'] );
+			} else {
+				$params['doc_ids'] = array_values( array_unique( array_merge( (array) $pending['params']['doc_ids'], (array) $params['doc_ids'] ) ) );
+			}
+		}
+		update_option(
+			self::PENDING_OPTION,
+			array(
+				'params'   => $params,
+				'owner_id' => (int) $owner_id,
+				'at'       => Util::now(),
+			),
+			false
+		);
+		return null;
+	}
+
+	/**
+	 * Starts the pending analysis once no analysis is active (called at every cron run).
+	 *
+	 * @return int Created job ID (0 = nothing to do or still blocked).
+	 */
+	public static function start_pending_analysis() {
+		$pending = get_option( self::PENDING_OPTION, array() );
+		if ( ! is_array( $pending ) || ! isset( $pending['params'] ) ) {
+			return 0;
+		}
+		$job = self::create( 'analyze', (array) $pending['params'], (int) $pending['owner_id'], 'chain' );
+		if ( is_wp_error( $job ) ) {
+			return 0;
+		}
+		delete_option( self::PENDING_OPTION );
+		return (int) $job['id'];
 	}
 
 	/**

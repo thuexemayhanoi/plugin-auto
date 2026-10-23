@@ -395,7 +395,7 @@ final class Migrator {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			$wpdb->query( "DROP TABLE IF EXISTS {$table}" );
 		}
-		foreach ( array( self::VERSION_OPTION, self::LOG_OPTION, self::RETRY_OPTION, 'sseo_settings', 'sseo_state', 'sseo_similarity_baseline', 'sseo_mutex_migration' ) as $opt ) {
+		foreach ( array( self::VERSION_OPTION, self::LOG_OPTION, self::RETRY_OPTION, 'sseo_scan_history', 'sseo_pending_analysis', 'sseo_settings', 'sseo_state', 'sseo_similarity_baseline', 'sseo_mutex_migration' ) as $opt ) {
 			delete_option( $opt );
 		}
 	}
