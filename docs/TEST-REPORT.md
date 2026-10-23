@@ -253,9 +253,30 @@ kept as a safeguard for sites whose pages are more alike than the fixture (fixtu
 30 instead of 31 pairs), and its rationale in the code was corrected. (2) "Missing translation" was
 suggested for 1,006 documents because the blog does not pair posts; it is now limited to content types
 the site translates as pairs (`QaTranslationScopeTest`), which on this blog leaves only the unpaired
-pages. That change was made after run 2 and is covered by tests, not by a new pilot run. (3) The
-overlap report needs triage on this blog: start with potential competition and near-duplicates;
-"manual review" pairs are semantic-only hypotheses (ADMIN-GUIDE §3).
+pages (confirmed by run 3). (3) The overlap report needed triage on this blog, which led to the
+rules measured in run 4.
+
+**Pilot run 3** (run [39909374968](https://github.com/thuexemayhanoi/plugin-auto/actions/runs/39909374968),
+commit `94a939f`, lexical only; [`evidence/site-pilot-run3.json`](evidence/site-pilot-run3.json)):
+"missing translation" suggestions **1,006 → 5** (the unpaired pages). The run is marked failed only
+because the summary step of the workflow returned 1 when the hybrid reports were absent (fixed).
+
+**Pilot run 4** (run [39912508368](https://github.com/thuexemayhanoi/plugin-auto/actions/runs/39912508368),
+commit `4c8cb74`: overlap rules `cannibal-5`, QA rules `qa-3`, server-side self-test check;
+[`evidence/site-pilot-run4.json`](evidence/site-pilot-run4.json)). Same copy, same model as run 2:
+
+| Item | Result |
+| --- | --- |
+| Inventory + lexical analysis | 626 s; 161 overlap findings in 99 groups (potential competition 88, review 43, information 30); 5 "missing translation" suggestions |
+| Embedding | 3,197 items in 4,177 s (q4f16, private worker over REST after the **server-side self-test check**, 4 vCPU) |
+| Hybrid overlap findings by review tier | **competition 95**, judgement needed 502 (manual review 424 + distinct facet 78), **vector-only 104** (confidence low), information 265 (different intent 212 + pillar/supporting 53); 898 groups as in run 2, nothing hidden |
+| Change vs run 2 | manual review 563 → 424: 104 vector-only pairs moved to their own tier, 36 pairs whose titles name different places → distinct facet (42 → 78); "different intent" 212 now information instead of a risk hypothesis |
+| Cross-language, links, related | unchanged from run 2 (0 cross-language overlap pairs; 2,908 link suggestions; 9 possible unlinked translation pairs for review) |
+| Front end of the copy | no plugin asset and no model runtime |
+
+The overlap list is now ordered by these tiers (`OverlapOrderTest`), so the 95 competition pairs come
+first. Semantic overlap findings remain hypotheses for a human, not confirmed SEO errors; there are
+no labels for the real site, so their precision there is not measured.
 
 ## 8. Acceptance matrix (README §20)
 

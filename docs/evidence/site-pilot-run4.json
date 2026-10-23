@@ -1,0 +1,670 @@
+{
+ "note": "Aggregates only, transcribed from the 'Summary (aggregates only)' step of GitHub Actions run 39912508368 (commit 4c8cb74: overlap rules cannibal-5 with places, intent information tier and vector-only tier; QA rules qa-3; server-side self-test check). Public GET requests only; the copy was analysed on the runner and discarded. No titles, URLs or per-page findings. The two hybrid reports are identical because the blog's median similarity (VI 0.378, EN 0.361) is below the model floor 0.40, so the site baseline does not change the gate.",
+ "run": "https://github.com/thuexemayhanoi/plugin-auto/actions/runs/39912508368",
+ "requests": {
+  "sitemaps_and_rest_totals": "17 s",
+  "rest_export": "1001 posts, 37 pages, 43 categories",
+  "hreflang": "519 English pages read"
+ },
+ "copy_import": {
+  "post_pairs_from_hreflang": 0,
+  "page_pairs_from_hreflang": 16,
+  "hreflang_unmatched": 1,
+  "standalone_english_posts": 500,
+  "contents_rewritten_to_the_copy": 823
+ },
+ "timings_seconds": {
+  "inventory_plus_lexical_analysis": 626,
+  "embedding_3197_items_q4f16_private_worker_4vcpu": 4177,
+  "hybrid_reanalysis_model_floor": 571,
+  "hybrid_reanalysis_site_baseline": 605
+ },
+ "front_end_of_the_copy": "front page has no plugin assets or model runtime",
+ "census": {
+  "site": "https://blog.rentbikehanoi.com",
+  "when": "2026-10-23T06:37:34Z",
+  "method": "public GET only: robots.txt, XML sitemaps, REST collection totals",
+  "robots_txt_status": 200,
+  "robots_sitemaps": [
+   "https://blog.rentbikehanoi.com/sitemap_index.xml"
+  ],
+  "sitemap_urls_total": 1083,
+  "sitemap_urls_by_type_and_language": {
+   "author/vi": 1,
+   "category/en": 21,
+   "category/vi": 22,
+   "page/en": 19,
+   "page/vi": 18,
+   "post/en": 500,
+   "post/vi": 502
+  },
+  "sitemap_urls_by_language": {
+   "vi": 543,
+   "en": 540
+  },
+  "rest_totals": {
+   "posts": {
+    "status": 200,
+    "total": 1001
+   },
+   "pages": {
+    "status": 200,
+    "total": 37
+   },
+   "categories": {
+    "status": 200,
+    "total": 43
+   },
+   "tags": {
+    "status": 200,
+    "total": 4
+   }
+  }
+ },
+ "pilot_lexical": {
+  "documents_by_type_locale": {
+   "post/page/en": 19,
+   "post/page/vi": 18,
+   "post/post/en": 500,
+   "post/post/vi": 501,
+   "term/category/en": 21,
+   "term/category/vi": 22
+  },
+  "documents_by_status": {
+   "publish": 1081
+  },
+  "locale_sources": {
+   "nh_vien": 1076,
+   "nh_vien_path": 5
+  },
+  "indexable": {
+   "1": 1081
+  },
+  "word_count": {
+   "min": "365",
+   "avg": "2144",
+   "max": "16789"
+  },
+  "chunks": 17940,
+  "links": {
+   "external/external": 4400,
+   "internal/resolved": 6771,
+   "internal/unresolved": 13
+  },
+  "orphans_published_posts": 579,
+  "findings_by_type_check": {
+   "qa/missing_meta_description/warning": 881,
+   "link/internal_link/suggestion": 830,
+   "qa/orphan/warning": 582,
+   "qa/few_cluster_links/suggestion": 499,
+   "qa/title_length/suggestion": 139,
+   "cannibalization/potential_competition/risk_hypothesis": 88,
+   "qa/no_external_sources/suggestion": 54,
+   "cannibalization/same_topic_different_intent/info": 28,
+   "cannibalization/distinct_facet/risk_hypothesis": 24,
+   "cannibalization/manual_review/risk_hypothesis": 19,
+   "qa/unresolved_internal_link/warning": 8,
+   "qa/missing_translation/suggestion": 5,
+   "classification/suggested_category/suggestion": 4,
+   "cannibalization/pillar_supporting/info": 2
+  },
+  "link_suggestion_sources": 492,
+  "cannibalization_groups": 99,
+  "cross_locale_overlaps": 0,
+  "clusters": {
+   "": 80,
+   "hub": 31,
+   "supporting": 970
+  },
+  "cluster_count": 42,
+  "related_rows": 1553,
+  "embeddings": 0,
+  "jobs": [
+   {
+    "type": "inventory",
+    "status": "completed",
+    "progress_done": "1081",
+    "progress_total": "1081",
+    "seconds": "63"
+   },
+   {
+    "type": "analyze",
+    "status": "completed",
+    "progress_done": "3246",
+    "progress_total": "3246",
+    "seconds": "561"
+   }
+  ],
+  "translation_pairs": {
+   "post_pairs": 0,
+   "page_pairs": 16,
+   "standalone_en": 500,
+   "documents_in_pair": 32
+  },
+  "semantic_baseline": [],
+  "cannibalization_by_category_confidence": {
+   "potential_competition/low": 88,
+   "same_topic_different_intent/medium": 28,
+   "distinct_facet/manual_review": 24,
+   "manual_review/manual_review": 19,
+   "pillar_supporting/medium": 2
+  },
+  "cannibalization_tiers": {
+   "risk": 88,
+   "review": 43,
+   "semantic_only": 0,
+   "information": 30,
+   "different_places": 1
+  },
+  "peak_memory_mb_this_process": 63.3,
+  "cannibalization_per_document": {
+   "documents_with_any": 176,
+   "share_of_posts": 0.17,
+   "findings_per_document": {
+    "n": 176,
+    "p10": 1,
+    "p50": 1,
+    "p90": 3,
+    "max": 11
+   }
+  },
+  "cannibalization_evidence": {
+   "semantic": null,
+   "semantic_calibrated_gate": null,
+   "lexical": {
+    "n": 161,
+    "p10": 0.005,
+    "p50": 0.036,
+    "p90": 0.093,
+    "max": 0.239
+   },
+   "title_overlap": {
+    "n": 161,
+    "p10": 0.308,
+    "p50": 0.5,
+    "p90": 0.75,
+    "max": 1
+   },
+   "topic_calibrated": {
+    "n": 161,
+    "p10": 0.005,
+    "p50": 0.036,
+    "p90": 0.093,
+    "max": 0.239
+   }
+  }
+ },
+ "pilot_hybrid_model_floor_only": {
+  "documents_by_type_locale": {
+   "post/page/en": 19,
+   "post/page/vi": 18,
+   "post/post/en": 500,
+   "post/post/vi": 501,
+   "term/category/en": 21,
+   "term/category/vi": 22
+  },
+  "documents_by_status": {
+   "publish": 1081
+  },
+  "locale_sources": {
+   "nh_vien": 1076,
+   "nh_vien_path": 5
+  },
+  "indexable": {
+   "1": 1081
+  },
+  "word_count": {
+   "min": "365",
+   "avg": "2144",
+   "max": "16789"
+  },
+  "chunks": 17940,
+  "links": {
+   "external/external": 4400,
+   "internal/resolved": 6771,
+   "internal/unresolved": 13
+  },
+  "orphans_published_posts": 579,
+  "findings_by_type_check": {
+   "link/internal_link/suggestion": 2908,
+   "qa/missing_meta_description/warning": 881,
+   "qa/orphan/warning": 582,
+   "cannibalization/manual_review/risk_hypothesis": 528,
+   "qa/few_cluster_links/suggestion": 499,
+   "cannibalization/same_topic_different_intent/info": 212,
+   "qa/title_length/suggestion": 139,
+   "cannibalization/potential_competition/risk_hypothesis": 95,
+   "cannibalization/distinct_facet/risk_hypothesis": 78,
+   "qa/no_external_sources/suggestion": 54,
+   "cannibalization/pillar_supporting/info": 53,
+   "qa/possible_translation_pair/suggestion": 9,
+   "qa/unresolved_internal_link/warning": 8,
+   "qa/missing_translation/suggestion": 5,
+   "classification/suggested_category/suggestion": 4
+  },
+  "link_suggestion_sources": 1014,
+  "cannibalization_groups": 898,
+  "cross_locale_overlaps": 0,
+  "clusters": {
+   "": 80,
+   "hub": 31,
+   "supporting": 970
+  },
+  "cluster_count": 42,
+  "related_rows": 5190,
+  "embeddings": 3197,
+  "jobs": [
+   {
+    "type": "inventory",
+    "status": "completed",
+    "progress_done": "1081",
+    "progress_total": "1081",
+    "seconds": "63"
+   },
+   {
+    "type": "analyze",
+    "status": "completed",
+    "progress_done": "3246",
+    "progress_total": "3246",
+    "seconds": "561"
+   },
+   {
+    "type": "embed",
+    "status": "completed",
+    "progress_done": "3197",
+    "progress_total": "3197",
+    "seconds": "4197"
+   },
+   {
+    "type": "analyze",
+    "status": "completed",
+    "progress_done": "3246",
+    "progress_total": "3246",
+    "seconds": "570"
+   }
+  ],
+  "translation_pairs": {
+   "post_pairs": 0,
+   "page_pairs": 16,
+   "standalone_en": 500,
+   "documents_in_pair": 32
+  },
+  "semantic_baseline": {
+   "vi": {
+    "documents": 519,
+    "pairs": 20000,
+    "p10": 0.2825,
+    "p50": 0.3784,
+    "p90": 0.5239,
+    "p99": 0.678
+   },
+   "en": {
+    "documents": 519,
+    "pairs": 20000,
+    "p10": 0.2439,
+    "p50": 0.3614,
+    "p90": 0.5172,
+    "p99": 0.6493
+   }
+  },
+  "cannibalization_by_category_confidence": {
+   "manual_review/manual_review": 424,
+   "same_topic_different_intent/medium": 212,
+   "manual_review/low": 104,
+   "distinct_facet/manual_review": 78,
+   "potential_competition/medium": 54,
+   "pillar_supporting/medium": 53,
+   "potential_competition/low": 41
+  },
+  "cannibalization_tiers": {
+   "risk": 95,
+   "review": 502,
+   "semantic_only": 104,
+   "information": 265,
+   "different_places": 58
+  },
+  "peak_memory_mb_this_process": 63.3,
+  "cannibalization_per_document": {
+   "documents_with_any": 719,
+   "share_of_posts": 0.693,
+   "findings_per_document": {
+    "n": 719,
+    "p10": 1,
+    "p50": 2,
+    "p90": 6,
+    "max": 25
+   }
+  },
+  "cannibalization_evidence": {
+   "semantic": {
+    "n": 966,
+    "p10": 0.683,
+    "p50": 0.748,
+    "p90": 0.828,
+    "max": 0.937
+   },
+   "semantic_calibrated_gate": {
+    "n": 966,
+    "p10": 0.565,
+    "p50": 0.697,
+    "p90": 0.857,
+    "max": 1
+   },
+   "lexical": {
+    "n": 966,
+    "p10": 0.013,
+    "p50": 0.051,
+    "p90": 0.129,
+    "max": 0.284
+   },
+   "title_overlap": {
+    "n": 966,
+    "p10": 0.067,
+    "p50": 0.25,
+    "p90": 0.5,
+    "max": 1
+   },
+   "topic_calibrated": {
+    "n": 966,
+    "p10": 0.301,
+    "p50": 0.335,
+    "p90": 0.42,
+    "max": 0.548
+   }
+  },
+  "cross_language_vs_hreflang": {
+   "announced_pairs_with_vectors": 16,
+   "sweep": [
+    {
+     "threshold": 0.6,
+     "suggested": 51,
+     "announced_pair": 6,
+     "contradicts_hreflang": 1,
+     "unannounced": 44,
+     "recall_of_announced": 0.375,
+     "skipped": []
+    },
+    {
+     "threshold": 0.65,
+     "suggested": 24,
+     "announced_pair": 5,
+     "contradicts_hreflang": 1,
+     "unannounced": 18,
+     "recall_of_announced": 0.313,
+     "skipped": []
+    },
+    {
+     "threshold": 0.7,
+     "suggested": 14,
+     "announced_pair": 4,
+     "contradicts_hreflang": 1,
+     "unannounced": 9,
+     "recall_of_announced": 0.25,
+     "skipped": []
+    },
+    {
+     "threshold": 0.75,
+     "suggested": 6,
+     "announced_pair": 1,
+     "contradicts_hreflang": 0,
+     "unannounced": 5,
+     "recall_of_announced": 0.063,
+     "skipped": []
+    },
+    {
+     "threshold": 0.8,
+     "suggested": 0,
+     "announced_pair": 0,
+     "contradicts_hreflang": 0,
+     "unannounced": 0,
+     "recall_of_announced": 0,
+     "skipped": []
+    }
+   ]
+  }
+ },
+ "pilot_hybrid_default": {
+  "documents_by_type_locale": {
+   "post/page/en": 19,
+   "post/page/vi": 18,
+   "post/post/en": 500,
+   "post/post/vi": 501,
+   "term/category/en": 21,
+   "term/category/vi": 22
+  },
+  "documents_by_status": {
+   "publish": 1081
+  },
+  "locale_sources": {
+   "nh_vien": 1076,
+   "nh_vien_path": 5
+  },
+  "indexable": {
+   "1": 1081
+  },
+  "word_count": {
+   "min": "365",
+   "avg": "2144",
+   "max": "16789"
+  },
+  "chunks": 17940,
+  "links": {
+   "external/external": 4400,
+   "internal/resolved": 6771,
+   "internal/unresolved": 13
+  },
+  "orphans_published_posts": 579,
+  "findings_by_type_check": {
+   "link/internal_link/suggestion": 2908,
+   "qa/missing_meta_description/warning": 881,
+   "qa/orphan/warning": 582,
+   "cannibalization/manual_review/risk_hypothesis": 528,
+   "qa/few_cluster_links/suggestion": 499,
+   "cannibalization/same_topic_different_intent/info": 212,
+   "qa/title_length/suggestion": 139,
+   "cannibalization/potential_competition/risk_hypothesis": 95,
+   "cannibalization/distinct_facet/risk_hypothesis": 78,
+   "qa/no_external_sources/suggestion": 54,
+   "cannibalization/pillar_supporting/info": 53,
+   "qa/possible_translation_pair/suggestion": 9,
+   "qa/unresolved_internal_link/warning": 8,
+   "qa/missing_translation/suggestion": 5,
+   "classification/suggested_category/suggestion": 4
+  },
+  "link_suggestion_sources": 1014,
+  "cannibalization_groups": 898,
+  "cross_locale_overlaps": 0,
+  "clusters": {
+   "": 80,
+   "hub": 31,
+   "supporting": 970
+  },
+  "cluster_count": 42,
+  "related_rows": 5190,
+  "embeddings": 3197,
+  "jobs": [
+   {
+    "type": "inventory",
+    "status": "completed",
+    "progress_done": "1081",
+    "progress_total": "1081",
+    "seconds": "63"
+   },
+   {
+    "type": "analyze",
+    "status": "completed",
+    "progress_done": "3246",
+    "progress_total": "3246",
+    "seconds": "561"
+   },
+   {
+    "type": "embed",
+    "status": "completed",
+    "progress_done": "3197",
+    "progress_total": "3197",
+    "seconds": "4197"
+   },
+   {
+    "type": "analyze",
+    "status": "completed",
+    "progress_done": "3246",
+    "progress_total": "3246",
+    "seconds": "570"
+   },
+   {
+    "type": "analyze",
+    "status": "completed",
+    "progress_done": "3246",
+    "progress_total": "3246",
+    "seconds": "605"
+   }
+  ],
+  "translation_pairs": {
+   "post_pairs": 0,
+   "page_pairs": 16,
+   "standalone_en": 500,
+   "documents_in_pair": 32
+  },
+  "semantic_baseline": {
+   "vi": {
+    "documents": 519,
+    "pairs": 20000,
+    "p10": 0.2825,
+    "p50": 0.3784,
+    "p90": 0.5239,
+    "p99": 0.678
+   },
+   "en": {
+    "documents": 519,
+    "pairs": 20000,
+    "p10": 0.2439,
+    "p50": 0.3614,
+    "p90": 0.5172,
+    "p99": 0.6493
+   }
+  },
+  "cannibalization_by_category_confidence": {
+   "manual_review/manual_review": 424,
+   "same_topic_different_intent/medium": 212,
+   "manual_review/low": 104,
+   "distinct_facet/manual_review": 78,
+   "potential_competition/medium": 54,
+   "pillar_supporting/medium": 53,
+   "potential_competition/low": 41
+  },
+  "cannibalization_tiers": {
+   "risk": 95,
+   "review": 502,
+   "semantic_only": 104,
+   "information": 265,
+   "different_places": 58
+  },
+  "peak_memory_mb_this_process": 63.3,
+  "cannibalization_per_document": {
+   "documents_with_any": 719,
+   "share_of_posts": 0.693,
+   "findings_per_document": {
+    "n": 719,
+    "p10": 1,
+    "p50": 2,
+    "p90": 6,
+    "max": 25
+   }
+  },
+  "cannibalization_evidence": {
+   "semantic": {
+    "n": 966,
+    "p10": 0.683,
+    "p50": 0.748,
+    "p90": 0.828,
+    "max": 0.937
+   },
+   "semantic_calibrated_gate": {
+    "n": 966,
+    "p10": 0.565,
+    "p50": 0.697,
+    "p90": 0.857,
+    "max": 1
+   },
+   "lexical": {
+    "n": 966,
+    "p10": 0.013,
+    "p50": 0.051,
+    "p90": 0.129,
+    "max": 0.284
+   },
+   "title_overlap": {
+    "n": 966,
+    "p10": 0.067,
+    "p50": 0.25,
+    "p90": 0.5,
+    "max": 1
+   },
+   "topic_calibrated": {
+    "n": 966,
+    "p10": 0.301,
+    "p50": 0.335,
+    "p90": 0.42,
+    "max": 0.548
+   }
+  },
+  "cross_language_vs_hreflang": {
+   "announced_pairs_with_vectors": 16,
+   "sweep": [
+    {
+     "threshold": 0.6,
+     "suggested": 51,
+     "announced_pair": 6,
+     "contradicts_hreflang": 1,
+     "unannounced": 44,
+     "recall_of_announced": 0.375,
+     "skipped": []
+    },
+    {
+     "threshold": 0.65,
+     "suggested": 24,
+     "announced_pair": 5,
+     "contradicts_hreflang": 1,
+     "unannounced": 18,
+     "recall_of_announced": 0.313,
+     "skipped": []
+    },
+    {
+     "threshold": 0.7,
+     "suggested": 14,
+     "announced_pair": 4,
+     "contradicts_hreflang": 1,
+     "unannounced": 9,
+     "recall_of_announced": 0.25,
+     "skipped": []
+    },
+    {
+     "threshold": 0.75,
+     "suggested": 6,
+     "announced_pair": 1,
+     "contradicts_hreflang": 0,
+     "unannounced": 5,
+     "recall_of_announced": 0.063,
+     "skipped": []
+    },
+    {
+     "threshold": 0.8,
+     "suggested": 0,
+     "announced_pair": 0,
+     "contradicts_hreflang": 0,
+     "unannounced": 0,
+     "recall_of_announced": 0,
+     "skipped": []
+    }
+   ]
+  }
+ },
+ "comparison_with_run2_same_model_and_data": {
+  "manual_review": "563 -> 424 (104 vector-only pairs moved to confidence low; 36 more pairs with different places in titles classified distinct_facet)",
+  "same_topic_different_intent": "212 risk_hypothesis -> 212 info",
+  "potential_competition": "96 -> 95",
+  "distinct_facet": "42 -> 78",
+  "groups": "898 -> 898 (nothing hidden; findings are tiered)",
+  "missing_translation_suggestions": "1,006 (run 2, qa-2) -> 5"
+ }
+}
