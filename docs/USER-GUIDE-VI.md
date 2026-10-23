@@ -38,7 +38,7 @@ Tác vụ chạy nền theo lô nhỏ. Nếu website tắt WP-Cron, hãy để t
 | **Gợi ý liên kết & Đồ thị** | Gợi ý nguồn → đích kèm anchor có sẵn trong bài, **vị trí byte chính xác**, lý do và bằng chứng; trang có thể bị mồ côi (kèm phạm vi quét — menu/widget/template không được quét). Nút *Tạo bản xem trước*. |
 | **Rà soát ăn thịt từ khóa** | Nhóm trang cùng ngôn ngữ có rủi ro chồng lấn: trùng lặp, gần trùng lặp, có thể cạnh tranh cùng truy vấn, khác ý định, khía cạnh riêng (theo ngày / theo tháng), trụ cột + bài hỗ trợ. **Bản dịch VI–EN không bao giờ bị so sánh.** |
 | **Cụm Pillar–Hub–Silo** | Cây cụm dựng từ chuyên mục hiện có; trang trụ cột/hub được khuyến nghị kèm bằng chứng; gợi ý chuyên mục cho bài chưa phân loại. Ghi đè và khóa được. Plugin **không tạo chuyên mục mới**. |
-| **Kiểm tra chất lượng nội dung** | 24 quy tắc; nhãn tách bạch: *Lỗi đã xác minh* (sự thật khách quan), *Cảnh báo* (cần cân nhắc), *Gợi ý*. Không chấm "điểm chất lượng". |
+| **Kiểm tra chất lượng nội dung** | 26 quy tắc; nhãn tách bạch: *Lỗi đã xác minh* (sự thật khách quan), *Cảnh báo* (cần cân nhắc), *Gợi ý*. Không chấm "điểm chất lượng". |
 | **Hiển thị bài viết liên quan** | Mặc định **tắt**. Khi bật: shortcode `[sseo_related]`, block "Related content (Semantic SEO)", hàm PHP `sseo_get_related_posts()`. Chỉ bài cùng ngôn ngữ, đã xuất bản, được lập chỉ mục; loại bỏ bản dịch và bài gần trùng lặp. |
 | **Tác vụ & Thiết bị suy luận** | Theo dõi/tạm dừng/tiếp tục/hủy tác vụ; bảng thiết bị cho mô hình trong trình duyệt. |
 | **Kết nối Agent / Phân quyền** | Tài khoản riêng cho agent AI, Mật khẩu ứng dụng, bật Abilities/MCP theo từng ability (chỉ quản trị viên). |
@@ -64,7 +64,7 @@ Nếu bài viết bị ai đó sửa giữa lúc xem trước và lúc áp dụn
 
 Máy tính có Chrome/Edge + WebGPU là nhanh nhất. Không có WebGPU thì cùng độ chính xác đó chạy bằng CPU (WASM): chậm hơn nhưng cho cùng kết quả. Nhiều điện thoại (kể cả iPhone) có thể không hỗ trợ hoặc quá chậm — khi đó cứ dùng tầng từ vựng.
 
-> **Trạng thái beta:** chưa chạy được mô hình Qwen3 thật trong môi trường build (không tải được trọng số). Đường ống đã được kiểm chứng đầy đủ bằng một mô hình thử nghiệm nhỏ có gắn nhãn. Xem [TEST-REPORT.md](TEST-REPORT.md).
+> **Đã kiểm chứng:** mô hình Qwen3-Embedding-0.6B thật (q4f16) đã chạy trong Chromium (WASM) trên GitHub Actions: tải từ huggingface.co, tự kiểm thử đạt, vector trùng với bộ chạy tham chiếu, mở lại từ bộ nhớ đệm đã xác minh mà không tải lại (xem [TEST-REPORT.md](TEST-REPORT.md) §6). Chưa đo tốc độ trên GPU thật (WebGPU) và trên điện thoại thật.
 
 ## 6. Dữ liệu Search Console (tùy chọn)
 
@@ -80,5 +80,5 @@ Ma trận SEO → *Dữ liệu Search Console*: tải tệp xuất thật theo *
 
 * **Plugin có làm chậm website không?** Không chạy gì trên trang công khai, trừ khi bạn bật "bài viết liên quan" (danh sách đã tính sẵn, có bộ nhớ đệm).
 * **Gỡ plugin có mất dữ liệu?** Mặc định **giữ** dữ liệu. Muốn xóa hết: Cài đặt → chính sách gỡ cài đặt → gõ `DELETE`. Bài viết WordPress không bao giờ bị xóa.
-* **Vì sao gợi ý liên kết ít?** Plugin ưu tiên độ chính xác: chỉ gợi ý khi tìm được anchor tự nhiên mô tả đúng trang đích (trên bộ dữ liệu thử có nhãn: ~79% gợi ý trả ra là đúng, độ phủ còn thấp). Bài viết liên quan có độ phủ cao hơn.
+* **Vì sao gợi ý liên kết ít?** Plugin ưu tiên độ chính xác: chỉ gợi ý khi tìm được anchor tự nhiên mô tả đúng trang đích (trên bộ dữ liệu thử có nhãn, chỉ tầng từ vựng: ~79% gợi ý trả ra là đúng nhưng chỉ tìm được 24% liên kết mong đợi; khi có vector của mô hình thật: tìm được 70%, 69% gợi ý trả ra là đúng). Bài viết liên quan có độ phủ cao hơn.
 * **Giá thuê, đặt cọc trong dữ liệu thử nghiệm** chỉ là dữ liệu kiểm thử, không phải bảng giá công bố.

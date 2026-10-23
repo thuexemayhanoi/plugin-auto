@@ -80,7 +80,7 @@ Model weights are not bundled.
 
 = 1.0.0-beta.1 =
 * First public beta. Lexical tier, M1–M6, Human Mode approvals with rollback, REST API, Abilities (WP 6.9+), opt-in MCP exposure of read-only abilities, browser inference worker with pinned and verified model files, private worker (Python) for self-hosted embeddings.
-* Beta because real Qwen3-Embedding inference could not be executed in the build environment (model host unreachable); the pipeline is verified with a labelled tiny fixture model. See docs/TEST-REPORT.md.
+* Real Qwen3-Embedding-0.6B (q4f16 default, fp16 option) verified in CI: model-card self-test, browser worker, private worker and hybrid evaluation. Beta until tried on a staging copy of a real site. See docs/TEST-REPORT.md.
 
 == Upgrade Notice ==
 

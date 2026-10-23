@@ -91,6 +91,8 @@ nothing is registered and REST keeps working). Read-only: `get-site-status`, `li
 `get-qa-issues`, `get-job-status`. Others: `get-audit-log`, `start-analysis`, `cancel-analysis`,
 `rebuild-index`, `create-change-preview`, `apply-approved-change`, `rollback-change`. Each has
 JSON Schemas for input and output and annotations (`readonly`, `destructive`, `idempotent`).
+Names follow the README specification; where a brief says "stop analysis", the ability is
+`cancel-analysis` (same behaviour: request cancellation of a job and report its status).
 
 Exposure is **opt-in per ability** (Agent Connections page → *Expose via Abilities REST*). Example
 (WordPress core routes):
@@ -116,8 +118,10 @@ Verified with MCP Adapter 0.7.1 on WordPress 7.1.3 and 6.9.10: unauthenticated c
 refused; with exposure off, `mcp-adapter-discover-abilities` lists no `semantic-seo/*` ability;
 after opting in, exactly the selected read-only abilities are discoverable and executable through
 `mcp-adapter-execute-ability`; an attempt to execute `semantic-seo/apply-approved-change` is
-refused. **No real third-party MCP client (e.g. Claude Desktop) was connected in this build** — the
-tests speak JSON-RPC to the adapter directly.
+refused. **No real third-party MCP client (e.g. Claude Desktop, ChatGPT) was connected in this
+build** — the tests speak JSON-RPC to the adapter directly, so an integration with ChatGPT is not
+claimed as working. The step-by-step runbook for using the plugin with ChatGPT Work through the
+admin interface (without giving it any write access) is in [ADMIN-GUIDE.md](ADMIN-GUIDE.md).
 
 ## 6. Change workflow for agents
 

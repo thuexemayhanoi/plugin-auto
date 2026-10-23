@@ -35,7 +35,7 @@ Plugin admin language*.
   Translations are never compared.
 * **Pillar–Hub–Silo Clusters** — built from existing categories; recommended pillar/hub with
   evidence; category suggestions. No term is ever created.
-* **Content QA** — 24 rules labelled *verified error* / *warning* / *suggestion*; no quality score.
+* **Content QA** — 26 rules labelled *verified error* / *warning* / *suggestion*; no quality score.
 * **Related Content Output** — off by default; shortcode `[sseo_related]`, block *Related content
   (Semantic SEO)*, PHP `sseo_get_related_posts()`; same-language, published, indexable posts only.
 * **Jobs & Inference Device** — job control and the browser-model panel.
@@ -56,9 +56,8 @@ just the inserted link, or a clear "manual recovery needed").
 self-test* (size + SHA-256 verified; uploads only after the self-test matches the model-card
 reference) → *Queue embeddings* → *Process embedding queue*; *Pause* / *Stop & release* any time.
 Keep the tab open. Prefer desktop Chrome/Edge with WebGPU; without WebGPU the same precision runs
-on the CPU (WASM), slower but with the same results. Beta
-note: the real Qwen3 weights were not downloadable in the build environment; see
-[TEST-REPORT.md](TEST-REPORT.md).
+on the CPU (WASM), slower but with the same results. The real model was verified this way in
+Chromium (see [TEST-REPORT.md](TEST-REPORT.md) §6); real-GPU speed was not measured.
 
 ## Search Console (optional)
 
@@ -70,6 +69,7 @@ dry run by default.
 * **Front-end impact?** None unless you enable related content (precomputed, cached list).
 * **Uninstall?** Data is kept by default; type `DELETE` under the uninstall policy to remove it.
   Posts are never deleted.
-* **Few link suggestions?** By design the lexical tier only suggests links with a natural,
-  descriptive anchor (≈ 79% of returned suggestions were correct on the labelled fixture, with low
-  recall); related content has much higher recall.
+* **Few link suggestions?** Without vectors (lexical tier) links are suggested only with a natural,
+  descriptive anchor: on the labelled fixture ≈ 79% of returned suggestions were correct but only
+  24% of the expected links were found. With the real model's vectors 70% were found (69% of
+  returned suggestions correct). Related content has much higher recall in both tiers.

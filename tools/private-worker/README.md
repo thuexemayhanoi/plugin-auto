@@ -48,6 +48,7 @@ sites only; credentials are refused over plain HTTP otherwise).
 
 `tests/e2e/private-worker.sh` runs this worker against a disposable WordPress site with the
 labelled **tiny random fixture model** (not Qwen): 89/89 queued items stored, and a stored vector
-matches an independent NumPy computation (max |Δ| 4.5e-8). Real Qwen3 weights could not be
-downloaded in the build environment, so a real-model run is still pending (see
-`docs/TEST-REPORT.md`, AC06).
+matches an independent NumPy computation (max |Δ| 4.5e-8). With the **real** pinned
+Qwen3-Embedding-0.6B (q4f16) the same script runs in the "Real Qwen3-Embedding-0.6B" GitHub Actions
+workflow: 89/89 stored in 76.6 s on a 4-vCPU runner, stored vectors equal to an independent
+recompute (max |Δ| 0.0). See `docs/TEST-REPORT.md` §6.

@@ -54,8 +54,8 @@ written. Tested with Yoast-style meta (`_yoast_wpseo_focuskw`) in fixtures; the 
 
 | Browser | Status |
 | --- | --- |
-| Chromium (Playwright 1.56, headless) | pipeline verified with the fixture model on WASM; WebGPU unavailable in headless mode |
-| Desktop Chrome/Edge with WebGPU | intended target; **not verified with the real model in this build** |
+| Chromium (Playwright, headless, GitHub Actions) | **real Qwen3-Embedding-0.6B verified on WASM** (q4f16 and fp16: self-test, vectors equal to ONNX Runtime CPU, verified cache reload); WebGPU only through the SwiftShader software adapter (self-test passed, no GPU) |
+| Desktop Chrome/Edge with a real GPU (WebGPU) | intended fastest target; **speed not measured** (no GPU in CI) |
 | Safari < 26 without WebGPU | plain (non-asyncify) WASM build selected automatically; not tested |
 | iPhone / iPadOS | detected and warned (emulated UA tested in Chromium, **no real iPhone tested**) |
 | No WebAssembly / no module workers | "unsupported on this device", model loading disabled, lexical tier unaffected (tested) |

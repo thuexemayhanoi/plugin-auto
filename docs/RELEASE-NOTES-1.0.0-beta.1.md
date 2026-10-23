@@ -1,9 +1,10 @@
 # Release notes — 1.0.0-beta.1 (2026-10-23)
 
-**Status: BETA — not "fully AI-verified".** The lexical engine, the six modules, Human Mode, Agent
-Mode (REST, Abilities, MCP), packaging and the browser/private-worker *pipelines* are implemented
-and tested on real WordPress installs. Real Qwen3-Embedding-0.6B inference has **not** been run:
-the model host was unreachable from the build environment (AC06 BLOCKED).
+**Status: BETA — all 20 acceptance criteria PASS with evidence.** The lexical engine, the six
+modules, Human Mode, Agent Mode (REST, Abilities, MCP), packaging and both inference tiers are
+implemented and tested on real WordPress installs. The real Qwen3-Embedding-0.6B model runs in
+GitHub Actions (browser worker, private worker, hybrid evaluation); see TEST-REPORT §6. It stays a
+beta until the owner has tried it on a staging copy of the blog.
 
 ## Artifact
 
@@ -17,7 +18,12 @@ the model host was unreachable from the build environment (AC06 BLOCKED).
 
 * Read-only by default; activation leaves content, SEO data, URLs and front-end HTML byte-identical
   (verified on WordPress 6.5.13, 6.9.10, 7.1.3).
-* Vietnamese-first admin (complete translation, 711 strings), English available.
+* Vietnamese-first admin (complete translation, 744 strings), English available.
+* Real Qwen3-Embedding-0.6B (pinned revision, SHA-256-verified): q4f16 default (567 MB), fp16
+  option; precision chosen from measurements (q8 removed: least accurate, not reproducible across
+  runtimes). Hybrid scoring found 70% of expected links vs 24% lexical-only on the labelled fixture.
+* Works with the blog's own language plugin (Nguyen Ha VI-EN Core, read-only adapter) and suggests
+  possible unlinked translations from cross-language similarity (never links automatically).
 * Every write is a human-approved, hash-bound diff with readback verification and rollback.
 * Agents can read/analyse/propose; never approve. MCP exposure is opt-in and read-only.
 * Browser inference downloads only pinned, SHA-256-verified files after consent; never on the
@@ -33,6 +39,6 @@ individually before removing it.
 
 1. Install on a **staging** copy of blog.rentbikehanoi.com (VI + /en/) from the ZIP, run the
    wizard and the read-only pilot, review findings.
-2. Optionally run the browser model once on a desktop Chrome/Edge with WebGPU and report whether
-   the self-test passes — this is the remaining step to verify AC06.
+2. Optionally run the browser model once on a desktop Chrome/Edge with a GPU and note the speed
+   shown on the Jobs page (real-GPU speed is the one inference number not measured in CI).
 3. Only after review, decide whether to install on production (separate approval).

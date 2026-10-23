@@ -53,7 +53,7 @@ Jobs run in bounded background batches through WP-Cron (default 25 objects / 20 
   plugin detects this and the lexical tier keeps working.
 * Keep the tab open; closing it returns claimed items to the queue.
 
-> **Beta status:** the real Qwen3-Embedding-0.6B weights could not be downloaded in the build environment, so real-model inference is **not yet verified** (see [TEST-REPORT.md](TEST-REPORT.md), AC06). The pipeline itself is verified end-to-end with a labelled tiny fixture model.
+> **Verified:** the real Qwen3-Embedding-0.6B (q4f16) ran in Chromium (WASM) in CI: download from huggingface.co, self-test, vectors equal to the reference runtime, reload from the verified cache with no download (see [TEST-REPORT.md](TEST-REPORT.md) §6). Speed on a real GPU (WebGPU) and on real phones was not measured.
 
 ## 6. Optional: private worker (Tier 2)
 

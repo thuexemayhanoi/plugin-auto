@@ -41,6 +41,6 @@ First beta. Release notes: [docs/RELEASE-NOTES-1.0.0-beta.1.md](docs/RELEASE-NOT
 - Translation loading for a plugin UI language different from the site locale.
 
 ### Known limitations
-- Real Qwen3-Embedding inference not yet verified (weights unreachable from the build
-  environment); WPML and the five SEO plugins not tested as installed plugins; no real iPhone or
-  real MCP client tested. See docs/TEST-REPORT.md.
+- Real-GPU (WebGPU) speed not measured (CI has no GPU); WPML and SEO plugins other than Yoast not
+  tested as installed plugins; no real iPhone or real MCP/ChatGPT client tested; not yet installed on
+  a staging copy of the blog. See docs/TEST-REPORT.md.

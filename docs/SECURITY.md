@@ -61,8 +61,9 @@ into agent accounts from the UI.
 
 ## 5. Known limitations
 
-* Real Qwen3 weights were not exercised in the build environment (AC06 BLOCKED); the integrity
-  pipeline was exercised with a fixture model and a deliberately tampered file.
+* The integrity pipeline was exercised with the real pinned Qwen3 files in CI (every byte
+  verified against the pinned SHA-256) and locally with a fixture model and a deliberately
+  tampered file (rejected).
 * Rate limiting uses transients (per site, per user/IP-hash, fixed window); a persistent object
   cache makes it cluster-wide, otherwise it is per database.
 * `unfiltered_html` semantics: approved link insertions are written with kses temporarily
