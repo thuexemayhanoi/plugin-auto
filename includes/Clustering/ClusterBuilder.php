@@ -127,10 +127,11 @@ final class ClusterBuilder {
 		$members  = array();
 		$after    = 0;
 		do {
-			$page = Db::rows(
+			$page    = Db::rows(
 				"SELECT id, object_id, subtype, word_count, excluded, cluster_id, cluster_locked, terms_json, signals FROM {documents} WHERE object_type = 'post' AND status = 'publish' AND locale = %s AND id > %d ORDER BY id ASC LIMIT %d",
 				array( $locale, $after, self::PAGE )
 			);
+			$fetched = count( $page );
 			$primary = self::primary_meta( array_map( 'intval', array_column( $page, 'object_id' ) ) );
 			foreach ( $page as $row ) {
 				$after                = (int) $row['id'];
@@ -166,7 +167,7 @@ final class ClusterBuilder {
 					array( 'id' => $p['id'] )
 				);
 			}
-		} while ( count( $page ) === self::PAGE );
+		} while ( self::PAGE === $fetched );
 
 		// 3. Centroids, recommended pillar/hub page per cluster. Pillars are linked from (and link to)
 		// pages of the whole subtree, not only from direct members, so links are counted per subtree.
@@ -186,20 +187,20 @@ final class ClusterBuilder {
 		};
 		$centroids = array();
 		foreach ( Db::rows( 'SELECT * FROM {clusters} WHERE locale = %s', array( $locale ) ) as $c ) {
-			$cid               = (int) $c['id'];
-			$ids               = isset( $members[ $cid ] ) ? $members[ $cid ] : array();
-			$cent              = self::centroid( $ids, $profiles );
-			$centroids[ $cid ] = array(
+			$cid                            = (int) $c['id'];
+			$ids                            = isset( $members[ $cid ] ) ? $members[ $cid ] : array();
+			$cent                           = self::centroid( $ids, $profiles );
+			$centroids[ $cid ]              = array(
 				'vec'   => $cent,
 				'label' => $c['label'],
 				'term'  => (int) $c['term_id'],
 				'tax'   => (string) $c['taxonomy'],
 				'role'  => (string) $c['role'],
 			);
-			$best              = 0;
-			$best_score        = -1.0;
-			$evidence          = array();
-			$tree              = array() === $ids ? array() : array_values( array_unique( $subtree( $cid ) ) );
+			$best                           = 0;
+			$best_score                     = -1.0;
+			$evidence                       = array();
+			$tree                           = array() === $ids ? array() : array_values( array_unique( $subtree( $cid ) ) );
 			list( $in_counts, $out_counts ) = self::subtree_link_counts( $ids, $tree );
 			foreach ( $ids as $id ) {
 				$p               = $profiles[ $id ];
