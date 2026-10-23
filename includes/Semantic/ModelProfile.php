@@ -91,8 +91,10 @@ final class ModelProfile {
 	 * document summary vectors gave 0.42 on average for unrelated same-language pairs and 0.62 for
 	 * related pairs (fp16/fp32: 0.43 / 0.64). Without calibration that floor is added to every pair
 	 * and lexical thresholds are crossed by unrelated pages. The calibrated value
-	 * (cosine − floor) / (ceiling − floor), clipped to 0..1, is what the scores use; the raw cosine
-	 * stays in the evidence.
+	 * (cosine − floor) / (ceiling − floor), clipped to 0..1, gates overlap (cannibalization) risk;
+	 * ranking keeps the raw cosine. Measured with the real q4f16 vectors (weight 0.35): calibrated
+	 * everywhere cut overlap pairs 42 → 31 but also link recall@3 0.702 → 0.390 and related P@5
+	 * 0.475 → 0.425, so it is used only where it helps. Both values are in the evidence.
 	 */
 	const CALIBRATION = array(
 		'q4f16' => array(

@@ -124,7 +124,11 @@ final class Scorer {
 		$sem_cal  = null === $semantic ? null : self::calibrate( $semantic );
 		$w_lex    = (float) Settings::get( 'w_lexical', 0.45 );
 		$w_sem    = (float) Settings::get( 'w_semantic', 0.35 );
-		$topic    = null === $sem_cal ? $lexical : ( $w_lex * $lexical + $w_sem * $sem_cal ) / max( 0.0001, $w_lex + $w_sem );
+		// Ranking (links, related, candidate order) uses the raw cosine: measured better on the labelled
+		// fixture with the real model. The overlap-risk gate uses the calibrated value, which keeps the
+		// cosine floor of unrelated pages from turning every pair into a "risk" (see ModelProfile::CALIBRATION).
+		$topic     = null === $semantic ? $lexical : ( $w_lex * $lexical + $w_sem * $semantic ) / max( 0.0001, $w_lex + $w_sem );
+		$topic_cal = null === $sem_cal ? $lexical : ( $w_lex * $lexical + $w_sem * $sem_cal ) / max( 0.0001, $w_lex + $w_sem );
 
 		$only_a = array_values( array_diff( $a['title_set'], $b['title_set'] ) );
 		$only_b = array_values( array_diff( $b['title_set'], $a['title_set'] ) );
@@ -138,6 +142,7 @@ final class Scorer {
 			'semantic'            => null === $semantic ? null : round( $semantic, 4 ),
 			'semantic_calibrated' => null === $sem_cal ? null : round( $sem_cal, 4 ),
 			'topic'               => round( $topic, 4 ),
+			'topic_calibrated'    => round( $topic_cal, 4 ),
 			'title_overlap'       => round( self::jaccard( $a['title_set'], $b['title_set'] ), 4 ),
 			'title_containment'   => round( self::containment( $a['title_set'], $b['title_set'] ), 4 ),
 			'heading_overlap'     => round( self::jaccard( $a['heading_set'], $b['heading_set'] ), 4 ),
@@ -173,16 +178,6 @@ final class Scorer {
 	}
 
 	/**
-	 * Semantic component of a feature set (calibrated when available).
-	 *
-	 * @param array $features Pair features.
-	 * @return float
-	 */
-	private static function semantic_component( array $features ) {
-		return isset( $features['semantic_calibrated'] ) ? (float) $features['semantic_calibrated'] : (float) $features['semantic'];
-	}
-
-	/**
 	 * Graph usefulness of linking to a target (0..1).
 	 *
 	 * @param array $source Source profile.
@@ -215,7 +210,7 @@ final class Scorer {
 		);
 		$sum   = max( 0.0001, array_sum( $w ) );
 		$total = ( $w['lexical'] * min( 1.0, $features['lexical'] * 2.0 )
-			+ $w['semantic'] * ( null === $features['semantic'] ? 0.0 : self::semantic_component( $features ) )
+			+ $w['semantic'] * ( null === $features['semantic'] ? 0.0 : (float) $features['semantic'] )
 			+ $w['anchor'] * $anchor
 			+ $w['graph'] * $graph ) / $sum;
 		return array(

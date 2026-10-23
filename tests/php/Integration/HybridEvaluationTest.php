@@ -231,8 +231,9 @@ final class HybridEvaluationTest extends TestCase {
 		}
 		Settings::update( array( 'translation_min_similarity' => 0.70 ) );
 
-		// Hybrid analysis for a grid of semantic weights (0 = lexical topic score with vectors stored),
-		// with the per-precision calibration (default) and, for comparison, raw cosine.
+		// Hybrid analysis for a grid of semantic weights (0 = lexical topic score with vectors stored):
+		// default scoring (raw cosine for ranking, calibrated value for the overlap-risk gate) and, for
+		// comparison, raw cosine everywhere (calibration disabled through its filter).
 		$grid = array();
 		$by_w = array();
 		$raw  = static function () {
@@ -287,7 +288,7 @@ final class HybridEvaluationTest extends TestCase {
 		self::write_artifact( 'evaluation-hybrid.json', $report );
 		fwrite( STDERR, "\nHYBRID " . wp_json_encode( array_diff_key( $report, array( 'hybrid_grid' => 1 ) ) ) . "\n" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite
 		foreach ( $grid as $g ) {
-			fwrite( STDERR, 'w_semantic=' . $g['w_semantic'] . ( $g['calibrated'] ? ' calibrated ' : ' raw ' ) . wp_json_encode( array( 'links' => $g['links'], 'related' => $g['related'], 'overlap' => $g['overlap'] ) ) . "\n" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite
+			fwrite( STDERR, 'w_semantic=' . $g['w_semantic'] . ( $g['calibrated'] ? ' default(raw ranking, calibrated overlap gate) ' : ' raw everywhere ' ) . wp_json_encode( array( 'links' => $g['links'], 'related' => $g['related'], 'overlap' => $g['overlap'] ) ) . "\n" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite
 		}
 
 		// Product guarantees that must hold with real vectors at the default weight.

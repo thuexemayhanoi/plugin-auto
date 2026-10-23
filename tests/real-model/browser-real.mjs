@@ -115,12 +115,13 @@ const fmt = ( m ) => JSON.stringify( m.map( ( r ) => r.map( ( x ) => +x.toFixed(
 /**
  * Loads one precision, runs the self-test and (when it passes) embeds the comparison inputs.
  */
-async function runVariant( P, dtype, device ) {
+async function runVariant( P, dtype, device, embedToo = true ) {
 	const p = profileFor( dtype );
 	const init = { type: 'init', vendorUrl, profile: p, device, wasmSuffix: '.asyncify', threads: 1 };
 	const t0 = Date.now();
+	const steps = ( a ) => [ a.init, { type: 'selftest', id: 1, reference: a.reference } ].concat( a.embedToo ? [ { type: 'embed', id: 2, items: a.items } ] : [] );
 	const run = await withTimeout(
-		P.page.evaluate( ( a ) => window.sseoRun( [ a.init, { type: 'selftest', id: 1, reference: a.reference }, { type: 'embed', id: 2, items: a.items } ] ), { init, reference: p.reference, items } ),
+		P.page.evaluate( ( a ) => window.sseoRun( a.steps ), { steps: steps( { init, reference: p.reference, items, embedToo } ) } ),
 		20 * 60 * 1000,
 		dtype + '/' + device
 	);
@@ -186,7 +187,8 @@ try {
 	info.webgpu = { caps };
 	if ( caps.adapter ) {
 		const dtype = caps.f16 ? 'q4f16' : ( manifest.files.q4 ? 'q4' : 'q4f16' );
-		const d = await runVariant( D, dtype, 'webgpu' );
+		// Self-test only: the SwiftShader adapter is a CPU emulation of a GPU and is very slow.
+		const d = await runVariant( D, dtype, 'webgpu', false );
 		info.webgpu.run = d;
 		record( 'D WebGPU (SwiftShader software adapter) ' + dtype, !! ( d.selftest && d.selftest.ok ), describe( d ), false );
 	} else {

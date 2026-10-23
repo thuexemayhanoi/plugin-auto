@@ -24,7 +24,7 @@ defined( 'ABSPATH' ) || exit;
  */
 final class CannibalizationAnalyzer {
 
-	const VERSION = 'cannibal-2';
+	const VERSION = 'cannibal-3';
 
 	const FACET_WORDS = array( 'giờ', 'ngày', 'tuần', 'tháng', 'năm', 'hour', 'hourly', 'day', 'daily', 'week', 'weekly', 'month', 'monthly', 'year', 'yearly', 'annual' );
 
@@ -75,7 +75,7 @@ final class CannibalizationAnalyzer {
 			$category = 'near_duplicate';
 			$conf     = $f['near_duplicate'] >= 0.9 ? 'high' : 'medium';
 			$notes[]  = 'Estimated shingle overlap (MinHash) ' . $f['near_duplicate'] . '.';
-		} elseif ( $f['topic'] < $threshold && $f['title_overlap'] < 0.6 && ! self::title_contained( $f ) && ! $f['focus_same'] && $f['gsc_overlap'] < 1 ) {
+		} elseif ( self::overlap_topic( $f ) < $threshold && $f['title_overlap'] < 0.6 && ! self::title_contained( $f ) && ! $f['focus_same'] && $f['gsc_overlap'] < 1 ) {
 			return null;
 		} elseif ( self::is_pillar_supporting( $a, $b, $f ) ) {
 			$category = 'pillar_supporting';
@@ -99,7 +99,7 @@ final class CannibalizationAnalyzer {
 			$notes[]  = 'Titles differ by distinguishing modifiers (' . implode( ', ', $f['title_only_a'] ) . ' vs ' . implode( ', ', $f['title_only_b'] ) . '); likely separate offers/sub-topics.';
 		} elseif ( $f['same_intent'] && ( $f['title_overlap'] >= 0.5 || self::title_contained( $f ) ) ) {
 			$category = 'potential_competition';
-			$conf     = $f['topic'] >= $threshold ? 'medium' : 'low';
+			$conf     = self::overlap_topic( $f ) >= $threshold ? 'medium' : 'low';
 			$notes[]  = self::title_contained( $f ) ? 'Same heuristic intent; one title is almost entirely contained in the other (' . implode( ' ', $f['title_shared'] ) . ').' : 'Same heuristic intent with strong title overlap.';
 		} else {
 			$category = 'manual_review';
@@ -130,6 +130,7 @@ final class CannibalizationAnalyzer {
 				'category'          => $category,
 				'notes'             => $notes,
 				'topic'             => $f['topic'],
+				'topic_calibrated'  => isset( $f['topic_calibrated'] ) ? $f['topic_calibrated'] : null,
 				'lexical'           => $f['lexical'],
 				'semantic'          => $f['semantic'],
 				'title_overlap'     => $f['title_overlap'],
@@ -168,7 +169,18 @@ final class CannibalizationAnalyzer {
 	 */
 	public static function risk_score( $category, array $f ) {
 		$base = self::RISK_ORDER[ $category ] / 6;
-		return round( 0.5 * $base + 0.25 * $f['topic'] + 0.15 * $f['title_overlap'] + ( $f['gsc_overlap'] > 0 ? 0.1 : 0 ), 4 );
+		return round( 0.5 * $base + 0.25 * self::overlap_topic( $f ) + 0.15 * $f['title_overlap'] + ( $f['gsc_overlap'] > 0 ? 0.1 : 0 ), 4 );
+	}
+
+	/**
+	 * Topic similarity used for overlap risk: with the calibrated semantic component when vectors
+	 * exist (the raw cosine floor of unrelated pages must not raise every pair above the threshold).
+	 *
+	 * @param array $f Features.
+	 * @return float
+	 */
+	private static function overlap_topic( array $f ) {
+		return isset( $f['topic_calibrated'] ) ? (float) $f['topic_calibrated'] : (float) $f['topic'];
 	}
 
 	/**
