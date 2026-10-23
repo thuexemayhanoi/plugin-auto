@@ -44,7 +44,7 @@ Lists use `limit` (≤ 100) and an opaque `cursor` → `next_cursor`.
 
 | Method & route | Capability | Purpose |
 | --- | --- | --- |
-| `GET /status` | read | version, read-only mode, tiers, index counts, link-scan coverage, findings summary, agent interface (abilities_api, mcp_adapter) |
+| `GET /status` | read | version, read-only mode, tiers, index counts, link-scan coverage, findings summary, `inventory_limit` (Max documents vs stored and in-scope objects), agent interface (abilities_api, mcp_adapter) |
 | `GET /inventory` | read | SEO Matrix rows (`locale`, `type`, `status`, `intent`, `search`, `has_qa`, `has_risk`, `sort`, `order`) |
 | `GET /analysis?url=…` (or `post_id`, `document_id`) | read | facts vs inferences, QA, link suggestions, overlap risks, related, provenance |
 | `GET /suggestions/links` | read | ranked suggestions with anchor + byte offset + evidence; orphan candidates with scan coverage |

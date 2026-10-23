@@ -10,7 +10,7 @@ via `wp_update_post`, or a category assignment via `wp_set_post_terms`) and its 
 | Option | Autoload | Content |
 | --- | --- | --- |
 | `sseo_settings` | no | all settings (schema-validated; defaults are read-only) |
-| `sseo_db_version` | yes | schema version (`1`) |
+| `sseo_db_version` | yes | schema version (`2`; version 2 adds the `findings.target_id` index) |
 | `sseo_migration_log` | no | last migration runs (time, from → to, steps, result) |
 | `sseo_state` | no | inventory/analysis timestamps and summary counters |
 | `sseo_similarity_baseline` | no | per language: median (and p10/p90/p99) cosine of sampled same-language page pairs, with the model key it was measured with; re-measured at every site-wide analysis |
@@ -29,7 +29,7 @@ options (created and deleted around critical sections).
 | `{prefix}sseo_links` | `id` bigint(20), `source_id` bigint(20), `target_id` bigint(20), `target_url` text, `target_hash` char(40), `anchor` text, `start_offset` int(10), `length` int(10), `fingerprint` char(40), `rel` varchar(64), `is_internal` tinyint(1), `resolution` varchar(20), `http_status` smallint(5), `scanned_at` datetime | PRIMARY KEY (id)<br>KEY source_id (source_id)<br>KEY target_id (target_id)<br>KEY target_hash (target_hash) |
 | `{prefix}sseo_embeddings` | `id` bigint(20), `document_id` bigint(20), `chunk_id` bigint(20), `model_key` char(40), `model_id` varchar(191), `revision` varchar(64), `dtype` varchar(16), `dimension` smallint(5), `preprocess_version` varchar(16), `locale` varchar(20), `content_hash` char(64), `vector` longblob, `norm` float, `source` varchar(16), `created_at` datetime | PRIMARY KEY (id)<br>UNIQUE KEY item (document_id,chunk_id,model_key)<br>KEY model_key (model_key) |
 | `{prefix}sseo_queue` | `id` bigint(20), `job_id` bigint(20), `document_id` bigint(20), `chunk_id` bigint(20), `model_key` char(40), `content_hash` char(64), `status` varchar(16), `lease_hash` char(64), `lease_owner` bigint(20), `lease_expires` datetime, `attempts` smallint(5), `last_error` varchar(255), `updated_at` datetime | PRIMARY KEY (id)<br>UNIQUE KEY item (document_id,chunk_id,model_key)<br>KEY job_status (job_id,status)<br>KEY status_lease (status,lease_expires) |
-| `{prefix}sseo_findings` | `id` bigint(20), `type` varchar(32), `check_id` varchar(64), `document_id` bigint(20), `target_id` bigint(20), `group_key` varchar(64), `fingerprint` char(40), `locale` varchar(20), `label` varchar(24), `severity` varchar(12), `confidence` varchar(16), `score` float, `evidence` longtext, `status` varchar(16), `algorithm_version` varchar(20), `run_id` bigint(20), `created_at` datetime, `updated_at` datetime | PRIMARY KEY (id)<br>UNIQUE KEY fingerprint (fingerprint)<br>KEY type_status (type,status)<br>KEY document_id (document_id)<br>KEY group_key (group_key) |
+| `{prefix}sseo_findings` | `id` bigint(20), `type` varchar(32), `check_id` varchar(64), `document_id` bigint(20), `target_id` bigint(20), `group_key` varchar(64), `fingerprint` char(40), `locale` varchar(20), `label` varchar(24), `severity` varchar(12), `confidence` varchar(16), `score` float, `evidence` longtext, `status` varchar(16), `algorithm_version` varchar(20), `run_id` bigint(20), `created_at` datetime, `updated_at` datetime | PRIMARY KEY (id)<br>UNIQUE KEY fingerprint (fingerprint)<br>KEY type_status (type,status)<br>KEY document_id (document_id)<br>KEY target_id (target_id)<br>KEY group_key (group_key) |
 | `{prefix}sseo_related` | `document_id` bigint(20), `related_id` bigint(20), `rank_pos` smallint(5), `score` float, `evidence` text, `updated_at` datetime | PRIMARY KEY (document_id,related_id)<br>KEY document_rank (document_id,rank_pos) |
 | `{prefix}sseo_clusters` | `id` bigint(20), `locale` varchar(20), `parent_id` bigint(20), `label` varchar(255), `source` varchar(16), `taxonomy` varchar(64), `term_id` bigint(20), `role` varchar(16), `pillar_document_id` bigint(20), `recommended_pillar_id` bigint(20), `member_count` int(10), `review_state` varchar(20), `locked` tinyint(1), `version` int(10), `evidence` longtext, `updated_at` datetime | PRIMARY KEY (id)<br>KEY locale_parent (locale,parent_id)<br>KEY term (taxonomy,term_id) |
 | `{prefix}sseo_jobs` | `id` bigint(20), `type` varchar(32), `status` varchar(16), `owner_id` bigint(20), `via` varchar(24), `idempotency_key` char(64), `params` longtext, `state` longtext, `progress_done` int(10), `progress_total` int(10), `attempts` smallint(5), `max_attempts` smallint(5), `lease_owner` varchar(64), `lease_expires` datetime, `heartbeat_at` datetime, `next_run_at` datetime, `last_error` text, `created_at` datetime, `started_at` datetime, `finished_at` datetime, `updated_at` datetime | PRIMARY KEY (id)<br>UNIQUE KEY idempotency_key (idempotency_key)<br>KEY status_type (status,type) |
@@ -58,11 +58,11 @@ Notes:
 `Database\Migrator::migrate()` runs on activation and, when `sseo_db_version` is behind
 `Schema::VERSION`, on the first request after an update. It takes the `sseo_mutex_migration`
 lock (stale after 300 s), runs `dbDelta()` for every table, then explicit idempotent steps
-(step 1: backfill `documents.url_hash`), advances the version **only on success**, and appends to
+(step 1: backfill `documents.url_hash`; version 2 only adds an index, created by `dbDelta()`), advances the version **only on success**, and appends to
 `sseo_migration_log`. A failed migration leaves the previous version in place and is reported in
 *Settings & Diagnostics*. Verified by `ActivationMigrationTest` (activation read-only for WordPress
 data, repeatable migration preserving data, upgrade from an older schema restoring dropped columns
-without data loss, interrupted upgrade resumed after a stale lock, exclusive mutex).
+without data loss, upgrade 1 → 2 adding the `findings.target_id` index, interrupted upgrade resumed after a stale lock, exclusive mutex).
 
 ## Uninstall
 
