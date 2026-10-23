@@ -260,6 +260,42 @@
 		}
 	}
 
+	/**
+	 * Asks the browser to keep the verified model files (best effort) and warns when the free
+	 * storage is smaller than the download, in which case the model is fetched again next time.
+	 *
+	 * @return {Promise<void>}
+	 */
+	function checkStorage() {
+		if ( ! navigator.storage || ! navigator.storage.estimate ) {
+			return Promise.resolve();
+		}
+		var persist = navigator.storage.persist ? navigator.storage.persist().catch( function () {
+			return false;
+		} ) : Promise.resolve( false );
+		return Promise.all( [ navigator.storage.estimate(), persist ] )
+			.then( function ( r ) {
+				var free = ( r[ 0 ].quota || 0 ) - ( r[ 0 ].usage || 0 );
+				var need = Object.keys( cfg.profile.files || {} ).reduce( function ( sum, k ) {
+					return sum + ( Number( cfg.profile.files[ k ][ 0 ] ) || 0 );
+				}, 0 );
+				if ( free > 0 && free < need ) {
+					log( t.storageLow.replace( '%1$s', mb( free ) ).replace( '%2$s', mb( need ) ), 'warning' );
+				}
+			} )
+			.catch( function () {} );
+	}
+
+	/**
+	 * Formats bytes as megabytes.
+	 *
+	 * @param {number} bytes Bytes.
+	 * @return {string}
+	 */
+	function mb( bytes ) {
+		return Math.round( bytes / 1048576 ) + ' MB';
+	}
+
 	function load() {
 		if ( ! el.consent || ! el.consent.checked ) {
 			log( t.consent, 'warning' );
@@ -274,6 +310,9 @@
 				if ( ! run.device || ! cfg.vendorReady ) {
 					throw new Error( cfg.vendorReady ? t.unsupported : t.noVendor );
 				}
+				return checkStorage();
+			} )
+			.then( function () {
 				if ( run.worker ) {
 					run.worker.terminate();
 				}

@@ -210,13 +210,20 @@ def mrl(v, dim):
     return (cut / max(float(np.linalg.norm(cut)), 1e-12)).astype("<f4")
 
 
+def expected_scores(reference, dtype):
+    """Matrix measured for this precision with the real pinned files, else the model-card matrix."""
+    by_dtype = reference.get("scores_by_dtype") or {}
+    return by_dtype.get(dtype) or reference["scores"]
+
+
 def selftest(embedder, reference, dtype):
     q = embedder.embed([embedder.format_query(x) for x in reference["queries"]])
     d = embedder.embed(list(reference["documents"]))
     measured = [[float(np.dot(a, b)) for b in d] for a in q]
-    tol = float(reference["tolerance"].get(dtype, 0.08))
-    diff = max(abs(measured[i][j] - reference["scores"][i][j]) for i in range(len(measured)) for j in range(len(measured[i])))
-    rank_ok = all(int(np.argmax(measured[i])) == int(np.argmax(reference["scores"][i])) for i in range(len(measured)))
+    expected = expected_scores(reference, dtype)
+    tol = float(reference["tolerance"].get(dtype, 0.03))
+    diff = max(abs(measured[i][j] - expected[i][j]) for i in range(len(measured)) for j in range(len(measured[i])))
+    rank_ok = all(int(np.argmax(measured[i])) == int(np.argmax(expected[i])) for i in range(len(measured)))
     return diff <= tol and rank_ok, diff, tol, measured
 
 

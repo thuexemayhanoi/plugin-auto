@@ -165,7 +165,7 @@ final class OverviewPage {
 			array( array() === $env['db_schema']['missing'], __( 'Plugin database tables', 'semantic-seo-engine-vi-en' ) ),
 			array( $env['intl'], $env['intl'] ? __( 'intl extension (Unicode normalization)', 'semantic-seo-engine-vi-en' ) : __( 'intl missing — the built-in Vietnamese normalizer is used', 'semantic-seo-engine-vi-en' ) ),
 			array( $env['abilities_api'], $env['abilities_api'] ? __( 'WordPress Abilities API available', 'semantic-seo-engine-vi-en' ) : __( 'Abilities API unavailable (WordPress 6.9+); REST still works', 'semantic-seo-engine-vi-en' ) ),
-			array( $env['translation_mapping'], sprintf( /* translators: %s: framework */ __( 'Language framework: %s', 'semantic-seo-engine-vi-en' ), LanguageResolver::framework() ) ),
+			array( $env['translation_mapping'], sprintf( /* translators: %s: framework */ __( 'Language framework: %s', 'semantic-seo-engine-vi-en' ), LanguageResolver::framework_label( LanguageResolver::framework() ) ) ),
 			array( true, sprintf( /* translators: %s: plugin */ __( 'SEO metadata source: %s (read-only)', 'semantic-seo-engine-vi-en' ), $env['seo_primary'] ) ),
 			array( ! $env['wp_cron_disabled'], $env['wp_cron_disabled'] ? __( 'WP-Cron disabled — jobs advance while the Jobs page is open, or via WP-CLI', 'semantic-seo-engine-vi-en' ) : __( 'WP-Cron available for background batches', 'semantic-seo-engine-vi-en' ) ),
 		);

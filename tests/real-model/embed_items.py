@@ -22,7 +22,7 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--manifest", required=True)
-    p.add_argument("--dtype", default="q8")
+    p.add_argument("--dtype", default="q4f16")
     p.add_argument("--dimension", type=int, default=1024)
     args = p.parse_args()
 

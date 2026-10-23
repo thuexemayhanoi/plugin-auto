@@ -2,7 +2,7 @@
 # End-to-end test of the Tier 2 private worker (tools/private-worker/sseo_worker.py) against a
 # disposable WordPress site, using the TINY RANDOM FIXTURE model (NOT Qwen3-Embedding) — or, when
 # REAL_MODEL_MANIFEST is set (manifest from tests/real-model/fetch_verify.py), the REAL pinned
-# Qwen3-Embedding-0.6B files with REAL_DTYPE (default q8), already verified in the worker cache.
+# Qwen3-Embedding-0.6B files with REAL_DTYPE (default q4f16), already verified in the worker cache.
 #
 #   tests/e2e/private-worker.sh <wp-version> <site-port> <fixture-port> <python>
 #
@@ -25,7 +25,7 @@ mkdir -p "$OUT"
 $WP eval-file "$HERE/load-corpus.php" >/dev/null
 $WP plugin install "$ZIP" --activate >/dev/null
 REAL="${REAL_MODEL_MANIFEST:-}"
-DTYPE="${REAL_DTYPE:-q8}"
+DTYPE="${REAL_DTYPE:-q4f16}"
 if [ -n "$REAL" ]; then
 	MODEL="REAL Qwen3-Embedding-0.6B ONNX ($DTYPE, pinned + SHA-256 verified)"
 	CACHE="$("$PY" -I -c 'import json,sys,os; r=json.load(open(sys.argv[1]))["root"]; print(os.path.dirname(os.path.dirname(r)))' "$REAL")"

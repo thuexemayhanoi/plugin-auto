@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       embed:
-        description: 'Also embed the copy with the real Qwen3-Embedding-0.6B (q8) through the private worker'
+        description: 'Also embed the copy with the real Qwen3-Embedding-0.6B (q4f16, the default precision) through the private worker'
         type: boolean
         default: true
   push:
@@ -91,16 +91,16 @@ jobs:
           echo "inventory + lexical analysis seconds: $(( $(date +%s) - START ))"
           $WP eval-file tests/site/pilot-report.php | tee tests/e2e/artifacts/site-pilot-lexical.json
 
-      - name: Fetch + verify the pinned q8 model files
+      - name: Fetch + verify the pinned q4f16 model files
         if: github.event_name == 'push' || inputs.embed
         run: |
           python -m pip install --quiet -r tools/private-worker/requirements.txt
-          python -I tests/real-model/fetch_verify.py --cache-dir "$HOME/.cache/sseo-worker" --dtypes q8 --manifest "$RUNNER_TEMP/manifest.json"
+          python -I tests/real-model/fetch_verify.py --cache-dir "$HOME/.cache/sseo-worker" --dtypes q4f16 --manifest "$RUNNER_TEMP/manifest.json"
       - name: Embed the copy with the real model through the private worker (REST + Application Password), re-analyse
         if: github.event_name == 'push' || inputs.embed
         run: |
           WP="wp --allow-root --path=$RUNNER_TEMP/pilot"
-          $WP eval '\SemanticSEO\Settings::update( array( "model_dtype" => "q8" ) ); \SemanticSEO\Capabilities::ensure_agent_roles();'
+          $WP eval '\SemanticSEO\Settings::update( array( "model_dtype" => "q4f16" ) ); \SemanticSEO\Capabilities::ensure_agent_roles();'
           $WP user create pilot_worker pilot_worker@example.test --role=sseo_worker --user_pass="$(head -c 18 /dev/urandom | base64)" > /dev/null
           APP="$($WP user application-password create pilot_worker pilot --porcelain)"
           $WP sseo start embed --user=admin

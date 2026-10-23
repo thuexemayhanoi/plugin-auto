@@ -10,8 +10,8 @@ CPU, last-token pooling, L2) for every fetched dtype and records, without thresh
 * semantic-only same-locale retrieval on the fixture labels (P@3, R@5), document level;
 * load and embedding times on the CI runner.
 
-Writes <out>/real-model.json and <out>/real-model-vectors.json (inputs + q8 vectors for the browser
-comparison). Exit code 1 when fp32 or q8 fails its self-test (pipeline error).
+Writes <out>/real-model.json and <out>/real-model-vectors.json (inputs + vectors per dtype for the
+browser comparison). Exit code 1 when fp32 or a dtype the plugin offers fails its self-test.
 """
 import argparse
 import importlib.util
@@ -45,20 +45,21 @@ def stats(xs):
     return {"n": len(xs), "min": round(min(xs), 4), "mean": round(float(np.mean(xs)), 4), "max": round(max(xs), 4)}
 
 
-def negative_controls(w, emb, prof):
-    """Deliberately wrong pipelines on the fp32 model: the self-test must reject every one of them."""
+def negative_controls(w, emb, prof, dtype):
+    """Deliberately wrong pipelines with this dtype: its self-test (expected matrix + tolerance)
+    must reject every one of them."""
     ref = prof["reference"]
-    tol = float(ref["tolerance"]["fp32"])
+    tol = float(ref["tolerance"].get(dtype, 0.03))
+    expected = w.expected_scores(ref, dtype)
     out = {}
 
     def matrix(q, d):
         return [[float(np.dot(a, b)) for b in d] for a in q]
 
     def judge(m):
-        diff = max(abs(m[i][j] - ref["scores"][i][j]) for i in range(2) for j in range(2))
-        rank = all(int(np.argmax(m[i])) == int(np.argmax(ref["scores"][i])) for i in range(2))
-        return {"max_abs_diff": round(diff, 4), "ranking_ok": rank, "rejected_at_fp32_tolerance": not (diff <= tol and rank),
-                "rejected_at_loosest_tolerance": not (diff <= max(ref["tolerance"].values()) and rank)}
+        diff = max(abs(m[i][j] - expected[i][j]) for i in range(2) for j in range(2))
+        rank = all(int(np.argmax(m[i])) == int(np.argmax(expected[i])) for i in range(2))
+        return {"max_abs_diff": round(diff, 4), "ranking_ok": rank, "tolerance": tol, "rejected": not (diff <= tol and rank)}
 
     queries = [emb.format_query(x) for x in ref["queries"]]
     out["no_query_instruction"] = judge(matrix(emb.embed(list(ref["queries"])), emb.embed(list(ref["documents"]))))
@@ -118,6 +119,7 @@ def main():
         "dtypes": {},
     }
     vectors = {}
+    browser_vectors = {"items": [], "vectors": {}}
     failed_offered = []
 
     order = ["fp32", "fp16", "q8", "int8", "uint8", "q4", "q4f16", "bnb4"]
@@ -135,27 +137,34 @@ def main():
             emb = w.Embedder(manifest["root"], profile, threads=args.threads)
             entry["load_seconds"] = round(time.time() - t0, 2)
             ok, diff, tol, measured = w.selftest(emb, prof["reference"], dtype)
-            entry["selftest"] = {"passed": bool(ok), "max_abs_diff": round(float(diff), 5), "tolerance": tol, "measured": [[round(x, 5) for x in r] for r in measured]}
+            card = prof["reference"]["scores"]
+            entry["selftest"] = {
+                "passed": bool(ok), "max_abs_diff": round(float(diff), 5), "tolerance": tol,
+                "expected": "measured matrix for this dtype" if dtype in prof["reference"].get("scores_by_dtype", {}) else "model card (fp32)",
+                "measured": [[round(x, 5) for x in r] for r in measured],
+                "max_abs_diff_vs_model_card": round(max(abs(measured[i][j] - card[i][j]) for i in range(2) for j in range(2)), 5),
+            }
             t0 = time.time()
             vecs = np.array(emb.embed(texts))
             entry["corpus_docs"] = len(texts)
             entry["embed_seconds_per_doc"] = round((time.time() - t0) / len(texts), 3)
             vectors[dtype] = vecs
-            if dtype == "q8":
+            if dtype in ("q4f16", "fp16", "q8", "q4", "bnb4"):
                 q = [emb.format_query(x) for x in prof["reference"]["queries"]]
                 inputs = [{"text": x, "role": "query"} for x in prof["reference"]["queries"]] + [{"text": x, "role": "document"} for x in prof["reference"]["documents"]] + [{"text": d["text"], "role": "document"} for d in docs[:4]]
                 ref_vecs = emb.embed(q) + emb.embed(list(prof["reference"]["documents"])) + [v for v in vecs[:4]]
-                json.dump({"dtype": "q8", "items": inputs, "vectors": [[float(x) for x in v] for v in ref_vecs]}, open(os.path.join(args.out, "real-model-vectors.json"), "w"))
+                browser_vectors["items"] = inputs
+                browser_vectors["vectors"][dtype] = [[float(x) for x in v] for v in ref_vecs]
         except Exception as e:  # noqa: BLE001 - recorded, not hidden
             entry["error"] = "%s: %s" % (type(e).__name__, str(e)[:500])
         report["dtypes"][dtype] = entry
         print(dtype, json.dumps({k: v for k, v in entry.items() if k != "files"}), flush=True)
         if dtype in plugin_dtypes and not entry.get("selftest", {}).get("passed"):
             failed_offered.append(dtype)
-        if dtype in ["fp32"] + plugin_dtypes and dtype != "fp16" and not entry.get("selftest", {}).get("passed"):
+        if dtype in ["fp32"] + plugin_dtypes and not entry.get("selftest", {}).get("passed"):
             report.setdefault("pipeline_failures", []).append(dtype)
-        if dtype == "fp32" and "error" not in entry:
-            report["negative_controls"] = negative_controls(w, emb, prof)
+        if dtype in ["fp32"] + plugin_dtypes and "error" not in entry:
+            report.setdefault("negative_controls", {})[dtype] = negative_controls(w, emb, prof, dtype)
 
     # Agreement with fp32: per-document cosine and same-locale top-5 neighbour overlap.
     if "fp32" in vectors:
@@ -173,7 +182,7 @@ def main():
                 report["dtypes"][dtype]["top5_neighbour_overlap_vs_fp32"] = round(float(np.mean([len(top5(vecs, i) & top5(F, i)) / 5.0 for i in live])), 3)
 
     # Cross-language and same-locale retrieval with the best available dtype.
-    base = "fp32" if "fp32" in vectors else ("q8" if "q8" in vectors else None)
+    base = "fp32" if "fp32" in vectors else ("q4f16" if "q4f16" in vectors else None)
     if base:
         V = vectors[base]
         idx = {d["key"]: i for i, d in enumerate(docs)}
@@ -228,16 +237,18 @@ def main():
         }
 
     report["failed_offered_dtypes"] = failed_offered
+    report["all_negative_controls_rejected"] = all(c["rejected"] for d in report.get("negative_controls", {}).values() for c in d.values())
+    json.dump(browser_vectors, open(os.path.join(args.out, "real-model-vectors.json"), "w"))
     json.dump(report, open(os.path.join(args.out, "real-model.json"), "w"), indent=1, ensure_ascii=False)
-    print("dtype  bytes        selftest_diff  ok     cos_vs_fp32(min/mean)  top5_overlap  s/doc")
+    print("dtype  bytes        diff_vs_card   diff_vs_expect ok     cos_vs_fp32(min/mean)  top5_overlap  s/doc")
     for dtype, e in report["dtypes"].items():
         st = e.get("selftest", {})
         cv = e.get("cosine_vs_fp32") or {}
-        print("%-6s %-12s %-14s %-6s %-22s %-13s %s" % (dtype, e.get("bytes"), st.get("max_abs_diff", e.get("error", "")[:40]), st.get("passed"), "%s/%s" % (cv.get("min"), cv.get("mean")) if cv else "-", e.get("top5_neighbour_overlap_vs_fp32", "-"), e.get("embed_seconds_per_doc")))
-    print(json.dumps({k: report[k] for k in ("negative_controls", "cross_language", "semantic_only_same_locale", "failed_offered_dtypes", "pipeline_failures") if k in report}, indent=1, ensure_ascii=False))
-    # fp32 proves the pipeline reproduces the model card; q8 is the dtype every CPU/WASM device can
-    # run. A q4f16/fp16 failure on CPU is recorded (it decides the documented defaults), not fatal.
-    return 1 if report.get("pipeline_failures") else 0
+        print("%-6s %-12s %-14s %-14s %-6s %-22s %-13s %s" % (dtype, e.get("bytes"), st.get("max_abs_diff_vs_model_card", e.get("error", "")[:40]), st.get("max_abs_diff"), st.get("passed"), "%s/%s" % (cv.get("min"), cv.get("mean")) if cv else "-", e.get("top5_neighbour_overlap_vs_fp32", "-"), e.get("embed_seconds_per_doc")))
+    print(json.dumps({k: report[k] for k in ("negative_controls", "all_negative_controls_rejected", "cross_language", "semantic_only_same_locale", "failed_offered_dtypes", "pipeline_failures") if k in report}, ensure_ascii=False))
+    # fp32 proves the pipeline reproduces the model card; every offered dtype must pass its own
+    # self-test, and every deliberately wrong pipeline must be rejected. Other variants are measured.
+    return 1 if report.get("pipeline_failures") or not report["all_negative_controls_rejected"] else 0
 
 
 if __name__ == "__main__":

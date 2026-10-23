@@ -4,6 +4,7 @@ import {
 	batches,
 	chooseDevice,
 	compareReference,
+	expectedScores,
 	createPinnedFetch,
 	dot,
 	float32ToBase64,
@@ -63,6 +64,17 @@ test( 'self-test comparison enforces tolerance and ranking', () => {
 	assert.equal( compareReference( [ [ 0.2, 0.21 ], [ 0.14, 0.59 ] ], [ [ 0.21, 0.2 ], [ 0.1355, 0.6 ] ], 0.08 ).ok, false );
 	assert.equal( compareReference( [ [ NaN, 0.1 ], [ 0.1, 0.6 ] ], ref, 0.08 ).ok, false );
 	assert.equal( compareReference( [], ref, 0.08 ).ok, false );
+} );
+
+test( 'self-test expects the matrix measured for the precision, else the model card', () => {
+	const ref = { scores: [ [ 0.76, 0.14 ], [ 0.14, 0.6 ] ], scores_by_dtype: { q4f16: [ [ 0.74, 0.24 ], [ 0.19, 0.67 ] ] } };
+	assert.deepEqual( expectedScores( ref, 'q4f16' ), [ [ 0.74, 0.24 ], [ 0.19, 0.67 ] ] );
+	assert.deepEqual( expectedScores( ref, 'fp32' ), ref.scores );
+	assert.deepEqual( expectedScores( { scores: ref.scores }, 'q4f16' ), ref.scores );
+	// A q4f16 run within 0.03 of its measured matrix passes; the same run against the fp32 card fails.
+	const run = [ [ 0.7402, 0.236 ], [ 0.1915, 0.679 ] ];
+	assert.equal( compareReference( run, expectedScores( ref, 'q4f16' ), 0.03 ).ok, true );
+	assert.equal( compareReference( run, ref.scores, 0.03 ).ok, false );
 } );
 
 test( 'sha256 and pinned verification', async () => {

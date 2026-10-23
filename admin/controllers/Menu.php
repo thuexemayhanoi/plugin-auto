@@ -151,12 +151,14 @@ final class Menu {
 						'iosNote'        => __( 'yes — may be too slow or run out of memory; keep the screen on', 'semantic-seo-engine-vi-en' ),
 						'wasmSlower'     => __( 'WebAssembly (CPU) — slower', 'semantic-seo-engine-vi-en' ),
 						/* translators: %s: precision such as q4f16 */
-						'f16OnWasm'      => __( 'WASM with %s may be slow or fail on this device; q8 precision is recommended for CPU-only devices (Settings & Diagnostics).', 'semantic-seo-engine-vi-en' ),
+						'f16OnWasm'      => __( 'No WebGPU with 16-bit shaders on this device: %s runs on the CPU (WebAssembly), which is slower. For many pages, a desktop browser with WebGPU or the private worker is faster.', 'semantic-seo-engine-vi-en' ),
 						'workerError'    => __( 'Worker error:', 'semantic-seo-engine-vi-en' ),
 						'profileChanged' => __( 'The model profile changed on the server; reload this page.', 'semantic-seo-engine-vi-en' ),
 						/* translators: 1: stored, 2: rejected, 3: milliseconds, 4: running total */
 						'batchDone'      => __( '%1$d stored, %2$d rejected (%3$d ms) — total %4$d', 'semantic-seo-engine-vi-en' ),
 						'cached'         => __( 'from cache', 'semantic-seo-engine-vi-en' ),
+						/* translators: 1: free browser storage, 2: model download size */
+						'storageLow'     => __( 'Browser storage has %1$s free but the model needs %2$s: it will work, but may be downloaded again next time.', 'semantic-seo-engine-vi-en' ),
 						'stopped'        => __( 'Stopped; claimed items were returned to the queue.', 'semantic-seo-engine-vi-en' ),
 					),
 				)

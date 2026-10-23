@@ -85,7 +85,7 @@ jobs:
       - run: composer install --no-interaction --no-progress
       - name: Hybrid evaluation (lexical + real vectors through the plugin queue), weight grid
         env:
-          SSEO_EMBED_DTYPE: q8
+          SSEO_EMBED_DTYPE: q4f16
         run: SSEO_EMBED_CMD="python -I tests/real-model/embed_items.py --manifest $RUNNER_TEMP/manifest.json" vendor/bin/phpunit -c phpunit.xml.dist --group real-model
 
       - name: Build ZIP
@@ -96,7 +96,7 @@ jobs:
         run: |
           mkdir -p "$RUNNER_TEMP/wp-src-7.1.3"
           curl -fsSL "https://wordpress.org/wordpress-7.1.3.tar.gz" | tar -xz -C "$RUNNER_TEMP/wp-src-7.1.3" --strip-components=1
-          WP_SOURCE="$RUNNER_TEMP/wp-src-7.1.3" SITES_DIR="$RUNNER_TEMP/sites" REAL_MODEL_MANIFEST="$RUNNER_TEMP/manifest.json" REAL_DTYPE=q8 \
+          WP_SOURCE="$RUNNER_TEMP/wp-src-7.1.3" SITES_DIR="$RUNNER_TEMP/sites" REAL_MODEL_MANIFEST="$RUNNER_TEMP/manifest.json" REAL_DTYPE=q4f16 \
             tests/e2e/private-worker.sh 7.1.3 8080 8081 "$(command -v python)"
 
       - uses: actions/upload-artifact@v4

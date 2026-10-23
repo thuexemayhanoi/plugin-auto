@@ -89,7 +89,20 @@ export function formatQuery( task, query ) {
 }
 
 /**
- * Compares measured similarities with the model-card reference.
+ * Expected self-test matrix for a precision: the matrix measured for that dtype with the real
+ * pinned files when the profile provides one, else the model-card (fp32) matrix.
+ *
+ * @param {object} reference Profile reference ({scores, scores_by_dtype?}).
+ * @param {string} dtype     Precision.
+ * @return {number[][]}
+ */
+export function expectedScores( reference, dtype ) {
+	const byDtype = reference && reference.scores_by_dtype;
+	return byDtype && Array.isArray( byDtype[ dtype ] ) ? byDtype[ dtype ] : reference.scores;
+}
+
+/**
+ * Compares measured similarities with the expected reference matrix.
  *
  * @param {number[][]} measured  Query × document similarities.
  * @param {number[][]} reference Reference matrix.

@@ -138,7 +138,7 @@ def download(url, dest, meta, log):
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--cache-dir", default=os.path.expanduser("~/.cache/sseo-worker"))
-    p.add_argument("--dtypes", default="q8,q4f16,fp32")
+    p.add_argument("--dtypes", default="q4f16,fp16,fp32")
     p.add_argument("--manifest", required=True)
     args = p.parse_args()
     log = lambda m: print(m, flush=True)  # noqa: E731

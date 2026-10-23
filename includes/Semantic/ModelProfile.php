@@ -47,9 +47,6 @@ final class ModelProfile {
 		'q4f16'  => array(
 			'onnx/model_q4f16.onnx' => array( 567458583, '7f9ebb9a77c428f2b4c2d8ed8a2ee64f292a0b1ce7a3f027ccaaef150ef7bdd1' ),
 		),
-		'q8'     => array(
-			'onnx/model_quantized.onnx' => array( 613527631, '87cd124e0ef1fd1f223ebc283efccbaeac386d0b08344701c46975d0657b591f' ),
-		),
 		'fp16'   => array(
 			'onnx/model_fp16.onnx'      => array( 583522, 'f376cf065d912675dd559270e19361367ebc28c938b9811dd61d5834c78d0834' ),
 			'onnx/model_fp16.onnx_data' => array( 1199927296, '06fbfded30166e3a33fe5252d7002ed1c370a4ec1bf45aba778cdf6cf7d31439' ),
@@ -57,25 +54,34 @@ final class ModelProfile {
 	);
 
 	/**
-	 * Reference similarities published on the model card (fp32), used as a runtime self-test.
-	 * Tolerances are the largest deviation measured for each dtype with the real pinned files
-	 * (GitHub Actions, workflow "Real Qwen3-Embedding-0.6B": fp32 0.0000, q8 0.1149, q4f16 0.0937
-	 * on ONNX Runtime CPU) plus a margin for other runtimes. The per-query ranking must also match,
-	 * and deliberately wrong pipelines (no instruction, mean/first-token pooling, missing end-of-text
-	 * token) are checked in that workflow to be rejected.
+	 * Runtime self-test: a query/document similarity matrix every device must reproduce before it may
+	 * upload vectors. "scores" are the fp32 values published on the model card. Quantized weights
+	 * shift that matrix systematically, so each offered dtype is compared with the matrix MEASURED
+	 * for it with the real pinned files (GitHub Actions workflow "Real Qwen3-Embedding-0.6B", ONNX
+	 * Runtime CPU; the browser worker on WASM and WebGPU reproduced q4f16/q4 within 0.008), using a
+	 * tight tolerance. Measured deviations from the model card: fp32 0.0000, fp16 0.0005, q4f16
+	 * 0.0937. Deliberately wrong pipelines deviate by 0.11–0.81 (no query instruction 0.193, mean
+	 * pooling 0.436, first-token pooling 0.813, missing end-of-text token 0.108) and are rejected.
+	 *
+	 * The q8 variant (dynamic int8) is not offered: it was the least accurate variant (mean cosine 0.836 to fp32,
+	 * top-5 neighbour agreement 0.869) and not reproducible across runtimes (browser vs ONNX Runtime
+	 * CPU cosine 0.885–0.946), so vectors from different devices would not be comparable.
 	 */
 	const REFERENCE = array(
-		'queries'   => array( 'What is the capital of China?', 'Explain gravity' ),
-		'documents' => array(
+		'queries'         => array( 'What is the capital of China?', 'Explain gravity' ),
+		'documents'       => array(
 			'The capital of China is Beijing.',
 			'Gravity is a force that attracts two bodies towards each other. It gives weight to physical objects and is responsible for the movement of planets around the sun.',
 		),
-		'scores'    => array( array( 0.7645590305328369, 0.14142560958862305 ), array( 0.13549776375293732, 0.599955141544342 ) ),
-		'tolerance' => array(
+		'scores'          => array( array( 0.7645590305328369, 0.14142560958862305 ), array( 0.13549776375293732, 0.599955141544342 ) ),
+		'scores_by_dtype' => array(
+			'fp16'  => array( array( 0.76408, 0.14131 ), array( 0.1356, 0.60018 ) ),
+			'q4f16' => array( array( 0.73918, 0.23513 ), array( 0.19281, 0.67363 ) ),
+		),
+		'tolerance'       => array(
 			'fp32'  => 0.01,
-			'fp16'  => 0.03,
-			'q8'    => 0.15,
-			'q4f16' => 0.13,
+			'fp16'  => 0.02,
+			'q4f16' => 0.03,
 		),
 	);
 

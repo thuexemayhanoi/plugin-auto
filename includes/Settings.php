@@ -268,7 +268,7 @@ final class Settings {
 		$tier                       = isset( $input['inference_tier'] ) ? (string) $input['inference_tier'] : $d['inference_tier'];
 		$out['inference_tier']      = in_array( $tier, array( 'lexical', 'browser', 'worker' ), true ) ? $tier : $d['inference_tier'];
 		$dtype                      = isset( $input['model_dtype'] ) ? (string) $input['model_dtype'] : $d['model_dtype'];
-		$out['model_dtype']         = in_array( $dtype, array( 'q4f16', 'q8', 'fp16' ), true ) ? $dtype : $d['model_dtype'];
+		$out['model_dtype']         = in_array( $dtype, array( 'q4f16', 'fp16' ), true ) ? $dtype : $d['model_dtype'];
 		$dim                        = isset( $input['embedding_dimension'] ) ? (int) $input['embedding_dimension'] : $d['embedding_dimension'];
 		$out['embedding_dimension'] = in_array( $dim, array( 256, 512, 768, 1024 ), true ) ? $dim : $d['embedding_dimension'];
 		$out['embed_body_chunks']   = Util::clamp_int( isset( $input['embed_body_chunks'] ) ? $input['embed_body_chunks'] : $d['embed_body_chunks'], 0, 8 );

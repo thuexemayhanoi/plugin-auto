@@ -18,6 +18,7 @@ import {
 	batches,
 	compareReference,
 	createPinnedFetch,
+	expectedScores,
 	dot,
 	formatQuery,
 	l2normalize,
@@ -124,10 +125,11 @@ async function selftest( msg ) {
 	const q = await embedTexts( ref.queries.map( ( x ) => formatQuery( p.query_task, x ) ) );
 	const d = await embedTexts( ref.documents );
 	const matrix = q.map( ( qv ) => d.map( ( dv ) => dot( qv, dv ) ) );
-	const tolerance = ref.tolerance[ p.dtype ] || 0.08;
-	const cmp = compareReference( matrix, ref.scores, tolerance );
+	const tolerance = ref.tolerance[ p.dtype ] || 0.03;
+	const expected = expectedScores( ref, p.dtype );
+	const cmp = compareReference( matrix, expected, tolerance );
 	state.verified = cmp.ok;
-	self.postMessage( { type: 'selftest', id: msg.id, ok: cmp.ok, maxDiff: cmp.maxDiff, matrix, tolerance } );
+	self.postMessage( { type: 'selftest', id: msg.id, ok: cmp.ok, maxDiff: cmp.maxDiff, matrix, expected, tolerance } );
 }
 
 /**

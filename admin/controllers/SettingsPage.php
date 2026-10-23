@@ -38,7 +38,7 @@ final class SettingsPage {
 		foreach ( $s['url_prefix_locales'] as $code => $p ) {
 			$prefix[] = $code . '=' . $p;
 		}
-		echo '<p><label for="sseo-pref">' . esc_html__( 'URL prefix rules (one per line, e.g. en=/en/) — used only without Polylang/WPML', 'semantic-seo-engine-vi-en' ) . '</label><br><textarea id="sseo-pref" name="sseo[url_prefix_locales]" rows="2" cols="30">' . esc_textarea( implode( "\n", $prefix ) ) . '</textarea></p>';
+		echo '<p><label for="sseo-pref">' . esc_html__( 'URL prefix rules (one per line, e.g. en=/en/) — used only when no language plugin (Polylang, WPML, Nguyen Ha VI-EN Core) is detected', 'semantic-seo-engine-vi-en' ) . '</label><br><textarea id="sseo-pref" name="sseo[url_prefix_locales]" rows="2" cols="30">' . esc_textarea( implode( "\n", $prefix ) ) . '</textarea></p>';
 		echo '<p><label for="sseo-exid">' . esc_html__( 'Excluded post IDs', 'semantic-seo-engine-vi-en' ) . '</label><br><input id="sseo-exid" type="text" name="sseo[exclude_post_ids]" value="' . esc_attr( implode( ',', $s['exclude_post_ids'] ) ) . '" size="50"></p>';
 		echo '<p><label for="sseo-expat">' . esc_html__( 'Excluded URL path fragments (one per line)', 'semantic-seo-engine-vi-en' ) . '</label><br><textarea id="sseo-expat" name="sseo[exclude_url_patterns]" rows="3" cols="50">' . esc_textarea( implode( "\n", $s['exclude_url_patterns'] ) ) . '</textarea></p></section>';
 
@@ -87,8 +87,7 @@ final class SettingsPage {
 			Ui::select(
 				'sseo[model_dtype]',
 				array(
-					'q4f16' => 'q4f16 (≈567 MB, WebGPU)',
-					'q8'    => 'q8 (≈614 MB, WASM-friendly)',
+					'q4f16' => 'q4f16 (≈567 MB)',
 					'fp16'  => 'fp16 (≈1.2 GB)',
 				),
 				$s['model_dtype'],

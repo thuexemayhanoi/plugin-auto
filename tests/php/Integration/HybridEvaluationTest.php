@@ -66,7 +66,7 @@ final class HybridEvaluationTest extends TestCase {
 		if ( '' === $cmd ) {
 			$this->markTestSkipped( 'SSEO_EMBED_CMD not set (real model files are only available in the real-model CI workflow).' );
 		}
-		$dtype = getenv( 'SSEO_EMBED_DTYPE' ) ? (string) getenv( 'SSEO_EMBED_DTYPE' ) : 'q8';
+		$dtype = getenv( 'SSEO_EMBED_DTYPE' ) ? (string) getenv( 'SSEO_EMBED_DTYPE' ) : 'q4f16';
 		Settings::update( array( 'model_dtype' => $dtype ) );
 		$profile = ModelProfile::active();
 		$this->assertSame( $dtype, $profile['dtype'] );
