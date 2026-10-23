@@ -6,7 +6,7 @@
  "stored": 89,
  "not_done": 0,
  "audit_entries": 12,
- "seconds": 6.79,
+ "seconds": 1.63,
  "max_abs_diff_vs_independent_recompute": 4.47e-08,
  "ok": true
 }
