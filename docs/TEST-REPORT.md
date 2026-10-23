@@ -29,7 +29,7 @@ real iPhones were not measured, and WPML/other SEO plugins were not installed (�
 | Suite | Command | Result |
 | --- | --- | --- |
 | PHP unit | `vendor/bin/phpunit -c phpunit-unit.xml.dist` | 14 tests, 68 assertions, OK |
-| WordPress integration | `vendor/bin/phpunit -c phpunit.xml.dist` | 66 tests, 1,218 assertions, OK locally (WP 7.1.3 test library, with the VI-EN plugin; skipped: the real-model test, which runs in its own workflow); CI on PHP 7.4 + WP 6.5.13, 8.1 + 6.9.10, 8.3/8.4 + 7.1.3 |
+| WordPress integration | `vendor/bin/phpunit -c phpunit.xml.dist` | 85 tests, 1,477 assertions, OK locally (WP 7.1.3 test library, with the VI-EN plugin; skipped: the real-model test, which runs in its own workflow); CI on PHP 7.4 + WP 6.5.13, 8.1 + 6.9.10, 8.3/8.4 + 7.1.3 |
 | Real VI-EN language plugin | `NH_VIEN_PLUGIN_DIR=… phpunit --filter NhVienLanguageTest` | real `NH_VIEN_Links` class (pinned commit of the owner's repo): locales, pairs, standalone English posts, page pairs, English categories, read-only |
 | Coding standards | `vendor/bin/phpcs` (WordPress + PHPCompatibilityWP 7.4-) | 0 errors, 0 warnings |
 | JS unit | `node --test tests/js/*.test.mjs` | 19 tests, OK |
@@ -41,7 +41,7 @@ real iPhones were not measured, and WPML/other SEO plugins were not installed (�
 | Relevance evaluation | `vendor/bin/phpunit --filter EvaluationTest` (lexical) and `--group real-model` (hybrid, real vectors) | see §5 and §6 |
 | Real model | workflow "Real Qwen3-Embedding-0.6B" | see §6; latest green run [39896404879](https://github.com/thuexemayhanoi/plugin-auto/actions/runs/39896404879) |
 | Real site (read-only) | workflow "Read-only site census + pilot" | see §7 |
-| Write safety, device verification, overlap rules | `phpunit --filter 'ChangeExecutorSafetyTest|DeviceVerificationTest|CannibalizationRulesTest|QaTranslationScopeTest'` | part of the integration suite |
+| Write safety, device verification, overlap rules, limits | `phpunit --filter 'ChangeExecutorSafetyTest|DeviceVerificationTest|CannibalizationRulesTest|QaTranslationScopeTest|InventoryLimitTest|LexicalSearchBudgetTest|MatrixRiskColumnsTest'` | part of the integration suite |
 | Coexistence with WooCommerce, Yoast SEO, Polylang | CI job "Coexistence…" (`tests/e2e/compat-plugins.sh`) | 22/22 (see §4) |
 | Reproducible ZIP + licenses | CI "Build release ZIP" job; locally two builds | identical SHA-256 |
 | Performance | `tests/bench/run-bench.sh 10|100|1000|6000` | see [PERFORMANCE.md](PERFORMANCE.md) |
@@ -91,6 +91,21 @@ Found and fixed in the final audit (1.0.0-beta.2):
 16. **Query volume:** finding upsert, related rows and embedding enqueue issued one or two queries
     per row; now single statements (100 posts: 6,307 → 4,387 queries per analysis).
 17. **Non-reproducible ZIP:** file order and timestamps varied; now byte-identical builds.
+18. **Unbounded BM25 candidate search:** at 6,000 synthetic posts one search read up to ~100,000
+    posting rows (~1 s per document). Now at most 20,000 postings per query, dropping the least
+    informative common terms first; labelled-fixture results unchanged (`LexicalSearchBudgetTest`).
+19. ***Max documents* was not applied:** shown in the wizard and settings, documented as a cap,
+    but no code enforced it. Now new objects beyond the limit are counted, reported on the overview
+    page and in `GET /status` (`inventory_limit`), and stored documents keep being refreshed
+    (`InventoryLimitTest`).
+20. **Slow SEO Matrix risk columns:** `document_id = d.id OR target_id = d.id` with no index on
+    `target_id` scanned every open overlap finding per row (`GET /inventory?limit=20`: 459 ms at
+    1,000 synthetic posts). Now one indexed lookup per side, schema version 2
+    (`MatrixRiskColumnsTest`, migration test 1 → 2).
+
+Also fixed in the test tooling (not the plugin): the census summary step failed when the hybrid
+reports were absent; the coexistence job compared pages too early; with two builds in `dist/` the
+e2e and benchmark scripts installed the alphabetically first (older) ZIP.
 
 ## 4. Browser UI (real Chromium, WordPress 7.1.3, Polylang 3.9.1)
 
