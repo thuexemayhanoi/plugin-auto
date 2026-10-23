@@ -4,7 +4,7 @@ Tags: seo, internal links, cannibalization, vietnamese, semantic search
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.0-beta.3
+Stable tag: 1.0.0-beta.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -34,7 +34,7 @@ Every write is a proposal with an exact diff. A human with the review capability
 
 == Installation ==
 
-1. Plugins → Add New → Upload Plugin → choose `semantic-seo-engine-vi-en-1.0.0-beta.3.zip` → Install → Activate.
+1. Plugins → Add New → Upload Plugin → choose `semantic-seo-engine-vi-en-1.0.0-beta.4.zip` → Install → Activate.
 2. Open **Semantic SEO → Overview & Setup** and follow the five-step wizard (scope → pilot on the latest posts → review).
 3. Optional: **Jobs & Inference Device** → check this device → tick the download consent → load the model and run the self-test.
 

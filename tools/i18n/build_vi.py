@@ -23,10 +23,12 @@ sys.path.insert(0, HERE)
 from vi_part1 import T as T1  # noqa: E402
 from vi_part2 import T as T2  # noqa: E402
 from vi_part3 import T as T3, PLURALS  # noqa: E402
+from vi_part4 import T as T4, PLURALS as PLURALS4  # noqa: E402
 
 TABLE = {}
-for table in (T1, T2, T3):
+for table in (T1, T2, T3, T4):
     TABLE.update(table)
+PLURALS = dict(PLURALS, **PLURALS4)
 
 BLOCK_STRINGS = [
     ("block title", "Related content (Semantic SEO)"),
