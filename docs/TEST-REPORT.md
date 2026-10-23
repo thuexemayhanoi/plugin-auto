@@ -100,10 +100,13 @@ Found and fixed in the final audit (1.0.0-beta.2):
     but no code enforced it. Now new objects beyond the limit are counted, reported on the overview
     page and in `GET /status` (`inventory_limit`), and stored documents keep being refreshed
     (`InventoryLimitTest`).
-20. **Slow SEO Matrix risk columns:** `document_id = d.id OR target_id = d.id` with no index on
-    `target_id` scanned every open overlap finding per row (`GET /inventory?limit=20`: 459 ms at
-    1,000 synthetic posts). Now one indexed lookup per side, schema version 2
-    (`MatrixRiskColumnsTest`, migration test 1 → 2).
+20. **Slow lists on large sites:** the SEO Matrix risk columns used `document_id = d.id OR
+    target_id = d.id` with no index on `target_id` (`GET /inventory?limit=20`: 459 ms at 1,000
+    synthetic posts); at 6,000 posts the status summary, link and overlap lists sorted or grouped
+    all 92,310 findings without a covering index (`/status` 651 ms, `/cannibalization` 689 ms).
+    Now one indexed lookup per side, a covering findings index with deferred-join paging and an
+    orphan index (schema 3; same data: 0.55 → 0.07 s, 0.42 → 0.02 s, 0.39 → 0.09 s;
+    `MatrixRiskColumnsTest`, migration test 1 → 3).
 
 Also fixed in the test tooling (not the plugin): the census summary step failed when the hybrid
 reports were absent; the coexistence job compared pages too early; with two builds in `dist/` the

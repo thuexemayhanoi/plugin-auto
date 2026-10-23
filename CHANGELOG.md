@@ -29,6 +29,11 @@ Final audit of the beta. Release notes: [docs/RELEASE-NOTES-1.0.0-beta.2.md](doc
   and document frequencies are counted once per request instead of once per analysed document
   (same 25 documents of a 6,000-post synthetic site: 0.65 s → 0.17 s each;
   `LexicalSearchBudgetTest`; labelled-fixture results unchanged).
+- Database schema 3 (migrated automatically, data kept): `findings.target_id` index and per-side
+  lookups for the SEO Matrix risk columns (`GET /inventory?limit=20` at 1,000 synthetic posts:
+  459 → 46 ms); a covering findings index with deferred-join paging and an orphan index for the
+  status summary, link and overlap lists (6,000 synthetic posts, same data: 0.55 → 0.07 s,
+  0.42 → 0.02 s, 0.39 → 0.09 s; `MatrixRiskColumnsTest`, migration test 1 → 3).
 - *Max documents* is now enforced (it was shown in the settings but not applied): new objects
   beyond the limit are counted and reported (overview notice, `GET /status` → `inventory_limit`),
   stored documents keep being refreshed (`InventoryLimitTest`).
