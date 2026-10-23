@@ -82,8 +82,9 @@ Model weights are not bundled.
 * Security: the kses filters suspended for an approved write are restored in a finally block; an exception in another plugin's hook is reverted and reported; no other post field may change during a write.
 * Embeddings are stored only after the server itself has checked the device's self-test vectors (24 h pass per account and model profile); older workers get HTTP 428 and must be updated.
 * Every proposal states its URL, post ID and risk; term proposals are refused when the permalink contains the taxonomy (a URL could change).
-* Overlap report: different places in titles are distinct facets, different intents are information, vector-only pairs are the weakest tier. "Missing translation" only for content types the site pairs, never for posts the language plugin declares standalone.
-* Faster analysis (fewer queries), reproducible ZIP builds.
+* Overlap report: different places in titles are distinct facets, different intents are information, vector-only pairs are the weakest tier; lists are ordered by these tiers. "Missing translation" only for content types the site pairs, never for posts the language plugin declares standalone.
+* The Max documents setting is applied; the overview page says when it leaves objects out.
+* Faster on large sites (bounded candidate search, cached document frequencies, covering indexes: database schema 3, migrated automatically), reproducible ZIP builds.
 
 = 1.0.0-beta.1 =
 * First public beta. Lexical tier, M1–M6, Human Mode approvals with rollback, REST API, Abilities (WP 6.9+), opt-in MCP exposure of read-only abilities, browser inference worker with pinned and verified model files, private worker (Python) for self-hosted embeddings.
@@ -92,7 +93,7 @@ Model weights are not bundled.
 == Upgrade Notice ==
 
 = 1.0.0-beta.2 =
-Update the private worker together with the plugin (it now sends its self-test to the server). Read-only by default; back up your database before approving any change.
+Update the private worker together with the plugin (it now sends its self-test to the server). The plugin's own tables get new indexes automatically (schema 3, data kept). Read-only by default; back up your database before approving any change.
 
 = 1.0.0-beta.1 =
 First beta. Read-only by default; back up your database before approving any change.

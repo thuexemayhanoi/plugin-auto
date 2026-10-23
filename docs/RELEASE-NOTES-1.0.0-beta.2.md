@@ -25,17 +25,21 @@ beta until the owner has tried it on a staging copy of the blog.
 * **SEO protection:** every proposal states URL, post ID and risk; term proposals are refused when
   the permalink contains the taxonomy.
 * **Overlap report:** different places in titles → distinct facets; different intents →
-  information; vector-only pairs → weakest tier. "Missing translation" only for content types the
-  site pairs and never for posts the language plugin declares standalone (copy of the blog:
-  1,006 → 5 suggestions).
-* **Performance:** fewer queries (100 synthetic posts: 6,307 → 4,387 per analysis; enqueue three
-  queries per batch); reproducible ZIP builds.
+  information; vector-only pairs → weakest tier; lists ordered by these tiers. On the copy of the
+  blog with the real model: 95 competition pairs listed first, "manual review" 563 → 424, nothing
+  hidden. "Missing translation" only for content types the site pairs and never for posts the
+  language plugin declares standalone (copy of the blog: 1,006 → 5 suggestions).
+* ***Max documents* is applied** (it was shown but not enforced); the overview page and
+  `GET /status` say when the limit leaves objects out.
+* **Performance on large sites:** bounded BM25 candidate search, document frequencies counted once
+  per request, covering indexes with deferred-join paging (schema 3), fewer queries. Measured on
+  synthetic sites up to 6,000 posts (docs/PERFORMANCE.md). Reproducible ZIP builds.
 
 ## Highlights
 
 * Read-only by default; activation leaves content, SEO data, URLs and front-end HTML byte-identical
   (verified on WordPress 6.5.13, 6.9.10, 7.1.3).
-* Vietnamese-first admin (complete translation, 756 strings), English available.
+* Vietnamese-first admin (complete translation, 757 strings), English available.
 * Real Qwen3-Embedding-0.6B (pinned revision, SHA-256-verified): q4f16 default (567 MB), fp16
   option; precision chosen from measurements (q8 removed: least accurate, not reproducible across
   runtimes). Hybrid scoring found 70% of expected links vs 24% lexical-only on the labelled fixture.
@@ -48,9 +52,12 @@ beta until the owner has tried it on a staging copy of the blog.
 
 ## Upgrade / rollback
 
-First release — nothing to migrate. To roll back the plugin: deactivate and delete it (data is
-kept unless you chose the delete policy). Changes applied through the plugin can be rolled back
-individually before removing it.
+From 1.0.0-beta.1 (if installed from a branch build): the plugin's own tables move to schema 3
+automatically on the first request after the update (indexes only, data kept; the migration runs
+under a lock and is logged in *Settings & Diagnostics*). Update the private worker together with the
+plugin (server-side self-test). To roll back the plugin: deactivate and delete it (data is kept unless
+you chose the delete policy). Changes applied through the plugin can be rolled back individually
+before removing it.
 
 ## What the site owner should do next
 
