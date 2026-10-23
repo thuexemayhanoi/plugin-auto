@@ -181,7 +181,7 @@ Môi trường: 4 vCPU, 16 GB RAM, MariaDB 10.11.14, PHP 8.3.6, WP 7.1.3. Tái l
 | 1.000 (beta.2) | 104,3 giây | 124 MB | 41 ms | `bench-1000.json` |
 | 1.000 (**beta.3**) | **94,2 giây** | 131 MB | 49 ms | [`bench-1000-beta3.json`](evidence/bench-1000-beta3.json) |
 | 6.000 (beta.2) | 1.852,6 giây | 295 MB | 108 ms | `bench-6000` (PR #1) |
-| 6.000 (**beta.3**) | BENCH6_BETA3 | | | |
+| 6.000 (beta.3, `01bd4bc`, trước hai bản sửa #32/#33) | 1.999,2 giây *(một phần thời gian máy đang chạy song song các test khác)* | 303 MB | 86 ms | [`bench-6000-beta3.json`](evidence/bench-6000-beta3.json) |
 | 20.000 (một phần) | Kiểm kê 301 giây; phân tích cặp **0,52 giây/bài** qua CLI (trung vị, đo riêng 150 bài) ⇒ ước tính khoảng **3 giờ** cho 20.010 bài; qua tick kiểu WP-Cron **5 giây/bài** | 73 MB (150 bài); **773–791 MB** với tiến trình CLI chạy 42 phút trước khi sửa #32; bước dựng cụm 759 MB ⇒ 156 MB | 950 ms *(đo trong lúc phân tích đang chạy)* | [`audit-bench-20000-partial.json`](evidence/audit-bench-20000-partial.json), [`audit-cluster-step-20000.json`](evidence/audit-cluster-step-20000.json) |
 
 **Kết luận hiệu năng:**

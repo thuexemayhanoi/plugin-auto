@@ -32,7 +32,10 @@ Measured on the same machine; details in [QA-AUDIT-REPORT.md](QA-AUDIT-REPORT.md
   0.52 s per document in one CLI process (≈ 3 h in total) and ≈ 5 s per document in WP-Cron ticks,
   where every request starts with cold document-frequency caches. At 6,000 posts it is 0.17–0.26 s
   per document. The reference blog has ≈ 1,083 URLs.
-* **1,000 posts (beta.3):** 94.2 s for a full CLI run, 131 MB.
+* **1,000 posts (beta.3):** 94.2 s for a full CLI run, 131 MB. **6,000 posts (beta.3 before the
+  cluster/tick fixes):** 1,999 s, 303 MB, `/status` median 86 ms
+  ([`bench-6000-beta3.json`](evidence/bench-6000-beta3.json); other tests ran on the machine part of
+  the time).
 * **1,500 near-duplicate posts:** 295 s, 167 MB, 37,362 overlap pairs (24.9 per post; candidate
   search is bounded, not all-pairs).
 
