@@ -295,6 +295,12 @@ final class InventoryScanner {
 		$standalone   = LanguageResolver::declared_standalone( $post->ID );
 		$seo          = SeoAdapter::post_meta( $post );
 		$canonical    = '' !== $seo['canonical'] ? $seo['canonical'] : ( 'publish' === $post->post_status ? (string) wp_get_canonical_url( $post ) : $url );
+		// Password-protected posts: their text is not public, so it is never stored, analysed or
+		// handed to agents or embedding workers; the post is kept out of suggestions (excluded).
+		$protected = '' !== (string) $post->post_password;
+		if ( $protected ) {
+			$seo['description'] = '';
+		}
 
 		$terms = array();
 		foreach ( self::taxonomies() as $tax ) {
@@ -333,6 +339,7 @@ final class InventoryScanner {
 					$loc,
 					$translations,
 					$standalone,
+					$protected,
 				)
 			)
 		);
@@ -341,7 +348,7 @@ final class InventoryScanner {
 			return 0;
 		}
 		$now      = Util::now();
-		$excluded = LockService::is_excluded( 'post', $post->ID, $url ) ? 1 : 0;
+		$excluded = $protected || LockService::is_excluded( 'post', $post->ID, $url ) ? 1 : 0;
 		if ( null !== $existing && ! $force && $existing['index_hash'] === $fingerprint && 0 === (int) $existing['dirty'] ) {
 			DocumentRepository::update(
 				(int) $existing['id'],
@@ -357,9 +364,9 @@ final class InventoryScanner {
 		$x = ContentExtractor::extract(
 			array(
 				'title'       => $post->post_title,
-				'content'     => $post->post_content,
-				'excerpt'     => $post->post_excerpt,
-				'description' => $seo['description'],
+				'content'     => $protected ? '' : $post->post_content,
+				'excerpt'     => $protected ? '' : $post->post_excerpt,
+				'description' => $protected ? '' : $seo['description'],
 				'slug'        => $post->post_name,
 			)
 		);
@@ -383,7 +390,7 @@ final class InventoryScanner {
 				'excluded'          => $excluded,
 				'published_at'      => '0000-00-00 00:00:00' === $post->post_date_gmt ? null : $post->post_date_gmt,
 				'modified_at'       => '0000-00-00 00:00:00' === $post->post_modified_gmt ? null : $post->post_modified_gmt,
-				'excerpt'           => $post->post_excerpt,
+				'excerpt'           => $protected ? '' : $post->post_excerpt,
 			),
 			$x
 		);
