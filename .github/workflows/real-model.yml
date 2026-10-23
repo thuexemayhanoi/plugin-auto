@@ -19,13 +19,6 @@ on:
       - 'bin/build-vendor.mjs'
       - 'package-lock.json'
       - '.github/workflows/real-model.yml'
-  pull_request:
-    paths:
-      - 'includes/**'
-      - 'assets/js/ai-worker/**'
-      - 'tools/private-worker/**'
-      - 'tests/real-model/**'
-      - '.github/workflows/real-model.yml'
 
 permissions:
   contents: read
@@ -52,6 +45,8 @@ jobs:
     env:
       WP_TESTS_DB_HOST: 127.0.0.1
       MODEL_CACHE: /home/runner/.cache/sseo-worker
+      # "all": every ONNX variant of the pinned revision is measured (quantization survey).
+      REAL_MODEL_DTYPES: all
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -77,25 +72,13 @@ jobs:
       - name: Install Chromium for Playwright
         run: npx playwright install --with-deps chromium
 
-      - name: Restore verified model files
-        id: model-cache
-        uses: actions/cache/restore@v4
-        with:
-          path: ${{ env.MODEL_CACHE }}
-          key: qwen3-embedding-0.6b-onnx-${{ hashFiles('includes/Semantic/ModelProfile.php') }}-q8-q4f16-fp32
-      - name: Fetch + verify the pinned files (Hub metadata cross-check, SHA-256)
-        run: python -I tests/real-model/fetch_verify.py --cache-dir "$MODEL_CACHE" --dtypes q8,q4f16,fp32 --manifest "$RUNNER_TEMP/manifest.json"
-      - name: Save verified model files
-        if: steps.model-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
-        with:
-          path: ${{ env.MODEL_CACHE }}
-          key: qwen3-embedding-0.6b-onnx-${{ hashFiles('includes/Semantic/ModelProfile.php') }}-q8-q4f16-fp32
+      - name: Fetch + verify the pinned files (Hub metadata cross-check, SHA-256) and every other ONNX variant
+        run: python -I tests/real-model/fetch_verify.py --cache-dir "$MODEL_CACHE" --dtypes "$REAL_MODEL_DTYPES" --manifest "$RUNNER_TEMP/manifest.json"
 
       - name: Python ONNX Runtime — model-card self-test per dtype, dtype agreement, cross-language
         run: python -I tests/real-model/verify_model.py --manifest "$RUNNER_TEMP/manifest.json"
       - name: Browser worker in Chromium — downloads from huggingface.co, self-test, vectors vs Python
-        run: node tests/real-model/browser-real.mjs tests/e2e/artifacts/real-model-vectors.json
+        run: node tests/real-model/browser-real.mjs tests/e2e/artifacts/real-model-vectors.json "$RUNNER_TEMP/manifest.json"
 
       - name: WordPress 7.1.3 release + test library
         run: bin/install-wp-tests.sh 7.1.3 "$RUNNER_TEMP/wp" | sed 's/^export //' >> "$GITHUB_ENV"

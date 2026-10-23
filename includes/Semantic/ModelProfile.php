@@ -58,6 +58,11 @@ final class ModelProfile {
 
 	/**
 	 * Reference similarities published on the model card (fp32), used as a runtime self-test.
+	 * Tolerances are the largest deviation measured for each dtype with the real pinned files
+	 * (GitHub Actions, workflow "Real Qwen3-Embedding-0.6B": fp32 0.0000, q8 0.1149, q4f16 0.0937
+	 * on ONNX Runtime CPU) plus a margin for other runtimes. The per-query ranking must also match,
+	 * and deliberately wrong pipelines (no instruction, mean/first-token pooling, missing end-of-text
+	 * token) are checked in that workflow to be rejected.
 	 */
 	const REFERENCE = array(
 		'queries'   => array( 'What is the capital of China?', 'Explain gravity' ),
@@ -69,8 +74,8 @@ final class ModelProfile {
 		'tolerance' => array(
 			'fp32'  => 0.01,
 			'fp16'  => 0.03,
-			'q8'    => 0.06,
-			'q4f16' => 0.08,
+			'q8'    => 0.15,
+			'q4f16' => 0.13,
 		),
 	);
 

@@ -45,6 +45,46 @@ def stats(xs):
     return {"n": len(xs), "min": round(min(xs), 4), "mean": round(float(np.mean(xs)), 4), "max": round(max(xs), 4)}
 
 
+def negative_controls(w, emb, prof):
+    """Deliberately wrong pipelines on the fp32 model: the self-test must reject every one of them."""
+    ref = prof["reference"]
+    tol = float(ref["tolerance"]["fp32"])
+    out = {}
+
+    def matrix(q, d):
+        return [[float(np.dot(a, b)) for b in d] for a in q]
+
+    def judge(m):
+        diff = max(abs(m[i][j] - ref["scores"][i][j]) for i in range(2) for j in range(2))
+        rank = all(int(np.argmax(m[i])) == int(np.argmax(ref["scores"][i])) for i in range(2))
+        return {"max_abs_diff": round(diff, 4), "ranking_ok": rank, "rejected_at_fp32_tolerance": not (diff <= tol and rank),
+                "rejected_at_loosest_tolerance": not (diff <= max(ref["tolerance"].values()) and rank)}
+
+    queries = [emb.format_query(x) for x in ref["queries"]]
+    out["no_query_instruction"] = judge(matrix(emb.embed(list(ref["queries"])), emb.embed(list(ref["documents"]))))
+
+    def pooled(texts, mode):
+        enc = emb.tok.encode_batch(texts)
+        ids = np.array([e.ids for e in enc], dtype=np.int64)
+        mask = np.array([e.attention_mask for e in enc], dtype=np.int64)
+        hidden = emb.session.run(None, emb._feeds(ids, mask))[0].astype(np.float32)
+        vecs = []
+        for b in range(hidden.shape[0]):
+            valid = np.where(mask[b] == 1)[0]
+            if mode == "mean":
+                v = hidden[b, valid, :].mean(axis=0)
+            elif mode == "first":
+                v = hidden[b, valid[0], :]
+            else:  # second-to-last real token: as if the appended end-of-text token were missing
+                v = hidden[b, valid[-2], :]
+            vecs.append(v / max(float(np.linalg.norm(v)), 1e-12))
+        return vecs
+
+    for mode in ("mean", "first", "without_eos"):
+        out[mode + "_pooling" if mode != "without_eos" else "last_token_without_eos"] = judge(matrix(pooled(queries, mode), pooled(list(ref["documents"]), mode)))
+    return out
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--manifest", required=True)
@@ -80,11 +120,16 @@ def main():
     vectors = {}
     failed_offered = []
 
-    for dtype in [d for d in ("fp32", "q8", "q4f16", "fp16") if d in manifest["files"]]:
+    order = ["fp32", "fp16", "q8", "int8", "uint8", "q4", "q4f16", "bnb4"]
+    plugin_dtypes = manifest.get("plugin_dtypes", offered)
+    for dtype in [d for d in order if d in manifest["files"]]:
         files = dict(manifest["files"]["common"])
         files.update(manifest["files"][dtype])
         profile = dict(prof, files=files, dtype=dtype)
-        entry = {"files": sorted(manifest["files"][dtype])}
+        if dtype not in prof["reference"]["tolerance"]:
+            # Not offered by the plugin: measured only, compared with the loosest plugin tolerance.
+            prof["reference"]["tolerance"][dtype] = max(prof["reference"]["tolerance"].values())
+        entry = {"files": sorted(manifest["files"][dtype]), "offered_by_plugin": dtype in plugin_dtypes, "bytes": sum(int(v[0]) for v in manifest["files"][dtype].values())}
         try:
             t0 = time.time()
             emb = w.Embedder(manifest["root"], profile, threads=args.threads)
@@ -105,17 +150,27 @@ def main():
             entry["error"] = "%s: %s" % (type(e).__name__, str(e)[:500])
         report["dtypes"][dtype] = entry
         print(dtype, json.dumps({k: v for k, v in entry.items() if k != "files"}), flush=True)
-        if dtype in offered and not entry.get("selftest", {}).get("passed"):
+        if dtype in plugin_dtypes and not entry.get("selftest", {}).get("passed"):
             failed_offered.append(dtype)
-        if dtype in ("fp32", "q8") and not entry.get("selftest", {}).get("passed"):
+        if dtype in ["fp32"] + plugin_dtypes and dtype != "fp16" and not entry.get("selftest", {}).get("passed"):
             report.setdefault("pipeline_failures", []).append(dtype)
+        if dtype == "fp32" and "error" not in entry:
+            report["negative_controls"] = negative_controls(w, emb, prof)
 
-    # Agreement with fp32.
+    # Agreement with fp32: per-document cosine and same-locale top-5 neighbour overlap.
     if "fp32" in vectors:
+        F = vectors["fp32"]
+        live = [i for i, d in enumerate(docs) if d["key"] not in ("vi-trashed", "vi-draft")]
+
+        def top5(V, i):
+            cands = [j for j in live if j != i and docs[j]["lang"] == docs[i]["lang"]]
+            return set(sorted(cands, key=lambda j: -float(V[i] @ V[j]))[:5])
+
         for dtype, vecs in vectors.items():
             if dtype != "fp32":
-                cos = np.sum(vecs * vectors["fp32"], axis=1)
+                cos = np.sum(vecs * F, axis=1)
                 report["dtypes"][dtype]["cosine_vs_fp32"] = stats(cos)
+                report["dtypes"][dtype]["top5_neighbour_overlap_vs_fp32"] = round(float(np.mean([len(top5(vecs, i) & top5(F, i)) / 5.0 for i in live])), 3)
 
     # Cross-language and same-locale retrieval with the best available dtype.
     base = "fp32" if "fp32" in vectors else ("q8" if "q8" in vectors else None)
@@ -174,7 +229,12 @@ def main():
 
     report["failed_offered_dtypes"] = failed_offered
     json.dump(report, open(os.path.join(args.out, "real-model.json"), "w"), indent=1, ensure_ascii=False)
-    print(json.dumps({k: report[k] for k in ("cross_language", "semantic_only_same_locale", "failed_offered_dtypes") if k in report}, indent=1, ensure_ascii=False))
+    print("dtype  bytes        selftest_diff  ok     cos_vs_fp32(min/mean)  top5_overlap  s/doc")
+    for dtype, e in report["dtypes"].items():
+        st = e.get("selftest", {})
+        cv = e.get("cosine_vs_fp32") or {}
+        print("%-6s %-12s %-14s %-6s %-22s %-13s %s" % (dtype, e.get("bytes"), st.get("max_abs_diff", e.get("error", "")[:40]), st.get("passed"), "%s/%s" % (cv.get("min"), cv.get("mean")) if cv else "-", e.get("top5_neighbour_overlap_vs_fp32", "-"), e.get("embed_seconds_per_doc")))
+    print(json.dumps({k: report[k] for k in ("negative_controls", "cross_language", "semantic_only_same_locale", "failed_offered_dtypes", "pipeline_failures") if k in report}, indent=1, ensure_ascii=False))
     # fp32 proves the pipeline reproduces the model card; q8 is the dtype every CPU/WASM device can
     # run. A q4f16/fp16 failure on CPU is recorded (it decides the documented defaults), not fatal.
     return 1 if report.get("pipeline_failures") else 0

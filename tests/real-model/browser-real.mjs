@@ -3,14 +3,15 @@
  * the worker itself from https://huggingface.co at the pinned revision through its pinned,
  * SHA-256-verifying fetch (exactly what an administrator's browser does). CI only (needs internet).
  *
- *   node tests/real-model/browser-real.mjs <real-model-vectors.json>
+ *   node tests/real-model/browser-real.mjs <real-model-vectors.json> [<manifest.json>]
  *
  * Scenarios (results in tests/e2e/artifacts/real-model-browser.json):
  *   A. q8 on WASM: load, model-card self-test, embed; vectors compared with the Python ONNX Runtime
  *      vectors of the same inputs (tests/real-model/verify_model.py). Required to pass.
  *   B. Second load is served from the verified browser cache (no model download).
- *   C. q4f16 on WASM (the default dtype on a device without WebGPU): recorded, not required.
+ *   C. Other variants on WASM (q4f16, q4 when fetched): recorded, not required.
  *   D. WebGPU through SwiftShader (software adapter) if Chromium exposes one: recorded, not required.
+ * Variants the plugin does not offer use the Hub-metadata pins from the manifest of fetch_verify.py.
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -23,6 +24,8 @@ const ROOT = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..
 const OUT = path.join( ROOT, 'tests/e2e/artifacts' );
 const ref = JSON.parse( fs.readFileSync( process.argv[ 2 ] || path.join( OUT, 'real-model-vectors.json' ), 'utf8' ) );
 const prof = JSON.parse( execFileSync( 'php', [ path.join( ROOT, 'tests/real-model/export.php' ), 'profile' ] ) );
+const manifest = process.argv[ 3 ] ? JSON.parse( fs.readFileSync( process.argv[ 3 ], 'utf8' ) ) : { files: {} };
+const loosest = Math.max( ...Object.values( prof.reference.tolerance ) );
 const results = [];
 const info = {};
 
@@ -32,6 +35,8 @@ function record( name, ok, detail, required = true ) {
 }
 
 function profileFor( dtype ) {
+	const files = prof.files[ dtype ] || manifest.files[ dtype ];
+	const reference = prof.reference.tolerance[ dtype ] ? prof.reference : { ...prof.reference, tolerance: { ...prof.reference.tolerance, [ dtype ]: loosest } };
 	return {
 		model_id: prof.model_id,
 		revision: prof.revision,
@@ -43,8 +48,8 @@ function profileFor( dtype ) {
 		preprocess_version: prof.preprocess_version,
 		max_tokens: prof.max_tokens,
 		query_task: prof.query_task,
-		files: { ...prof.files.common, ...prof.files[ dtype ] },
-		reference: prof.reference,
+		files: { ...prof.files.common, ...files },
+		reference,
 	};
 }
 
@@ -137,18 +142,21 @@ try {
 	record( 'A5 no page errors', A.errors.length === 0, A.errors.join( ' | ' ) );
 	await A.browser.close();
 
-	// C. q4f16 on WASM (informational).
-	const C = await openPage( [] );
-	t0 = Date.now();
-	const c = await withTimeout(
-		C.page.evaluate( ( a ) => window.sseoRun( [ a.init, { type: 'selftest', id: 1, reference: a.reference } ] ), { init: { ...init, profile: profileFor( 'q4f16' ) }, reference: prof.reference } ),
-		20 * 60 * 1000,
-		'q4f16/wasm'
-	);
-	const cs = c.out[ 1 ];
-	info.q4f16_wasm = { ready: c.out[ 0 ], selftest: cs && { ok: cs.ok, maxDiff: cs.maxDiff, matrix: cs.matrix, tolerance: cs.tolerance }, total_seconds: ( Date.now() - t0 ) / 1000 };
-	record( 'C q4f16 on WASM: load + self-test', !! ( cs && cs.type === 'selftest' && cs.ok ), c.out[ 0 ].type === 'error' ? c.out[ 0 ].message : cs && ( cs.type === 'selftest' ? 'max |Δ| ' + cs.maxDiff.toFixed( 4 ) + ' (tolerance ' + cs.tolerance + '), ' + info.q4f16_wasm.total_seconds + ' s' : cs.message ), false );
-	await C.browser.close();
+	// C. Other variants on WASM (informational).
+	for ( const dtype of [ 'q4f16', 'q4', 'bnb4' ].filter( ( d ) => prof.files[ d ] || manifest.files[ d ] ) ) {
+		const C = await openPage( [] );
+		t0 = Date.now();
+		const p = profileFor( dtype );
+		const c = await withTimeout(
+			C.page.evaluate( ( a ) => window.sseoRun( [ a.init, { type: 'selftest', id: 1, reference: a.reference } ] ), { init: { ...init, profile: p }, reference: p.reference } ),
+			20 * 60 * 1000,
+			dtype + '/wasm'
+		);
+		const cs = c.out[ 1 ];
+		info[ dtype + '_wasm' ] = { ready: c.out[ 0 ], selftest: cs && { ok: cs.ok, maxDiff: cs.maxDiff, matrix: cs.matrix, tolerance: cs.tolerance }, total_seconds: ( Date.now() - t0 ) / 1000 };
+		record( 'C ' + dtype + ' on WASM: load + self-test', !! ( cs && cs.type === 'selftest' && cs.ok ), c.out[ 0 ].type === 'error' ? c.out[ 0 ].message : cs && ( cs.type === 'selftest' ? 'max |Δ| ' + cs.maxDiff.toFixed( 4 ) + ' (tolerance ' + cs.tolerance + '), matrix ' + JSON.stringify( cs.matrix.map( ( r ) => r.map( ( x ) => +x.toFixed( 4 ) ) ) ) + ', ' + info[ dtype + '_wasm' ].total_seconds + ' s' : cs.message ), false );
+		await C.browser.close();
+	}
 
 	// D. WebGPU through SwiftShader (informational; no GPU on CI runners).
 	const D = await openPage( [ '--enable-unsafe-webgpu', '--enable-features=Vulkan', '--use-vulkan=swiftshader', '--use-webgpu-adapter=swiftshader', '--disable-vulkan-surface' ] );
@@ -161,16 +169,16 @@ try {
 	} );
 	info.webgpu = { caps };
 	if ( caps.adapter ) {
-		const dtype = caps.f16 ? 'q4f16' : 'q8';
+		const dtype = caps.f16 ? 'q4f16' : ( manifest.files.q4 ? 'q4' : 'q8' );
 		t0 = Date.now();
 		const d = await withTimeout(
-			D.page.evaluate( ( a ) => window.sseoRun( [ a.init, { type: 'selftest', id: 1, reference: a.reference } ] ), { init: { ...init, device: 'webgpu', profile: profileFor( dtype ) }, reference: prof.reference } ),
+			D.page.evaluate( ( a ) => window.sseoRun( [ a.init, { type: 'selftest', id: 1, reference: a.reference } ] ), { init: { ...init, device: 'webgpu', profile: profileFor( dtype ) }, reference: profileFor( dtype ).reference } ),
 			20 * 60 * 1000,
 			'webgpu'
 		);
 		const ds = d.out[ 1 ];
 		info.webgpu.run = { dtype, ready: d.out[ 0 ], selftest: ds && { ok: ds.ok, maxDiff: ds.maxDiff, matrix: ds.matrix }, total_seconds: ( Date.now() - t0 ) / 1000 };
-		record( 'D WebGPU (SwiftShader software adapter) ' + dtype + ': load + self-test', !! ( ds && ds.type === 'selftest' && ds.ok ), d.out[ 0 ].type === 'error' ? d.out[ 0 ].message : ds && ( ds.type === 'selftest' ? 'max |Δ| ' + ds.maxDiff.toFixed( 4 ) : ds.message ), false );
+		record( 'D WebGPU (SwiftShader software adapter) ' + dtype + ': load + self-test', !! ( ds && ds.type === 'selftest' && ds.ok ), d.out[ 0 ].type === 'error' ? d.out[ 0 ].message : ds && ( ds.type === 'selftest' ? 'max |Δ| ' + ds.maxDiff.toFixed( 4 ) + ', matrix ' + JSON.stringify( ds.matrix.map( ( r ) => r.map( ( x ) => +x.toFixed( 4 ) ) ) ) + ', ' + info.webgpu.run.total_seconds + ' s' : ds.message ), false );
 	} else {
 		record( 'D WebGPU adapter available in headless Chromium', false, JSON.stringify( caps ), false );
 	}
@@ -184,5 +192,6 @@ try {
 failed = results.some( ( r ) => r.required && ! r.ok );
 fs.mkdirSync( OUT, { recursive: true } );
 fs.writeFileSync( path.join( OUT, 'real-model-browser.json' ), JSON.stringify( { when: new Date().toISOString(), model: prof.model_id + '@' + prof.revision, chromium: chromium.name(), results, info }, null, 1 ) );
+console.log( 'INFO ' + JSON.stringify( info ) );
 console.log( results.filter( ( r ) => r.ok ).length + '/' + results.length + ' passed (' + results.filter( ( r ) => r.required ).length + ' required)' );
 process.exit( failed ? 1 : 0 );

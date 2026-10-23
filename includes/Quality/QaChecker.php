@@ -22,7 +22,7 @@ defined( 'ABSPATH' ) || exit;
  */
 final class QaChecker {
 
-	const VERSION = 'qa-1';
+	const VERSION = 'qa-2';
 
 	const CHECKS = array(
 		'missing_title'              => 'Missing title',
@@ -268,14 +268,15 @@ final class QaChecker {
 			);
 		}
 
-		// Translations (only when a mapping can be verified).
+		// Translations (only when a mapping can be verified). A missing translation is a suggestion for
+		// human review, not a warning: many bilingual sites translate selectively, by search intent.
 		if ( $is_post && $ctx['mapping'] && count( $ctx['languages'] ) > 1 ) {
 			$tr      = isset( $s['translations'] ) ? array_keys( (array) $s['translations'] ) : array();
 			$missing = array_values( array_diff( $ctx['languages'], $tr, array( $p['locale'] ) ) );
 			if ( array() !== $missing ) {
 				$add(
 					'missing_translation',
-					'warning',
+					'suggestion',
 					'info',
 					array(
 						'missing_languages' => $missing,

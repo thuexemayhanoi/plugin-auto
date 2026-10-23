@@ -98,6 +98,12 @@ jobs:
       - name: WordPress ${{ matrix.wp }} release + test library
         run: bin/install-wp-tests.sh ${{ matrix.wp }} "$RUNNER_TEMP/wp" | sed 's/^export //' >> "$GITHUB_ENV"
       - run: composer install --no-interaction --no-progress
+      - name: Nguyen Ha VI-EN Core (the blog's language plugin, pinned, read-only) for NhVienLanguageTest
+        run: |
+          git init -q "$RUNNER_TEMP/wordpress-theme"
+          git -C "$RUNNER_TEMP/wordpress-theme" fetch -q --depth 1 https://github.com/thuexemayhanoi/wordpress-theme.git d8f6b582a97d03071bae7019bfeead20bfde267d
+          git -C "$RUNNER_TEMP/wordpress-theme" checkout -q FETCH_HEAD
+          echo "NH_VIEN_PLUGIN_DIR=$RUNNER_TEMP/wordpress-theme/plugins/nguyen-ha-vi-en" >> "$GITHUB_ENV"
       - name: Integration suite (real WordPress + MariaDB)
         run: vendor/bin/phpunit -c phpunit.xml.dist
 
