@@ -23,26 +23,55 @@ final class JobRepository {
 	const FINISHED = array( 'completed', 'failed', 'cancelled' );
 
 	/**
-	 * Creates a job unless an equivalent active job exists.
+	 * Job previously created by the same owner with the same idempotency key, if any.
 	 *
 	 * @param string $type            Job type.
-	 * @param array  $params          Bounded parameters.
 	 * @param int    $owner_id        Owner user ID.
+	 * @param string $idempotency_key Client key.
+	 * @return array|null Job row with "reused" flag.
+	 */
+	public static function by_idempotency_key( $type, $owner_id, $idempotency_key ) {
+		if ( '' === (string) $idempotency_key ) {
+			return null;
+		}
+		$prior = Db::row( 'SELECT * FROM {jobs} WHERE idempotency_key = %s', array( self::idempotency_hash( $type, $owner_id, $idempotency_key ) ) );
+		if ( null === $prior ) {
+			return null;
+		}
+		$prior['reused'] = true;
+		return self::decode( $prior );
+	}
+
+	/**
+	 * Stored form of an idempotency key (scoped to job type and owner).
+	 *
+	 * @param string $type            Job type.
+	 * @param int    $owner_id        Owner.
+	 * @param string $idempotency_key Client key.
+	 * @return string
+	 */
+	private static function idempotency_hash( $type, $owner_id, $idempotency_key ) {
+		return Util::sha256( $type . '|' . (int) $owner_id . '|' . $idempotency_key );
+	}
+
+	/**
+	 * Creates a job unless an identical idempotent request exists or a job of the type is active.
+	 *
+	 * @param string $type            Job type.
+	 * @param array  $params          Parameters.
+	 * @param int    $owner_id        Owner.
 	 * @param string $via             Transport.
 	 * @param string $idempotency_key Optional client key.
-	 * @return array|\WP_Error Job row (with "reused" flag when idempotent replay).
+	 * @return array|\WP_Error
 	 */
 	public static function create( $type, array $params, $owner_id, $via, $idempotency_key = '' ) {
 		if ( ! in_array( $type, self::TYPES, true ) ) {
 			return new \WP_Error( 'sseo_invalid_job_type', __( 'Unknown job type.', 'semantic-seo-engine-vi-en' ), array( 'status' => 400 ) );
 		}
-		$key = '' === $idempotency_key ? null : Util::sha256( $type . '|' . $owner_id . '|' . $idempotency_key );
-		if ( null !== $key ) {
-			$prior = Db::row( 'SELECT * FROM {jobs} WHERE idempotency_key = %s', array( $key ) );
-			if ( null !== $prior ) {
-				$prior['reused'] = true;
-				return self::decode( $prior );
-			}
+		$key   = '' === $idempotency_key ? null : self::idempotency_hash( $type, $owner_id, $idempotency_key );
+		$prior = null === $key ? null : self::by_idempotency_key( $type, $owner_id, $idempotency_key );
+		if ( null !== $prior ) {
+			return $prior;
 		}
 		$lock = Mutex::acquire( 'job_create', 30 );
 		if ( false === $lock ) {

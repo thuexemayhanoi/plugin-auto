@@ -588,10 +588,16 @@ final class Api {
 		if ( ! empty( $args['then_analyze'] ) ) {
 			$params['then_analyze'] = true;
 		}
+		$idempotency_key = isset( $args['idempotency_key'] ) ? substr( (string) $args['idempotency_key'], 0, 64 ) : '';
+		// A retried request returns the original job, before any quota applies.
+		$prior = JobRepository::by_idempotency_key( $type, get_current_user_id(), $idempotency_key );
+		if ( null !== $prior ) {
+			return JobRepository::to_public( $prior );
+		}
 		if ( AuthContext::is_agent_context() && JobRepository::active_count_for( get_current_user_id() ) >= 1 ) {
 			return new \WP_Error( 'sseo_quota', __( 'Agents may run one job at a time.', 'semantic-seo-engine-vi-en' ), array( 'status' => 429 ) );
 		}
-		$job = JobRepository::create( $type, $params, get_current_user_id(), AuthContext::via(), isset( $args['idempotency_key'] ) ? substr( (string) $args['idempotency_key'], 0, 64 ) : '' );
+		$job = JobRepository::create( $type, $params, get_current_user_id(), AuthContext::via(), $idempotency_key );
 		if ( is_wp_error( $job ) ) {
 			return $job;
 		}
@@ -837,9 +843,12 @@ final class Api {
 		if ( is_wp_error( $g ) ) {
 			return $g;
 		}
+		$profile = ModelProfile::active();
 		return array(
-			'profile' => EmbeddingQueue::public_profile( ModelProfile::active() ),
-			'queue'   => EmbeddingQueue::counts(),
+			'profile'   => EmbeddingQueue::public_profile( $profile ),
+			// Model-card similarities: every worker must reproduce them before uploading vectors.
+			'reference' => $profile['reference'],
+			'queue'     => EmbeddingQueue::counts(),
 		);
 	}
 

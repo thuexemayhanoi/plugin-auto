@@ -55,6 +55,13 @@ export function startServer() {
 		res.end( body );
 	} );
 	return new Promise( ( resolve ) => {
-		server.listen( 0, '127.0.0.1', () => resolve( { server, log, port: server.address().port } ) );
+		server.listen( startServer.port || 0, '127.0.0.1', () => resolve( { server, log, port: server.address().port } ) );
 	} );
+}
+
+// Standalone: node tests/e2e/static-server.mjs <port>
+if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( import.meta.url ) ) {
+	startServer.port = Number( process.argv[ 2 ] || 0 );
+	const { port } = await startServer();
+	console.log( 'fixture server on http://127.0.0.1:' + port );
 }

@@ -7,6 +7,7 @@
 
 namespace SemanticSEO\Tests\Integration;
 
+use SemanticSEO\Capabilities;
 use SemanticSEO\Database\Db;
 use SemanticSEO\Database\Migrator;
 use SemanticSEO\Jobs\JobRepository;
@@ -15,6 +16,7 @@ use SemanticSEO\Matrix\CsvReader;
 use SemanticSEO\Matrix\MatrixExporter;
 use SemanticSEO\Matrix\MatrixImporter;
 use SemanticSEO\Matrix\MatrixQuery;
+use SemanticSEO\Services\Api;
 use SemanticSEO\Settings;
 use SemanticSEO\Support\Util;
 
@@ -266,5 +268,33 @@ final class OperationsTest extends TestCase {
 		// Restore for the rest of the suite.
 		Migrator::migrate();
 		$this->assertSame( array(), Migrator::missing_tables() );
+	}
+
+	public function test_idempotent_retry_returns_the_same_job_despite_the_agent_quota() {
+		Capabilities::ensure_agent_roles();
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'sseo_agent_analyst' ) ) );
+		$first = Api::start_analysis(
+			array(
+				'type'            => 'analyze',
+				'idempotency_key' => 'retry-key-123',
+			)
+		);
+		$this->assertIsArray( $first );
+		$retry = Api::start_analysis(
+			array(
+				'type'            => 'analyze',
+				'idempotency_key' => 'retry-key-123',
+			)
+		);
+		$this->assertIsArray( $retry, 'A retried request must not hit the quota.' );
+		$this->assertSame( $first['id'], $retry['id'] );
+		$other = Api::start_analysis(
+			array(
+				'type'            => 'inventory',
+				'idempotency_key' => 'other-key-456',
+			)
+		);
+		$this->assertWPError( $other );
+		$this->assertSame( 'sseo_quota', $other->get_error_code() );
 	}
 }

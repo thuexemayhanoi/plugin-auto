@@ -35,7 +35,8 @@ echo "$PASS" > "$DIR/.admin-pass"
 chmod 600 "$DIR/.admin-pass"
 
 cp "$HERE/router.php" "$DIR/.router.php"
-( cd "$DIR" && PHP_CLI_SERVER_WORKERS=4 nohup php -S "127.0.0.1:$PORT" .router.php >"$DIR/.server.log" 2>&1 & )
+# exec + group redirection: no shell keeps the caller's stdout/stderr open (pipelines can finish).
+( cd "$DIR" && PHP_CLI_SERVER_WORKERS=4 exec nohup php -S "127.0.0.1:$PORT" .router.php ) >"$DIR/.server.log" 2>&1 </dev/null &
 for _ in $(seq 1 50); do
 	curl -fsS -o /dev/null "http://127.0.0.1:$PORT/" && break
 	sleep 0.2
