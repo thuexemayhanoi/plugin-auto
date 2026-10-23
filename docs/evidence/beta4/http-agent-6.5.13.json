@@ -2,7 +2,7 @@
  "wordpress": "6.5.13",
  "abilities": false,
  "mcp_adapter": false,
- "when": "2026-10-23T19:38:05.638Z",
+ "when": "2026-10-23T20:16:25.413Z",
  "results": [
   {
    "name": "guest is refused (401) on every read route",
@@ -97,7 +97,7 @@
   {
    "name": "rate limiting returns 429 with Retry-After",
    "ok": true,
-   "detail": "Retry-After 55"
+   "detail": "Retry-After 36"
   },
   {
    "name": "audit log records agent actions without secrets; agents only see their own entries",
