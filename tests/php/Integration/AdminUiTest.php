@@ -321,4 +321,130 @@ final class AdminUiTest extends TestCase {
 		$this->assertSame( 'Settings saved.', __( 'Settings saved.', 'semantic-seo-engine-vi-en' ) );
 		unload_textdomain( 'semantic-seo-engine-vi-en' );
 	}
+
+	/**
+	 * Runs every queued scan job to completion (inventory, then the chained analysis).
+	 *
+	 * @return void
+	 */
+	private function run_scan_jobs() {
+		for ( $i = 0; $i < 6; $i++ ) {
+			$next = \SemanticSEO\Jobs\JobRepository::next_runnable();
+			if ( $next <= 0 ) {
+				return;
+			}
+			\SemanticSEO\Jobs\JobRunner::run_to_completion( $next );
+		}
+	}
+
+	public function test_dashboard_trial_on_20_pages_is_read_only_and_shows_measured_results() {
+		$this->load_corpus();
+		$before = \SemanticSEO\Security\ReadOnlyProof::snapshot();
+		list( $type, $msg ) = $this->post_action( 'scan', array( 'scope' => 'pilot' ) );
+		$this->assertSame( 'success', $type, $msg );
+		$inv = \SemanticSEO\Jobs\JobRepository::find( array( 'type' => 'inventory', 'limit' => 1 ) )[0];
+		$this->assertTrue( $inv['params']['pilot'] );
+		$this->assertCount( \SemanticSEO\Admin\OverviewPage::PILOT_SIZE, $inv['params']['post_ids'] );
+		$this->assertArrayHasKey( 'hash', $inv['params']['readonly_snapshot'] );
+
+		// While it runs: progress and controls on the dashboard.
+		$html = $this->render_page( 'sseo' );
+		$this->assertStringContainsString( 'data-sseo-job="' . $inv['id'] . '"', $html );
+		$this->assertStringContainsString( 'name="op" value="pause"', $html );
+		$this->assertStringContainsString( 'name="op" value="cancel"', $html );
+
+		$this->run_scan_jobs();
+		$pilot = \SemanticSEO\Analysis\ScanHistory::latest( 'pilot' );
+		$this->assertNotNull( $pilot );
+		$this->assertTrue( $pilot['readonly']['unchanged'], 'the trial changed nothing' );
+		$this->assertSame( array(), $pilot['readonly']['changed_post_ids'] );
+		$this->assertGreaterThan( 0, $pilot['work_seconds'] );
+		$this->assertGreaterThan( 0, $pilot['peak_memory'] );
+		$this->assertSame( $before['hash'], \SemanticSEO\Security\ReadOnlyProof::snapshot()['hash'], 'posts, meta and terms of the whole site unchanged' );
+
+		$html = $this->render_page( 'sseo' );
+		$this->assertStringContainsString( 'Read-only verified', $html );
+		$this->assertStringContainsString( 'Estimated processing time', $html, 'the whole-site estimate comes from the measured trial' );
+		$this->assertStringContainsString( 'value="site"', $html, 'step 3 is offered' );
+		$est = \SemanticSEO\Services\HealthReport::overview()['estimate'];
+		$this->assertSame( $pilot['job_id'], $est['basis_job'] );
+		$this->assertSame( (int) ceil( $est['seconds_per_document'] * $est['documents'] ), $est['estimated_seconds'] );
+	}
+
+	public function test_dashboard_full_scan_can_be_paused_resumed_and_compared() {
+		$this->load_corpus();
+		list( $type ) = $this->post_action( 'scan', array( 'scope' => 'site' ) );
+		$this->assertSame( 'success', $type );
+		$inv = \SemanticSEO\Jobs\JobRepository::find( array( 'type' => 'inventory', 'limit' => 1 ) )[0];
+		list( $type ) = $this->post_action( 'job_control', array( 'job_id' => $inv['id'], 'op' => 'pause' ) );
+		$this->assertSame( 'paused', \SemanticSEO\Jobs\JobRepository::get( (int) $inv['id'] )['status'] );
+		$this->assertStringContainsString( 'name="op" value="resume"', $this->render_page( 'sseo' ) );
+		$this->post_action( 'job_control', array( 'job_id' => $inv['id'], 'op' => 'resume' ) );
+		$this->run_scan_jobs();
+		$this->assertSame( 'site', \SemanticSEO\Analysis\ScanHistory::latest()['scope'] );
+
+		$html = $this->render_page( 'sseo' );
+		$this->assertStringContainsString( 'SEO health', $html );
+		$this->assertStringContainsString( 'What to do first', $html );
+		$this->assertStringContainsString( 'This is the first full scan', $html );
+
+		// A second scan is compared with the first one.
+		$this->post_action( 'scan', array( 'scope' => 'site' ) );
+		$this->run_scan_jobs();
+		$diff = \SemanticSEO\Analysis\ScanHistory::diff();
+		$this->assertNotNull( $diff['previous'] );
+		$this->assertSame( 0, $diff['new_count'], 'nothing changed between the scans' );
+		$this->assertSame( 0, $diff['resolved_count'] );
+		$this->assertStringContainsString( '0 new findings, 0 resolved', $this->render_page( 'sseo' ) );
+	}
+
+	public function test_dashboard_repairs_an_incomplete_database() {
+		remove_filter( 'query', array( $this, '_create_temporary_tables' ) );
+		remove_filter( 'query', array( $this, '_drop_temporary_tables' ) );
+		global $wpdb;
+		$table = \SemanticSEO\Database\Schema::table( 'embeddings' );
+		$wpdb->query( 'DROP TABLE IF EXISTS ' . $table ); // phpcs:ignore WordPress.DB
+		$read = array();
+		$spy  = static function ( $q ) use ( $table, &$read ) {
+			if ( false !== stripos( $q, 'FROM ' . $table ) ) {
+				$read[] = $q;
+			}
+			return $q;
+		};
+		add_filter( 'query', $spy );
+		$html = $this->render_page( 'sseo' );
+		remove_filter( 'query', $spy );
+		$this->assertSame( array(), $read, 'the dashboard never reads the missing table (no SQL error on an incomplete database)' );
+		$this->assertStringContainsString( 'sseo-health--error', $html );
+		$this->assertStringContainsString( 'Missing: embeddings', $html );
+		$this->assertStringContainsString( 'value="sseo_repair_db"', $html );
+		$this->assertStringNotContainsString( 'value="pilot"', $html, 'no scan button while the database is incomplete' );
+
+		list( $type, $msg ) = $this->post_action( 'repair_db', array() );
+		$this->assertSame( 'success', $type, $msg );
+		$this->assertStringContainsString( 'Database ready', $msg );
+		$this->assertTrue( \SemanticSEO\Compatibility\Environment::db_schema()['ready'] );
+		$this->assertStringContainsString( 'sseo-health--ok', $this->render_page( 'sseo' ) );
+	}
+
+	public function test_only_managers_can_repair_the_database() {
+		Capabilities::ensure_agent_roles();
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'sseo_agent_analyst' ) ) );
+		list( $type ) = $this->post_action( 'repair_db', array() );
+		$this->assertSame( 'error', $type );
+	}
+
+	public function test_priorities_page_filters() {
+		$this->load_corpus();
+		$this->run_full_pipeline();
+		$all = $this->render_page( 'sseo-priorities' );
+		$this->assertStringContainsString( 'sseo-priorities', $all );
+		$this->assertStringContainsString( 'Expected benefit:', $all );
+		$this->assertStringContainsString( 'value="sseo_export_priorities"', $all );
+		$links = $this->render_page( 'sseo-priorities', array( 'category' => 'links' ) );
+		$this->assertStringNotContainsString( 'Two pages with nearly the same content', $links );
+		$this->assertStringContainsString( 'Internal links', $links );
+		$none = $this->render_page( 'sseo-priorities', array( 'search' => 'zzz-no-such-page' ) );
+		$this->assertStringContainsString( 'Nothing to show for these filters.', $none );
+	}
 }

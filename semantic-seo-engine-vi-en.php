@@ -3,7 +3,7 @@
  * Plugin Name:       Semantic SEO Engine VI–EN
  * Plugin URI:        https://github.com/thuexemayhanoi/plugin-auto
  * Description:       Hybrid lexical + optional Qwen3 embedding SEO operations for bilingual (Vietnamese/English) WordPress sites: inventory, internal links, cannibalization risk, topic clusters, content QA and related content, with human approval, rollback and a permissioned agent API. Read-only by default.
- * Version:           1.0.0-beta.3
+ * Version:           1.0.0-beta.4
  * Requires at least: 6.5
  * Requires PHP:      7.4
  * Author:            thuexemayhanoi
@@ -17,7 +17,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'SSEO_VERSION', '1.0.0-beta.3' );
+define( 'SSEO_VERSION', '1.0.0-beta.4' );
 define( 'SSEO_FILE', __FILE__ );
 define( 'SSEO_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SSEO_URL', plugin_dir_url( __FILE__ ) );

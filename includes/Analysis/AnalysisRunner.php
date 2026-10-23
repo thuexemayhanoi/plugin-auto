@@ -37,6 +37,11 @@ final class AnalysisRunner {
 	const PHASES  = array( 'graph', 'vectors', 'clusters', 'pairs', 'qa', 'finalize' );
 
 	/**
+	 * Most documents one scoped (doc_ids) analysis takes; larger requests become site-wide.
+	 */
+	const SCOPE_LIMIT = 500;
+
+	/**
 	 * Initial state.
 	 *
 	 * @param array $params Job params: doc_ids (bounded), locale.
@@ -64,7 +69,7 @@ final class AnalysisRunner {
 	 */
 	public static function scope_ids( array $params ) {
 		if ( ! empty( $params['doc_ids'] ) ) {
-			$ids = array_slice( array_values( array_unique( array_map( 'intval', (array) $params['doc_ids'] ) ) ), 0, 500 );
+			$ids = array_slice( array_values( array_unique( array_map( 'intval', (array) $params['doc_ids'] ) ) ), 0, self::SCOPE_LIMIT );
 			return array_map(
 				'intval',
 				Db::col( "SELECT id FROM {documents} WHERE status = 'publish' AND id IN (" . Db::in( $ids ) . ') ORDER BY id ASC', $ids )
@@ -192,7 +197,7 @@ final class AnalysisRunner {
 						$state['counts']['qa'] = ( isset( $state['counts']['qa'] ) ? $state['counts']['qa'] : 0 ) + 1;
 					}
 				}
-				FindingRepository::resolve_stale( array( 'link', 'cannibalization', 'qa', 'classification' ), $run_id, $scope );
+				$state['resolved'] = FindingRepository::resolve_stale( array( 'link', 'cannibalization', 'qa', 'classification' ), $run_id, $scope );
 				self::group_cannibalization();
 				if ( array() === $scope ) {
 					Db::query( "UPDATE {documents} SET analyzed_at = %s WHERE status = 'publish'", array( Util::now() ) );

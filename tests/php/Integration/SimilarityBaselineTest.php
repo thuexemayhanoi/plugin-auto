@@ -119,10 +119,15 @@ final class SimilarityBaselineTest extends TestCase {
 		$stored = get_option( SimilarityBaseline::OPTION );
 		$this->assertSame( $profile['model_key'], $stored['model_key'] );
 		$this->assertArrayHasKey( 'vi', $stored['locales'] );
-		$f = Db::row( "SELECT evidence FROM {findings} WHERE type = 'cannibalization' AND status = 'open' LIMIT 1" );
-		if ( null !== $f ) {
-			$e = json_decode( $f['evidence'], true );
-			$this->assertSame( 'site_median', $e['calibration']['source'] );
+		// Only Vietnamese documents have a baseline here; English findings keep the model floor.
+		// (Without ORDER BY and a locale, MariaDB 11.8 returned an English finding first.)
+		$f = Db::row( "SELECT evidence FROM {findings} WHERE type = 'cannibalization' AND status = 'open' AND locale = 'vi' ORDER BY id LIMIT 1" );
+		$this->assertNotNull( $f );
+		$e = json_decode( $f['evidence'], true );
+		$this->assertSame( 'site_median', $e['calibration']['source'] );
+		$en = Db::row( "SELECT evidence FROM {findings} WHERE type = 'cannibalization' AND status = 'open' AND locale = 'en' ORDER BY id LIMIT 1" );
+		if ( null !== $en ) {
+			$this->assertSame( 'model', json_decode( $en['evidence'], true )['calibration']['source'] );
 		}
 	}
 

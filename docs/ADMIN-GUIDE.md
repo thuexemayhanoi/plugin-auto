@@ -1,4 +1,4 @@
-# Hướng dẫn quản trị — Semantic SEO Engine VI–EN (1.0.0-beta.3)
+# Hướng dẫn quản trị — Semantic SEO Engine VI–EN (1.0.0-beta.4)
 
 Tài liệu cho **người quản trị website** (không cần biết lập trình) và cho **người/AI vận hành thay
 mặt quản trị viên** qua giao diện WordPress Admin. Hướng dẫn sử dụng từng màn hình nằm ở
@@ -29,7 +29,7 @@ là agent, kể cả khi tài khoản là administrator.
 1. **Bản sao staging trước.** Cài ZIP lên bản sao staging của blog (VI + `/en/`), không lên production.
 2. **Kích hoạt.** Kích hoạt không thay đổi nội dung, URL, dữ liệu SEO hay HTML front-end (đã kiểm
    chứng trên WordPress 6.5.13, 6.9.10, 7.1.3).
-3. **Mở *Semantic SEO → Tổng quan & Thiết lập*.** Kiểm tra các dòng phát hiện môi trường:
+3. **Mở *Semantic SEO → Bảng điều khiển SEO*.** Kiểm tra các dòng phát hiện môi trường:
    * *Language framework: Nguyen Ha VI-EN Core*. Blog dùng plugin ngôn ngữ riêng
      `nguyen-ha-vi-en`. Plugin này đọc (không ghi) cặp VI⇔EN, bài tiếng Anh độc lập, cặp trang và
      chuyên mục tiếng Anh của plugin đó. Nếu dòng này báo "URL prefix rules" hoặc "Site default", hãy
@@ -141,8 +141,8 @@ Phần này đã chụp màn hình kiểm tra ở chiều ngang 390 px.
 
 **Làm được trên điện thoại**
 1. Đăng nhập `…/wp-admin` → *Semantic SEO*.
-2. *Tổng quan & Thiết lập*: xem trạng thái (Sẵn sàng, Đang xử lý, Cần rà soát, Lỗi), chạy thử
-   chỉ-đọc, tiếp tục hoặc tạm dừng tác vụ.
+2. *Bảng điều khiển SEO*: xem trạng thái (hoạt động bình thường / cần chú ý / có lỗi), chạy
+   *Phân tích thử 20 bài*, *Phân tích toàn website*, tạm dừng / tiếp tục / hủy; xem *Việc nên làm trước*.
 3. Rà soát phát hiện: đánh dấu *đã xem*, *bỏ qua*, *chấp nhận*. Khóa một URL không cho đề xuất.
 4. *Nhật ký / Hoàn tác*: xem bản diff, **phê duyệt hoặc từ chối**, hoàn tác thay đổi đã áp dụng.
 5. Giữ màn hình sáng khi tác vụ đang chạy nếu WP-Cron của hosting ít lượt truy cập. Trang *Tác vụ*
@@ -168,7 +168,7 @@ khoản riêng, đăng nhập thường (không dùng Application Password), và
 2. Không cấp quyền Administrator cho tài khoản AI.
 
 **Việc AI làm mỗi lần**
-1. Mở `https://<site>/wp-admin/admin.php?page=sseo` (*Tổng quan & Thiết lập*). Đọc dòng trạng thái.
+1. Mở `https://<site>/wp-admin/admin.php?page=sseo` (*Bảng điều khiển SEO*). Đọc dòng trạng thái.
 2. Nếu dữ liệu cũ hơn 7 ngày: bấm **Kiểm kê toàn bộ + phân tích** (mục *Chạy phân tích* trên trang
    Tổng quan). Chờ đến khi trạng thái là *Sẵn sàng* hoặc *Cần rà soát*.
 3. Đọc lần lượt các trang và ghi tóm tắt:
@@ -191,7 +191,7 @@ khoản riêng, đăng nhập thường (không dùng Application Password), và
 * Sửa bài viết trực tiếp trong trình soạn thảo, sửa trường Yoast, cài/gỡ plugin hoặc theme.
 
 **Mẫu yêu cầu cho ChatGPT Work**
-> "Đăng nhập WordPress Admin bằng tài khoản ai-operator. Vào Semantic SEO → Tổng quan & Thiết lập. Nếu
+> "Đăng nhập WordPress Admin bằng tài khoản ai-operator. Vào Semantic SEO → Bảng điều khiển SEO. Nếu
 > phân tích cũ hơn 7 ngày thì bấm "Kiểm kê toàn bộ + phân tích" và chờ xong. Tóm tắt 10 lỗi đã xác minh quan trọng nhất và 10 gợi
 > ý liên kết nội bộ có độ tin cậy cao nhất (kèm câu chứa anchor). Tạo bản xem trước cho tối đa 3 liên
 > kết hợp lý nhất rồi dừng lại để tôi phê duyệt. Không phê duyệt, không sửa bài, không đổi cài đặt."

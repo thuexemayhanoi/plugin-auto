@@ -112,6 +112,30 @@ final class Environment {
 	}
 
 	/**
+	 * Database schema state: installed/expected version, missing tables and columns, and the SQL
+	 * error of the last failed migration (MySQL error number, SQLSTATE, message).
+	 *
+	 * @return array
+	 */
+	public static function db_schema() {
+		$verify = Migrator::verify();
+		$last   = Migrator::last_log();
+		$ready  = Migrator::installed_version() >= Schema::VERSION && array() === $verify['missing'] && array() === $verify['missing_columns'];
+		return array(
+			'installed'       => Migrator::installed_version(),
+			'expected'        => Schema::VERSION,
+			'ready'           => $ready,
+			'tables_present'  => count( Schema::TABLES ) - count( $verify['missing'] ),
+			'tables_expected' => count( Schema::TABLES ),
+			'missing'         => $verify['missing'],
+			'missing_columns' => $verify['missing_columns'],
+			'last_error'      => $ready || ! isset( $last['error'] ) ? '' : (string) $last['error'],
+			'sql_errors'      => $ready || ! isset( $last['sql_errors'] ) ? array() : (array) $last['sql_errors'],
+			'retry_scheduled' => ! $ready && Migrator::backing_off(),
+		);
+	}
+
+	/**
 	 * Full diagnostics report.
 	 *
 	 * @return array
@@ -124,11 +148,7 @@ final class Environment {
 			'wordpress'             => $wp_version,
 			'php'                   => PHP_VERSION,
 			'database'              => $wpdb->db_server_info(),
-			'db_schema'             => array(
-				'installed' => Migrator::installed_version(),
-				'expected'  => Schema::VERSION,
-				'missing'   => Migrator::missing_tables(),
-			),
+			'db_schema'             => self::db_schema(),
 			'intl'                  => TextNormalizer::has_intl(),
 			'mbstring'              => function_exists( 'mb_strtolower' ),
 			'memory_limit'          => (string) ini_get( 'memory_limit' ),

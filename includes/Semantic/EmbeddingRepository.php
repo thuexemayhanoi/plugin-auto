@@ -46,7 +46,7 @@ final class EmbeddingRepository {
 				'preprocess_version' => $profile['preprocess_version'],
 				'locale'             => isset( $item['locale'] ) ? (string) $item['locale'] : '',
 				'content_hash'       => (string) $item['content_hash'],
-				'vector'             => VectorMath::pack( $vector ),
+				'vector_data'        => VectorMath::pack( $vector ),
 				'norm'               => round( VectorMath::norm( $vector ), 6 ),
 				'source'             => substr( (string) $source, 0, 16 ),
 				'created_at'         => Util::now(),
@@ -69,11 +69,11 @@ final class EmbeddingRepository {
 		$out = array();
 		foreach ( array_chunk( $doc_ids, 200 ) as $chunk ) {
 			$rows = Db::rows(
-				'SELECT e.document_id, e.vector FROM {embeddings} e JOIN {chunks} c ON c.document_id = e.document_id AND c.chunk_index = e.chunk_id AND c.kind = %s AND c.content_hash = e.content_hash WHERE e.model_key = %s AND e.document_id IN (' . Db::in( $chunk ) . ')',
+				'SELECT e.document_id, e.vector_data FROM {embeddings} e JOIN {chunks} c ON c.document_id = e.document_id AND c.chunk_index = e.chunk_id AND c.kind = %s AND c.content_hash = e.content_hash WHERE e.model_key = %s AND e.document_id IN (' . Db::in( $chunk ) . ')',
 				array_merge( array( 'summary', $model_key ), $chunk )
 			);
 			foreach ( $rows as $r ) {
-				$vec = VectorMath::unpack( $r['vector'] );
+				$vec = VectorMath::unpack( $r['vector_data'] );
 				if ( array() !== $vec ) {
 					$out[ (int) $r['document_id'] ] = $vec;
 				}
@@ -91,8 +91,8 @@ final class EmbeddingRepository {
 	 */
 	public static function chunk_vectors( $doc_id, $model_key ) {
 		$out = array();
-		foreach ( Db::rows( "SELECT e.chunk_id, e.vector FROM {embeddings} e JOIN {chunks} c ON c.document_id = e.document_id AND c.chunk_index = e.chunk_id AND c.content_hash = e.content_hash WHERE e.document_id = %d AND e.model_key = %s AND c.kind = 'section'", array( (int) $doc_id, $model_key ) ) as $r ) {
-			$out[ (int) $r['chunk_id'] ] = VectorMath::unpack( $r['vector'] );
+		foreach ( Db::rows( "SELECT e.chunk_id, e.vector_data FROM {embeddings} e JOIN {chunks} c ON c.document_id = e.document_id AND c.chunk_index = e.chunk_id AND c.content_hash = e.content_hash WHERE e.document_id = %d AND e.model_key = %s AND c.kind = 'section'", array( (int) $doc_id, $model_key ) ) as $r ) {
+			$out[ (int) $r['chunk_id'] ] = VectorMath::unpack( $r['vector_data'] );
 		}
 		return $out;
 	}

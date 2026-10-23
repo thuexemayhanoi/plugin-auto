@@ -17,8 +17,12 @@ Plugin admin language*.
 ## Getting started
 
 1. Back up, preferably test on staging. Upload and activate the ZIP ([INSTALLATION.md](INSTALLATION.md)).
-2. *Semantic SEO → Overview & Setup*: compatibility check → compute tiers → scope → read-only
-   pilot (20 latest posts) → finish → *Full inventory + analysis*.
+2. *Semantic SEO → SEO Dashboard*: **Check the system** → **Analyze 20 pages (trial)** (read-only,
+   real results, measured time and memory, read-only evidence) → **Analyze the whole site** (estimate
+   from the trial; pause / resume / cancel). Then open **What to do first**: each item names the page,
+   the evidence, the confidence, the expected benefit and the action, with filters and CSV export.
+   If the database is incomplete, the dashboard shows the SQL error and a safe **Repair the
+   database** button.
 
 ## Screens
 

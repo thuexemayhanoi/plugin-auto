@@ -62,6 +62,7 @@ final class JobRunner {
 	 * @return void
 	 */
 	public static function run_cron() {
+		JobRepository::start_pending_analysis();
 		self::tick( (int) Settings::get( 'time_budget', 20 ) );
 		self::schedule();
 	}
@@ -152,7 +153,13 @@ final class JobRunner {
 				self::assert_no_db_error( $job );
 				++$batches;
 				$speed = isset( $state['seconds_per_item'] ) ? (float) $state['seconds_per_item'] : null;
+				$work  = isset( $state['work_seconds'] ) ? (float) $state['work_seconds'] : 0.0;
+				$peak  = isset( $state['peak_memory'] ) ? (int) $state['peak_memory'] : 0;
 				$state = $res['state'];
+				// Measured cost (processing time without the waits between ticks, request peak memory):
+				// the dashboard estimates a full scan from these real numbers.
+				$state['work_seconds'] = round( $work + ( microtime( true ) - $batch_start ), 3 );
+				$state['peak_memory']  = max( $peak, (int) memory_get_peak_usage() );
 				if ( (int) $res['done'] > 0 ) {
 					$measured = ( microtime( true ) - $batch_start ) / (int) $res['done'];
 					$speed    = null === $speed ? $measured : ( $speed + $measured ) / 2;
@@ -169,8 +176,16 @@ final class JobRunner {
 				}
 				if ( ! empty( $res['finished'] ) ) {
 					$state['phase'] = 'done';
-					JobRepository::heartbeat( $job_id, $owner, $state, max( $done, $total ), max( $done, $total ), self::LEASE_TTL );
-					JobRepository::complete( $job_id, $owner, $state );
+					// A cancel or pause during the last batch wins: no completion, no chained job.
+					if ( ! JobRepository::heartbeat( $job_id, $owner, $state, max( $done, $total ), max( $done, $total ), self::LEASE_TTL ) || ! JobRepository::complete( $job_id, $owner, $state ) ) {
+						$fresh = JobRepository::get( $job_id );
+						return array(
+							'job_id'  => $job_id,
+							'status'  => null === $fresh ? 'missing' : (string) $fresh['status'],
+							'batches' => $batches,
+							'message' => 'lease lost',
+						);
+					}
 					call_user_func( array( $class, 'finished' ), JobRepository::get( $job_id ) );
 					AuditLog::record( 'job.completed', 'job', $job_id, 'ok', array( 'type' => $job['type'] ) );
 					return array(

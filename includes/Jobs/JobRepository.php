@@ -18,10 +18,11 @@ defined( 'ABSPATH' ) || exit;
  */
 final class JobRepository {
 
-	const TYPES    = array( 'inventory', 'analyze', 'embed', 'incremental', 'verify_links' );
-	const ACTIVE   = array( 'queued', 'running', 'paused' );
-	const FINISHED = array( 'completed', 'failed', 'cancelled' );
-	const CRASHED  = 'The previous run stopped without finishing its batch (PHP fatal error, timeout, memory limit or killed worker).';
+	const TYPES          = array( 'inventory', 'analyze', 'embed', 'incremental', 'verify_links' );
+	const PENDING_OPTION = 'sseo_pending_analysis';
+	const ACTIVE         = array( 'queued', 'running', 'paused' );
+	const FINISHED       = array( 'completed', 'failed', 'cancelled' );
+	const CRASHED        = 'The previous run stopped without finishing its batch (PHP fatal error, timeout, memory limit or killed worker).';
 
 	/**
 	 * Job previously created by the same owner with the same idempotency key, if any.
@@ -83,7 +84,7 @@ final class JobRepository {
 			if ( null !== $active ) {
 				return new \WP_Error(
 					'sseo_job_exists',
-					__( 'A job of this type is already queued or running.', 'semantic-seo-engine-vi-en' ),
+					__( 'A job of this type is already queued, running or paused.', 'semantic-seo-engine-vi-en' ),
 					array(
 						'status' => 409,
 						'job_id' => (int) $active['id'],
@@ -235,13 +236,166 @@ final class JobRepository {
 	 * @param int    $id    Job ID.
 	 * @param string $owner Owner.
 	 * @param array  $state Final state.
-	 * @return void
+	 * @return bool Whether this call completed the job.
 	 */
 	public static function complete( $id, $owner, array $state ) {
-		Db::query(
-			"UPDATE {jobs} SET status = 'completed', state = %s, progress_done = progress_total, lease_owner = '', lease_expires = NULL, finished_at = %s, updated_at = %s, last_error = NULL WHERE id = %d AND lease_owner = %s",
+		// Only the lease holder of a still-running job completes it: a cancel or pause that landed
+		// during the last batch wins, and the caller must not run the completion hook.
+		return 1 === Db::query(
+			"UPDATE {jobs} SET status = 'completed', state = %s, progress_done = progress_total, lease_owner = '', lease_expires = NULL, finished_at = %s, updated_at = %s, last_error = NULL WHERE id = %d AND lease_owner = %s AND status = 'running'",
 			array( Util::json( $state ), Util::now(), Util::now(), (int) $id, $owner )
 		);
+	}
+
+	/**
+	 * Marks a completed job as failed after the fact (its follow-up could not run), with the reason
+	 * shown on the dashboard.
+	 *
+	 * @param int    $id      Job ID.
+	 * @param string $message Reason.
+	 * @return bool
+	 */
+	public static function fail_completed( $id, $message ) {
+		return 1 === Db::query( "UPDATE {jobs} SET status = 'failed', last_error = %s, updated_at = %s WHERE id = %d AND status = 'completed'", array( Util::truncate( (string) $message, 1000 ), Util::now(), (int) $id ) );
+	}
+
+	/**
+	 * Queues an analysis after an inventory. When another analysis is already active, a narrower
+	 * one (a pilot) that is not running yet is replaced by a site-wide one, which covers its pages;
+	 * otherwise the request is kept as pending and started when no analysis is active any more —
+	 * never silently dropped.
+	 *
+	 * @param array $params   Analysis parameters (doc_ids empty = site-wide).
+	 * @param int   $owner_id Owner.
+	 * @return array|null The created job, or null when it was left pending.
+	 */
+	public static function chain_analysis( array $params, $owner_id ) {
+		$job = self::create( 'analyze', $params, (int) $owner_id, 'chain' );
+		if ( ! is_wp_error( $job ) ) {
+			return $job;
+		}
+		$data     = (array) $job->get_error_data();
+		$existing = 'sseo_job_exists' === $job->get_error_code() && isset( $data['job_id'] ) ? self::get( (int) $data['job_id'] ) : null;
+		if ( null !== $existing && empty( $params['doc_ids'] ) && ! empty( $existing['params']['doc_ids'] ) && in_array( $existing['status'], array( 'queued', 'paused' ), true ) && self::cancel( (int) $existing['id'] ) ) {
+			$job = self::create( 'analyze', $params, (int) $owner_id, 'chain' );
+			if ( ! is_wp_error( $job ) ) {
+				return $job;
+			}
+		}
+		// Read-merge-write under the same lock as start_pending_analysis(), so a request stored
+		// while the pending one is being started is never deleted with it.
+		$lock    = self::pending_lock();
+		$pending = self::pending();
+		if ( null !== $pending ) {
+			$old = (array) $pending['params'];
+			if ( empty( $old['doc_ids'] ) ) {
+				// The pending request is site-wide: it covers this one (and keeps its own inventory).
+				$params   = $old;
+				$owner_id = (int) $pending['owner_id'];
+			} elseif ( ! empty( $params['doc_ids'] ) ) {
+				$merged = array_values( array_unique( array_map( 'intval', array_merge( (array) $old['doc_ids'], (array) $params['doc_ids'] ) ) ) );
+				// Two scopes: the read-only evidence of one inventory does not cover both.
+				unset( $params['source_job'] );
+				if ( empty( $old['pilot'] ) ) {
+					unset( $params['pilot'] );
+				}
+				if ( count( $merged ) > \SemanticSEO\Analysis\AnalysisRunner::SCOPE_LIMIT ) {
+					// More pages than one scoped analysis takes: analyse the whole site instead of
+					// silently leaving some out.
+					unset( $params['doc_ids'], $params['pilot'] );
+				} else {
+					$params['doc_ids'] = $merged;
+				}
+			}
+			// Otherwise this request is site-wide and covers the pending one.
+		}
+		update_option(
+			self::PENDING_OPTION,
+			array(
+				'params'   => $params,
+				'owner_id' => (int) $owner_id,
+				'at'       => Util::now(),
+			),
+			false
+		);
+		if ( false !== $lock ) {
+			Mutex::release( 'pending_analysis', $lock );
+		}
+		// The blocking analysis may have finished (and found nothing pending) meanwhile: try once
+		// now, so the request does not wait for an unrelated job to wake the runner.
+		$started = self::start_pending_analysis();
+		if ( $started > 0 ) {
+			JobRunner::schedule();
+			return self::get( $started );
+		}
+		return null;
+	}
+
+	/**
+	 * Starts the pending analysis once no analysis is active (called at every cron run).
+	 *
+	 * @return int Created job ID (0 = nothing to do or still blocked).
+	 */
+	public static function start_pending_analysis() {
+		if ( null === self::pending() ) {
+			return 0;
+		}
+		$lock = self::pending_lock();
+		if ( false === $lock ) {
+			return 0;
+		}
+		try {
+			$pending = self::pending();
+			if ( null === $pending ) {
+				return 0;
+			}
+			$job = self::create( 'analyze', (array) $pending['params'], (int) $pending['owner_id'], 'chain' );
+			if ( is_wp_error( $job ) ) {
+				return 0;
+			}
+			delete_option( self::PENDING_OPTION );
+			return (int) $job['id'];
+		} finally {
+			Mutex::release( 'pending_analysis', $lock );
+		}
+	}
+
+	/**
+	 * The pending analysis request, read from the database (not the option cache: another process,
+	 * such as WP-Cron next to an open dashboard, may have changed it during this request).
+	 *
+	 * @return array|null {params, owner_id, at}
+	 */
+	private static function pending() {
+		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		$raw   = $wpdb->get_var( $wpdb->prepare( "SELECT option_value FROM {$wpdb->options} WHERE option_name = %s", self::PENDING_OPTION ) );
+		$value = null === $raw ? null : maybe_unserialize( $raw );
+		// Drop the cached copy (and a cached "does not exist") so update_option() compares with the
+		// database and inserts or updates correctly.
+		wp_cache_delete( self::PENDING_OPTION, 'options' );
+		$none = wp_cache_get( 'notoptions', 'options' );
+		if ( is_array( $none ) && isset( $none[ self::PENDING_OPTION ] ) ) {
+			unset( $none[ self::PENDING_OPTION ] );
+			wp_cache_set( 'notoptions', $none, 'options' );
+		}
+		return is_array( $value ) && isset( $value['params'] ) && is_array( $value['params'] ) ? $value : null;
+	}
+
+	/**
+	 * Lock around the pending analysis request (waits up to about 2 seconds).
+	 *
+	 * @return string|false Lock token.
+	 */
+	private static function pending_lock() {
+		for ( $i = 0; $i < 20; $i++ ) {
+			$lock = Mutex::acquire( 'pending_analysis', 30 );
+			if ( false !== $lock ) {
+				return $lock;
+			}
+			usleep( 100000 );
+		}
+		return false;
 	}
 
 	/**

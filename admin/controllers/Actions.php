@@ -29,7 +29,7 @@ defined( 'ABSPATH' ) || exit;
  */
 final class Actions {
 
-	const ACTIONS = array( 'start_job', 'job_control', 'review_finding', 'create_preview', 'approve', 'reject', 'apply', 'rollback', 'rollback_approval', 'revoke_approval', 'lock', 'unlock', 'editorial', 'save_settings', 'agent_roles', 'assign_agent_role', 'export', 'import_preview', 'import_apply', 'gsc_import', 'gsc_delete', 'wizard', 'cluster_lock' );
+	const ACTIONS = array( 'scan', 'repair_db', 'export_priorities', 'start_job', 'job_control', 'review_finding', 'create_preview', 'approve', 'reject', 'apply', 'rollback', 'rollback_approval', 'revoke_approval', 'lock', 'unlock', 'editorial', 'save_settings', 'agent_roles', 'assign_agent_role', 'export', 'import_preview', 'import_apply', 'gsc_import', 'gsc_delete', 'wizard', 'cluster_lock' );
 
 	/**
 	 * Registers handlers.
@@ -113,6 +113,88 @@ final class Actions {
 		}
 		/* translators: 1: job id, 2: job type */
 		return sprintf( __( 'Job #%1$d (%2$s) queued. Progress is shown under Jobs.', 'semantic-seo-engine-vi-en' ), $res['id'], Ui::term( $res['type'] ) );
+	}
+
+	/**
+	 * Dashboard scans: the 20-page trial or the whole site (inventory, then analysis; read-only).
+	 *
+	 * @return string|\WP_Error
+	 */
+	private static function do_scan() {
+		if ( 'pilot' === self::p( 'scope' ) ) {
+			$ids = OverviewPage::pilot_ids();
+			if ( array() === $ids ) {
+				return new \WP_Error( 'sseo_empty', __( 'No published posts in scope.', 'semantic-seo-engine-vi-en' ) );
+			}
+			$res = Api::start_analysis(
+				array(
+					'type'         => 'inventory',
+					'post_ids'     => $ids,
+					'then_analyze' => true,
+					'pilot'        => true,
+				)
+			);
+			/* translators: %d: number of posts */
+			return is_wp_error( $res ) ? $res : sprintf( __( 'Trial started on the %d most recently updated posts. Nothing on the site is changed.', 'semantic-seo-engine-vi-en' ), count( $ids ) );
+		}
+		$res = Api::start_analysis(
+			array(
+				'type'         => 'inventory',
+				'then_analyze' => true,
+			)
+		);
+		return is_wp_error( $res ) ? $res : __( 'Analysis of the whole site started. It runs in the background; you can pause or cancel it on this page.', 'semantic-seo-engine-vi-en' );
+	}
+
+	/**
+	 * Repairs the plugin database (creates missing tables and columns; never drops anything).
+	 *
+	 * @return string|\WP_Error
+	 */
+	private static function do_repair_db() {
+		$g = Guard::check( Capabilities::MANAGE, 'write', 'repair_db' );
+		if ( is_wp_error( $g ) ) {
+			return $g;
+		}
+		$res = \SemanticSEO\Database\Migrator::migrate();
+		AuditLog::record( 'db.repair', 'database', 0, '' === $res['error'] ? 'ok' : 'error', array( 'error' => $res['error'] ) );
+		if ( '' !== $res['error'] ) {
+			$sql = array();
+			foreach ( isset( $res['failures'] ) ? (array) $res['failures'] : array() as $table => $e ) {
+				$sql[] = $table . ': #' . (int) $e['errno'] . ' SQLSTATE ' . $e['sqlstate'] . ' ' . $e['message'];
+			}
+			/* translators: 1: error, 2: SQL errors */
+			return new \WP_Error( 'sseo_db_repair', sprintf( __( 'The database could not be completed: %1$s %2$s', 'semantic-seo-engine-vi-en' ), $res['error'], implode( ' | ', $sql ) ) );
+		}
+		/* translators: %d: schema version */
+		return sprintf( __( 'Database ready (schema %d). No data was deleted.', 'semantic-seo-engine-vi-en' ), (int) $res['to'] );
+	}
+
+	/**
+	 * Streams the priority queue as CSV.
+	 *
+	 * @return \WP_Error|void
+	 */
+	private static function do_export_priorities() {
+		$g = Guard::check( Capabilities::READ, 'read', 'export_priorities' );
+		if ( is_wp_error( $g ) ) {
+			return $g;
+		}
+		$filters = array(
+			'locale'      => sanitize_key( self::p( 'locale' ) ),
+			'category'    => sanitize_key( self::p( 'category' ) ),
+			'priority'    => (int) self::p( 'priority' ),
+			'search'      => self::p( 'search' ),
+			'public_only' => ! Api::can_see_private(),
+		);
+		AuditLog::record( 'priorities.exported', 'report', 0, 'ok', $filters );
+		nocache_headers();
+		header( 'Content-Type: text/csv; charset=utf-8' );
+		header( 'Content-Disposition: attachment; filename="seo-priorities-' . gmdate( 'Ymd-His' ) . '.csv"' );
+		$out = fopen( 'php://output', 'w' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
+		\SemanticSEO\Analysis\PriorityQueue::csv( $out, $filters );
+		fclose( $out ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+		exit;
 	}
 
 	/**
@@ -641,6 +723,7 @@ final class Actions {
 					'type'         => 'inventory',
 					'post_ids'     => array_map( 'intval', $ids ),
 					'then_analyze' => true,
+					'pilot'        => true,
 				)
 			);
 			/* translators: %d: number of posts */
