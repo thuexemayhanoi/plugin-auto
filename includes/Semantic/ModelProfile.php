@@ -26,8 +26,10 @@ final class ModelProfile {
 	const HOST          = 'https://huggingface.co';
 	const MAX_DIMENSION = 1024;
 	const POOLING       = 'last_token';
-	const PREPROCESS    = 'p1';
-	const MAX_TOKENS    = 512;
+	// p2: the browser worker keeps the end-of-text token when it truncates (as the private worker
+	// always did); vectors made before are not compared with newer ones (part of the model key).
+	const PREPROCESS = 'p2';
+	const MAX_TOKENS = 512;
 
 	/**
 	 * Query instruction used for retrieval-style queries (documents get no instruction), as documented
