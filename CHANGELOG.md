@@ -21,7 +21,12 @@ Final audit of the beta. Release notes: [docs/RELEASE-NOTES-1.0.0-beta.2.md](doc
 - "Missing translation" limited to content types with pairs and to posts not declared standalone
   (`QaTranslationScopeTest`, `NhVienLanguageTest`).
 - Performance: single-statement finding upsert, multi-row related insert, cached anchor title
-  counts, batched embedding enqueue.
+  counts, batched embedding enqueue; the BM25 candidate search reads at most 20,000 postings per
+  query (filter `sseo_search_postings_budget`), dropping the least informative common terms first
+  (`LexicalSearchBudgetTest`; labelled-fixture results unchanged).
+- *Max documents* is now enforced (it was shown in the settings but not applied): new objects
+  beyond the limit are counted and reported (overview notice, `GET /status` → `inventory_limit`),
+  stored documents keep being refreshed (`InventoryLimitTest`).
 - Reproducible ZIP (sorted entries, fixed permissions and timestamp); CI checks it, the shipped
   licenses, and coexistence with WooCommerce, Yoast SEO and Polylang.
 

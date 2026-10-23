@@ -103,6 +103,10 @@ only new or edited pages are re-embedded and re-analysed (content hash).
 
 * *Batch size* and *time budget per background tick* (Settings → Operations) bound each tick.
 * *Candidates per page (BM25 top-k)* (Expert panel, default 15) bounds pair analysis.
-* *Max documents* (default 5,000) caps the inventory scope.
+* *Max documents* (default 5,000) caps how many documents the inventory holds. New objects beyond
+  it are counted, not indexed; documents already stored keep being refreshed (nothing is deleted
+  when the limit is lowered). The overview page and `GET /status` (`inventory_limit`) say when the
+  limit was reached and how many objects in scope were left out. Raise it for larger sites (the
+  6,000-post benchmark raises it to the post count).
 * Large sites: run the initial analysis with `wp sseo start inventory --then-analyze --run` from
   WP-CLI (no request timeouts), then let incremental updates run in the background.

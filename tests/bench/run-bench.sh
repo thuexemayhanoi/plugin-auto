@@ -13,7 +13,7 @@ N="$1"
 PORT="$2"
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$HERE/../.." && pwd)"
-ZIP="${ZIP:-$(ls -1 "$ROOT"/dist/semantic-seo-engine-vi-en-*.zip | head -1)}"
+ZIP="${ZIP:-$ROOT/dist/semantic-seo-engine-vi-en-$(sed -n 's/^ \* Version:[[:space:]]*//p' "$ROOT/semantic-seo-engine-vi-en.php" | head -1 | tr -d '\r').zip}"
 DIR="${SITES_DIR:-/tmp/sseo-sites}/bench-$N"
 WP="wp --allow-root --path=$DIR"
 OUT="$ROOT/tests/e2e/artifacts"
@@ -27,6 +27,8 @@ fi
 $WP eval-file "$HERE/generate.php" "$N" 2>&1 | tail -1
 $WP rewrite flush >/dev/null
 $WP plugin install "$ZIP" --activate >/dev/null
+# Above the default Max documents limit (5,000) the inventory would leave part of the site out.
+$WP eval "\\SemanticSEO\\Settings::update( array( 'max_documents' => $(( N + 1000 )) ) );" >/dev/null
 
 # 1. One bounded tick (what WP-Cron runs in the background).
 $WP sseo start inventory --then-analyze --user=admin >/dev/null
