@@ -30,6 +30,14 @@ Every fix below has a regression test that fails on beta.2.
 - Browser worker: the end-of-text token is kept when long texts are truncated (pooling reads the
   last token); preprocessing version `p2` (new model profile key).
 
+### Fixed — large sites (P1)
+- The cluster step of the analysis read every document and full profile at once and ran two
+  link-count queries per member: on 20,000 posts 159 s and 759 MB, fatal under a 256 MB WP-Cron
+  request. Now paged, slim profiles and grouped counts: 10.7 s, 156 MB, identical results
+  (`ClusterScaleTest`).
+- Ticks size their batches from the measured time per item, so a tick stays within its budget
+  (20 s budget: 68 s before, 20.5–22.1 s after on 20,000 posts; `TickBudgetTest`).
+
 ### Fixed — security (P2)
 - Unpublished link sources are hidden from agents in URL analysis; password-protected posts' text
   is never stored, analysed or handed to agents/workers (`PrivacyScopeTest`).
