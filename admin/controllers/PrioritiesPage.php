@@ -76,7 +76,7 @@ final class PrioritiesPage {
 		echo '<label for="sseo-search">' . esc_html__( 'URL or title contains', 'semantic-seo-engine-vi-en' ) . '</label> <input id="sseo-search" type="search" name="search" value="' . esc_attr( $f['search'] ) . '"> <button class="button">' . esc_html__( 'Filter', 'semantic-seo-engine-vi-en' ) . '</button></form>';
 
 		/* translators: %s: number of items */
-		echo '<p><strong>' . esc_html( sprintf( __( '%s items', 'semantic-seo-engine-vi-en' ), number_format_i18n( (int) $res['total'] ) ) ) . '</strong> — ' . esc_html( $res['notice'] ) . '</p>';
+		echo '<p class="sseo-total" data-total="' . (int) $res['total'] . '"><strong>' . esc_html( sprintf( __( '%s items', 'semantic-seo-engine-vi-en' ), number_format_i18n( (int) $res['total'] ) ) ) . '</strong> — ' . esc_html( $res['notice'] ) . '</p>';
 		self::table( $res['items'] );
 		Ui::pagination( (int) $res['total'], $page, self::PER_PAGE, 'sseo-priorities', array_filter( array_map( 'strval', $f ) ) );
 		Ui::out( Ui::action_button( 'export_priorities', array_map( 'strval', $f ), __( 'Download CSV (Excel)', 'semantic-seo-engine-vi-en' ) ) );

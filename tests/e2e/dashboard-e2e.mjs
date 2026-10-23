@@ -181,12 +181,24 @@ try {
 			assert.ok( langs.every( ( l ) => l.trim() === 'EN' ), 'only English pages: ' + [ ...new Set( langs ) ].join( '|' ) );
 			langNote = langs.length + ' English link items';
 		}
+		// The export follows the filters shown (type, and language when the site has two).
+		const listed = Number( await page.getAttribute( 'p.sseo-total', 'data-total' ) );
 		const [ dl ] = await Promise.all( [ page.waitForEvent( 'download' ), page.click( 'button:has-text("Tải CSV (Excel)")' ) ] );
 		const file = await dl.path();
 		const csv = fs.readFileSync( file, 'utf8' );
 		assert.ok( csv.startsWith( '﻿priority,' ), 'BOM + header' );
-		const lines = csv.trim().split( '\n' ).length - 1;
-		assert.ok( lines >= cats.length, 'csv rows ' + lines );
+		// Records, not lines: a quoted cell may contain a line break.
+		let records = 0;
+		let quoted = false;
+		for ( const ch of csv ) {
+			if ( ch === '"' ) {
+				quoted = ! quoted;
+			} else if ( ch === '\n' && ! quoted ) {
+				records++;
+			}
+		}
+		const lines = records - 1;
+		assert.equal( lines, listed, 'csv rows ' + lines + ' = items listed with these filters ' + listed );
 		return all + ' items on page 1 unfiltered; ' + cats.length + ' link items; ' + langNote + '; CSV ' + lines + ' rows (' + dl.suggestedFilename() + ')';
 	} );
 
