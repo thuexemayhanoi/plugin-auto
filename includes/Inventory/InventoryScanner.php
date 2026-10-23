@@ -27,7 +27,7 @@ defined( 'ABSPATH' ) || exit;
  */
 final class InventoryScanner {
 
-	const VERSION = 'inv-2';
+	const VERSION = 'inv-3';
 
 	/**
 	 * Post statuses in scope.
@@ -228,6 +228,7 @@ final class InventoryScanner {
 		$url          = (string) get_permalink( $post );
 		$loc          = LanguageResolver::post_locale( $post->ID, $url );
 		$translations = LanguageResolver::post_translations( $post->ID, $post->post_type );
+		$standalone   = LanguageResolver::declared_standalone( $post->ID );
 		$seo          = SeoAdapter::post_meta( $post );
 		$canonical    = '' !== $seo['canonical'] ? $seo['canonical'] : ( 'publish' === $post->post_status ? (string) wp_get_canonical_url( $post ) : $url );
 
@@ -267,6 +268,7 @@ final class InventoryScanner {
 					$terms,
 					$loc,
 					$translations,
+					$standalone,
 				)
 			)
 		);
@@ -308,6 +310,7 @@ final class InventoryScanner {
 				'seo'               => $seo,
 				'translation_group' => LanguageResolver::group_key( $translations ),
 				'translations'      => $translations,
+				'standalone'        => $standalone,
 				'terms'             => $terms,
 				'fingerprint'       => $fingerprint,
 				'excluded'          => $excluded,
@@ -455,35 +458,36 @@ final class InventoryScanner {
 		}
 
 		$signals = array(
-			'versions'              => array(
+			'versions'               => array(
 				'inventory' => self::VERSION,
 				'extractor' => ContentExtractor::VERSION,
 				'tokenizer' => Tokenizer::VERSION,
 				'lexical'   => LexicalIndex::VERSION,
 				'intent'    => IntentClassifier::VERSION,
 			),
-			'headings'              => array_slice( $x['headings'], 0, 80 ),
-			'entities'              => $x['entities'],
-			'attributes'            => $x['attributes'],
-			'top_terms'             => array_map(
+			'headings'               => array_slice( $x['headings'], 0, 80 ),
+			'entities'               => $x['entities'],
+			'attributes'             => $x['attributes'],
+			'top_terms'              => array_map(
 				static function ( $w ) {
 					return round( $w, 2 );
 				},
 				$top
 			),
-			'repetition'            => $x['repetition'],
-			'minhash'               => $x['minhash'],
-			'first_paragraph'       => $x['first_paragraph'],
-			'detected_lang'         => $x['detected_lang'],
-			'images'                => $x['images'],
-			'images_no_alt'         => $x['images_no_alt'],
-			'jsonld_in_content'     => $x['jsonld_in_content'],
-			'intent'                => $intent,
-			'indexability'          => $reasons,
-			'translations'          => $d['translations'],
-			'seo_title_is_template' => ! empty( $seo['title_is_template'] ),
-			'link_count'            => count( $x['links'] ),
-			'slug'                  => isset( $x['slug'] ) ? $x['slug'] : '',
+			'repetition'             => $x['repetition'],
+			'minhash'                => $x['minhash'],
+			'first_paragraph'        => $x['first_paragraph'],
+			'detected_lang'          => $x['detected_lang'],
+			'images'                 => $x['images'],
+			'images_no_alt'          => $x['images_no_alt'],
+			'jsonld_in_content'      => $x['jsonld_in_content'],
+			'intent'                 => $intent,
+			'indexability'           => $reasons,
+			'translations'           => $d['translations'],
+			'translation_standalone' => ! empty( $d['standalone'] ),
+			'seo_title_is_template'  => ! empty( $seo['title_is_template'] ),
+			'link_count'             => count( $x['links'] ),
+			'slug'                   => isset( $x['slug'] ) ? $x['slug'] : '',
 		);
 		$now     = Util::now();
 		$doc_id  = DocumentRepository::upsert(

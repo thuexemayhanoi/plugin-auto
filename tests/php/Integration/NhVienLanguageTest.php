@@ -151,6 +151,9 @@ final class NhVienLanguageTest extends TestCase {
 		$this->assertNotContains( 'warning', $labels );
 		$missing = Db::col( "SELECT document_id FROM {findings} WHERE type = 'qa' AND check_id = 'missing_translation'" );
 		$this->assertNotContains( (string) $doc( 'post', $vi_rent )['id'], array_map( 'strval', $missing ), 'paired post is not missing a translation' );
+		$this->assertNotContains( (string) $doc( 'post', $en_alone )['id'], array_map( 'strval', $missing ), 'a declared standalone English post is never missing a translation' );
+		$this->assertContains( (string) $doc( 'post', $vi_only )['id'], array_map( 'strval', $missing ), 'an unpaired Vietnamese post on a site that pairs posts is suggested' );
+		$this->assertTrue( json_decode( $doc( 'post', $en_alone )['signals'], true )['translation_standalone'] );
 
 		// Read-only: the plugin's options are untouched by indexing and analysis.
 		$this->assertSame( array( $vi_rent => $en_rent ), get_option( 'nh_vien_translation_pairs_v1' ) );

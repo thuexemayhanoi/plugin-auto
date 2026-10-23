@@ -256,6 +256,24 @@ final class LanguageResolver {
 	}
 
 	/**
+	 * Whether the language plugin declares a post a standalone article with no counterpart by design
+	 * (Nguyen Ha VI-EN Core "independent English posts"). Such a post is never "missing" a translation.
+	 *
+	 * @param int $post_id Post ID.
+	 * @return bool
+	 */
+	public static function declared_standalone( $post_id ) {
+		if ( 'nh_vien' !== self::framework() || ! method_exists( 'NH_VIEN_Links', 'independent_ids' ) ) {
+			return false;
+		}
+		try {
+			return in_array( (int) $post_id, array_map( 'intval', (array) \NH_VIEN_Links::independent_ids() ), true );
+		} catch ( \Throwable $e ) {
+			return false;
+		}
+	}
+
+	/**
 	 * Translations of a post: lang => post ID (including itself). Empty when unverifiable.
 	 *
 	 * @param int    $post_id   Post ID.

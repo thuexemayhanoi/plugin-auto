@@ -322,8 +322,10 @@ final class QaChecker {
 		// Only for content types the site translates as linked pairs at all: the read-only pilot on a
 		// copy of the blog found its English posts written as standalone articles (no post pair), so
 		// every post would otherwise be "missing" a translation.
+		// Never for a post the language plugin declares standalone by design.
 		$translated_type = ! isset( $ctx['translated'] ) || isset( $ctx['translated'][ $p['subtype'] ] );
-		if ( $is_post && $translated_type && $ctx['mapping'] && count( $ctx['languages'] ) > 1 ) {
+		$standalone      = ! empty( $s['translation_standalone'] );
+		if ( $is_post && $translated_type && ! $standalone && $ctx['mapping'] && count( $ctx['languages'] ) > 1 ) {
 			$tr      = isset( $s['translations'] ) ? array_keys( (array) $s['translations'] ) : array();
 			$missing = array_values( array_diff( $ctx['languages'], $tr, array( $p['locale'] ) ) );
 			if ( array() !== $missing ) {
