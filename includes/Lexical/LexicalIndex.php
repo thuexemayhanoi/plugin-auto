@@ -17,9 +17,14 @@ defined( 'ABSPATH' ) || exit;
  */
 final class LexicalIndex {
 
-	const VERSION = 'bm25-1';
+	const VERSION = 'bm25-2';
 	const K1      = 1.2;
 	const B       = 0.75;
+
+	/**
+	 * Upper bound of posting rows read by one candidate search (see search()).
+	 */
+	const MAX_POSTINGS = 20000;
 
 	const FIELD_WEIGHTS = array(
 		'title'       => 3.0,
@@ -194,9 +199,24 @@ final class LexicalIndex {
 		if ( array() === $weighted ) {
 			return array();
 		}
-		$terms = array_keys( $weighted );
-		$args  = $terms;
-		$sql   = "SELECT p.term, p.document_id, p.tf, d.doc_len FROM {postings} p JOIN {documents} d ON d.id = p.document_id WHERE d.status = 'publish' AND d.excluded = 0 AND p.term IN (" . Db::in( $terms, '%s' ) . ')';
+		// Bound the work: on large sites a few very common terms carry thousands of postings each
+		// while adding little to BM25 (low IDF). The highest-weighted terms are kept first and a term
+		// is skipped once its postings would exceed the budget (the five strongest terms always stay).
+		// Measured at 6,000 synthetic posts: one search read up to ~100,000 rows and took ~1 s.
+		$budget = (int) apply_filters( 'sseo_search_postings_budget', self::MAX_POSTINGS );
+		$kept   = array();
+		$sum    = 0;
+		foreach ( $weighted as $term => $w ) {
+			if ( count( $kept ) >= 5 && $sum + $df[ $term ] > $budget ) {
+				continue;
+			}
+			$kept[ $term ] = $w;
+			$sum          += $df[ $term ];
+		}
+		$weighted = $kept;
+		$terms    = array_keys( $weighted );
+		$args     = $terms;
+		$sql      = "SELECT p.term, p.document_id, p.tf, d.doc_len FROM {postings} p JOIN {documents} d ON d.id = p.document_id WHERE d.status = 'publish' AND d.excluded = 0 AND p.term IN (" . Db::in( $terms, '%s' ) . ')';
 		if ( '' !== $locale ) {
 			$sql   .= ' AND d.locale = %s';
 			$args[] = $locale;
