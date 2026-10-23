@@ -169,6 +169,14 @@ T = {
     "The self-test was computed with a different model profile.": "Lần tự kiểm thử được tính bằng một hồ sơ model khác.",
     "Send one vector per reference query and per reference document.": "Gửi một vector cho mỗi truy vấn tham chiếu và mỗi tài liệu tham chiếu.",
     "checked by the server, max Δ": "máy chủ đã kiểm tra, Δ tối đa",
+    # Proposal URL / risk and permalink protection.
+    "URL:": "URL:",
+    "Risk:": "Rủi ro:",
+    "low": "thấp",
+    "medium": "trung bình",
+    "high": "cao",
+    "Category proposals are disabled because the permalink structure contains this taxonomy: assigning a term could change the post URL.": "Đề xuất chuyên mục bị tắt vì cấu trúc permalink chứa taxonomy này: gán thêm một mục có thể làm đổi URL bài viết.",
+    "The permalink structure now contains this taxonomy: applying could change the post URL; nothing was written.": "Cấu trúc permalink hiện chứa taxonomy này: áp dụng có thể làm đổi URL bài viết; chưa ghi gì.",
 }
 
 # Plural entries: Vietnamese has a single form (nplurals=1).

@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Semantic SEO Engine VI–EN 1.0.0-beta.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/semantic-seo-engine-vi-en\n"
-"POT-Creation-Date: 2026-10-23T06:48:11+00:00\n"
+"POT-Creation-Date: 2026-10-23T06:52:22+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -406,7 +406,7 @@ msgstr ""
 msgid "Recent agent activity"
 msgstr ""
 
-#: admin/controllers/AgentsPage.php:152 admin/controllers/AuditPage.php:272
+#: admin/controllers/AgentsPage.php:152 admin/controllers/AuditPage.php:280
 msgid "When (UTC)"
 msgstr ""
 
@@ -414,12 +414,12 @@ msgstr ""
 msgid "Agent"
 msgstr ""
 
-#: admin/controllers/AgentsPage.php:154 admin/controllers/AuditPage.php:274
+#: admin/controllers/AgentsPage.php:154 admin/controllers/AuditPage.php:282
 msgid "Action"
 msgstr ""
 
-#: admin/controllers/AgentsPage.php:155 admin/controllers/AuditPage.php:249
-#: admin/controllers/AuditPage.php:276
+#: admin/controllers/AgentsPage.php:155 admin/controllers/AuditPage.php:257
+#: admin/controllers/AuditPage.php:284
 msgid "Result"
 msgstr ""
 
@@ -441,15 +441,15 @@ msgstr ""
 msgid "Proposals"
 msgstr ""
 
-#: admin/controllers/AuditPage.php:31 admin/controllers/AuditPage.php:182
+#: admin/controllers/AuditPage.php:31 admin/controllers/AuditPage.php:190
 msgid "Applied changes"
 msgstr ""
 
-#: admin/controllers/AuditPage.php:32 admin/controllers/AuditPage.php:214
+#: admin/controllers/AuditPage.php:32 admin/controllers/AuditPage.php:222
 msgid "Approvals"
 msgstr ""
 
-#: admin/controllers/AuditPage.php:33 admin/controllers/AuditPage.php:270
+#: admin/controllers/AuditPage.php:33 admin/controllers/AuditPage.php:278
 msgid "Audit log"
 msgstr ""
 
@@ -457,8 +457,8 @@ msgstr ""
 msgid "Sections"
 msgstr ""
 
-#: admin/controllers/AuditPage.php:76 admin/controllers/AuditPage.php:186
-#: admin/controllers/AuditPage.php:219
+#: admin/controllers/AuditPage.php:76 admin/controllers/AuditPage.php:194
+#: admin/controllers/AuditPage.php:227
 #: admin/controllers/CannibalizationPage.php:71
 #: admin/controllers/JobsPage.php:126 admin/controllers/LinksPage.php:74
 #: admin/controllers/RelatedPage.php:29 admin/controllers/SemanticPage.php:85
@@ -466,7 +466,7 @@ msgstr ""
 msgid "Status"
 msgstr ""
 
-#: admin/controllers/AuditPage.php:77 admin/controllers/AuditPage.php:250
+#: admin/controllers/AuditPage.php:77 admin/controllers/AuditPage.php:258
 #: admin/controllers/CannibalizationPage.php:74
 #: admin/controllers/ClustersPage.php:38 admin/controllers/LinksPage.php:77
 #: admin/controllers/MatrixPage.php:186 admin/controllers/QaPage.php:71
@@ -499,123 +499,147 @@ msgstr ""
 msgid "Why:"
 msgstr ""
 
-#: admin/controllers/AuditPage.php:102
-msgid "Before:"
+#: admin/controllers/AuditPage.php:101
+msgid "low"
 msgstr ""
 
 #: admin/controllers/AuditPage.php:102
-msgid "After:"
+msgid "medium"
 msgstr ""
 
-#: admin/controllers/AuditPage.php:104
-msgid "Unchanged:"
+#: admin/controllers/AuditPage.php:103
+msgid "high"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:105
+msgid "URL:"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:105 admin/controllers/RelatedPage.php:49
+msgid "Post ID"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:105
+msgid "Risk:"
 msgstr ""
 
 #: admin/controllers/AuditPage.php:110
-msgid "I reviewed this exact change and approve it for this single object."
+msgid "Before:"
 msgstr ""
 
-#: admin/controllers/AuditPage.php:111
-msgid "Note (optional)"
+#: admin/controllers/AuditPage.php:110
+msgid "After:"
 msgstr ""
 
 #: admin/controllers/AuditPage.php:112
+msgid "Unchanged:"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:118
+msgid "I reviewed this exact change and approve it for this single object."
+msgstr ""
+
+#: admin/controllers/AuditPage.php:119
+msgid "Note (optional)"
+msgstr ""
+
+#: admin/controllers/AuditPage.php:120
 msgid "Approve"
 msgstr ""
 
-#: admin/controllers/AuditPage.php:113
+#: admin/controllers/AuditPage.php:121
 msgid "Reject"
 msgstr ""
 
 #. translators: 1: id, 2: expiry
-#: admin/controllers/AuditPage.php:123
+#: admin/controllers/AuditPage.php:131
 #, php-format
 msgid "Approval #%1$d active until %2$s UTC."
 msgstr ""
 
-#: admin/controllers/AuditPage.php:133
+#: admin/controllers/AuditPage.php:141
 msgid "Apply now"
 msgstr ""
 
-#: admin/controllers/AuditPage.php:139
+#: admin/controllers/AuditPage.php:147
 msgid "Revoke approval"
 msgstr ""
 
-#: admin/controllers/AuditPage.php:165
+#: admin/controllers/AuditPage.php:173
 msgid "Confirm"
 msgstr ""
 
-#: admin/controllers/AuditPage.php:165
+#: admin/controllers/AuditPage.php:173
 msgid "Roll back"
 msgstr ""
 
-#: admin/controllers/AuditPage.php:168
+#: admin/controllers/AuditPage.php:176
 msgid "Authorize an agent rollback"
 msgstr ""
 
-#: admin/controllers/AuditPage.php:176
+#: admin/controllers/AuditPage.php:184
 msgid "readback verified"
 msgstr ""
 
-#: admin/controllers/AuditPage.php:176
+#: admin/controllers/AuditPage.php:184
 msgid "rollback:"
 msgstr ""
 
-#: admin/controllers/AuditPage.php:184
+#: admin/controllers/AuditPage.php:192
 msgid "Change"
 msgstr ""
 
-#: admin/controllers/AuditPage.php:185 admin/controllers/AuditPage.php:275
+#: admin/controllers/AuditPage.php:193 admin/controllers/AuditPage.php:283
 msgid "Object"
 msgstr ""
 
-#: admin/controllers/AuditPage.php:187
+#: admin/controllers/AuditPage.php:195
 msgid "Verification"
 msgstr ""
 
-#: admin/controllers/AuditPage.php:188
+#: admin/controllers/AuditPage.php:196
 msgid "Applied via"
 msgstr ""
 
-#: admin/controllers/AuditPage.php:189
+#: admin/controllers/AuditPage.php:197
 msgid "Undo"
 msgstr ""
 
-#: admin/controllers/AuditPage.php:192
+#: admin/controllers/AuditPage.php:200
 msgid "No changes have been applied by this plugin."
 msgstr ""
 
 #. translators: %d: id
-#: admin/controllers/AuditPage.php:207
+#: admin/controllers/AuditPage.php:215
 #, php-format
 msgid "proposal #%d"
 msgstr ""
 
-#: admin/controllers/AuditPage.php:216
+#: admin/controllers/AuditPage.php:224
 msgid "Approval"
 msgstr ""
 
-#: admin/controllers/AuditPage.php:217
+#: admin/controllers/AuditPage.php:225
 msgid "Target"
 msgstr ""
 
-#: admin/controllers/AuditPage.php:218
+#: admin/controllers/AuditPage.php:226
 msgid "Approved by"
 msgstr ""
 
-#: admin/controllers/AuditPage.php:220
+#: admin/controllers/AuditPage.php:228
 msgid "Expires (UTC)"
 msgstr ""
 
-#: admin/controllers/AuditPage.php:223
+#: admin/controllers/AuditPage.php:231
 msgid "No approvals yet."
 msgstr ""
 
-#: admin/controllers/AuditPage.php:240
+#: admin/controllers/AuditPage.php:248
 msgid "Action starts with"
 msgstr ""
 
-#: admin/controllers/AuditPage.php:243
+#: admin/controllers/AuditPage.php:251
 #: admin/controllers/CannibalizationPage.php:54
 #: admin/controllers/ClustersPage.php:32 admin/controllers/LinksPage.php:43
 #: admin/controllers/LinksPage.php:55 admin/controllers/MatrixPage.php:120
@@ -624,19 +648,19 @@ msgstr ""
 msgid "All"
 msgstr ""
 
-#: admin/controllers/AuditPage.php:273
+#: admin/controllers/AuditPage.php:281
 msgid "Who / via"
 msgstr ""
 
-#: admin/controllers/AuditPage.php:277
+#: admin/controllers/AuditPage.php:285
 msgid "Details (redacted)"
 msgstr ""
 
-#: admin/controllers/AuditPage.php:280
+#: admin/controllers/AuditPage.php:288
 msgid "The audit log is empty."
 msgstr ""
 
-#: admin/controllers/AuditPage.php:294
+#: admin/controllers/AuditPage.php:302
 msgid "Older ›"
 msgstr ""
 
@@ -1995,10 +2019,6 @@ msgstr ""
 msgid "Preview"
 msgstr ""
 
-#: admin/controllers/RelatedPage.php:49
-msgid "Post ID"
-msgstr ""
-
 #: admin/controllers/RelatedPage.php:66
 msgid "Related preview"
 msgstr ""
@@ -2924,15 +2944,21 @@ msgid ""
 "The computed result does not match the approved diff; nothing was written."
 msgstr ""
 
-#: includes/Approval/ChangeExecutor.php:170
+#: includes/Approval/ChangeExecutor.php:148
+msgid ""
+"The permalink structure now contains this taxonomy: applying could change "
+"the post URL; nothing was written."
+msgstr ""
+
+#: includes/Approval/ChangeExecutor.php:173
 msgid "A concurrent apply with the same idempotency key is in progress."
 msgstr ""
 
-#: includes/Approval/ChangeExecutor.php:229
+#: includes/Approval/ChangeExecutor.php:232
 msgid "The write could not be verified and was reverted automatically."
 msgstr ""
 
-#: includes/Approval/ChangeExecutor.php:229
+#: includes/Approval/ChangeExecutor.php:232
 msgid ""
 "The write could not be verified and the automatic revert also failed: manual"
 " recovery is needed (see change log)."
@@ -2997,25 +3023,31 @@ msgid ""
 "analysis."
 msgstr ""
 
-#: includes/Approval/ProposalService.php:209 includes/Services/Api.php:995
+#: includes/Approval/ProposalService.php:215 includes/Services/Api.php:995
 msgid "Document not found."
 msgstr ""
 
-#: includes/Approval/ProposalService.php:219
+#: includes/Approval/ProposalService.php:224
+msgid ""
+"Category proposals are disabled because the permalink structure contains "
+"this taxonomy: assigning a term could change the post URL."
+msgstr ""
+
+#: includes/Approval/ProposalService.php:228
 msgid ""
 "The suggested term does not exist or is out of scope. Terms are never "
 "created by this plugin."
 msgstr ""
 
-#: includes/Approval/ProposalService.php:225
+#: includes/Approval/ProposalService.php:234
 msgid "The post already has this term."
 msgstr ""
 
-#: includes/Approval/ProposalService.php:276
+#: includes/Approval/ProposalService.php:302
 msgid "Only published posts can receive proposals."
 msgstr ""
 
-#: includes/Approval/ProposalService.php:279
+#: includes/Approval/ProposalService.php:305
 msgid "This URL is locked or excluded by an administrator."
 msgstr ""
 
