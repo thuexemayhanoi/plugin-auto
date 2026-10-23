@@ -21,6 +21,7 @@ final class JobRepository {
 	const TYPES    = array( 'inventory', 'analyze', 'embed', 'incremental', 'verify_links' );
 	const ACTIVE   = array( 'queued', 'running', 'paused' );
 	const FINISHED = array( 'completed', 'failed', 'cancelled' );
+	const CRASHED  = 'The previous run stopped without finishing its batch (PHP fatal error, timeout, memory limit or killed worker).';
 
 	/**
 	 * Job previously created by the same owner with the same idempotency key, if any.
@@ -153,6 +154,10 @@ final class JobRepository {
 	/**
 	 * Atomically claims a runnable job lease.
 	 *
+	 * Taking over an expired lease means the previous tick stopped without releasing it (PHP fatal
+	 * error, timeout, memory limit, killed worker): that counts as a failed attempt, so a job that
+	 * crashes every time ends as "failed" after max_attempts instead of blocking its type forever.
+	 *
 	 * @param int    $id    Job ID.
 	 * @param string $owner Lease owner token.
 	 * @param int    $ttl   Lease seconds.
@@ -160,10 +165,18 @@ final class JobRepository {
 	 */
 	public static function claim( $id, $owner, $ttl ) {
 		$now = Util::now();
-		$n   = Db::query(
-			"UPDATE {jobs} SET status = 'running', lease_owner = %s, lease_expires = %s, heartbeat_at = %s, started_at = COALESCE(started_at, %s), updated_at = %s
+		Db::query(
+			"UPDATE {jobs} SET attempts = attempts + 1, last_error = %s, status = 'failed', lease_owner = '', lease_expires = NULL, finished_at = %s, updated_at = %s
+			WHERE id = %d AND status = 'running' AND lease_owner <> '' AND lease_expires < %s AND attempts + 1 >= max_attempts",
+			array( self::CRASHED, $now, $now, (int) $id, $now )
+		);
+		// attempts and last_error are assigned first: MySQL evaluates SET left to right, so they must
+		// read lease_owner / lease_expires before those are overwritten.
+		$n = Db::query(
+			"UPDATE {jobs} SET attempts = attempts + IF(lease_owner <> '' AND lease_expires < %s, 1, 0), last_error = IF(lease_owner <> '' AND lease_expires < %s, %s, last_error),
+			status = 'running', lease_owner = %s, lease_expires = %s, heartbeat_at = %s, started_at = COALESCE(started_at, %s), updated_at = %s
 			WHERE id = %d AND status IN ('queued','running') AND (lease_expires IS NULL OR lease_expires < %s OR lease_owner = '') AND (next_run_at IS NULL OR next_run_at <= %s)",
-			array( $owner, Util::now( $ttl ), $now, $now, $now, (int) $id, $now, $now )
+			array( $now, $now, self::CRASHED, $owner, Util::now( $ttl ), $now, $now, $now, (int) $id, $now, $now )
 		);
 		return 1 === $n;
 	}

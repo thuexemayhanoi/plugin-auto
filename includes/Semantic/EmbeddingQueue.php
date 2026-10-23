@@ -37,8 +37,9 @@ final class EmbeddingQueue {
 	public static function enqueue_batch( $job_id, $after, $batch, array $doc_ids = array() ) {
 		$profile = ModelProfile::active();
 		$chunks  = (int) Settings::get( 'embed_body_chunks', 2 );
-		// MySQL evaluates ON DUPLICATE KEY assignments left to right: attempts and status are
-		// computed from the old row before content_hash is overwritten.
+		// MySQL evaluates ON DUPLICATE KEY assignments left to right: attempts, lease_hash and status
+		// are computed from the old row before content_hash (and status) are overwritten. New
+		// content starts with fresh attempts and invalidates a lease on the old content.
 		$sql  = "SELECT id, locale FROM {documents} WHERE status = 'publish' AND excluded = 0 AND id > %d";
 		$args = array( (int) $after );
 		if ( array() !== $doc_ids ) {
@@ -79,7 +80,7 @@ final class EmbeddingQueue {
 		if ( array() !== $values ) {
 			Db::query(
 				'INSERT INTO {queue} (job_id, document_id, chunk_id, model_key, content_hash, status, attempts, updated_at) VALUES ' . implode( ', ', $values ) . "
-				ON DUPLICATE KEY UPDATE attempts = IF(status = 'done' OR status = 'failed', 0, attempts), status = IF(status = 'leased' AND content_hash = VALUES(content_hash), status, 'pending'), job_id = VALUES(job_id), content_hash = VALUES(content_hash), last_error = '', updated_at = VALUES(updated_at)",
+				ON DUPLICATE KEY UPDATE attempts = IF(status = 'done' OR status = 'failed' OR content_hash <> VALUES(content_hash), 0, attempts), lease_hash = IF(status = 'leased' AND content_hash = VALUES(content_hash), lease_hash, ''), status = IF(status = 'leased' AND content_hash = VALUES(content_hash), status, 'pending'), job_id = VALUES(job_id), content_hash = VALUES(content_hash), last_error = '', updated_at = VALUES(updated_at)",
 				$vargs
 			);
 		}
@@ -96,6 +97,12 @@ final class EmbeddingQueue {
 	 * @return int
 	 */
 	public static function expire_leases() {
+		// A pending item can no longer be claimed once it used all its attempts: settle it, so the
+		// embedding job can finish.
+		Db::query(
+			"UPDATE {queue} SET status = 'failed', last_error = 'too many attempts', updated_at = %s WHERE status = 'pending' AND attempts >= %d",
+			array( Util::now(), self::MAX_ATTEMPT )
+		);
 		return max(
 			0,
 			Db::query(
@@ -122,6 +129,12 @@ final class EmbeddingQueue {
 		Db::query(
 			"UPDATE {queue} SET status = 'leased', lease_hash = %s, lease_owner = %d, lease_expires = %s, attempts = attempts + 1, updated_at = %s WHERE status = 'pending' AND model_key = %s AND attempts < %d ORDER BY id ASC LIMIT %d",
 			array( $hash, (int) $user_id, $expires, Util::now(), $profile['model_key'], self::MAX_ATTEMPT, $limit )
+		);
+		// The chunk text may have changed since the item was queued: hand out the current text with
+		// its own hash, so the result is accepted instead of rejected as stale.
+		Db::query(
+			'UPDATE {queue} q JOIN {chunks} c ON c.document_id = q.document_id AND c.chunk_index = q.chunk_id SET q.content_hash = c.content_hash WHERE q.lease_hash = %s AND q.content_hash <> c.content_hash',
+			array( $hash )
 		);
 		$rows  = Db::rows(
 			'SELECT q.id, q.document_id, q.chunk_id, q.content_hash, c.kind, c.text, d.locale FROM {queue} q JOIN {chunks} c ON c.document_id = q.document_id AND c.chunk_index = q.chunk_id JOIN {documents} d ON d.id = q.document_id WHERE q.lease_hash = %s',

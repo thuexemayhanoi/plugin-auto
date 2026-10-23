@@ -25,6 +25,13 @@ final class JobRunner {
 	const LEASE_TTL = 90;
 
 	/**
+	 * Lease held by this process ([job ID, owner]) while a tick runs, for the fatal-error handler.
+	 *
+	 * @var array|null
+	 */
+	private static $running = null;
+
+	/**
 	 * Handler classes by job type.
 	 */
 	const HANDLERS = array(
@@ -118,6 +125,7 @@ final class JobRunner {
 		$batch = (int) Settings::get( 'batch_size', 25 );
 		$delay = 0;
 		Db::take_errors();
+		self::watch_fatal( $job_id, $owner );
 		try {
 			if ( empty( $state['initialized'] ) ) {
 				$init = call_user_func( array( $class, 'init' ), $job );
@@ -181,6 +189,8 @@ final class JobRunner {
 				'batches' => $batches,
 				'message' => Util::truncate( $e->getMessage(), 300 ),
 			);
+		} finally {
+			self::$running = null;
 		}
 		JobRepository::release( $job_id, $owner, $delay );
 		return array(
@@ -188,6 +198,37 @@ final class JobRunner {
 			'status'  => 'running',
 			'batches' => $batches,
 			'message' => $delay > 0 ? 'waiting for external workers' : 'time budget reached; will resume',
+		);
+	}
+
+	/**
+	 * Records a PHP fatal error (memory limit, timeout, …) of the running tick as a failed attempt
+	 * at shutdown, with its message, instead of leaving the lease to expire silently.
+	 *
+	 * @param int    $job_id Job ID.
+	 * @param string $owner  Lease owner.
+	 * @return void
+	 */
+	private static function watch_fatal( $job_id, $owner ) {
+		static $registered = false;
+		self::$running     = array( (int) $job_id, (string) $owner );
+		if ( $registered ) {
+			return;
+		}
+		$registered = true;
+		register_shutdown_function(
+			static function () {
+				$lease = self::$running;
+				$error = error_get_last();
+				if ( null === $lease || ! is_array( $error ) || ! in_array( $error['type'], array( E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR, E_USER_ERROR ), true ) ) {
+					return;
+				}
+				try {
+					JobRepository::fail( $lease[0], $lease[1], 'PHP fatal error: ' . Util::truncate( (string) $error['message'], 500 ) );
+				} catch ( \Throwable $e ) {
+					unset( $e ); // The lease expires and the next claim counts the attempt.
+				}
+			}
 		);
 	}
 
@@ -214,7 +255,8 @@ final class JobRunner {
 	 * @return array Last tick result.
 	 */
 	public static function run_to_completion( $job_id, $max_ticks = 10000 ) {
-		$last = array();
+		$last    = array();
+		$waiting = 0;
 		for ( $i = 0; $i < $max_ticks; $i++ ) {
 			$last = self::tick( 30, $job_id );
 			if ( in_array( $last['status'], array( 'completed', 'failed', 'cancelled', 'paused', 'missing' ), true ) ) {
@@ -223,6 +265,20 @@ final class JobRunner {
 			if ( 'queued' === $last['status'] ) {
 				break; // Backing off after an error.
 			}
+			if ( 0 === $last['batches'] ) {
+				$job = JobRepository::get( (int) $job_id );
+				if ( null === $job || '' === (string) $job['lease_owner'] || strtotime( $job['lease_expires'] . ' UTC' ) < time() ) {
+					break; // Scheduled to run later (waiting for workers or backing off).
+				}
+				// Another worker (WP-Cron) holds the lease: wait for it instead of spinning, and give
+				// up once a whole lease period passed without this process getting a turn.
+				if ( ++$waiting > self::LEASE_TTL ) {
+					break;
+				}
+				sleep( 1 );
+				continue;
+			}
+			$waiting = 0;
 			// One long process (WP-CLI) would otherwise keep every post, term and meta row it read in
 			// WordPress' in-memory object cache: peak 329 MB for 6,000 synthetic posts.
 			if ( wp_cache_supports( 'flush_runtime' ) ) {
