@@ -35,7 +35,7 @@ Enforced for every transport (verified over real HTTP in `tests/e2e/http-agent.m
 Authentication: HTTP Basic with the Application Password. Every response is an envelope:
 
 ```json
-{ "ok": true, "data": { … }, "meta": { "api_version": "1", "plugin_version": "1.0.0-beta.3", "generated_at": "…" } }
+{ "ok": true, "data": { … }, "meta": { "api_version": "1", "plugin_version": "1.0.0-beta.4", "generated_at": "…" } }
 { "ok": false, "error": { "code": "sseo_quota", "message": "…", "data": {} }, "meta": { … } }
 ```
 
@@ -45,6 +45,9 @@ Lists use `limit` (≤ 100) and an opaque `cursor` → `next_cursor`.
 | Method & route | Capability | Purpose |
 | --- | --- | --- |
 | `GET /status` | read | version, read-only mode, tiers, index counts, link-scan coverage, findings summary, `inventory_limit` (Max documents vs stored and in-scope objects), agent interface (abilities_api, mcp_adapter) |
+| `GET /health` | read | dashboard data for a person or an agent: health (ok/warning/error), database state (`ready`, tables present/expected, missing tables/columns, last SQL error with errno and SQLSTATE), counts (pages analyzed by language, issues by priority and kind, orphans, overlap, content quality, verified errors), active and failed jobs, last scan and last trial (with read-only evidence), comparison with the previous scan, measured estimate, Qwen state, allowed / never-done actions, system check rows |
+| `GET /priorities` | read | the work list, most important first: `priority` 1–4, `category`, `problem`, `url`, `target_url`, `evidence`, `confidence`, `benefit`, `action`, `detail_url`; filters `locale`, `category` (technical, links, overlap, content, translation, structure), `priority`, `search`; `limit` ≤ 100, `offset` |
+| `GET /scans` | read | history of completed scans (scope pilot/partial/site, documents, measured processing seconds, peak memory, read-only evidence) and the difference between the last two full scans |
 | `GET /inventory` | read | SEO Matrix rows (`locale`, `type`, `status`, `intent`, `search`, `has_qa`, `has_risk`, `sort`, `order`) |
 | `GET /analysis?url=…` (or `post_id`, `document_id`) | read | facts vs inferences, QA, link suggestions, overlap risks, related, provenance |
 | `GET /suggestions/links` | read | ranked suggestions with anchor + byte offset + evidence; orphan candidates with scan coverage |

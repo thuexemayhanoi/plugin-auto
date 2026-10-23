@@ -1,4 +1,4 @@
-# Installation guide — Semantic SEO Engine VI–EN 1.0.0-beta.3
+# Installation guide — Semantic SEO Engine VI–EN 1.0.0-beta.4
 
 > Tiếng Việt: xem [USER-GUIDE-VI.md](USER-GUIDE-VI.md) mục 1 cho phần cài đặt tóm tắt.
 
@@ -8,7 +8,7 @@
 | --- | --- | --- |
 | WordPress | 6.5 | 6.5.13, 6.9.10, 7.1.3 (see [COMPATIBILITY.md](COMPATIBILITY.md)) |
 | PHP | 7.4 (`mbstring` required, `intl` recommended, `zip` for XLSX export) | 8.3.6 locally; 7.4–8.4 in CI |
-| Database | MySQL 5.7+/MariaDB 10.4+ (InnoDB, utf8mb4) | MariaDB 10.11 |
+| Database | MySQL 5.7+/MariaDB 10.4+ (InnoDB, utf8mb4); tested on MariaDB 10.11 and 11.8, MySQL 8.4 | MariaDB 10.11 or 11.8 |
 | Optional | WordPress 6.9+ for the Abilities API; the official MCP Adapter plugin for MCP clients; Polylang or WPML for bilingual sites | Polylang 3.9.1, MCP Adapter 0.7.1 |
 
 Shared hosting is enough for everything except embeddings: the semantic model never runs on the server. It runs in an administrator's browser (Tier 1) or in an optional private worker you control (Tier 2).
@@ -21,26 +21,42 @@ Shared hosting is enough for everything except embeddings: the semantic model ne
 
 ## 3. Install from the ZIP
 
-1. Download `semantic-seo-engine-vi-en-1.0.0-beta.3.zip` (and its `.sha256`). Optional check: `sha256sum -c semantic-seo-engine-vi-en-1.0.0-beta.3.zip.sha256`.
+1. Download `semantic-seo-engine-vi-en-1.0.0-beta.4.zip` (and its `.sha256`). Optional check: `sha256sum -c semantic-seo-engine-vi-en-1.0.0-beta.4.zip.sha256`.
 2. WP Admin → **Plugins → Add New → Upload Plugin** → choose the ZIP → **Install Now** → **Activate**.
    The ZIP is reproducible: building the same commit with `bin/build-zip.sh` gives the same SHA-256.
-   *WP-CLI:* `wp plugin install semantic-seo-engine-vi-en-1.0.0-beta.3.zip --activate`
+   *WP-CLI:* `wp plugin install semantic-seo-engine-vi-en-1.0.0-beta.4.zip --activate`
 3. What activation does (verified by `tests/e2e/smoke-zip.sh` on WordPress 6.5.13, 6.9.10 and 7.1.3):
    * creates 16 tables `{prefix}sseo_*` and the options `sseo_settings`, `sseo_db_version`, `sseo_migration_log`;
    * does **not** change posts, post meta, terms, users, roles, other options, rewrite rules or front-end HTML (byte-identical before/after);
    * starts no scan and contacts no external service.
 
-## 4. First run (5-step wizard)
+## 4. First run: the SEO Dashboard
 
-Open **Semantic SEO → Tổng quan & Thiết lập (Overview & Setup)**:
+Open **Semantic SEO → Bảng điều khiển SEO (SEO Dashboard)**:
 
-1. **Compatibility check** — WordPress/PHP versions, tables, `intl`, Abilities API, language framework (Polylang/WPML/URL prefix/site default), SEO metadata source.
-2. **Compute tiers** — Tier 0 lexical works immediately; Tier 1/2 are optional.
-3. **Scope** — post types, exclusions, batch size, maximum documents.
-4. **Read-only pilot** — analyse the N most recently updated posts (default 20) and check the counts.
-5. **Finish** — then run *Full inventory + analysis* from the Overview or Jobs page.
+1. **Check the system** — database (tables present/expected, schema version, last SQL error), your
+   permissions, SEO plugin (read only), language plugin, cache plugin, PHP memory and time limits,
+   WP-Cron, the optional model, read-only mode. If the database is incomplete, the page shows the
+   SQL error and a **Repair the database** button (creates missing tables/columns only).
+2. **Analyze 20 pages (trial)** — read-only analysis of the 20 most recently updated posts with real
+   results, measured processing time and peak memory, and read-only evidence (posts, meta and terms
+   fingerprinted before and after).
+3. **Analyze the whole site** — shows the number of objects in scope and the time estimated from the
+   trial; runs in the background with **pause / resume / cancel**.
 
-Jobs run in bounded background batches through WP-Cron (default 25 objects / 20 s per tick). If `DISABLE_WP_CRON` is set, keep the Jobs page open (it advances jobs) or run `wp sseo run --user=<admin>`.
+Jobs run in bounded background batches through WP-Cron (default 25 objects / 20 s per tick); while
+the dashboard is open it advances the scan itself. If `DISABLE_WP_CRON` is set, keep the dashboard
+or the Jobs page open, or run `wp sseo run --user=<admin>`.
+
+### Upgrading from 1.0.0-beta.3 on MariaDB 11.7 or later
+
+Earlier versions could not create the `{prefix}sseo_embeddings` table on MariaDB 11.7+ (its column
+was named `vector`, a keyword there): `/status` showed `db_schema.installed = 0` and
+`missing = ["embeddings"]`. Install this ZIP over the old one (Plugins → Add New → Upload → Replace
+current with uploaded): the next request completes the schema; nothing is deleted. Check
+`/wp-json/semantic-seo/v1/status` → `diagnostics.db_schema`: `ready: true`, `installed` = `expected`,
+`missing: []`. On MySQL / MariaDB ≤ 11.6 the existing column is renamed to `vector_data` and stored
+vectors are kept.
 
 ## 5. Optional: browser model (Tier 1)
 

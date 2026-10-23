@@ -2,6 +2,59 @@
 
 All notable changes to Semantic SEO Engine VI–EN. Versions follow semantic versioning.
 
+## [1.0.0-beta.4] — 2026-10-23
+
+Production fix for MariaDB 11.7+ and a Vietnamese-first dashboard for non-technical site owners.
+Report: [docs/QA-REPORT-BETA4.md](docs/QA-REPORT-BETA4.md).
+
+### Fixed — database (P0 on MariaDB 11.7+)
+- The embeddings table was never created on MariaDB 11.7 and later (production: 11.8.9): its
+  column was named `vector`, a keyword since MariaDB 11.7, so `CREATE TABLE` failed with error
+  1064 (SQLSTATE 42000) near `longblob NOT NULL`. The column is now `vector_data` (schema 4).
+  Existing tables (MySQL, MariaDB ≤ 11.6) are renamed in place before `dbDelta()`, keeping every
+  stored vector; a table with both columns is repaired without loss (`SchemaCompatibilityTest`).
+- A failed migration re-ran on every request (front end included). It is now retried at most every
+  30 minutes, or at once after a plugin update; activation, WP-CLI and the dashboard's
+  "Repair the database" button always retry.
+- Migration checks every table and every column; a missing one is never reported as migrated. The
+  log keeps the MySQL error number, SQLSTATE, message and statement of each failed table;
+  `/status` and the dashboard show tables present/expected and the SQL error.
+- No scan can start on an incomplete database (`sseo_db_not_ready`, HTTP 503).
+- The dashboard and `/status` no longer query the embeddings table while it is missing (they
+  logged "Table ... doesn't exist" on the 15/16-table install); they report zero vectors.
+
+### Fixed — scans (found by an independent audit; regression tests fail before)
+- A cancel or pause during a job's last batch was ignored and the analysis was still chained (P2).
+- A full scan started while a trial analysis was waiting silently dropped the site-wide analysis
+  (P1): a waiting trial analysis is now superseded, otherwise the request is kept pending and
+  started when no analysis is active (`JobChainTest`).
+
+### Added
+- **SEO Dashboard** (first admin page, Vietnamese by default): health banner; quick start in 3
+  steps (system check; "Analyze 20 pages" read-only trial; "Analyze the whole site" with the time
+  and memory estimated from the measured trial); progress bars with pause / resume / cancel;
+  cards (pages analyzed by language, issues by priority and kind, pages without inbound links,
+  keyword/intent overlap, content quality, verified technical errors); comparison with the
+  previous scan; optional Qwen card with a device check that downloads nothing; what the plugin
+  may and never does. No SEO score and no ranking prediction.
+- **What to do first** (priority queue): page, problem, evidence, confidence, expected benefit and
+  action per item; filters by language, type, priority and URL/title; CSV export (Excel BOM,
+  formula-safe).
+- Read-only evidence: posts, their meta and terms are fingerprinted when a scan starts and compared
+  when its analysis ends (WordPress's own editor locks and ping flags excluded).
+- REST: `GET /health`, `GET /priorities`, `GET /scans` (`sseo_read`).
+- Every plugin API response is sent with `Cache-Control: no-store` and
+  `X-LiteSpeed-Cache-Control: no-cache` (LiteSpeed Cache, CDNs).
+- CI: integration tests on MariaDB 11.8 and MySQL 8.4; a production-like job (MariaDB 11.8, Yoast
+  SEO, LiteSpeed Cache, Nguyen Ha VI-EN Core) running the upgrade from beta.3 and the dashboard in
+  Chromium; a release workflow publishing the installable ZIP with its SHA-256.
+
+### Changed
+- The dashboard advances a running scan itself while it is open (bounded ticks; leases prevent
+  double work): a 20-page trial took 64.7 s waiting for WP-Cron on a quiet test site, 8.5 s now.
+  A tick uses the read quota.
+- Job durations and peak memory are measured per job (`work_seconds`, `peak_memory`).
+
 ## [1.0.0-beta.3] — 2026-10-23
 
 Independent architecture and security audit. Report: [docs/QA-AUDIT-REPORT.md](docs/QA-AUDIT-REPORT.md).

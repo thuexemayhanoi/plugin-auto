@@ -78,6 +78,13 @@ Model weights are not bundled.
 
 == Changelog ==
 
+= 1.0.0-beta.4 =
+* MariaDB 11.7+ (incl. 11.8): the embeddings table is created (its column was named "vector", a keyword since MariaDB 11.7; error 1064). Existing installs are migrated in place, stored vectors kept. A failed migration no longer re-runs on every request; the database state and SQL error are shown, with a safe "Repair the database" button.
+* New SEO Dashboard in Vietnamese: system check, read-only 20-page trial, whole-site scan with a measured estimate, pause/resume/cancel, issue counts by priority, read-only evidence, comparison with the previous scan, optional AI model state.
+* New "What to do first" page: each item with page, evidence, confidence, expected benefit and action; filters by language, type and priority; CSV export.
+* Fixes: a cancel or pause during the last batch is honoured; a full scan after a waiting trial analyses the whole site; no scan starts on an incomplete database.
+* REST: GET /health, /priorities, /scans; API answers are never cached (LiteSpeed Cache).
+
 = 1.0.0-beta.3 =
 * Data integrity: an approved link now changes post_content only, with a compare-and-set write. Before, the write re-saved the whole post and could change the slug/URL, unpublish a post dated in the future, add the default category, re-resolve tags and overwrite an edit saved at the same moment. Apply re-checks that the source and the target are still published; a rollback cannot run twice; an interrupted change is recovered.
 * Links are never inserted inside an existing link (apostrophes in attributes), an embed or bare URL, a block rebuilt from attributes (e.g. FAQ blocks), a caption, or in the middle of a name.
@@ -99,6 +106,9 @@ Model weights are not bundled.
 * Real Qwen3-Embedding-0.6B (q4f16 default, fp16 option) verified in CI: model-card self-test, browser worker, private worker and hybrid evaluation. Beta until tried on a staging copy of a real site. See docs/TEST-REPORT.md.
 
 == Upgrade Notice ==
+
+= 1.0.0-beta.4 =
+Required on MariaDB 11.7 or later, where earlier versions could not create the embeddings table. Updating completes the database automatically (no data deleted). Read-only by default; back up your database before approving any change.
 
 = 1.0.0-beta.3 =
 Fixes found by an independent audit, including P0 data-integrity issues of the approved-change write path: update before approving any change. The browser model profile changes (long-text truncation fix), so browser-computed embeddings are recomputed. Read-only by default; back up your database before approving any change.

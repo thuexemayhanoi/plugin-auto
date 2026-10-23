@@ -1,4 +1,4 @@
-# Hướng dẫn sử dụng — Semantic SEO Engine VI–EN (bản 1.0.0-beta.3)
+# Hướng dẫn sử dụng — Semantic SEO Engine VI–EN (bản 1.0.0-beta.4)
 
 Tài liệu dành cho quản trị viên/biên tập viên website. Bản tiếng Anh: [USER-GUIDE-EN.md](USER-GUIDE-EN.md).
 
@@ -12,24 +12,71 @@ Tài liệu dành cho quản trị viên/biên tập viên website. Bản tiến
 ## 1. Cài đặt nhanh
 
 1. Sao lưu website (tệp + cơ sở dữ liệu). Nên thử trên bản staging trước.
-2. *Plugins → Cài mới → Tải plugin lên* → chọn `semantic-seo-engine-vi-en-1.0.0-beta.3.zip` → *Cài đặt* → *Kích hoạt*.
+2. *Plugins → Cài mới → Tải plugin lên* → chọn `semantic-seo-engine-vi-en-1.0.0-beta.4.zip` → *Cài đặt* → *Kích hoạt*.
 3. Kích hoạt **chỉ tạo bảng dữ liệu riêng của plugin** (`{prefix}sseo_*`); nội dung, SEO, URL, giao diện ngoài website giữ nguyên (đã kiểm chứng byte-by-byte trên WordPress 6.5.13, 6.9.10, 7.1.3).
 
 Chi tiết: [INSTALLATION.md](INSTALLATION.md).
 
-## 2. Trình hướng dẫn nhanh (Tổng quan & Thiết lập)
+## 2. Bảng điều khiển SEO — cài xong là dùng được
 
-Menu **Semantic SEO → Tổng quan & Thiết lập**:
+Menu **Semantic SEO → Bảng điều khiển SEO**. Không cần đọc các trang kỹ thuật khác để bắt đầu.
 
-1. **Kiểm tra tương thích** — phiên bản WordPress/PHP, bảng dữ liệu, phần mở rộng `intl`, Abilities API, nền tảng đa ngôn ngữ (Polylang/WPML/tiền tố URL/mặc định), nguồn metadata SEO (Yoast, Rank Math, SEOPress, The SEO Framework, AIOSEO — chỉ đọc).
-2. **Các tầng xử lý** — Tầng 0 (từ vựng) dùng được ngay; Tầng 1 (mô hình trong trình duyệt) và Tầng 2 (worker riêng) là tùy chọn.
-3. **Phạm vi** — loại nội dung, URL loại trừ, kích thước lô, số tài liệu tối đa (mặc định 5.000;
-   khi chạm giới hạn, trang Tổng quan báo số đối tượng chưa được kiểm kê — nâng giới hạn để đưa
-   chúng vào).
-4. **Chạy thử chỉ-đọc** — phân tích 20 bài cập nhật gần nhất, xem số liệu.
-5. **Hoàn tất** — sau đó bấm *Kiểm kê toàn bộ + phân tích*.
+**Banner trạng thái** ở đầu trang cho biết plugin đang *hoạt động bình thường*, *cần chú ý* hay *có lỗi*.
+Nếu database của plugin chưa đầy đủ (ví dụ thiếu bảng), banner hiện số bảng đang có/cần có, lỗi SQL
+(mã lỗi, SQLSTATE) và nút **Sửa database**. Nút này chỉ tạo bảng/cột còn thiếu, không xóa dữ liệu.
+Khi database chưa đầy đủ, plugin không cho chạy phân tích.
 
-Tác vụ chạy nền theo lô nhỏ. Nếu website tắt WP-Cron, hãy để trang *Tác vụ & Thiết bị suy luận* mở (trang sẽ tự chạy tiếp) hoặc dùng `wp sseo run --user=<quản trị viên>`.
+**Bắt đầu nhanh trong 3 bước:**
+
+1. **Kiểm tra hệ thống** — database, quyền WordPress của bạn, plugin SEO (ví dụ Yoast SEO, chỉ đọc),
+   plugin đa ngôn ngữ (ví dụ Nguyen Ha VI–EN Core), cache (ví dụ LiteSpeed Cache), bộ nhớ và thời gian
+   tối đa của PHP, WP-Cron, mô hình AI, chế độ chỉ đọc. Mỗi mục có giải thích ngắn.
+2. **Phân tích thử 20 bài** — phân tích 20 bài cập nhật gần nhất ở chế độ chỉ đọc. Khi xong, trang
+   hiển thị kết quả thật (số vấn đề theo mức ưu tiên), thời gian xử lý, bộ nhớ đỉnh, và dòng
+   **"Đã xác minh chỉ đọc"**: plugin lấy dấu vân tay của bài viết, metadata và chuyên mục trước khi quét
+   rồi so lại sau khi quét. Nếu có bài thay đổi trong lúc quét (do có người sửa, plugin khác hoặc bài
+   hẹn giờ), trang sẽ nêu ID bài đó.
+3. **Phân tích toàn website** — trang hiển thị trước số bài/trang/chuyên mục sẽ phân tích (đếm thật
+   trong database) và **thời gian xử lý ước tính dựa trên số đo của lần chạy thử** (là mức tối thiểu:
+   website càng lớn thì mỗi trang được so với càng nhiều trang). Tác vụ chạy nền theo lô nhỏ; có nút
+   **Tạm dừng**, **Tiếp tục**, **Hủy**. Khi trang bảng điều khiển đang mở, chính trang sẽ đẩy tác vụ
+   chạy tiếp (không phải chờ WP-Cron); đóng trang thì WP-Cron tiếp tục. Lỗi (nếu có) hiện ngay trên
+   trang kèm nút chạy lại.
+
+Không cần mô hình AI để phân tích: phần phân tích từ vựng chạy được trên mọi hosting WordPress.
+
+**Sức khỏe SEO** (sau lần quét đầu tiên), mỗi thẻ có giải thích ngắn và liên kết "Xem chi tiết":
+
+| Thẻ | Ý nghĩa |
+| --- | --- |
+| Số trang đã phân tích | Số trang đã xuất bản được đọc, chia theo ngôn ngữ (VI/EN). |
+| Vấn đề theo mức ưu tiên | *Làm ngay / Nên làm sớm / Nên làm / Khi có thời gian*, và theo loại: lỗi đã xác minh, cảnh báo cần xem, gợi ý biên tập. |
+| Bài chưa có liên kết nội bộ trỏ tới | Chỉ tính liên kết trong nội dung bài và mô tả chuyên mục (menu, widget, template không được quan sát). |
+| Bài có nguy cơ trùng từ khóa / ý định | Giả thuyết rủi ro cần người xem (kiểm tra Search Console trước khi xử lý). Plugin không bao giờ gộp, xóa, chuyển hướng hay đổi slug. |
+| Bài cần cải thiện chất lượng | Ngắn so với ý định tìm kiếm, thiếu tiêu đề phụ, ảnh thiếu alt, thiếu nguồn… |
+| Lỗi kỹ thuật đã xác minh | Ví dụ liên kết nội bộ tới bài đã xóa: nên sửa trước. |
+
+Plugin **không có điểm SEO tổng** và **không dự đoán thứ hạng Google**.
+
+Bên dưới là **"Việc nên làm trước"** (10 mục đầu), **"So với lần quét trước"** (số phát hiện mới / đã hết),
+thẻ **mô hình AI Qwen3 (tùy chọn)** với nút **Kiểm tra thiết bị này** (chỉ đọc khả năng trình duyệt,
+không tải gì về), và danh sách **plugin được phép làm gì / không bao giờ tự làm gì**.
+Phạm vi phân tích (loại nội dung, URL loại trừ, kích thước lô, số tài liệu tối đa) nằm trong mục
+**Phạm vi phân tích (nâng cao)** ở cuối trang.
+
+### Trang "Việc nên làm trước"
+
+Mỗi mục ghi: mức ưu tiên, loại vấn đề, **trang (URL)**, **bằng chứng**, **độ tin cậy**, **nên làm gì**,
+**lợi ích dự kiến** và liên kết mở phát hiện đầy đủ. Ví dụ:
+
+* *Liên kết nội bộ trỏ tới bài đã xóa* → bằng chứng: anchor "…" → URL cũ → nên làm: sửa hoặc gỡ liên kết.
+* *Thiếu liên kết nội bộ tới trang liên quan* → bằng chứng: anchor đề xuất "…" → bài đích "…", lý do.
+* *Hai trang có thể cạnh tranh cùng truy vấn* → bằng chứng: độ tương đồng chủ đề, cụm từ chung → nên làm:
+  kiểm tra Search Console, phân định trọng tâm từng trang.
+* *Nhóm chủ đề chưa có bài trụ cột được xác nhận* → đề xuất bài trụ cột.
+
+Lọc theo **ngôn ngữ**, **loại vấn đề**, **mức ưu tiên**, **URL hoặc tiêu đề**; **Tải CSV (Excel)** xuất mọi
+mục khớp bộ lọc. AI agent đọc cùng danh sách qua REST API `GET /wp-json/semantic-seo/v1/priorities`.
 
 ## 3. Các màn hình chính
 
