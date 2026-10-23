@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Semantic SEO Engine VI–EN 1.0.0-beta.2\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/plugin-auto\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/semantic-seo-engine-vi-en\n"
 "Language: vi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -2622,7 +2622,7 @@ msgstr "Hoàn tác một thay đổi"
 msgid "Restores a change made by this plugin. Non-interactive callers need a separate human-issued rollback approval."
 msgstr "Khôi phục thay đổi do plugin này thực hiện. Bên gọi không tương tác cần một phê duyệt hoàn tác riêng do con người cấp."
 
-#: includes/Approval/ApprovalService.php:39 includes/Approval/ChangeExecutor.php:79
+#: includes/Approval/ApprovalService.php:39 includes/Approval/ChangeExecutor.php:84
 msgid "Proposal not found."
 msgstr "Không tìm thấy đề xuất."
 
@@ -2634,7 +2634,7 @@ msgstr "Chỉ có thể phê duyệt đề xuất đang ở trạng thái xem tr
 msgid "The content changed after this preview was created. Create a new preview."
 msgstr "Nội dung đã thay đổi sau khi tạo bản xem trước này. Hãy tạo bản xem trước mới."
 
-#: includes/Approval/ApprovalService.php:113 includes/Rollback/RollbackService.php:48
+#: includes/Approval/ApprovalService.php:113 includes/Rollback/RollbackService.php:52 includes/Rollback/RollbackService.php:79
 msgid "Only applied changes can be rolled back."
 msgstr "Chỉ có thể hoàn tác thay đổi đã áp dụng."
 
@@ -2666,59 +2666,79 @@ msgstr "Chỉ quản trị viên là con người, thao tác trong WP Admin, m�
 msgid "You do not have permission to approve changes."
 msgstr "Bạn không có quyền phê duyệt thay đổi."
 
-#: includes/Approval/ChangeExecutor.php:61
+#: includes/Approval/ChangeExecutor.php:62
 msgid "You do not have permission to apply changes."
 msgstr "Bạn không có quyền áp dụng thay đổi."
 
-#: includes/Approval/ChangeExecutor.php:65
+#: includes/Approval/ChangeExecutor.php:66
 msgid "An idempotency key (8–64 characters) is required."
 msgstr "Cần idempotency key (8–64 ký tự)."
 
-#: includes/Approval/ChangeExecutor.php:71
+#: includes/Approval/ChangeExecutor.php:72
 msgid "This idempotency key was already used for another change."
 msgstr "Idempotency key này đã được dùng cho một thay đổi khác."
 
-#: includes/Approval/ChangeExecutor.php:82
+#: includes/Approval/ChangeExecutor.php:87
 msgid "This proposal has no active human approval."
 msgstr "Đề xuất này chưa có phê duyệt còn hiệu lực của con người."
 
-#: includes/Approval/ChangeExecutor.php:87
+#: includes/Approval/ChangeExecutor.php:92
 msgid "The approval does not belong to this proposal."
 msgstr "Phê duyệt không thuộc đề xuất này."
 
-#: includes/Approval/ChangeExecutor.php:91
+#: includes/Approval/ChangeExecutor.php:96
 msgid "The approval scope does not match."
 msgstr "Phạm vi phê duyệt không khớp."
 
-#: includes/Approval/ChangeExecutor.php:94
+#: includes/Approval/ChangeExecutor.php:99
 msgid "This URL is locked by an administrator."
 msgstr "URL này đã bị quản trị viên khóa."
 
-#: includes/Approval/ChangeExecutor.php:98 includes/Rollback/RollbackService.php:69
+#: includes/Approval/ChangeExecutor.php:103 includes/Rollback/RollbackService.php:73
 msgid "Another change to this object is in progress."
 msgstr "Đang có một thay đổi khác cho đối tượng này."
 
-#: includes/Approval/ChangeExecutor.php:117
+#: includes/Approval/ChangeExecutor.php:133
 msgid "The content changed after approval; nothing was written. Create a new preview."
 msgstr "Nội dung đã thay đổi sau khi phê duyệt; chưa ghi gì. Hãy tạo bản xem trước mới."
 
-#: includes/Approval/ChangeExecutor.php:143
+#: includes/Approval/ChangeExecutor.php:136
+msgid "The post is no longer published; nothing was written."
+msgstr "Bài viết không còn ở trạng thái xuất bản; chưa ghi gì."
+
+#: includes/Approval/ChangeExecutor.php:140
+msgid "The linked page is no longer published at the approved URL; nothing was written. Create a new preview."
+msgstr "Trang đích không còn được xuất bản tại URL đã phê duyệt; chưa ghi gì. Hãy tạo bản xem trước mới."
+
+#: includes/Approval/ChangeExecutor.php:148
 msgid "The computed result does not match the approved diff; nothing was written."
 msgstr "Kết quả tính toán không khớp diff đã phê duyệt; chưa ghi gì."
 
-#: includes/Approval/ChangeExecutor.php:148
+#: includes/Approval/ChangeExecutor.php:157
 msgid "The permalink structure now contains this taxonomy: applying could change the post URL; nothing was written."
 msgstr "Cấu trúc permalink hiện chứa taxonomy này: áp dụng có thể làm đổi URL bài viết; chưa ghi gì."
 
-#: includes/Approval/ChangeExecutor.php:173
+#: includes/Approval/ChangeExecutor.php:160
+msgid "The term no longer exists; nothing was written."
+msgstr "Chuyên mục/thẻ không còn tồn tại; chưa ghi gì."
+
+#: includes/Approval/ChangeExecutor.php:249
 msgid "A concurrent apply with the same idempotency key is in progress."
 msgstr "Đang có một lần áp dụng đồng thời với cùng idempotency key."
 
-#: includes/Approval/ChangeExecutor.php:232
+#: includes/Approval/ChangeExecutor.php:359
+msgid "The post was edited at the same moment; nothing was written. Create a new preview."
+msgstr "Bài viết vừa được người khác sửa cùng lúc; chưa ghi gì. Hãy tạo bản xem trước mới."
+
+#: includes/Approval/ChangeExecutor.php:368
+msgid "The write failed before anything was changed (see change log)."
+msgstr "Thao tác ghi thất bại trước khi có thay đổi nào (xem nhật ký thay đổi)."
+
+#: includes/Approval/ChangeExecutor.php:444
 msgid "The write could not be verified and was reverted automatically."
 msgstr "Không xác minh được lần ghi nên đã tự động hoàn nguyên."
 
-#: includes/Approval/ChangeExecutor.php:232
+#: includes/Approval/ChangeExecutor.php:444
 msgid "The write could not be verified and the automatic revert also failed: manual recovery is needed (see change log)."
 msgstr "Không xác minh được lần ghi và tự động hoàn nguyên cũng thất bại: cần khôi phục thủ công (xem nhật ký thay đổi)."
 
@@ -2726,15 +2746,15 @@ msgstr "Không xác minh được lần ghi và tự động hoàn nguyên cũng
 msgid "The anchor text is not at the recorded position."
 msgstr "Anchor không còn ở vị trí đã ghi nhận."
 
-#: includes/Approval/Operations.php:52
+#: includes/Approval/Operations.php:52 includes/Approval/Operations.php:68
 msgid "The position is inside a heading, link, shortcode, code or other protected element."
 msgstr "Vị trí nằm trong heading, liên kết, shortcode, mã nguồn hoặc phần tử được bảo vệ khác."
 
-#: includes/Approval/Operations.php:72
+#: includes/Approval/Operations.php:88
 msgid "The inserted link is no longer present; nothing to revert automatically."
 msgstr "Liên kết đã chèn không còn; không có gì để tự động hoàn nguyên."
 
-#: includes/Approval/Operations.php:73
+#: includes/Approval/Operations.php:89
 msgid "The inserted link markup occurs several times; automatic revert would be ambiguous."
 msgstr "Mã liên kết đã chèn xuất hiện nhiều lần; tự động hoàn nguyên sẽ không rõ ràng."
 
@@ -2770,7 +2790,7 @@ msgstr "Không tìm thấy anchor tự nhiên; gợi ý này cần biên tập v
 msgid "The anchor text is no longer present in an editable position; re-run the analysis."
 msgstr "Anchor không còn ở vị trí có thể sửa; hãy chạy lại phân tích."
 
-#: includes/Approval/ProposalService.php:215 includes/Services/Api.php:1016
+#: includes/Approval/ProposalService.php:215 includes/Services/Api.php:1021
 msgid "Document not found."
 msgstr "Không tìm thấy tài liệu."
 
@@ -2820,19 +2840,19 @@ msgstr "Cần khoảng thời gian báo cáo hợp lệ (ngày bắt đầu ≤ 
 msgid "Missing required columns. Required: %s."
 msgstr "Thiếu cột bắt buộc. Cần có: %s."
 
-#: includes/Jobs/JobRepository.php:69 includes/Services/Api.php:590
+#: includes/Jobs/JobRepository.php:70 includes/Services/Api.php:595
 msgid "Unknown job type."
 msgstr "Loại tác vụ không hợp lệ."
 
-#: includes/Jobs/JobRepository.php:78
+#: includes/Jobs/JobRepository.php:79
 msgid "Another job is being created; retry shortly."
 msgstr "Đang tạo một tác vụ khác; hãy thử lại sau giây lát."
 
-#: includes/Jobs/JobRepository.php:85
+#: includes/Jobs/JobRepository.php:86
 msgid "A job of this type is already queued or running."
 msgstr "Đã có tác vụ cùng loại đang chờ hoặc đang chạy."
 
-#: includes/Jobs/JobRepository.php:111
+#: includes/Jobs/JobRepository.php:112
 msgid "Could not create the job."
 msgstr "Không tạo được tác vụ."
 
@@ -3008,19 +3028,27 @@ msgstr "Bạn không có quyền hoàn tác thay đổi."
 msgid "Change not found."
 msgstr "Không tìm thấy thay đổi."
 
-#: includes/Rollback/RollbackService.php:52
+#: includes/Rollback/RollbackService.php:56
 msgid "A separate rollback approval issued by a human in WP Admin is required."
 msgstr "Cần một phê duyệt hoàn tác riêng do con người cấp trong WP Admin."
 
-#: includes/Rollback/RollbackService.php:56
+#: includes/Rollback/RollbackService.php:60
 msgid "The rollback approval does not belong to this change."
 msgstr "Phê duyệt hoàn tác không thuộc thay đổi này."
 
-#: includes/Rollback/RollbackService.php:65
+#: includes/Rollback/RollbackService.php:69
 msgid "Original proposal missing; manual recovery required."
 msgstr "Thiếu đề xuất gốc; cần khôi phục thủ công."
 
-#: includes/Rollback/RollbackService.php:102
+#: includes/Rollback/RollbackService.php:113
+msgid "The post was edited at the same moment; nothing was changed. Try the rollback again."
+msgstr "Bài viết vừa được người khác sửa cùng lúc; chưa thay đổi gì. Hãy thử hoàn tác lại."
+
+#: includes/Rollback/RollbackService.php:115
+msgid "The rollback failed before anything was changed; the change is still applied (see change log)."
+msgstr "Hoàn tác thất bại trước khi có thay đổi nào; thay đổi vẫn đang được áp dụng (xem nhật ký thay đổi)."
+
+#: includes/Rollback/RollbackService.php:120
 msgid "Rollback could not be verified; manual recovery is needed (the before snapshot is in the change log)."
 msgstr "Không xác minh được việc hoàn tác; cần khôi phục thủ công (bản lưu trước khi đổi nằm trong nhật ký thay đổi)."
 
@@ -3038,11 +3066,11 @@ msgstr "Gửi một vector cho mỗi truy vấn tham chiếu và mỗi tài li�
 msgid "Invalid self-test vector (%1$s %2$d): %3$s"
 msgstr "Vector tự kiểm thử không hợp lệ (%1$s %2$d): %3$s"
 
-#: includes/Semantic/EmbeddingQueue.php:164
+#: includes/Semantic/EmbeddingQueue.php:177
 msgid "Vectors were produced with a different model profile and were rejected."
 msgstr "Vector được tạo bằng hồ sơ mô hình khác nên đã bị từ chối."
 
-#: includes/Semantic/EmbeddingQueue.php:168
+#: includes/Semantic/EmbeddingQueue.php:181
 msgid "This device has no valid server-checked self-test for the current model profile; send the reference vectors to /embeddings/selftest first."
 msgstr "Thiết bị này chưa có lần tự kiểm thử hợp lệ được máy chủ kiểm tra cho hồ sơ model hiện tại; hãy gửi vector tham chiếu tới /embeddings/selftest trước."
 
@@ -3058,49 +3086,49 @@ msgstr "Hãy cung cấp post_id, document_id hoặc url."
 msgid "This URL is not in the inventory (run an inventory first)."
 msgstr "URL này chưa có trong danh sách kiểm kê (hãy chạy kiểm kê trước)."
 
-#: includes/Services/Api.php:554 includes/Services/Api.php:666
+#: includes/Services/Api.php:559 includes/Services/Api.php:671
 msgid "Job not found."
 msgstr "Không tìm thấy tác vụ."
 
 #. translators: %d: max
-#: includes/Services/Api.php:596
+#: includes/Services/Api.php:601
 #, php-format
 msgid "At most %d targets per request."
 msgstr "Tối đa %d mục tiêu mỗi yêu cầu."
 
-#: includes/Services/Api.php:603
+#: includes/Services/Api.php:608
 msgid "None of these posts is in the inventory yet; run an inventory first."
 msgstr "Chưa bài nào trong số này có trong danh sách kiểm kê; hãy chạy kiểm kê trước."
 
-#: includes/Services/Api.php:620
+#: includes/Services/Api.php:625
 msgid "Agents may run one job at a time."
 msgstr "Mỗi agent chỉ được chạy một tác vụ tại một thời điểm."
 
-#: includes/Services/Api.php:669
+#: includes/Services/Api.php:674
 msgid "Agents can only control their own jobs."
 msgstr "Agent chỉ được điều khiển tác vụ của chính mình."
 
-#: includes/Services/Api.php:707
+#: includes/Services/Api.php:712
 msgid "Set confirm=true to rebuild. Derived data is recomputed in the background; WordPress content is not modified."
 msgstr "Đặt confirm=true để xây dựng lại. Dữ liệu dẫn xuất được tính lại ở nền; nội dung WordPress không bị sửa."
 
-#: includes/Services/Api.php:711
+#: includes/Services/Api.php:716
 msgid "model_version must match the active pinned profile (model key or revision)."
 msgstr "model_version phải khớp hồ sơ mô hình cố định đang dùng (khóa mô hình hoặc revision)."
 
-#: includes/Services/Api.php:740
+#: includes/Services/Api.php:745
 msgid "Provide 1–10 finding IDs."
 msgstr "Hãy cung cấp 1–10 ID phát hiện."
 
-#: includes/Services/Api.php:967
+#: includes/Services/Api.php:972
 msgid "Provide lease_token or all_mine=true."
 msgstr "Hãy cung cấp lease_token hoặc all_mine=true."
 
-#: includes/Services/Api.php:989
+#: includes/Services/Api.php:994
 msgid "Invalid finding or status."
 msgstr "Phát hiện hoặc trạng thái không hợp lệ."
 
-#: includes/Services/Api.php:1038
+#: includes/Services/Api.php:1043
 msgid "No valid fields."
 msgstr "Không có trường hợp lệ."
 

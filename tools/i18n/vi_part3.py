@@ -177,6 +177,14 @@ T = {
     "high": "cao",
     "Category proposals are disabled because the permalink structure contains this taxonomy: assigning a term could change the post URL.": "Đề xuất chuyên mục bị tắt vì cấu trúc permalink chứa taxonomy này: gán thêm một mục có thể làm đổi URL bài viết.",
     "The permalink structure now contains this taxonomy: applying could change the post URL; nothing was written.": "Cấu trúc permalink hiện chứa taxonomy này: áp dụng có thể làm đổi URL bài viết; chưa ghi gì.",
+    # Write path re-validation and compare-and-set (independent audit).
+    "The post is no longer published; nothing was written.": "Bài viết không còn ở trạng thái xuất bản; chưa ghi gì.",
+    "The linked page is no longer published at the approved URL; nothing was written. Create a new preview.": "Trang đích không còn được xuất bản tại URL đã phê duyệt; chưa ghi gì. Hãy tạo bản xem trước mới.",
+    "The term no longer exists; nothing was written.": "Chuyên mục/thẻ không còn tồn tại; chưa ghi gì.",
+    "The post was edited at the same moment; nothing was written. Create a new preview.": "Bài viết vừa được người khác sửa cùng lúc; chưa ghi gì. Hãy tạo bản xem trước mới.",
+    "The write failed before anything was changed (see change log).": "Thao tác ghi thất bại trước khi có thay đổi nào (xem nhật ký thay đổi).",
+    "The post was edited at the same moment; nothing was changed. Try the rollback again.": "Bài viết vừa được người khác sửa cùng lúc; chưa thay đổi gì. Hãy thử hoàn tác lại.",
+    "The rollback failed before anything was changed; the change is still applied (see change log).": "Hoàn tác thất bại trước khi có thay đổi nào; thay đổi vẫn đang được áp dụng (xem nhật ký thay đổi).",
     # Max documents limit.
     "The inventory reached the Max documents limit (%1$s): %2$s objects in scope are not inventoried or analyzed. Raise the limit in Settings to include them.": "Kiểm kê đã chạm giới hạn Số tài liệu tối đa (%1$s): %2$s đối tượng trong phạm vi chưa được kiểm kê và phân tích. Hãy nâng giới hạn trong Cài đặt để đưa chúng vào.",
 }
