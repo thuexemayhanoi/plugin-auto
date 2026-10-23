@@ -22,7 +22,7 @@ defined( 'ABSPATH' ) || exit;
  */
 final class ClusterBuilder {
 
-	const VERSION = 'clusters-1';
+	const VERSION = 'clusters-2';
 
 	/**
 	 * Builds clusters for every locale.
@@ -35,6 +35,7 @@ final class ClusterBuilder {
 		foreach ( Db::col( "SELECT DISTINCT locale FROM {documents} WHERE status = 'publish'" ) as $locale ) {
 			$summary[ $locale ] = self::build_locale( (string) $locale, (int) $run_id );
 		}
+		ClusterTree::flush();
 		return $summary;
 	}
 
@@ -135,7 +136,22 @@ final class ClusterBuilder {
 			);
 		}
 
-		// 3. Centroids, recommended pillar/hub page per cluster.
+		// 3. Centroids, recommended pillar/hub page per cluster. Pillars are linked from (and link to)
+		// pages of the whole subtree, not only from direct members, so links are counted per subtree.
+		$children = array();
+		foreach ( $cluster_of as $term_id => $cid ) {
+			$parent_term = isset( $terms[ $term_id ] ) ? (int) $terms[ $term_id ]['parent'] : 0;
+			if ( $parent_term > 0 && isset( $cluster_of[ $parent_term ] ) ) {
+				$children[ $cluster_of[ $parent_term ] ][] = $cid;
+			}
+		}
+		$subtree = static function ( $cid ) use ( &$subtree, $children, $members ) {
+			$ids = isset( $members[ $cid ] ) ? $members[ $cid ] : array();
+			foreach ( isset( $children[ $cid ] ) ? $children[ $cid ] : array() as $child ) {
+				$ids = array_merge( $ids, $subtree( $child ) );
+			}
+			return $ids;
+		};
 		$centroids = array();
 		foreach ( Db::rows( 'SELECT * FROM {clusters} WHERE locale = %s', array( $locale ) ) as $c ) {
 			$cid    = (int) $c['id'];
@@ -151,16 +167,22 @@ final class ClusterBuilder {
 			$best       = 0;
 			$best_score = -1.0;
 			$evidence   = array();
+			$tree = array() === $ids ? array() : array_values( array_unique( $subtree( $cid ) ) );
 			foreach ( $ids as $id ) {
 				$p        = $profiles[ $id ];
 				$inbound  = (int) Db::value(
-					'SELECT COUNT(DISTINCT source_id) FROM {links} WHERE target_id = %d AND source_id IN (' . Db::in( $ids ) . ')',
-					array_merge( array( $id ), $ids )
+					'SELECT COUNT(DISTINCT source_id) FROM {links} WHERE target_id = %d AND source_id IN (' . Db::in( $tree ) . ')',
+					array_merge( array( $id ), $tree )
+				);
+				$outbound = (int) Db::value(
+					'SELECT COUNT(DISTINCT target_id) FROM {links} WHERE source_id = %d AND target_id IN (' . Db::in( $tree ) . ')',
+					array_merge( array( $id ), $tree )
 				);
 				$central  = LexicalIndex::cosine( $p['lexvec'], $cent );
-				$score    = 2 * $inbound + 3 * $central + ( 'page' === $p['subtype'] ? 0.5 : 0 ) + min( 1.0, $p['word_count'] / 1500 );
+				$score    = 2 * $inbound + 1.5 * $outbound + 3 * $central + ( 'page' === $p['subtype'] ? 0.5 : 0 ) + min( 1.0, $p['word_count'] / 1500 );
 				$evidence[ $id ] = array(
 					'inbound_from_cluster' => $inbound,
+					'outbound_to_cluster'  => $outbound,
 					'centrality'           => round( $central, 3 ),
 					'is_page'              => 'page' === $p['subtype'],
 					'word_count'           => $p['word_count'],
@@ -190,7 +212,7 @@ final class ClusterBuilder {
 				'evidence'              => Util::json(
 					array(
 						'candidates' => array_slice( $evidence, 0, 5, true ),
-						'method'     => '2×inbound links from cluster members + 3×centrality + page bonus + length factor',
+						'method'     => '2×inbound links from the cluster subtree + 1.5×outbound links to it + 3×centrality + page bonus + length factor',
 						'version'    => self::VERSION,
 					)
 				),

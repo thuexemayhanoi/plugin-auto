@@ -9,6 +9,7 @@ namespace SemanticSEO\Analysis;
 
 use SemanticSEO\Cannibalization\CannibalizationAnalyzer;
 use SemanticSEO\Clustering\ClusterBuilder;
+use SemanticSEO\Clustering\ClusterTree;
 use SemanticSEO\Database\Db;
 use SemanticSEO\Graph\LinkGraph;
 use SemanticSEO\Gsc\GscRepository;
@@ -30,8 +31,8 @@ defined( 'ABSPATH' ) || exit;
  */
 final class AnalysisRunner {
 
-	const VERSION = 'analysis-1';
-	const PHASES  = array( 'graph', 'vectors', 'pairs', 'clusters', 'qa', 'finalize' );
+	const VERSION = 'analysis-2';
+	const PHASES  = array( 'graph', 'vectors', 'clusters', 'pairs', 'qa', 'finalize' );
 
 	/**
 	 * Initial state.
@@ -115,7 +116,7 @@ final class AnalysisRunner {
 					++$done;
 				}
 				if ( count( $ids ) < $batch * 4 ) {
-					$phase  = 'pairs';
+					$phase  = 'clusters';
 					$cursor = 0;
 				}
 				break;
@@ -138,14 +139,14 @@ final class AnalysisRunner {
 					++$done;
 				}
 				if ( count( $ids ) < $batch ) {
-					$phase  = 'clusters';
+					$phase  = 'qa';
 					$cursor = 0;
 				}
 				break;
 
 			case 'clusters':
 				$state['counts']['clusters'] = ClusterBuilder::build( $run_id );
-				$phase                       = 'qa';
+				$phase                       = 'pairs';
 				$cursor                      = 0;
 				$done                        = 1;
 				break;
@@ -271,7 +272,9 @@ final class AnalysisRunner {
 		$ids  = array_keys( $hits );
 		if ( $source['cluster_id'] > 0 ) {
 			$ids = array_merge( $ids, array_map( 'intval', Db::col( "SELECT id FROM {documents} WHERE cluster_id = %d AND status = 'publish' AND id <> %d LIMIT 20", array( $source['cluster_id'], $source['id'] ) ) ) );
+			$ids = array_merge( $ids, ClusterTree::ancestor_pillars( $source['cluster_id'] ) );
 		}
+		$ids = array_values( array_diff( array_unique( $ids ), array( $source['id'] ) ) );
 		$rows      = DocumentRepository::many( $ids );
 		$model_key = ModelProfile::active()['model_key'];
 		$vectors   = EmbeddingRepository::summary_vectors( array_merge( array( $source['id'] ), array_keys( $rows ) ), $model_key );

@@ -8,6 +8,7 @@
 namespace SemanticSEO\Links;
 
 use SemanticSEO\Analysis\Scorer;
+use SemanticSEO\Clustering\ClusterTree;
 use SemanticSEO\Graph\LinkGraph;
 use SemanticSEO\Language\TextNormalizer;
 use SemanticSEO\Lexical\Tokenizer;
@@ -23,7 +24,7 @@ defined( 'ABSPATH' ) || exit;
  */
 final class LinkSuggester {
 
-	const VERSION = 'links-1';
+	const VERSION = 'links-2';
 
 	/**
 	 * Suggestions for one source document.
@@ -140,7 +141,7 @@ final class LinkSuggester {
 					'source_locked'   => $source_locked,
 					'source_hash'     => Util::sha256( $content ),
 					'notes'           => $notes,
-					'gates'           => array( 'same_locale', 'target_published', 'target_indexable', 'not_already_linked', 'not_self', 'not_excluded' ),
+					'gates'           => array( 'same_locale', 'target_published', 'target_indexable', 'not_already_linked', 'not_self', 'not_excluded', 'not_translation', 'not_navigational_page' ),
 				),
 			);
 			if ( null !== $anchor ) {
@@ -170,7 +171,9 @@ final class LinkSuggester {
 		if ( 'focus_keyword' === $anchor['phrase_source'] || 'term' === $target['object_type'] ) {
 			return true;
 		}
-		if ( $target['cluster_id'] > 0 && $target['cluster_id'] === $source['cluster_id'] && in_array( $target['cluster_role'], array( 'pillar', 'hub' ), true ) ) {
+		// Supporting pages linking up to the pillar/hub of their own or a parent cluster with the head
+		// term is the intended Pillar–Hub–Silo pattern.
+		if ( in_array( $target['cluster_role'], array( 'pillar', 'hub' ), true ) && ClusterTree::is_same_or_ancestor( (int) $target['cluster_id'], (int) $source['cluster_id'] ) ) {
 			return true;
 		}
 		$lang   = in_array( $source['locale'], array( 'vi', 'en' ), true ) ? $source['locale'] : '';
@@ -222,6 +225,20 @@ final class LinkSuggester {
 		if ( '' !== $source['translation_group'] && $source['translation_group'] === $target['translation_group'] ) {
 			return 'translation';
 		}
+		if ( self::is_navigational_page( $target ) ) {
+			return 'navigational_page';
+		}
 		return true;
+	}
+
+	/**
+	 * Contact/about/policy pages are reached through menus and footers; they are not useful
+	 * contextual link or related-content targets.
+	 *
+	 * @param array $target Target profile.
+	 * @return bool
+	 */
+	public static function is_navigational_page( array $target ) {
+		return 'page' === $target['subtype'] && 'navigational' === $target['intent'];
 	}
 }

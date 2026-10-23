@@ -40,7 +40,7 @@ final class RelatedContent {
 			if ( $t['id'] === $source['id'] || $t['locale'] !== $source['locale'] || 'post' !== $t['object_type'] ) {
 				continue;
 			}
-			if ( 'publish' !== $t['status'] || ! $t['indexable'] || $t['excluded'] ) {
+			if ( 'publish' !== $t['status'] || ! $t['indexable'] || $t['excluded'] || \SemanticSEO\Links\LinkSuggester::is_navigational_page( $t ) ) {
 				continue;
 			}
 			if ( $f['near_duplicate'] >= $near || $f['exact_duplicate'] ) {

@@ -76,14 +76,77 @@ final class Plugin {
 	 * @return void
 	 */
 	public static function load_textdomain() {
-		$domain = 'semantic-seo-engine-vi-en';
-		$locale = apply_filters( 'plugin_locale', determine_locale(), $domain ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- core hook.
+		$domain  = 'semantic-seo-engine-vi-en';
+		self::$mo = null;
+		remove_filter( 'gettext_' . $domain, array( __CLASS__, 'translate_text' ), 10 );
+		remove_filter( 'gettext_with_context_' . $domain, array( __CLASS__, 'translate_with_context' ), 10 );
+		remove_filter( 'ngettext_' . $domain, array( __CLASS__, 'translate_plural' ), 10 );
+		$current = determine_locale();
+		$locale  = apply_filters( 'plugin_locale', $current, $domain ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- core hook.
 		// Site-installed translations (wp-content/languages/plugins) win over the bundled ones.
 		$site = WP_LANG_DIR . '/plugins/' . $domain . '-' . $locale . '.mo';
 		$file = is_readable( $site ) ? $site : SSEO_DIR . 'languages/' . $domain . '-' . $locale . '.mo';
-		if ( is_readable( $file ) ) {
-			load_textdomain( $domain, $file, $locale );
+		if ( ! is_readable( $file ) ) {
+			return;
 		}
+		if ( $locale === $current ) {
+			load_textdomain( $domain, $file, $locale );
+			return;
+		}
+		// The plugin UI language differs from the site/user locale (e.g. Vietnamese plugin screens on
+		// an English site). Since WordPress 6.5, load_textdomain() with another locale switches the
+		// global translation locale, which would affect other plugins; translate only this domain.
+		$mo = new \MO();
+		if ( ! $mo->import_from_file( $file ) ) {
+			return;
+		}
+		self::$mo = $mo;
+		add_filter( 'gettext_' . $domain, array( __CLASS__, 'translate_text' ), 10, 2 );
+		add_filter( 'gettext_with_context_' . $domain, array( __CLASS__, 'translate_with_context' ), 10, 3 );
+		add_filter( 'ngettext_' . $domain, array( __CLASS__, 'translate_plural' ), 10, 4 );
+	}
+
+	/**
+	 * Domain-only translation table used when the plugin UI language differs from the site locale.
+	 *
+	 * @var \MO|null
+	 */
+	private static $mo = null;
+
+	/**
+	 * Gettext filter for this domain.
+	 *
+	 * @param string $translation Current translation.
+	 * @param string $text        Original.
+	 * @return string
+	 */
+	public static function translate_text( $translation, $text ) {
+		return null === self::$mo ? $translation : self::$mo->translate( $text );
+	}
+
+	/**
+	 * Gettext-with-context filter for this domain.
+	 *
+	 * @param string $translation Current translation.
+	 * @param string $text        Original.
+	 * @param string $context     Context.
+	 * @return string
+	 */
+	public static function translate_with_context( $translation, $text, $context ) {
+		return null === self::$mo ? $translation : self::$mo->translate( $text, $context );
+	}
+
+	/**
+	 * Plural filter for this domain.
+	 *
+	 * @param string $translation Current translation.
+	 * @param string $single      Singular.
+	 * @param string $plural      Plural.
+	 * @param int    $number      Number.
+	 * @return string
+	 */
+	public static function translate_plural( $translation, $single, $plural, $number ) {
+		return null === self::$mo ? $translation : self::$mo->translate_plural( $single, $plural, $number );
 	}
 
 	/**

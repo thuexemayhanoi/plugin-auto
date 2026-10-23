@@ -24,7 +24,7 @@ defined( 'ABSPATH' ) || exit;
  */
 final class CannibalizationAnalyzer {
 
-	const VERSION = 'cannibal-1';
+	const VERSION = 'cannibal-2';
 
 	const FACET_WORDS = array( 'giờ', 'ngày', 'tuần', 'tháng', 'năm', 'hour', 'hourly', 'day', 'daily', 'week', 'weekly', 'month', 'monthly', 'year', 'yearly', 'annual' );
 
@@ -194,7 +194,13 @@ final class CannibalizationAnalyzer {
 			return false;
 		}
 		$roles = array( $a['cluster_role'], $b['cluster_role'] );
-		return ( in_array( 'pillar', $roles, true ) || in_array( 'hub', $roles, true ) ) && in_array( 'supporting', $roles, true );
+		if ( ! ( in_array( 'pillar', $roles, true ) || in_array( 'hub', $roles, true ) ) || ! in_array( 'supporting', $roles, true ) ) {
+			return false;
+		}
+		// The supporting page must narrow the pillar's topic. A page that only adds a generic modifier
+		// ("giá rẻ", "cheap") to the pillar's head query targets the same query and may compete.
+		$unique = 'supporting' === $a['cluster_role'] ? $f['title_only_a'] : $f['title_only_b'];
+		return count( $unique ) >= 2 || self::has_facet_token( $unique );
 	}
 
 	/**

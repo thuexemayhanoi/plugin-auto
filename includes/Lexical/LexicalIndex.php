@@ -179,9 +179,12 @@ final class LexicalIndex {
 		}
 		// Keep the most informative query terms to bound the work.
 		$df = self::df( array_keys( $query ), $locale );
+		// A term found in at most the excluded documents (typically only the source itself) cannot
+		// retrieve anything; letting such rare terms win the top-40 cut starved candidate recall.
+		$min_df   = array() === $exclude ? 1 : 2;
 		$weighted = array();
 		foreach ( $query as $term => $qw ) {
-			if ( empty( $df[ $term ] ) ) {
+			if ( empty( $df[ $term ] ) || $df[ $term ] < $min_df ) {
 				continue;
 			}
 			$weighted[ $term ] = $qw * self::idf( $df[ $term ], $stats['n'] );
