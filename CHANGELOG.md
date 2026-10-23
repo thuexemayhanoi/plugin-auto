@@ -66,7 +66,8 @@ Report: [docs/QA-REPORT-BETA4.md](docs/QA-REPORT-BETA4.md).
   `X-LiteSpeed-Cache-Control: no-cache` (LiteSpeed Cache, CDNs).
 - CI: integration tests on MariaDB 11.8 and MySQL 8.4; a production-like job (MariaDB 11.8, Yoast
   SEO, LiteSpeed Cache, Nguyen Ha VI-EN Core) running the upgrade from beta.3 and the dashboard in
-  Chromium; a release workflow publishing the installable ZIP with its SHA-256.
+  Chromium; a release workflow publishing the installable ZIP with its SHA-256 (on a version tag,
+  or started by hand on main with the tag to create).
 
 ### Changed
 - The dashboard advances a running scan itself while it is open (bounded ticks; leases prevent
