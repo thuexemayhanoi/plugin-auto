@@ -1,4 +1,4 @@
-# Hướng dẫn sử dụng — Semantic SEO Engine VI–EN (bản 1.0.0-beta.2)
+# Hướng dẫn sử dụng — Semantic SEO Engine VI–EN (bản 1.0.0-beta.3)
 
 Tài liệu dành cho quản trị viên/biên tập viên website. Bản tiếng Anh: [USER-GUIDE-EN.md](USER-GUIDE-EN.md).
 
@@ -12,7 +12,7 @@ Tài liệu dành cho quản trị viên/biên tập viên website. Bản tiến
 ## 1. Cài đặt nhanh
 
 1. Sao lưu website (tệp + cơ sở dữ liệu). Nên thử trên bản staging trước.
-2. *Plugins → Cài mới → Tải plugin lên* → chọn `semantic-seo-engine-vi-en-1.0.0-beta.2.zip` → *Cài đặt* → *Kích hoạt*.
+2. *Plugins → Cài mới → Tải plugin lên* → chọn `semantic-seo-engine-vi-en-1.0.0-beta.3.zip` → *Cài đặt* → *Kích hoạt*.
 3. Kích hoạt **chỉ tạo bảng dữ liệu riêng của plugin** (`{prefix}sseo_*`); nội dung, SEO, URL, giao diện ngoài website giữ nguyên (đã kiểm chứng byte-by-byte trên WordPress 6.5.13, 6.9.10, 7.1.3).
 
 Chi tiết: [INSTALLATION.md](INSTALLATION.md).

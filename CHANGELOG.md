@@ -2,6 +2,44 @@
 
 All notable changes to Semantic SEO Engine VI–EN. Versions follow semantic versioning.
 
+## [1.0.0-beta.3] — 2026-10-23
+
+Independent architecture and security audit. Report: [docs/QA-AUDIT-REPORT.md](docs/QA-AUDIT-REPORT.md).
+Every fix below has a regression test that fails on beta.2.
+
+### Fixed — data integrity (P0)
+- Approved link writes go through a compare-and-set `UPDATE` of `post_content` (and the modified
+  dates) instead of `wp_update_post()`, then fire core's post hooks. No more slug/URL changes,
+  unpublished future-dated posts, default category added, tags re-resolved by name or invalid
+  entities rewritten; an edit saved before or during the write is never overwritten; an undo only
+  reverts this plugin's own write (`WriteIntegrityTest`, `ChangeExecutorSafetyTest`).
+- Apply re-validates source and target publication and URL under the lock; a category change
+  that would move the URL (CPT permalink built from a term) is undone; rollback re-checks the
+  status under the lock (no double rollback); `applying` changes left by a dead process are settled
+  from the stored value.
+- `HtmlScanner` quote handling (a link could be nested in a link); anchors never in embed/bare
+  URLs, blocks rebuilt from JSON attributes, enclosing shortcodes or across a capitalised name;
+  anchor search on original bytes (`AnchorSafetyTest`).
+
+### Fixed — jobs and embeddings (P1)
+- A batch whose database writes failed is retried, never reported as completed
+  (`DatabaseFailureTest`). Crashed ticks count as attempts; fatal errors are recorded; WP-CLI waits
+  for a lease held by WP-Cron; embedding items re-queued with new content stay claimable; items out
+  of attempts never keep the embed job open; claims hand out the hash of the text they send
+  (`JobRecoveryTest`).
+- Browser worker: the end-of-text token is kept when long texts are truncated (pooling reads the
+  last token); preprocessing version `p2` (new model profile key).
+
+### Fixed — security (P2)
+- Unpublished link sources are hidden from agents in URL analysis; password-protected posts' text
+  is never stored, analysed or handed to agents/workers (`PrivacyScopeTest`).
+
+### Fixed — SEO logic (P1/P2)
+- Search Console / focus-keyword evidence is evaluated before cluster roles; generic modifiers
+  ("giá rẻ") do not make a supporting page; no exact-match links between competing pages except up
+  to their pillar/hub; inbound counts only from published pages (`SeoLogicTest`); exact duplicates
+  count as overlap risk in the SEO Matrix (`MatrixRiskColumnsTest`).
+
 ## [1.0.0-beta.2] — 2026-10-23
 
 Final audit of the beta. Release notes: [docs/RELEASE-NOTES-1.0.0-beta.2.md](docs/RELEASE-NOTES-1.0.0-beta.2.md).
