@@ -113,17 +113,27 @@ final class ActivationMigrationTest extends TestCase {
 		$this->assertSame( 0, end( $log )['from'] );
 	}
 
-	public function test_upgrade_from_schema_1_adds_the_findings_target_index() {
+	public function test_upgrade_from_schema_1_adds_the_new_indexes() {
 		$this->real_ddl();
 		global $wpdb;
 		$table = Schema::table( 'findings' );
-		$wpdb->query( "ALTER TABLE {$table} DROP INDEX target_id" ); // phpcs:ignore
+		$docs  = Schema::table( 'documents' );
+		// Schema 1: no target_id index, the narrow type_status index, no orphan/excluded indexes.
+		$wpdb->query( "ALTER TABLE {$table} DROP INDEX target_id, DROP INDEX type_status_rank, ADD INDEX type_status (type,status)" ); // phpcs:ignore
+		$wpdb->query( "ALTER TABLE {$docs} DROP INDEX orphans, DROP INDEX excluded" ); // phpcs:ignore
 		update_option( Migrator::VERSION_OPTION, 1 );
 		$res = Migrator::maybe_upgrade();
 		$this->assertSame( '', $res['error'] );
-		$this->assertSame( 2, Migrator::installed_version() );
+		$this->assertSame( Schema::VERSION, Migrator::installed_version() );
 		$keys = $wpdb->get_col( "SHOW INDEX FROM {$table}", 2 ); // phpcs:ignore
 		$this->assertContains( 'target_id', $keys );
+		$this->assertContains( 'type_status_rank', $keys );
+		$this->assertNotContains( 'type_status', $keys, 'the replaced index is dropped' );
+		$keys = $wpdb->get_col( "SHOW INDEX FROM {$docs}", 2 ); // phpcs:ignore
+		$this->assertContains( 'orphans', $keys );
+		$this->assertContains( 'excluded', $keys );
+		// Running the step again is harmless.
+		Migrator::step_3_drop_replaced_index();
 	}
 
 	public function test_interrupted_upgrade_is_resumed_after_stale_lock() {

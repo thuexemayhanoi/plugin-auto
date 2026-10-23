@@ -17,7 +17,7 @@ final class Schema {
 	/**
 	 * Bump when the schema changes; add a matching step in Migrator::steps().
 	 */
-	const VERSION = 2;
+	const VERSION = 3;
 
 	const TABLES = array(
 		'documents',
@@ -112,7 +112,9 @@ KEY locale_status (locale,status),
 KEY url_hash (url_hash),
 KEY translation_group (translation_group),
 KEY cluster_id (cluster_id),
-KEY dirty (dirty)
+KEY dirty (dirty),
+KEY orphans (object_type,inbound_count,word_count),
+KEY excluded (excluded)
 ) $c;",
 			"CREATE TABLE {$t['chunks']} (
 id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -215,7 +217,7 @@ created_at datetime NOT NULL,
 updated_at datetime NOT NULL,
 PRIMARY KEY  (id),
 UNIQUE KEY fingerprint (fingerprint),
-KEY type_status (type,status),
+KEY type_status_rank (type,status,label,check_id,confidence,score),
 KEY document_id (document_id),
 KEY target_id (target_id),
 KEY group_key (group_key)

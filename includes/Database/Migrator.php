@@ -117,7 +117,23 @@ final class Migrator {
 		// Version 2 only adds the findings.target_id index, which dbDelta() creates: no data step.
 		return array(
 			1 => array( __CLASS__, 'step_1_backfill_hashes' ),
+			3 => array( __CLASS__, 'step_3_drop_replaced_index' ),
 		);
+	}
+
+	/**
+	 * Step 3: findings.type_status is covered by the wider type_status_rank index that dbDelta()
+	 * just added; dbDelta() never drops indexes, so the old one is removed here (idempotent).
+	 *
+	 * @return void
+	 */
+	public static function step_3_drop_replaced_index() {
+		global $wpdb;
+		$table = Schema::table( 'findings' );
+		$found = $wpdb->get_var( $wpdb->prepare( "SHOW INDEX FROM {$table} WHERE Key_name = %s", 'type_status' ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery
+		if ( null !== $found ) {
+			$wpdb->query( "ALTER TABLE {$table} DROP INDEX type_status" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.SchemaChange
+		}
 	}
 
 	/**

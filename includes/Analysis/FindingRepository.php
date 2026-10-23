@@ -162,7 +162,9 @@ final class FindingRepository {
 			// supporting). On a copy of the blog, 95 of 966 overlap findings were competition pairs.
 			$order = "CASE WHEN check_id IN ('exact_duplicate','near_duplicate','potential_competition','translation_mapping_conflict') THEN 0 WHEN check_id = 'distinct_facet' OR (check_id = 'manual_review' AND confidence <> 'low') THEN 1 WHEN check_id = 'manual_review' THEN 2 ELSE 3 END, score DESC, id ASC";
 		}
-		$rows = Db::rows( "SELECT * FROM {findings} WHERE {$w} ORDER BY {$order} LIMIT %d OFFSET %d", array_merge( $args, array( $limit, $offset ) ) );
+		// Deferred join: the page is chosen on the narrow index columns, and only its rows (with their
+		// evidence) are read. Sorting whole rows took 0.2-0.4 s at 6,000 synthetic posts.
+		$rows = Db::rows( "SELECT * FROM {findings} JOIN (SELECT id FROM {findings} WHERE {$w} ORDER BY {$order} LIMIT %d OFFSET %d) sel USING (id) ORDER BY {$order}", array_merge( $args, array( $limit, $offset ) ) );
 		return array(
 			'items' => array_map( array( __CLASS__, 'decode' ), $rows ),
 			'total' => $total,
