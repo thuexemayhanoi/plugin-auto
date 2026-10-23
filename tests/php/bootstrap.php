@@ -32,3 +32,4 @@ tests_add_filter(
 
 require $sseo_tests_dir . '/includes/bootstrap.php';
 require_once __DIR__ . '/Integration/TestCase.php';
+require_once __DIR__ . '/Integration/RelevanceMetrics.php';

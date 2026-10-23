@@ -1,0 +1,184 @@
+#!/usr/bin/env python3
+"""Real Qwen3-Embedding-0.6B checks on the pinned, verified ONNX files (CI only, not shipped).
+
+Uses the private worker's own Embedder (tools/private-worker/sseo_worker.py: tokenizer, ONNX Runtime
+CPU, last-token pooling, L2) for every fetched dtype and records, without thresholds tuned to pass:
+
+* self-test: query/document similarity matrix vs the fp32 values published on the model card;
+* agreement of each dtype with fp32 on the bilingual labelled fixture corpus (cosine per document);
+* cross-language similarity: VI/EN translation pairs vs non-pairs, and top-1 translation retrieval;
+* semantic-only same-locale retrieval on the fixture labels (P@3, R@5), document level;
+* load and embedding times on the CI runner.
+
+Writes <out>/real-model.json and <out>/real-model-vectors.json (inputs + q8 vectors for the browser
+comparison). Exit code 1 when fp32 or q8 fails its self-test (pipeline error).
+"""
+import argparse
+import importlib.util
+import json
+import os
+import platform
+import subprocess
+import sys
+import time
+
+import numpy as np
+
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+
+
+def worker_module():
+    spec = importlib.util.spec_from_file_location("sseo_worker", os.path.join(ROOT, "tools", "private-worker", "sseo_worker.py"))
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def export(what):
+    return json.loads(subprocess.check_output(["php", os.path.join(ROOT, "tests", "real-model", "export.php"), what]))
+
+
+def stats(xs):
+    xs = [float(x) for x in xs]
+    if not xs:
+        return None
+    return {"n": len(xs), "min": round(min(xs), 4), "mean": round(float(np.mean(xs)), 4), "max": round(max(xs), 4)}
+
+
+def main():
+    p = argparse.ArgumentParser()
+    p.add_argument("--manifest", required=True)
+    p.add_argument("--out", default=os.path.join(ROOT, "tests", "e2e", "artifacts"))
+    p.add_argument("--threads", type=int, default=0)
+    args = p.parse_args()
+    os.makedirs(args.out, exist_ok=True)
+
+    w = worker_module()
+    import onnxruntime as ort
+    import tokenizers
+
+    manifest = json.load(open(args.manifest))
+    prof = export("profile")
+    corpus = export("corpus")
+    docs = [d for d in corpus["docs"]]
+    texts = [d["text"] for d in docs]
+    offered = [d for d in prof["files"] if d != "common"]
+
+    report = {
+        "what": "REAL Qwen3-Embedding-0.6B ONNX (%s @ %s), pinned files verified against the Hub metadata" % (manifest["model_id"], manifest["revision"]),
+        "runtime": {
+            "python": platform.python_version(),
+            "onnxruntime": ort.__version__,
+            "tokenizers": tokenizers.__version__,
+            "numpy": np.__version__,
+            "machine": platform.machine(),
+            "cpu_count": os.cpu_count(),
+        },
+        "reference": prof["reference"],
+        "dtypes": {},
+    }
+    vectors = {}
+    failed_offered = []
+
+    for dtype in [d for d in ("fp32", "q8", "q4f16", "fp16") if d in manifest["files"]]:
+        files = dict(manifest["files"]["common"])
+        files.update(manifest["files"][dtype])
+        profile = dict(prof, files=files, dtype=dtype)
+        entry = {"files": sorted(manifest["files"][dtype])}
+        try:
+            t0 = time.time()
+            emb = w.Embedder(manifest["root"], profile, threads=args.threads)
+            entry["load_seconds"] = round(time.time() - t0, 2)
+            ok, diff, tol, measured = w.selftest(emb, prof["reference"], dtype)
+            entry["selftest"] = {"passed": bool(ok), "max_abs_diff": round(float(diff), 5), "tolerance": tol, "measured": [[round(x, 5) for x in r] for r in measured]}
+            t0 = time.time()
+            vecs = np.array(emb.embed(texts))
+            entry["corpus_docs"] = len(texts)
+            entry["embed_seconds_per_doc"] = round((time.time() - t0) / len(texts), 3)
+            vectors[dtype] = vecs
+            if dtype == "q8":
+                q = [emb.format_query(x) for x in prof["reference"]["queries"]]
+                inputs = [{"text": x, "role": "query"} for x in prof["reference"]["queries"]] + [{"text": x, "role": "document"} for x in prof["reference"]["documents"]] + [{"text": d["text"], "role": "document"} for d in docs[:4]]
+                ref_vecs = emb.embed(q) + emb.embed(list(prof["reference"]["documents"])) + [v for v in vecs[:4]]
+                json.dump({"dtype": "q8", "items": inputs, "vectors": [[float(x) for x in v] for v in ref_vecs]}, open(os.path.join(args.out, "real-model-vectors.json"), "w"))
+        except Exception as e:  # noqa: BLE001 - recorded, not hidden
+            entry["error"] = "%s: %s" % (type(e).__name__, str(e)[:500])
+        report["dtypes"][dtype] = entry
+        print(dtype, json.dumps({k: v for k, v in entry.items() if k != "files"}), flush=True)
+        if dtype in offered and not entry.get("selftest", {}).get("passed"):
+            failed_offered.append(dtype)
+        if dtype in ("fp32", "q8") and not entry.get("selftest", {}).get("passed"):
+            report.setdefault("pipeline_failures", []).append(dtype)
+
+    # Agreement with fp32.
+    if "fp32" in vectors:
+        for dtype, vecs in vectors.items():
+            if dtype != "fp32":
+                cos = np.sum(vecs * vectors["fp32"], axis=1)
+                report["dtypes"][dtype]["cosine_vs_fp32"] = stats(cos)
+
+    # Cross-language and same-locale retrieval with the best available dtype.
+    base = "fp32" if "fp32" in vectors else ("q8" if "q8" in vectors else None)
+    if base:
+        V = vectors[base]
+        idx = {d["key"]: i for i, d in enumerate(docs)}
+        publishable = [i for i, d in enumerate(docs) if d["key"] not in ("vi-trashed", "vi-draft")]
+        groups = {}
+        for i, d in enumerate(docs):
+            if d["group"]:
+                groups.setdefault(d["group"], []).append(i)
+        pairs = []
+        for g, members in groups.items():
+            vi = [i for i in members if docs[i]["lang"] == "vi"]
+            en = [i for i in members if docs[i]["lang"] == "en"]
+            if len(vi) == 1 and len(en) == 1:
+                pairs.append((vi[0], en[0]))
+        pair_set = set(pairs)
+        vi_all = [i for i in publishable if docs[i]["lang"] == "vi"]
+        en_all = [i for i in publishable if docs[i]["lang"] == "en"]
+        pos = [float(V[a] @ V[b]) for a, b in pairs]
+        neg = [float(V[a] @ V[b]) for a in vi_all for b in en_all if (a, b) not in pair_set]
+        top1 = sum(1 for a, b in pairs if max(en_all, key=lambda j: float(V[a] @ V[j])) == b)
+        report["cross_language"] = {
+            "dtype": base,
+            "translation_pairs": stats(pos),
+            "non_pairs": stats(neg),
+            "top1_translation_retrieval": "%d/%d" % (top1, len(pairs)),
+            "pairs": {docs[a]["key"] + " ~ " + docs[b]["key"]: round(float(V[a] @ V[b]), 4) for a, b in pairs},
+        }
+        p3 = []
+        r5 = []
+        rel_sims = []
+        other_sims = []
+        for src, rel in corpus["labels"]["relevant"].items():
+            s = idx[src]
+            cands = [i for i in publishable if i != s and docs[i]["lang"] == docs[s]["lang"]]
+            ranked = sorted(cands, key=lambda j: -float(V[s] @ V[j]))
+            keys = [docs[j]["key"] for j in ranked]
+            p3.append(len(set(keys[:3]) & set(rel)) / 3.0)
+            r5.append(len(set(keys[:5]) & set(rel)) / float(len(rel)))
+            for j in cands:
+                (rel_sims if docs[j]["key"] in rel else other_sims).append(float(V[s] @ V[j]))
+        controls = [float(V[idx[a]] @ V[idx[b]]) for a, b in corpus["labels"]["not_competition"]]
+        overlaps = [float(V[idx[a]] @ V[idx[b]]) for a, b, _ in corpus["labels"]["expected_overlap"]]
+        report["semantic_only_same_locale"] = {
+            "dtype": base,
+            "note": "document-level cosine (title + text, first 512 tokens), fixture labels; the plugin itself uses lexical candidates + hybrid reranking",
+            "precision@3": round(float(np.mean(p3)), 3),
+            "recall@5": round(float(np.mean(r5)), 3),
+            "similarity_relevant_pairs": stats(rel_sims),
+            "similarity_other_same_locale_pairs": stats(other_sims),
+            "similarity_must_not_compete_controls": stats(controls),
+            "similarity_expected_overlaps": stats(overlaps),
+        }
+
+    report["failed_offered_dtypes"] = failed_offered
+    json.dump(report, open(os.path.join(args.out, "real-model.json"), "w"), indent=1, ensure_ascii=False)
+    print(json.dumps({k: report[k] for k in ("cross_language", "semantic_only_same_locale", "failed_offered_dtypes") if k in report}, indent=1, ensure_ascii=False))
+    # fp32 proves the pipeline reproduces the model card; q8 is the dtype every CPU/WASM device can
+    # run. A q4f16/fp16 failure on CPU is recorded (it decides the documented defaults), not fatal.
+    return 1 if report.get("pipeline_failures") else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
