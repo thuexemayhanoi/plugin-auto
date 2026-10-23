@@ -88,8 +88,9 @@ check "front-end HTML byte-identical after activation (home, posts, category, pa
 TABLES="$($WP db query "SHOW TABLES LIKE '%sseo\_%'" --skip-column-names 2>/dev/null | grep -c 'sseo_')"
 [ "$TABLES" -eq 16 ]
 check "16 plugin tables created" $? "$TABLES"
-[ "$($WP option get sseo_db_version 2>/dev/null)" = "1" ]
-check "schema version recorded" $? "sseo_db_version=$($WP option get sseo_db_version 2>/dev/null)"
+SCHEMA="$(sed -n 's/^[[:space:]]*const VERSION = \([0-9]*\);.*/\1/p' "$ROOT/includes/Database/Schema.php")"
+[ -n "$SCHEMA" ] && [ "$($WP option get sseo_db_version 2>/dev/null)" = "$SCHEMA" ]
+check "schema version recorded" $? "sseo_db_version=$($WP option get sseo_db_version 2>/dev/null), expected $SCHEMA"
 
 STATUS="$($WP sseo status --user=admin 2>&1)"
 check "wp sseo status" $? "$(echo "$STATUS" | tr '\n' ' ' | cut -c1-200)"
