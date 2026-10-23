@@ -55,7 +55,8 @@ just the inserted link, or a clear "manual recovery needed").
 *Check this device* → consent to the ≈ 579 MB download from huggingface.co → *Load model & run
 self-test* (size + SHA-256 verified; uploads only after the self-test matches the model-card
 reference) → *Queue embeddings* → *Process embedding queue*; *Pause* / *Stop & release* any time.
-Keep the tab open. Prefer desktop Chrome/Edge with WebGPU; choose q8 on CPU-only devices. Beta
+Keep the tab open. Prefer desktop Chrome/Edge with WebGPU; without WebGPU the same precision runs
+on the CPU (WASM), slower but with the same results. Beta
 note: the real Qwen3 weights were not downloadable in the build environment; see
 [TEST-REPORT.md](TEST-REPORT.md).
 

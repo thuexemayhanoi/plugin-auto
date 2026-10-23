@@ -29,8 +29,19 @@ PHP 7.4 was exercised in CI only (the local sandbox has PHP 8.3 only).
 | --- | --- | --- |
 | Polylang | `pll_get_post_language()`, translations via `pll_get_post_translations()` | Polylang 3.9.1 (real plugin from source) on WP 6.9.10 and 7.1.3; API double in PHPUnit. Polylang 3.9.1 requires WP 6.8+, so WP 6.5.13 runs used the site language |
 | WPML | public filters (`wpml_post_language_details`, `wpml_element_trid`, `wpml_get_element_translations`, …) | code path only, **not tested** with a real WPML install (commercial plugin not available here) |
+| Nguyen Ha VI-EN Core (`nguyen-ha-vi-en`, the custom VI/EN plugin of blog.rentbikehanoi.com, source in the owner's `thuexemayhanoi/wordpress-theme` repository) | its public read API `NH_VIEN_Links` (`language_of`, `en_for_vi`, `vi_for_en`, `for_page`, `en_only_term_ids`); English pages without a page pair = below `/en/` | `NhVienLanguageTest` against the **real plugin class** (CI checks out commit `d8f6b58`); the read-only pilot runs the real plugin on a disposable copy. Read only: its options are never written |
 | URL prefix (e.g. `/en/`) | Settings → URL prefix rules | unit/integration tested |
 | None | site language for every document | tested on WP 6.5.13 |
+
+## The blog's existing stack (read-only audit of the owner's repositories, 2026-10-23)
+
+| Component | Finding | Consequence for this plugin |
+| --- | --- | --- |
+| Theme (latest record: *Nguyen Ha Editorial*, repo `wordpress-theme`; an older record names *Nguyễn Hà Glass 2026*) | prints no JSON-LD/meta/canonical (Yoast owns them); builds a TOC from `h2/h3` in `the_content`; has its own related-posts block with no off switch; fixed home/footer link block | related-content output stays **off** (default); if ever enabled inside content its heading would enter the TOC; menu/footer links are outside the scanned link graph (stated with every orphan list) |
+| Yoast SEO | the single source of schema, meta, canonical, breadcrumbs | read only; this plugin prints none of them |
+| Nguyen Ha VI-EN Core | `/en/` routing, hreflang, explicit VI⇔EN pairs; front-end queries scoped by language (REST/admin/cron/CLI are not) | locales and pairs read through its API; translations never inferred into pairs; "possible translation" is only a suggestion |
+| Multi AI SEO Content Factory (`wp-plugin` repo, `MASF\`, `masf_*`) | a different product (AI article drafts, Yoast meta writes) | no name, table, route or option collisions; `_masf_*` meta is never touched |
+| `theme-thuha` (Rentbike Hanoi 1.2.0) | theme of rentbikehanoi.com, not the blog | no collisions (`rbh_*`); not a target |
 
 ## SEO plugins (read-only metadata)
 

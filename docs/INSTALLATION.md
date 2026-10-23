@@ -46,8 +46,11 @@ Jobs run in bounded background batches through WP-Cron (default 25 objects / 20 
 **Jobs & Inference Device** page → *Check this device* → tick the download consent (≈ 579 MB for the default q4f16 precision, from huggingface.co, pinned revision `c25a394dd583836952667c12f008335071b3f43d`) → *Load model & run self-test* → *Process embedding queue* (after *Queue embeddings*).
 
 * The browser verifies size and SHA-256 of every model file before use, also when reusing its cache.
-* Uploads are refused unless the self-test reproduces the model-card similarities within tolerance.
-* Desktop Chrome/Edge with WebGPU is the target. WASM works but is slower; on CPU-only devices choose **q8** precision in Settings. Many phones (including iPhones) may be unsupported or too slow; the plugin detects this and the lexical tier keeps working.
+* Uploads are refused unless the self-test reproduces the similarity matrix measured for the chosen
+  precision (q4f16 default; fp16 optional) within its tolerance.
+* Desktop Chrome/Edge with WebGPU is the fastest. Without WebGPU the same precision runs on WASM
+  (slower, same results). Many phones (including iPhones) may be unsupported or too slow; the
+  plugin detects this and the lexical tier keeps working.
 * Keep the tab open; closing it returns claimed items to the queue.
 
 > **Beta status:** the real Qwen3-Embedding-0.6B weights could not be downloaded in the build environment, so real-model inference is **not yet verified** (see [TEST-REPORT.md](TEST-REPORT.md), AC06). The pipeline itself is verified end-to-end with a labelled tiny fixture model.

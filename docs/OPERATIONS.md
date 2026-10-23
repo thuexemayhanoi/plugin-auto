@@ -41,7 +41,7 @@ Embedding jobs are skipped by `wp sseo run` (they wait for a browser or private 
 | Orphan list contains pages that are in menus | menus, widgets and templates are not scanned (stated with every orphan list) | treat orphans as candidates; check navigation manually |
 | "Unsupported on this device" | no WebAssembly SIMD / module workers / WebGPU | use desktop Chrome/Edge, or the private worker; lexical analysis is unaffected |
 | Model download fails with *Integrity check failed* | a file differs from the pinned SHA-256 (corrupted download, proxy rewriting, or a changed upstream file) | retry; if it persists, do not bypass — report it; vectors are never uploaded without a passing self-test |
-| Self-test fails | wrong precision for the device/runtime, or numerical issues | try q8 precision (Settings), another browser, or the private worker |
+| Self-test fails | the runtime produced different numbers than the ones measured for this precision (broken GPU driver, unsupported browser build) | do not bypass it; try another browser, WASM instead of WebGPU, or the private worker; vectors are never uploaded without a passing self-test |
 | Application Passwords missing on user profiles | site not on HTTPS (WordPress rule) | enable HTTPS; local test sites can set `WP_ENVIRONMENT_TYPE` to `local` |
 | MCP client cannot see tools | MCP Adapter not active, exposure off, or no read-only ability selected | Agent Connections page shows adapter status; select abilities and enable MCP exposure |
 | Admin screens in Vietnamese but you want English | default plugin UI language is Vietnamese | Settings → *Plugin admin language* → English or *Follow WordPress profile language* |

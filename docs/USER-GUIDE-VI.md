@@ -62,7 +62,7 @@ Nếu bài viết bị ai đó sửa giữa lúc xem trước và lúc áp dụn
 3. **Tải mô hình & tự kiểm thử** — mỗi tệp được kiểm tra kích thước và SHA-256; vector chỉ được gửi lên khi tự kiểm thử khớp số liệu tham chiếu của model card.
 4. Bấm *Xếp hàng vector nhúng* (khu vực *Bắt đầu tác vụ*), rồi **Xử lý hàng đợi vector nhúng**. Có thể *Tạm dừng*, *Dừng & trả lại*. Giữ tab mở; đóng tab hoặc khóa màn hình iPhone sẽ dừng xử lý (các mục đã nhận tự trở lại hàng đợi).
 
-Máy tính có Chrome/Edge + WebGPU là phù hợp nhất. Thiết bị chỉ có CPU nên chọn độ chính xác **q8** trong Cài đặt. Nhiều điện thoại (kể cả iPhone) có thể không hỗ trợ hoặc quá chậm — khi đó cứ dùng tầng từ vựng.
+Máy tính có Chrome/Edge + WebGPU là nhanh nhất. Không có WebGPU thì cùng độ chính xác đó chạy bằng CPU (WASM): chậm hơn nhưng cho cùng kết quả. Nhiều điện thoại (kể cả iPhone) có thể không hỗ trợ hoặc quá chậm — khi đó cứ dùng tầng từ vựng.
 
 > **Trạng thái beta:** chưa chạy được mô hình Qwen3 thật trong môi trường build (không tải được trọng số). Đường ống đã được kiểm chứng đầy đủ bằng một mô hình thử nghiệm nhỏ có gắn nhãn. Xem [TEST-REPORT.md](TEST-REPORT.md).
 
