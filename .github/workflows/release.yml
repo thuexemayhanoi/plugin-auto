@@ -51,6 +51,13 @@ jobs:
           V="$(sed -n 's/^ \* Version:[[:space:]]*//p' semantic-seo-engine-vi-en.php | head -1 | tr -d '\r')"
           [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$ ]] || { echo "invalid tag: $TAG"; exit 1; }
           [ "v$V" = "$TAG" ] || { echo "tag $TAG does not match version $V"; exit 1; }
+          # A tag that already exists must be the commit being built: the release must never
+          # attach this commit's ZIP to a tag of another commit (--target only applies to new tags).
+          if git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null; then
+            git fetch --quiet --depth=1 origin "+refs/tags/$TAG:refs/tags/$TAG"
+            TAGGED="$(git rev-parse "refs/tags/$TAG^{commit}")"
+            [ "$TAGGED" = "$GITHUB_SHA" ] || { echo "tag $TAG already exists on $TAGGED, not on $GITHUB_SHA"; exit 1; }
+          fi
           echo "VERSION=$V" >> "$GITHUB_ENV"
       - run: npm ci --ignore-scripts && node bin/build-vendor.mjs
       - name: Build ZIP twice (reproducible)
