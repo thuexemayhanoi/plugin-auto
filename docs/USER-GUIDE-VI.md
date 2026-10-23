@@ -23,7 +23,9 @@ Menu **Semantic SEO → Tổng quan & Thiết lập**:
 
 1. **Kiểm tra tương thích** — phiên bản WordPress/PHP, bảng dữ liệu, phần mở rộng `intl`, Abilities API, nền tảng đa ngôn ngữ (Polylang/WPML/tiền tố URL/mặc định), nguồn metadata SEO (Yoast, Rank Math, SEOPress, The SEO Framework, AIOSEO — chỉ đọc).
 2. **Các tầng xử lý** — Tầng 0 (từ vựng) dùng được ngay; Tầng 1 (mô hình trong trình duyệt) và Tầng 2 (worker riêng) là tùy chọn.
-3. **Phạm vi** — loại nội dung, URL loại trừ, kích thước lô, số tài liệu tối đa.
+3. **Phạm vi** — loại nội dung, URL loại trừ, kích thước lô, số tài liệu tối đa (mặc định 5.000;
+   khi chạm giới hạn, trang Tổng quan báo số đối tượng chưa được kiểm kê — nâng giới hạn để đưa
+   chúng vào).
 4. **Chạy thử chỉ-đọc** — phân tích 20 bài cập nhật gần nhất, xem số liệu.
 5. **Hoàn tất** — sau đó bấm *Kiểm kê toàn bộ + phân tích*.
 

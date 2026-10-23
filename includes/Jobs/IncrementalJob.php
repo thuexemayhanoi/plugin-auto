@@ -66,6 +66,7 @@ final class IncrementalJob {
 		$state  = $job['state'];
 		$slice  = array_slice( $state['objects'], (int) $state['i'], max( 1, (int) $batch ) );
 		$errors = array();
+		InventoryScanner::begin_batch();
 		foreach ( $slice as $ref ) {
 			list( $type, $id ) = explode( ':', $ref );
 			$id                = (int) $id;
@@ -94,7 +95,8 @@ final class IncrementalJob {
 			}
 		}
 		$state['i']      += count( $slice );
-		$state['touched'] = array_slice( array_values( array_unique( array_map( 'intval', $state['touched'] ) ) ), 0, 500 );
+		$state['touched'] = array_slice( array_values( array_unique( array_filter( array_map( 'intval', $state['touched'] ) ) ) ), 0, 500 );
+		$state['capped']  = ( isset( $state['capped'] ) ? (int) $state['capped'] : 0 ) + InventoryScanner::capped_in_batch();
 		return array(
 			'state'    => $state,
 			'done'     => count( $slice ),

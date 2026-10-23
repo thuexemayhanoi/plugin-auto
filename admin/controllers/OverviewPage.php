@@ -85,6 +85,17 @@ final class OverviewPage {
 		}
 		list( $state, $explain ) = self::state( $status );
 		echo '<section class="sseo-state sseo-state--' . esc_attr( $state ) . '" aria-live="polite"><h2>' . esc_html__( 'Current state', 'semantic-seo-engine-vi-en' ) . '</h2><p><strong>' . esc_html( $explain ) . '</strong></p></section>';
+		if ( ! empty( $status['inventory_limit']['reached'] ) ) {
+			Ui::notice(
+				'warning',
+				sprintf(
+					/* translators: 1: limit, 2: number of objects */
+					__( 'The inventory reached the Max documents limit (%1$s): %2$s objects in scope are not inventoried or analyzed. Raise the limit in Settings to include them.', 'semantic-seo-engine-vi-en' ),
+					number_format_i18n( (int) $status['inventory_limit']['max_documents'] ),
+					number_format_i18n( (int) $status['inventory_limit']['not_inventoried'] )
+				)
+			);
+		}
 
 		if ( ! Settings::get( 'wizard_completed', false ) && current_user_can( Capabilities::MANAGE ) ) {
 			self::wizard( $status );

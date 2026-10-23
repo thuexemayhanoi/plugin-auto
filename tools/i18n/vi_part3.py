@@ -177,6 +177,8 @@ T = {
     "high": "cao",
     "Category proposals are disabled because the permalink structure contains this taxonomy: assigning a term could change the post URL.": "Đề xuất chuyên mục bị tắt vì cấu trúc permalink chứa taxonomy này: gán thêm một mục có thể làm đổi URL bài viết.",
     "The permalink structure now contains this taxonomy: applying could change the post URL; nothing was written.": "Cấu trúc permalink hiện chứa taxonomy này: áp dụng có thể làm đổi URL bài viết; chưa ghi gì.",
+    # Max documents limit.
+    "The inventory reached the Max documents limit (%1$s): %2$s objects in scope are not inventoried or analyzed. Raise the limit in Settings to include them.": "Kiểm kê đã chạm giới hạn Số tài liệu tối đa (%1$s): %2$s đối tượng trong phạm vi chưa được kiểm kê và phân tích. Hãy nâng giới hạn trong Cài đặt để đưa chúng vào.",
 }
 
 # Plural entries: Vietnamese has a single form (nplurals=1).

@@ -17,6 +17,7 @@ use SemanticSEO\Compatibility\Environment;
 use SemanticSEO\Database\Db;
 use SemanticSEO\Graph\LinkGraph;
 use SemanticSEO\Inventory\DocumentRepository;
+use SemanticSEO\Inventory\InventoryScanner;
 use SemanticSEO\Jobs\JobRepository;
 use SemanticSEO\Jobs\JobRunner;
 use SemanticSEO\Locks\LockService;
@@ -42,6 +43,25 @@ final class Api {
 
 	const API_VERSION = '1';
 	const MAX_TARGETS = 200;
+
+	/**
+	 * The *Max documents* limit against what is stored and what is in scope (real counts).
+	 *
+	 * @return array{max_documents:int,documents:int,in_scope:int,reached:bool,not_inventoried:int}
+	 */
+	public static function inventory_limit() {
+		$max    = InventoryScanner::max_documents();
+		$stored = (int) Db::value( "SELECT COUNT(*) FROM {documents} WHERE status <> 'deleted'" );
+		$scope  = InventoryScanner::scope_counts();
+		$gap    = max( 0, (int) $scope['total'] - $stored );
+		return array(
+			'max_documents'   => $max,
+			'documents'       => $stored,
+			'in_scope'        => (int) $scope['total'],
+			'reached'         => $stored >= $max && $gap > 0,
+			'not_inventoried' => $stored >= $max ? $gap : 0,
+		);
+	}
 
 	/**
 	 * Site status (semantic-seo/get-site-status).
@@ -95,6 +115,7 @@ final class Api {
 			),
 			'jobs_active'     => array_map( array( JobRepository::class, 'to_public' ), JobRepository::find( array( 'status' => 'running' ) ) ),
 			'last_inventory'  => isset( $state['inventory_completed_at'] ) ? $state['inventory_completed_at'] : null,
+			'inventory_limit' => self::inventory_limit(),
 			'last_analysis'   => isset( $state['last_analysis_at'] ) ? $state['last_analysis_at'] : null,
 			'agent_interface' => array(
 				'rest'          => rest_url( 'semantic-seo/v1' ),

@@ -379,13 +379,14 @@ final class Schemas {
 				return array(
 					'type'       => 'object',
 					'properties' => array(
-						'plugin_version' => array( 'type' => 'string' ),
-						'api_version'    => array( 'type' => 'string' ),
-						'mode'           => array( 'type' => 'object' ),
-						'tiers'          => array( 'type' => 'object' ),
-						'index'          => array( 'type' => 'object' ),
-						'link_coverage'  => array( 'type' => 'object' ),
-						'diagnostics'    => array( 'type' => 'object' ),
+						'plugin_version'  => array( 'type' => 'string' ),
+						'api_version'     => array( 'type' => 'string' ),
+						'mode'            => array( 'type' => 'object' ),
+						'tiers'           => array( 'type' => 'object' ),
+						'index'           => array( 'type' => 'object' ),
+						'link_coverage'   => array( 'type' => 'object' ),
+						'inventory_limit' => array( 'type' => 'object' ),
+						'diagnostics'     => array( 'type' => 'object' ),
 					),
 					'required'   => array( 'plugin_version', 'mode', 'tiers', 'index', 'diagnostics' ),
 				);

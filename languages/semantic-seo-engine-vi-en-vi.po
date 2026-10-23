@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Semantic SEO Engine VI–EN 1.0.0-beta.2\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/semantic-seo-engine-vi-en\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/plugin-auto\n"
 "Language: vi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -772,7 +772,7 @@ msgstr "Mở khóa cụm"
 msgid "Lock cluster membership"
 msgstr "Khóa thành viên cụm"
 
-#: admin/controllers/JobsPage.php:28 admin/controllers/Menu.php:37 admin/controllers/OverviewPage.php:128
+#: admin/controllers/JobsPage.php:28 admin/controllers/Menu.php:37 admin/controllers/OverviewPage.php:139
 msgid "Jobs & Inference Device"
 msgstr "Tác vụ & Thiết bị suy luận"
 
@@ -1141,7 +1141,7 @@ msgid "Inbound links"
 msgstr "Liên kết đến"
 
 #. translators: 1: scanned docs, 2: links
-#: admin/controllers/MatrixPage.php:164 admin/controllers/OverviewPage.php:122
+#: admin/controllers/MatrixPage.php:164 admin/controllers/OverviewPage.php:133
 msgid "Link suggestions"
 msgstr "Gợi ý liên kết"
 
@@ -1323,7 +1323,7 @@ msgstr "Tổng quan & Thiết lập"
 msgid "Semantic Analysis"
 msgstr "Phân tích ngữ nghĩa"
 
-#: admin/controllers/Menu.php:35 admin/controllers/OverviewPage.php:112 admin/controllers/QaPage.php:28
+#: admin/controllers/Menu.php:35 admin/controllers/OverviewPage.php:123 admin/controllers/QaPage.php:28
 msgid "Content QA"
 msgstr "Kiểm tra chất lượng nội dung"
 
@@ -1517,220 +1517,226 @@ msgstr "Mặc định chỉ đọc: plugin phân tích và đề xuất; không 
 msgid "Current state"
 msgstr "Trạng thái hiện tại"
 
-#: admin/controllers/OverviewPage.php:105 admin/controllers/Ui.php:176
+#. translators: 1: limit, 2: number of objects
+#: admin/controllers/OverviewPage.php:93
+#, php-format
+msgid "The inventory reached the Max documents limit (%1$s): %2$s objects in scope are not inventoried or analyzed. Raise the limit in Settings to include them."
+msgstr "Kiểm kê đã chạm giới hạn Số tài liệu tối đa (%1$s): %2$s đối tượng trong phạm vi chưa được kiểm kê và phân tích. Hãy nâng giới hạn trong Cài đặt để đưa chúng vào."
+
+#: admin/controllers/OverviewPage.php:116 admin/controllers/Ui.php:176
 msgid "Inventory"
 msgstr "Kiểm kê"
 
-#: admin/controllers/OverviewPage.php:105
+#: admin/controllers/OverviewPage.php:116
 msgid "published URLs analyzed (posts, pages, category archives)"
 msgstr "URL đã xuất bản được phân tích (bài viết, trang, trang chuyên mục)"
 
-#: admin/controllers/OverviewPage.php:109
+#: admin/controllers/OverviewPage.php:120
 msgid "Open SEO Matrix"
 msgstr "Mở Ma trận SEO"
 
-#: admin/controllers/OverviewPage.php:116
+#: admin/controllers/OverviewPage.php:127
 msgid "Review QA issues"
 msgstr "Xem vấn đề QA"
 
-#: admin/controllers/OverviewPage.php:120
+#: admin/controllers/OverviewPage.php:131
 msgid "Links & overlap"
 msgstr "Liên kết & chồng lấn"
 
 #. translators: %s: number
-#: admin/controllers/OverviewPage.php:120
+#: admin/controllers/OverviewPage.php:131
 #, php-format
 msgid "%s open internal-link suggestions"
 msgstr "%s gợi ý liên kết nội bộ đang mở"
 
 #. translators: %s: number
-#: admin/controllers/OverviewPage.php:120
+#: admin/controllers/OverviewPage.php:131
 #, php-format
 msgid "%s same-locale overlap hypotheses"
 msgstr "%s giả thuyết chồng lấn cùng ngôn ngữ"
 
 #. translators: 1: scanned docs, 2: links
-#: admin/controllers/OverviewPage.php:121
+#: admin/controllers/OverviewPage.php:132
 #, php-format
 msgid "Coverage: %1$d documents scanned, %2$d internal links observed in content (menus/widgets/templates not observed)."
 msgstr "Phạm vi quét: %1$d tài liệu, %2$d liên kết nội bộ trong nội dung (không quét menu/widget/template)."
 
 #. translators: 1: scanned docs, 2: links
-#: admin/controllers/OverviewPage.php:122
+#: admin/controllers/OverviewPage.php:133
 msgid "Overlap review"
 msgstr "Rà soát chồng lấn"
 
-#: admin/controllers/OverviewPage.php:124
+#: admin/controllers/OverviewPage.php:135
 msgid "Compute tiers"
 msgstr "Các tầng xử lý"
 
-#: admin/controllers/OverviewPage.php:125
+#: admin/controllers/OverviewPage.php:136
 msgid "Tier 0 — lexical:"
 msgstr "Tầng 0 — từ vựng:"
 
-#: admin/controllers/OverviewPage.php:125
+#: admin/controllers/OverviewPage.php:136
 msgid "Ready (works on this server, no model)."
 msgstr "Sẵn sàng (chạy trên máy chủ này, không cần mô hình)."
 
-#: admin/controllers/OverviewPage.php:126
+#: admin/controllers/OverviewPage.php:137
 msgid "Tier 1 — browser model:"
 msgstr "Tầng 1 — mô hình trong trình duyệt:"
 
 #. translators: %d: vectors
-#: admin/controllers/OverviewPage.php:126
+#: admin/controllers/OverviewPage.php:137
 #, php-format
 msgid "optional, started by an administrator in a supported browser; %d vectors stored for the pinned model."
 msgstr "tùy chọn, do quản trị viên khởi động trên trình duyệt hỗ trợ; đã lưu %d vector cho mô hình cố định."
 
 #. translators: %d: vectors
-#: admin/controllers/OverviewPage.php:127
+#: admin/controllers/OverviewPage.php:138
 msgid "Tier 2 — private worker:"
 msgstr "Tầng 2 — worker riêng:"
 
 #. translators: %d: vectors
-#: admin/controllers/OverviewPage.php:127
+#: admin/controllers/OverviewPage.php:138
 msgid "optional, not configured unless you set one up."
 msgstr "tùy chọn, chỉ hoạt động khi bạn tự thiết lập."
 
-#: admin/controllers/OverviewPage.php:132
+#: admin/controllers/OverviewPage.php:143
 msgid "Run analysis"
 msgstr "Chạy phân tích"
 
-#: admin/controllers/OverviewPage.php:132
+#: admin/controllers/OverviewPage.php:143
 msgid "Inventory and analysis are read-only and run in small background batches. Large sites take several minutes."
 msgstr "Kiểm kê và phân tích chỉ đọc, chạy nền theo lô nhỏ. Website lớn cần vài phút."
 
-#: admin/controllers/OverviewPage.php:140
+#: admin/controllers/OverviewPage.php:151
 msgid "Full inventory + analysis"
 msgstr "Kiểm kê toàn bộ + phân tích"
 
-#: admin/controllers/OverviewPage.php:144
+#: admin/controllers/OverviewPage.php:155
 msgid "Re-run analysis only"
 msgstr "Chỉ chạy lại phân tích"
 
-#: admin/controllers/OverviewPage.php:159
+#: admin/controllers/OverviewPage.php:170
 msgid "Quick-start wizard"
 msgstr "Trình hướng dẫn nhanh"
 
-#: admin/controllers/OverviewPage.php:162
+#: admin/controllers/OverviewPage.php:173
 msgid "1. Compatibility check"
 msgstr "1. Kiểm tra tương thích"
 
 #. translators: 1: WP, 2: PHP
-#: admin/controllers/OverviewPage.php:164
+#: admin/controllers/OverviewPage.php:175
 #, php-format
 msgid "WordPress %1$s, PHP %2$s"
 msgstr "WordPress %1$s, PHP %2$s"
 
 #. translators: 1: WP, 2: PHP
-#: admin/controllers/OverviewPage.php:165
+#: admin/controllers/OverviewPage.php:176
 msgid "Plugin database tables"
 msgstr "Bảng cơ sở dữ liệu của plugin"
 
-#: admin/controllers/OverviewPage.php:166
+#: admin/controllers/OverviewPage.php:177
 msgid "intl extension (Unicode normalization)"
 msgstr "Phần mở rộng intl (chuẩn hóa Unicode)"
 
-#: admin/controllers/OverviewPage.php:166
+#: admin/controllers/OverviewPage.php:177
 msgid "intl missing — the built-in Vietnamese normalizer is used"
 msgstr "Thiếu intl — dùng bộ chuẩn hóa tiếng Việt tích hợp sẵn"
 
-#: admin/controllers/OverviewPage.php:167
+#: admin/controllers/OverviewPage.php:178
 msgid "WordPress Abilities API available"
 msgstr "WordPress Abilities API khả dụng"
 
-#: admin/controllers/OverviewPage.php:167
+#: admin/controllers/OverviewPage.php:178
 msgid "Abilities API unavailable (WordPress 6.9+); REST still works"
 msgstr "Abilities API không khả dụng (cần WordPress 6.9+); REST vẫn hoạt động"
 
 #. translators: %s: framework
-#: admin/controllers/OverviewPage.php:168
+#: admin/controllers/OverviewPage.php:179
 #, php-format
 msgid "Language framework: %s"
 msgstr "Nền tảng đa ngôn ngữ: %s"
 
 #. translators: %s: plugin
-#: admin/controllers/OverviewPage.php:169
+#: admin/controllers/OverviewPage.php:180
 #, php-format
 msgid "SEO metadata source: %s (read-only)"
 msgstr "Nguồn metadata SEO: %s (chỉ đọc)"
 
 #. translators: %s: plugin
-#: admin/controllers/OverviewPage.php:170
+#: admin/controllers/OverviewPage.php:181
 msgid "WP-Cron disabled — jobs advance while the Jobs page is open, or via WP-CLI"
 msgstr "WP-Cron đang tắt — tác vụ chạy tiếp khi trang Tác vụ đang mở, hoặc qua WP-CLI"
 
 #. translators: %s: plugin
-#: admin/controllers/OverviewPage.php:170
+#: admin/controllers/OverviewPage.php:181
 msgid "WP-Cron available for background batches"
 msgstr "WP-Cron sẵn sàng cho các lô xử lý nền"
 
-#: admin/controllers/OverviewPage.php:178
+#: admin/controllers/OverviewPage.php:189
 msgid "2. Compute tiers"
 msgstr "2. Các tầng xử lý"
 
-#: admin/controllers/OverviewPage.php:178
+#: admin/controllers/OverviewPage.php:189
 msgid "Tier 0 (lexical) is available now on this hosting. Tier 1 runs the Qwen3 embedding model in your browser only when you start it; Tier 2 is an optional private worker. Site visitors never load a model."
 msgstr "Tầng 0 (từ vựng) dùng được ngay trên hosting này. Tầng 1 chạy mô hình vector nhúng Qwen3 trong trình duyệt của bạn chỉ khi bạn khởi động; Tầng 2 là worker riêng tùy chọn. Khách truy cập không bao giờ tải mô hình."
 
-#: admin/controllers/OverviewPage.php:181
+#: admin/controllers/OverviewPage.php:192
 msgid "3. Scope"
 msgstr "3. Phạm vi"
 
-#: admin/controllers/OverviewPage.php:185
+#: admin/controllers/OverviewPage.php:196
 msgid "Content types"
 msgstr "Loại nội dung"
 
-#: admin/controllers/OverviewPage.php:192
+#: admin/controllers/OverviewPage.php:203
 msgid "Exclude URL path fragments (one per line)"
 msgstr "Loại trừ URL chứa đoạn đường dẫn (mỗi dòng một mục)"
 
-#: admin/controllers/OverviewPage.php:193 admin/controllers/SettingsPage.php:46
+#: admin/controllers/OverviewPage.php:204 admin/controllers/SettingsPage.php:46
 msgid "Batch size"
 msgstr "Kích thước lô"
 
-#: admin/controllers/OverviewPage.php:193 admin/controllers/SettingsPage.php:48
+#: admin/controllers/OverviewPage.php:204 admin/controllers/SettingsPage.php:48
 msgid "Max documents"
 msgstr "Số tài liệu tối đa"
 
 #. translators: 1: posts, 2: terms
-#: admin/controllers/OverviewPage.php:194
+#: admin/controllers/OverviewPage.php:205
 #, php-format
 msgid "In scope now: %1$d posts/pages and %2$d category archives (real database counts)."
 msgstr "Hiện trong phạm vi: %1$d bài viết/trang và %2$d trang chuyên mục (đếm thật từ cơ sở dữ liệu)."
 
 #. translators: 1: posts, 2: terms
-#: admin/controllers/OverviewPage.php:195
+#: admin/controllers/OverviewPage.php:206
 msgid "Save scope"
 msgstr "Lưu phạm vi"
 
-#: admin/controllers/OverviewPage.php:198
+#: admin/controllers/OverviewPage.php:209
 msgid "4. Read-only pilot"
 msgstr "4. Chạy thử chỉ-đọc"
 
-#: admin/controllers/OverviewPage.php:198
+#: admin/controllers/OverviewPage.php:209
 msgid "Analyze a small sample first and check the counts and coverage before running the whole site."
 msgstr "Phân tích một mẫu nhỏ trước, kiểm tra số liệu và phạm vi quét rồi mới chạy toàn bộ website."
 
-#: admin/controllers/OverviewPage.php:200
+#: admin/controllers/OverviewPage.php:211
 msgid "Pilot size"
 msgstr "Số bài chạy thử"
 
-#: admin/controllers/OverviewPage.php:200
+#: admin/controllers/OverviewPage.php:211
 msgid "Start pilot"
 msgstr "Bắt đầu chạy thử"
 
 #. translators: 1: documents, 2: links
-#: admin/controllers/OverviewPage.php:202
+#: admin/controllers/OverviewPage.php:213
 #, php-format
 msgid "Pilot result so far: %1$d documents, %2$d internal links observed."
 msgstr "Kết quả chạy thử đến nay: %1$d tài liệu, %2$d liên kết nội bộ được ghi nhận."
 
-#: admin/controllers/OverviewPage.php:207
+#: admin/controllers/OverviewPage.php:218
 msgid "5. Finish"
 msgstr "5. Hoàn tất"
 
-#: admin/controllers/OverviewPage.php:209
+#: admin/controllers/OverviewPage.php:220
 msgid "Finish setup"
 msgstr "Hoàn tất thiết lập"
 
@@ -2764,7 +2770,7 @@ msgstr "Không tìm thấy anchor tự nhiên; gợi ý này cần biên tập v
 msgid "The anchor text is no longer present in an editable position; re-run the analysis."
 msgstr "Anchor không còn ở vị trí có thể sửa; hãy chạy lại phân tích."
 
-#: includes/Approval/ProposalService.php:215 includes/Services/Api.php:995
+#: includes/Approval/ProposalService.php:215 includes/Services/Api.php:1016
 msgid "Document not found."
 msgstr "Không tìm thấy tài liệu."
 
@@ -2814,7 +2820,7 @@ msgstr "Cần khoảng thời gian báo cáo hợp lệ (ngày bắt đầu ≤ 
 msgid "Missing required columns. Required: %s."
 msgstr "Thiếu cột bắt buộc. Cần có: %s."
 
-#: includes/Jobs/JobRepository.php:69 includes/Services/Api.php:569
+#: includes/Jobs/JobRepository.php:69 includes/Services/Api.php:590
 msgid "Unknown job type."
 msgstr "Loại tác vụ không hợp lệ."
 
@@ -3040,61 +3046,61 @@ msgstr "Vector được tạo bằng hồ sơ mô hình khác nên đã bị t�
 msgid "This device has no valid server-checked self-test for the current model profile; send the reference vectors to /embeddings/selftest first."
 msgstr "Thiết bị này chưa có lần tự kiểm thử hợp lệ được máy chủ kiểm tra cho hồ sơ model hiện tại; hãy gửi vector tham chiếu tới /embeddings/selftest trước."
 
-#: includes/Services/Api.php:188
+#: includes/Services/Api.php:209
 msgid "Only URLs of this site are accepted."
 msgstr "Chỉ chấp nhận URL của website này."
 
-#: includes/Services/Api.php:192
+#: includes/Services/Api.php:213
 msgid "Provide post_id, document_id or url."
 msgstr "Hãy cung cấp post_id, document_id hoặc url."
 
-#: includes/Services/Api.php:195 includes/Services/Api.php:198
+#: includes/Services/Api.php:216 includes/Services/Api.php:219
 msgid "This URL is not in the inventory (run an inventory first)."
 msgstr "URL này chưa có trong danh sách kiểm kê (hãy chạy kiểm kê trước)."
 
-#: includes/Services/Api.php:533 includes/Services/Api.php:645
+#: includes/Services/Api.php:554 includes/Services/Api.php:666
 msgid "Job not found."
 msgstr "Không tìm thấy tác vụ."
 
 #. translators: %d: max
-#: includes/Services/Api.php:575
+#: includes/Services/Api.php:596
 #, php-format
 msgid "At most %d targets per request."
 msgstr "Tối đa %d mục tiêu mỗi yêu cầu."
 
-#: includes/Services/Api.php:582
+#: includes/Services/Api.php:603
 msgid "None of these posts is in the inventory yet; run an inventory first."
 msgstr "Chưa bài nào trong số này có trong danh sách kiểm kê; hãy chạy kiểm kê trước."
 
-#: includes/Services/Api.php:599
+#: includes/Services/Api.php:620
 msgid "Agents may run one job at a time."
 msgstr "Mỗi agent chỉ được chạy một tác vụ tại một thời điểm."
 
-#: includes/Services/Api.php:648
+#: includes/Services/Api.php:669
 msgid "Agents can only control their own jobs."
 msgstr "Agent chỉ được điều khiển tác vụ của chính mình."
 
-#: includes/Services/Api.php:686
+#: includes/Services/Api.php:707
 msgid "Set confirm=true to rebuild. Derived data is recomputed in the background; WordPress content is not modified."
 msgstr "Đặt confirm=true để xây dựng lại. Dữ liệu dẫn xuất được tính lại ở nền; nội dung WordPress không bị sửa."
 
-#: includes/Services/Api.php:690
+#: includes/Services/Api.php:711
 msgid "model_version must match the active pinned profile (model key or revision)."
 msgstr "model_version phải khớp hồ sơ mô hình cố định đang dùng (khóa mô hình hoặc revision)."
 
-#: includes/Services/Api.php:719
+#: includes/Services/Api.php:740
 msgid "Provide 1–10 finding IDs."
 msgstr "Hãy cung cấp 1–10 ID phát hiện."
 
-#: includes/Services/Api.php:946
+#: includes/Services/Api.php:967
 msgid "Provide lease_token or all_mine=true."
 msgstr "Hãy cung cấp lease_token hoặc all_mine=true."
 
-#: includes/Services/Api.php:968
+#: includes/Services/Api.php:989
 msgid "Invalid finding or status."
 msgstr "Phát hiện hoặc trạng thái không hợp lệ."
 
-#: includes/Services/Api.php:1017
+#: includes/Services/Api.php:1038
 msgid "No valid fields."
 msgstr "Không có trường hợp lệ."
 

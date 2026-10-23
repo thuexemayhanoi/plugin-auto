@@ -3,8 +3,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Semantic SEO Engine VI–EN 1.0.0-beta.2\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/semantic-seo-engine-vi-en\n"
-"POT-Creation-Date: 2026-10-23T06:53:14+00:00\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/plugin-auto\n"
+"POT-Creation-Date: 2026-10-23T08:05:57+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -860,7 +860,7 @@ msgid "Lock cluster membership"
 msgstr ""
 
 #: admin/controllers/JobsPage.php:28 admin/controllers/Menu.php:37
-#: admin/controllers/OverviewPage.php:128
+#: admin/controllers/OverviewPage.php:139
 msgid "Jobs & Inference Device"
 msgstr ""
 
@@ -1261,7 +1261,7 @@ msgid "Inbound links"
 msgstr ""
 
 #. translators: 1: scanned docs, 2: links
-#: admin/controllers/MatrixPage.php:164 admin/controllers/OverviewPage.php:122
+#: admin/controllers/MatrixPage.php:164 admin/controllers/OverviewPage.php:133
 msgid "Link suggestions"
 msgstr ""
 
@@ -1456,7 +1456,7 @@ msgstr ""
 msgid "Semantic Analysis"
 msgstr ""
 
-#: admin/controllers/Menu.php:35 admin/controllers/OverviewPage.php:112
+#: admin/controllers/Menu.php:35 admin/controllers/OverviewPage.php:123
 #: admin/controllers/QaPage.php:28
 msgid "Content QA"
 msgstr ""
@@ -1674,40 +1674,49 @@ msgstr ""
 msgid "Current state"
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:105 admin/controllers/Ui.php:176
+#. translators: 1: limit, 2: number of objects
+#: admin/controllers/OverviewPage.php:93
+#, php-format
+msgid ""
+"The inventory reached the Max documents limit (%1$s): %2$s objects in scope "
+"are not inventoried or analyzed. Raise the limit in Settings to include "
+"them."
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:116 admin/controllers/Ui.php:176
 msgid "Inventory"
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:105
+#: admin/controllers/OverviewPage.php:116
 msgid "published URLs analyzed (posts, pages, category archives)"
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:109
+#: admin/controllers/OverviewPage.php:120
 msgid "Open SEO Matrix"
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:116
+#: admin/controllers/OverviewPage.php:127
 msgid "Review QA issues"
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:120
+#: admin/controllers/OverviewPage.php:131
 msgid "Links & overlap"
 msgstr ""
 
 #. translators: %s: number
-#: admin/controllers/OverviewPage.php:120
+#: admin/controllers/OverviewPage.php:131
 #, php-format
 msgid "%s open internal-link suggestions"
 msgstr ""
 
 #. translators: %s: number
-#: admin/controllers/OverviewPage.php:120
+#: admin/controllers/OverviewPage.php:131
 #, php-format
 msgid "%s same-locale overlap hypotheses"
 msgstr ""
 
 #. translators: 1: scanned docs, 2: links
-#: admin/controllers/OverviewPage.php:121
+#: admin/controllers/OverviewPage.php:132
 #, php-format
 msgid ""
 "Coverage: %1$d documents scanned, %2$d internal links observed in content "
@@ -1715,28 +1724,28 @@ msgid ""
 msgstr ""
 
 #. translators: 1: scanned docs, 2: links
-#: admin/controllers/OverviewPage.php:122
+#: admin/controllers/OverviewPage.php:133
 msgid "Overlap review"
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:124
+#: admin/controllers/OverviewPage.php:135
 msgid "Compute tiers"
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:125
+#: admin/controllers/OverviewPage.php:136
 msgid "Tier 0 — lexical:"
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:125
+#: admin/controllers/OverviewPage.php:136
 msgid "Ready (works on this server, no model)."
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:126
+#: admin/controllers/OverviewPage.php:137
 msgid "Tier 1 — browser model:"
 msgstr ""
 
 #. translators: %d: vectors
-#: admin/controllers/OverviewPage.php:126
+#: admin/controllers/OverviewPage.php:137
 #, php-format
 msgid ""
 "optional, started by an administrator in a supported browser; %d vectors "
@@ -1744,126 +1753,126 @@ msgid ""
 msgstr ""
 
 #. translators: %d: vectors
-#: admin/controllers/OverviewPage.php:127
+#: admin/controllers/OverviewPage.php:138
 msgid "Tier 2 — private worker:"
 msgstr ""
 
 #. translators: %d: vectors
-#: admin/controllers/OverviewPage.php:127
+#: admin/controllers/OverviewPage.php:138
 msgid "optional, not configured unless you set one up."
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:132
+#: admin/controllers/OverviewPage.php:143
 msgid "Run analysis"
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:132
+#: admin/controllers/OverviewPage.php:143
 msgid ""
 "Inventory and analysis are read-only and run in small background batches. "
 "Large sites take several minutes."
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:140
+#: admin/controllers/OverviewPage.php:151
 msgid "Full inventory + analysis"
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:144
+#: admin/controllers/OverviewPage.php:155
 msgid "Re-run analysis only"
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:159
+#: admin/controllers/OverviewPage.php:170
 msgid "Quick-start wizard"
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:162
+#: admin/controllers/OverviewPage.php:173
 msgid "1. Compatibility check"
 msgstr ""
 
 #. translators: 1: WP, 2: PHP
-#: admin/controllers/OverviewPage.php:164
+#: admin/controllers/OverviewPage.php:175
 #, php-format
 msgid "WordPress %1$s, PHP %2$s"
 msgstr ""
 
 #. translators: 1: WP, 2: PHP
-#: admin/controllers/OverviewPage.php:165
+#: admin/controllers/OverviewPage.php:176
 msgid "Plugin database tables"
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:166
+#: admin/controllers/OverviewPage.php:177
 msgid "intl extension (Unicode normalization)"
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:166
+#: admin/controllers/OverviewPage.php:177
 msgid "intl missing — the built-in Vietnamese normalizer is used"
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:167
+#: admin/controllers/OverviewPage.php:178
 msgid "WordPress Abilities API available"
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:167
+#: admin/controllers/OverviewPage.php:178
 msgid "Abilities API unavailable (WordPress 6.9+); REST still works"
 msgstr ""
 
 #. translators: %s: framework
-#: admin/controllers/OverviewPage.php:168
+#: admin/controllers/OverviewPage.php:179
 #, php-format
 msgid "Language framework: %s"
 msgstr ""
 
 #. translators: %s: plugin
-#: admin/controllers/OverviewPage.php:169
+#: admin/controllers/OverviewPage.php:180
 #, php-format
 msgid "SEO metadata source: %s (read-only)"
 msgstr ""
 
 #. translators: %s: plugin
-#: admin/controllers/OverviewPage.php:170
+#: admin/controllers/OverviewPage.php:181
 msgid ""
 "WP-Cron disabled — jobs advance while the Jobs page is open, or via WP-CLI"
 msgstr ""
 
 #. translators: %s: plugin
-#: admin/controllers/OverviewPage.php:170
+#: admin/controllers/OverviewPage.php:181
 msgid "WP-Cron available for background batches"
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:178
+#: admin/controllers/OverviewPage.php:189
 msgid "2. Compute tiers"
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:178
+#: admin/controllers/OverviewPage.php:189
 msgid ""
 "Tier 0 (lexical) is available now on this hosting. Tier 1 runs the Qwen3 "
 "embedding model in your browser only when you start it; Tier 2 is an "
 "optional private worker. Site visitors never load a model."
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:181
+#: admin/controllers/OverviewPage.php:192
 msgid "3. Scope"
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:185
+#: admin/controllers/OverviewPage.php:196
 msgid "Content types"
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:192
+#: admin/controllers/OverviewPage.php:203
 msgid "Exclude URL path fragments (one per line)"
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:193
+#: admin/controllers/OverviewPage.php:204
 #: admin/controllers/SettingsPage.php:46
 msgid "Batch size"
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:193
+#: admin/controllers/OverviewPage.php:204
 #: admin/controllers/SettingsPage.php:48
 msgid "Max documents"
 msgstr ""
 
 #. translators: 1: posts, 2: terms
-#: admin/controllers/OverviewPage.php:194
+#: admin/controllers/OverviewPage.php:205
 #, php-format
 msgid ""
 "In scope now: %1$d posts/pages and %2$d category archives (real database "
@@ -1871,39 +1880,39 @@ msgid ""
 msgstr ""
 
 #. translators: 1: posts, 2: terms
-#: admin/controllers/OverviewPage.php:195
+#: admin/controllers/OverviewPage.php:206
 msgid "Save scope"
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:198
+#: admin/controllers/OverviewPage.php:209
 msgid "4. Read-only pilot"
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:198
+#: admin/controllers/OverviewPage.php:209
 msgid ""
 "Analyze a small sample first and check the counts and coverage before "
 "running the whole site."
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:200
+#: admin/controllers/OverviewPage.php:211
 msgid "Pilot size"
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:200
+#: admin/controllers/OverviewPage.php:211
 msgid "Start pilot"
 msgstr ""
 
 #. translators: 1: documents, 2: links
-#: admin/controllers/OverviewPage.php:202
+#: admin/controllers/OverviewPage.php:213
 #, php-format
 msgid "Pilot result so far: %1$d documents, %2$d internal links observed."
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:207
+#: admin/controllers/OverviewPage.php:218
 msgid "5. Finish"
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:209
+#: admin/controllers/OverviewPage.php:220
 msgid "Finish setup"
 msgstr ""
 
@@ -3023,7 +3032,7 @@ msgid ""
 "analysis."
 msgstr ""
 
-#: includes/Approval/ProposalService.php:215 includes/Services/Api.php:995
+#: includes/Approval/ProposalService.php:215 includes/Services/Api.php:1016
 msgid "Document not found."
 msgstr ""
 
@@ -3077,7 +3086,7 @@ msgstr ""
 msgid "Missing required columns. Required: %s."
 msgstr ""
 
-#: includes/Jobs/JobRepository.php:69 includes/Services/Api.php:569
+#: includes/Jobs/JobRepository.php:69 includes/Services/Api.php:590
 msgid "Unknown job type."
 msgstr ""
 
@@ -3313,64 +3322,64 @@ msgid ""
 "profile; send the reference vectors to /embeddings/selftest first."
 msgstr ""
 
-#: includes/Services/Api.php:188
+#: includes/Services/Api.php:209
 msgid "Only URLs of this site are accepted."
 msgstr ""
 
-#: includes/Services/Api.php:192
+#: includes/Services/Api.php:213
 msgid "Provide post_id, document_id or url."
 msgstr ""
 
-#: includes/Services/Api.php:195 includes/Services/Api.php:198
+#: includes/Services/Api.php:216 includes/Services/Api.php:219
 msgid "This URL is not in the inventory (run an inventory first)."
 msgstr ""
 
-#: includes/Services/Api.php:533 includes/Services/Api.php:645
+#: includes/Services/Api.php:554 includes/Services/Api.php:666
 msgid "Job not found."
 msgstr ""
 
 #. translators: %d: max
-#: includes/Services/Api.php:575
+#: includes/Services/Api.php:596
 #, php-format
 msgid "At most %d targets per request."
 msgstr ""
 
-#: includes/Services/Api.php:582
+#: includes/Services/Api.php:603
 msgid "None of these posts is in the inventory yet; run an inventory first."
 msgstr ""
 
-#: includes/Services/Api.php:599
+#: includes/Services/Api.php:620
 msgid "Agents may run one job at a time."
 msgstr ""
 
-#: includes/Services/Api.php:648
+#: includes/Services/Api.php:669
 msgid "Agents can only control their own jobs."
 msgstr ""
 
-#: includes/Services/Api.php:686
+#: includes/Services/Api.php:707
 msgid ""
 "Set confirm=true to rebuild. Derived data is recomputed in the background; "
 "WordPress content is not modified."
 msgstr ""
 
-#: includes/Services/Api.php:690
+#: includes/Services/Api.php:711
 msgid ""
 "model_version must match the active pinned profile (model key or revision)."
 msgstr ""
 
-#: includes/Services/Api.php:719
+#: includes/Services/Api.php:740
 msgid "Provide 1–10 finding IDs."
 msgstr ""
 
-#: includes/Services/Api.php:946
+#: includes/Services/Api.php:967
 msgid "Provide lease_token or all_mine=true."
 msgstr ""
 
-#: includes/Services/Api.php:968
+#: includes/Services/Api.php:989
 msgid "Invalid finding or status."
 msgstr ""
 
-#: includes/Services/Api.php:1017
+#: includes/Services/Api.php:1038
 msgid "No valid fields."
 msgstr ""
 

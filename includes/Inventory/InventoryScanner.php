@@ -88,7 +88,69 @@ final class InventoryScanner {
 	}
 
 	/**
-	 * Processes one batch. State: {phase: posts|terms|cleanup|done, cursor:int, processed:int}.
+	 * Documents currently stored (null: not counted yet in this batch).
+	 *
+	 * @var int|null
+	 */
+	private static $stored = null;
+
+	/**
+	 * New objects skipped in this batch because the *Max documents* limit was reached.
+	 *
+	 * @var int
+	 */
+	private static $capped = 0;
+
+	/**
+	 * The *Max documents* setting: how many documents the inventory may hold.
+	 *
+	 * @return int
+	 */
+	public static function max_documents() {
+		return max( 10, (int) Settings::get( 'max_documents', 5000 ) );
+	}
+
+	/**
+	 * Takes a slot for a new document, or refuses when the limit is reached. Objects that already
+	 * have a document are never refused, so existing documents keep being refreshed when the limit
+	 * is lowered below the stored count (nothing is deleted).
+	 *
+	 * @return bool
+	 */
+	private static function reserve_slot() {
+		if ( null === self::$stored ) {
+			self::$stored = (int) Db::value( "SELECT COUNT(*) FROM {documents} WHERE status <> 'deleted'" );
+		}
+		if ( self::$stored >= self::max_documents() ) {
+			++self::$capped;
+			return false;
+		}
+		++self::$stored;
+		return true;
+	}
+
+	/**
+	 * Starts a batch: the document count is re-read and the skip counter reset.
+	 *
+	 * @return void
+	 */
+	public static function begin_batch() {
+		self::$stored = null;
+		self::$capped = 0;
+	}
+
+	/**
+	 * New objects skipped in the current batch because of the limit.
+	 *
+	 * @return int
+	 */
+	public static function capped_in_batch() {
+		return self::$capped;
+	}
+
+	/**
+	 * Processes one batch. State: {phase: posts|terms|cleanup|done, cursor:int, processed:int,
+	 * capped:int}. Objects beyond the *Max documents* limit are counted in `capped`, not indexed.
 	 *
 	 * @param array $state State.
 	 * @param int   $batch Batch size.
@@ -101,6 +163,7 @@ final class InventoryScanner {
 		$errors = array();
 		$count  = 0;
 		$batch  = max( 1, (int) $batch );
+		self::begin_batch();
 
 		if ( 'posts' === $phase ) {
 			$ids = self::next_post_ids( $cursor, $batch, $only );
@@ -167,6 +230,7 @@ final class InventoryScanner {
 		$state['phase']     = $phase;
 		$state['cursor']    = $cursor;
 		$state['processed'] = ( isset( $state['processed'] ) ? (int) $state['processed'] : 0 ) + $count;
+		$state['capped']    = ( isset( $state['capped'] ) ? (int) $state['capped'] : 0 ) + self::$capped;
 		return array(
 			'state'     => $state,
 			'processed' => $count,
@@ -222,7 +286,7 @@ final class InventoryScanner {
 	 *
 	 * @param \WP_Post $post  Post.
 	 * @param bool     $force Force re-extraction.
-	 * @return int Document ID.
+	 * @return int Document ID, or 0 when the *Max documents* limit is reached for a new object.
 	 */
 	public static function index_post( \WP_Post $post, $force = false ) {
 		$url          = (string) get_permalink( $post );
@@ -273,8 +337,11 @@ final class InventoryScanner {
 			)
 		);
 		$existing    = DocumentRepository::by_object( 'post', $post->ID );
-		$now         = Util::now();
-		$excluded    = LockService::is_excluded( 'post', $post->ID, $url ) ? 1 : 0;
+		if ( null === $existing && ! self::reserve_slot() ) {
+			return 0;
+		}
+		$now      = Util::now();
+		$excluded = LockService::is_excluded( 'post', $post->ID, $url ) ? 1 : 0;
 		if ( null !== $existing && ! $force && $existing['index_hash'] === $fingerprint && 0 === (int) $existing['dirty'] ) {
 			DocumentRepository::update(
 				(int) $existing['id'],
@@ -327,7 +394,7 @@ final class InventoryScanner {
 	 *
 	 * @param \WP_Term $term  Term.
 	 * @param bool     $force Force.
-	 * @return int Document ID.
+	 * @return int Document ID, or 0 when the *Max documents* limit is reached for a new object.
 	 */
 	public static function index_term( \WP_Term $term, $force = false ) {
 		$link         = get_term_link( $term );
@@ -341,7 +408,10 @@ final class InventoryScanner {
 		}
 		$fingerprint = Util::sha256( Util::canonical_json( array( self::VERSION, Tokenizer::VERSION, $term->name, $term->description, $term->slug, $term->parent, $url, $loc, $translations ) ) );
 		$existing    = DocumentRepository::by_object( 'term', $term->term_id );
-		$excluded    = LockService::is_excluded( 'term', $term->term_id, $url ) ? 1 : 0;
+		if ( null === $existing && ! self::reserve_slot() ) {
+			return 0;
+		}
+		$excluded = LockService::is_excluded( 'term', $term->term_id, $url ) ? 1 : 0;
 		if ( null !== $existing && ! $force && $existing['index_hash'] === $fingerprint && 0 === (int) $existing['dirty'] ) {
 			DocumentRepository::update(
 				(int) $existing['id'],
