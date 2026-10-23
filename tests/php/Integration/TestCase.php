@@ -72,6 +72,60 @@ abstract class TestCase extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Reference vectors that reproduce the active profile's expected self-test matrix exactly
+	 * (documents on two axes, each query = its expected similarities + an orthogonal remainder).
+	 * SYNTHETIC: they exercise the server-side check, they are not model output.
+	 *
+	 * @param array|null $matrix Matrix to reproduce (default: the expected one).
+	 * @return array{queries: float[][], documents: float[][]}
+	 */
+	protected function reference_vectors( $matrix = null ) {
+		$p      = \SemanticSEO\Semantic\ModelProfile::active();
+		$ref    = $p['reference'];
+		$matrix = null !== $matrix ? $matrix : ( isset( $ref['scores_by_dtype'][ $p['dtype'] ] ) ? $ref['scores_by_dtype'][ $p['dtype'] ] : $ref['scores'] );
+		$dim    = (int) $p['dimension'];
+		$docs   = array();
+		foreach ( array_keys( $matrix[0] ) as $j ) {
+			$v       = array_fill( 0, $dim, 0.0 );
+			$v[ $j ] = 1.0;
+			$docs[]  = $v;
+		}
+		$queries = array();
+		foreach ( $matrix as $i => $row ) {
+			$v   = array_fill( 0, $dim, 0.0 );
+			$sum = 0.0;
+			foreach ( $row as $j => $s ) {
+				$v[ $j ] = (float) $s;
+				$sum    += $s * $s;
+			}
+			$v[ count( $row ) + $i ] = sqrt( max( 0.0, 1.0 - $sum ) );
+			$queries[]               = $v;
+		}
+		return array(
+			'queries'   => $queries,
+			'documents' => $docs,
+		);
+	}
+
+	/**
+	 * Passes the server-side self-test as the current (worker) user.
+	 *
+	 * @return void
+	 */
+	protected function verify_device() {
+		$v   = $this->reference_vectors();
+		$res = \SemanticSEO\Services\Api::embedding_selftest(
+			array(
+				'model_key' => \SemanticSEO\Semantic\ModelProfile::active()['model_key'],
+				'source'    => 'worker',
+				'queries'   => $v['queries'],
+				'documents' => $v['documents'],
+			)
+		);
+		$this->assertTrue( is_array( $res ) && $res['verified'], wp_json_encode( $res ) );
+	}
+
+	/**
 	 * Loads the labelled fixture corpus.
 	 *
 	 * @return array Corpus definition.
@@ -79,8 +133,8 @@ abstract class TestCase extends \WP_UnitTestCase {
 	protected function load_corpus() {
 		$corpus = require dirname( __DIR__, 2 ) . '/fixtures/corpus.php';
 		foreach ( $corpus['categories'] as $c ) {
-			$parent = '' !== $c['parent'] ? $this->cats[ $c['parent'] ] : 0;
-			$res    = wp_insert_term(
+			$parent                  = '' !== $c['parent'] ? $this->cats[ $c['parent'] ] : 0;
+			$res                     = wp_insert_term(
 				$c['name'],
 				'category',
 				array(
@@ -93,8 +147,8 @@ abstract class TestCase extends \WP_UnitTestCase {
 		}
 		// Pass 1: create posts (needed for {{url:key}} replacement).
 		foreach ( $corpus['docs'] as $d ) {
-			$status = isset( $d['status'] ) ? $d['status'] : 'publish';
-			$id     = self::factory()->post->create(
+			$status                   = isset( $d['status'] ) ? $d['status'] : 'publish';
+			$id                       = self::factory()->post->create(
 				array(
 					'post_type'    => $d['type'],
 					'post_status'  => 'trash' === $status ? 'publish' : $status,

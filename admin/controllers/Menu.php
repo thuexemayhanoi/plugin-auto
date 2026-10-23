@@ -139,6 +139,7 @@ final class Menu {
 						'loaded'         => __( 'Model loaded', 'semantic-seo-engine-vi-en' ),
 						'selftestOk'     => __( 'Self-test passed: similarities match the model card reference within tolerance.', 'semantic-seo-engine-vi-en' ),
 						'selftestFail'   => __( 'Self-test failed: results differ from the reference; vectors will not be uploaded.', 'semantic-seo-engine-vi-en' ),
+						'serverChecked'  => __( 'checked by the server, max Δ', 'semantic-seo-engine-vi-en' ),
 						'idle'           => __( 'Queue empty — nothing to embed.', 'semantic-seo-engine-vi-en' ),
 						'tabWarning'     => __( 'Keep this tab open and the device awake; closing the tab or locking an iPhone interrupts processing (claimed items are returned to the queue automatically).', 'semantic-seo-engine-vi-en' ),
 						'noVendor'       => __( 'The browser runtime files are not bundled in this build; browser inference is unavailable.', 'semantic-seo-engine-vi-en' ),

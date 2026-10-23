@@ -36,7 +36,7 @@ def main():
     files.update(manifest["files"][args.dtype])
     profile = dict(prof, files=files, dtype=args.dtype, dimension=args.dimension)
     emb = w.Embedder(manifest["root"], profile)
-    ok, diff, tol, measured = w.selftest(emb, prof["reference"], args.dtype)
+    ok, diff, tol, measured, _ = w.selftest(emb, prof["reference"], args.dtype)
     print(json.dumps({"ready": bool(ok), "dtype": args.dtype, "selftest": {"passed": bool(ok), "max_abs_diff": float(diff), "tolerance": tol, "measured": measured}}), flush=True)
     if not ok:
         return 2

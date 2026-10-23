@@ -53,6 +53,7 @@ final class EmbeddingQueueTest extends TestCase {
 		JobRunner::tick( 10, (int) $job['id'] );
 		Capabilities::ensure_agent_roles();
 		wp_set_current_user( self::factory()->user->create( array( 'role' => 'sseo_worker' ) ) );
+		$this->verify_device();
 		return (int) $job['id'];
 	}
 

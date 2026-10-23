@@ -6,7 +6,7 @@
  *               {type:'embed', id, items:[{queue_id, text, role}]}
  * Messages out: {type:'progress', file, loaded, total, cached}
  *               {type:'ready', device, dtype, ms}
- *               {type:'selftest', id, ok, maxDiff, matrix, tolerance}
+ *               {type:'selftest', id, ok, maxDiff, matrix, tolerance, vectors:{queries, documents}}
  *               {type:'embedded', id, results:[{queue_id, vector}], ms}
  *               {type:'error', id, message}
  *
@@ -129,7 +129,9 @@ async function selftest( msg ) {
 	const expected = expectedScores( ref, p.dtype );
 	const cmp = compareReference( matrix, expected, tolerance );
 	state.verified = cmp.ok;
-	self.postMessage( { type: 'selftest', id: msg.id, ok: cmp.ok, maxDiff: cmp.maxDiff, matrix, expected, tolerance } );
+	// The vectors go to the server, which recomputes the matrix itself: the page's "ok" is not trusted.
+	const vectors = { queries: q.map( ( v ) => Array.from( v ) ), documents: d.map( ( v ) => Array.from( v ) ) };
+	self.postMessage( { type: 'selftest', id: msg.id, ok: cmp.ok, maxDiff: cmp.maxDiff, matrix, expected, tolerance, vectors } );
 }
 
 /**

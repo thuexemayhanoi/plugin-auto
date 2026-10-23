@@ -141,6 +141,34 @@ final class RestController {
 			)
 		);
 		self::post(
+			'/embeddings/selftest',
+			array( Api::class, 'embedding_selftest' ),
+			$embed,
+			array(
+				'model_key' => array(
+					'type'     => 'string',
+					'required' => true,
+					'pattern'  => '^[a-f0-9]{40}$',
+				),
+				'source'    => array(
+					'type' => 'string',
+					'enum' => array( 'browser', 'worker' ),
+				),
+				'queries'   => array(
+					'type'     => 'array',
+					'required' => true,
+					'maxItems' => 4,
+					'items'    => array( 'type' => array( 'string', 'array' ) ),
+				),
+				'documents' => array(
+					'type'     => 'array',
+					'required' => true,
+					'maxItems' => 4,
+					'items'    => array( 'type' => array( 'string', 'array' ) ),
+				),
+			)
+		);
+		self::post(
 			'/embeddings/complete',
 			array( Api::class, 'embedding_complete' ),
 			$embed,

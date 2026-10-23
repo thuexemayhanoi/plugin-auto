@@ -247,6 +247,26 @@ await check( 'embedding lease: claim → wrong model rejected → replay rejecte
 	assert.equal( wp( 'db', 'query', "SELECT COUNT(*) FROM wp_sseo_queue WHERE lease_hash = '" + token + "'", '--skip-column-names' ), '0', 'raw token never stored' );
 	const wrong = await call( 'worker', 'POST', '/embeddings/complete', { lease_token: token, model_key: 'a'.repeat( 40 ), results: [ { queue_id: claim.json.data.items[ 0 ].queue_id, vector: [ 1 ] } ] } );
 	assert.equal( wrong.status, 409 );
+	// No server-checked self-test yet: vectors refused (428) whatever the device claims.
+	const unverified = await call( 'worker', 'POST', '/embeddings/complete', { lease_token: token, model_key: key, results: [ { queue_id: claim.json.data.items[ 0 ].queue_id, vector: [ 1, 2, 3 ] } ] } );
+	assert.equal( unverified.status, 428, unverified.text.slice( 0, 200 ) );
+	// Server-side self-test with SYNTHETIC vectors reproducing the expected matrix (not model output).
+	const p = prof.json.data;
+	const expected = ( p.reference.scores_by_dtype && p.reference.scores_by_dtype[ p.profile.dtype ] ) || p.reference.scores;
+	const dim = p.profile.dimension;
+	const unit = ( i ) => Array.from( { length: dim }, ( _, k ) => ( k === i ? 1 : 0 ) );
+	const docs = expected[ 0 ].map( ( _, j ) => unit( j ) );
+	const queries = expected.map( ( row, i ) => {
+		const v = new Array( dim ).fill( 0 );
+		row.forEach( ( x, j ) => ( v[ j ] = x ) );
+		v[ row.length + i ] = Math.sqrt( 1 - row.reduce( ( a, x ) => a + x * x, 0 ) );
+		return v;
+	} );
+	const failed = await call( 'worker', 'POST', '/embeddings/selftest', { model_key: key, source: 'worker', queries: docs, documents: docs } );
+	assert.equal( failed.status, 200 );
+	assert.equal( failed.json.data.verified, false, 'a wrong matrix fails the server check' );
+	const verified = await call( 'worker', 'POST', '/embeddings/selftest', { model_key: key, source: 'worker', queries, documents: docs } );
+	assert.equal( verified.json.data.verified, true, verified.text.slice( 0, 200 ) );
 	const bad = await call( 'worker', 'POST', '/embeddings/complete', { lease_token: token, model_key: key, results: [ { queue_id: claim.json.data.items[ 0 ].queue_id, vector: [ 1, 2, 3 ] } ] } );
 	assert.equal( bad.status, 200 );
 	assert.equal( bad.json.data.stored, 0 );

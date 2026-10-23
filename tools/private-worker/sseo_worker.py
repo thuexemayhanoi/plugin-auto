@@ -224,7 +224,18 @@ def selftest(embedder, reference, dtype):
     tol = float(reference["tolerance"].get(dtype, 0.03))
     diff = max(abs(measured[i][j] - expected[i][j]) for i in range(len(measured)) for j in range(len(measured[i])))
     rank_ok = all(int(np.argmax(measured[i])) == int(np.argmax(expected[i])) for i in range(len(measured)))
-    return diff <= tol and rank_ok, diff, tol, measured
+    return diff <= tol and rank_ok, diff, tol, measured, (q, d)
+
+
+def server_selftest(client, profile, vectors):
+    """Sends the reference vectors; the server recomputes the matrix (a local pass is only a claim)."""
+    q, d = vectors
+    return client.request("POST", "/embeddings/selftest", {
+        "model_key": profile["model_key"],
+        "source": "worker",
+        "queries": [[float(x) for x in v] for v in q],
+        "documents": [[float(x) for x in v] for v in d],
+    })
 
 
 def run(args):
@@ -238,9 +249,13 @@ def run(args):
     log("profile %s @ %s, %s, dim %s, key %s" % (profile["model_id"], profile["revision"][:12], profile["dtype"], profile["dimension"], profile["model_key"][:12]))
     model_dir = fetch_pinned(profile, os.path.expanduser(args.cache_dir), log)
     embedder = Embedder(model_dir, profile, threads=args.threads)
-    ok, diff, tol, measured = selftest(embedder, info["reference"], profile["dtype"])
+    ok, diff, tol, measured, vectors = selftest(embedder, info["reference"], profile["dtype"])
     log("self-test %s: max diff %.6f (tolerance %s) %s" % ("PASSED" if ok else "FAILED", diff, tol, measured))
     if not ok:
+        raise SystemExit(2)
+    check = server_selftest(client, profile, vectors)
+    log("server check %s: max diff %s (tolerance %s)" % ("PASSED" if check.get("verified") else "FAILED", check.get("max_abs_diff"), check.get("tolerance")))
+    if not check.get("verified"):
         raise SystemExit(2)
     if args.selftest_only:
         return 0

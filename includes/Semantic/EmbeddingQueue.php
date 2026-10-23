@@ -150,6 +150,10 @@ final class EmbeddingQueue {
 		if ( ! hash_equals( $profile['model_key'], (string) $model_key ) ) {
 			return new \WP_Error( 'sseo_model_mismatch', __( 'Vectors were produced with a different model profile and were rejected.', 'semantic-seo-engine-vi-en' ), array( 'status' => 409 ) );
 		}
+		// The device's own "self-test passed" is not accepted as proof: the server must have checked it.
+		if ( ! DeviceVerification::is_verified( $user_id, $profile['model_key'] ) ) {
+			return new \WP_Error( 'sseo_selftest_required', __( 'This device has no valid server-checked self-test for the current model profile; send the reference vectors to /embeddings/selftest first.', 'semantic-seo-engine-vi-en' ), array( 'status' => 428 ) );
+		}
 		$hash = Util::sha256( (string) $token );
 		$out  = array(
 			'stored'   => 0,

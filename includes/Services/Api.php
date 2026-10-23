@@ -25,6 +25,7 @@ use SemanticSEO\Plugin;
 use SemanticSEO\Rollback\RollbackService;
 use SemanticSEO\Security\AuthContext;
 use SemanticSEO\Security\UrlGuard;
+use SemanticSEO\Semantic\DeviceVerification;
 use SemanticSEO\Semantic\EmbeddingQueue;
 use SemanticSEO\Semantic\EmbeddingRepository;
 use SemanticSEO\Semantic\ModelProfile;
@@ -855,10 +856,31 @@ final class Api {
 		}
 		$profile = ModelProfile::active();
 		return array(
-			'profile'   => EmbeddingQueue::public_profile( $profile ),
-			// Model-card similarities: every worker must reproduce them before uploading vectors.
-			'reference' => $profile['reference'],
-			'queue'     => EmbeddingQueue::counts(),
+			'profile'      => EmbeddingQueue::public_profile( $profile ),
+			// Model-card similarities: every worker must reproduce them, checked by the server, before uploading vectors.
+			'reference'    => $profile['reference'],
+			'verification' => DeviceVerification::status( get_current_user_id(), $profile['model_key'] ),
+			'queue'        => EmbeddingQueue::counts(),
+		);
+	}
+
+	/**
+	 * Server-side check of a device's self-test vectors.
+	 *
+	 * @param array $args model_key, queries, documents, source.
+	 * @return array|\WP_Error
+	 */
+	public static function embedding_selftest( array $args ) {
+		$g = Guard::check( Capabilities::EMBED, 'embed', 'embedding_selftest' );
+		if ( is_wp_error( $g ) ) {
+			return $g;
+		}
+		return DeviceVerification::verify(
+			get_current_user_id(),
+			isset( $args['model_key'] ) ? (string) $args['model_key'] : '',
+			isset( $args['queries'] ) && is_array( $args['queries'] ) ? $args['queries'] : array(),
+			isset( $args['documents'] ) && is_array( $args['documents'] ) ? $args['documents'] : array(),
+			isset( $args['source'] ) && 'worker' === $args['source'] ? 'worker' : 'browser'
 		);
 	}
 

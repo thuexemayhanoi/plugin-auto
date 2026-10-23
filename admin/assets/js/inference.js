@@ -339,6 +339,22 @@
 				return ask( { type: 'selftest', reference: cfg.reference } );
 			} )
 			.then( function ( r ) {
+				if ( ! r.ok ) {
+					return r;
+				}
+				// Server-side check of the same vectors; only its verdict unlocks uploads.
+				return rest( '/embeddings/selftest', {
+					model_key: cfg.profile.model_key,
+					source: 'browser',
+					queries: r.vectors.queries,
+					documents: r.vectors.documents,
+				} ).then( function ( v ) {
+					r.ok = !! v.verified;
+					r.serverDiff = v.max_abs_diff;
+					return r;
+				} );
+			} )
+			.then( function ( r ) {
 				run.verified = !! r.ok;
 				var m = r.matrix
 					.map( function ( row ) {
@@ -349,7 +365,7 @@
 							.join( ' ' );
 					} )
 					.join( ' | ' );
-				log( ( r.ok ? t.selftestOk : t.selftestFail ) + ' [' + m + '] max Δ ' + r.maxDiff.toFixed( 4 ) + ' ≤ ' + r.tolerance, r.ok ? '' : 'error' );
+				log( ( r.ok ? t.selftestOk : t.selftestFail ) + ' [' + m + '] max Δ ' + r.maxDiff.toFixed( 4 ) + ' ≤ ' + r.tolerance + ( undefined !== r.serverDiff ? ' · ' + t.serverChecked + ' ' + Number( r.serverDiff ).toFixed( 4 ) : '' ), r.ok ? '' : 'error' );
 				setStatus( r.ok ? t.selftestOk : t.selftestFail );
 			} )
 			.catch( function ( err ) {

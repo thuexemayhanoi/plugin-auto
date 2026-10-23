@@ -88,10 +88,45 @@ final class HybridEvaluationTest extends TestCase {
 		Capabilities::ensure_agent_roles();
 		wp_set_current_user( self::factory()->user->create( array( 'role' => 'sseo_worker' ) ) );
 
-		$proc = proc_open( $cmd . ' --dtype ' . escapeshellarg( $dtype ) . ' --dimension ' . (int) $profile['dimension'], array( 0 => array( 'pipe', 'r' ), 1 => array( 'pipe', 'w' ), 2 => STDERR ), $pipes ); // phpcs:ignore Generic.PHP.ForbiddenFunctions.Found
+		$proc = proc_open(
+			$cmd . ' --dtype ' . escapeshellarg( $dtype ) . ' --dimension ' . (int) $profile['dimension'],
+			array(
+				0 => array( 'pipe', 'r' ),
+				1 => array( 'pipe', 'w' ),
+				2 => STDERR,
+			),
+			$pipes
+		); // phpcs:ignore Generic.PHP.ForbiddenFunctions.Found
 		$this->assertIsResource( $proc );
 		$ready = json_decode( (string) fgets( $pipes[1] ), true );
 		$this->assertTrue( is_array( $ready ) && true === $ready['ready'], 'model self-test: ' . wp_json_encode( $ready ) );
+
+		// Server-side self-test with the reference vectors of the real model (required before upload).
+		$ref = $profile['reference'];
+		$req = array( 'items' => array() );
+		foreach ( $ref['queries'] as $text ) {
+			$req['items'][] = array(
+				'text' => $text,
+				'role' => 'query',
+			);
+		}
+		foreach ( $ref['documents'] as $text ) {
+			$req['items'][] = array(
+				'text' => $text,
+				'role' => 'document',
+			);
+		}
+		fwrite( $pipes[0], wp_json_encode( $req ) . "\n" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite
+		$ref_vecs = json_decode( (string) fgets( $pipes[1] ), true )['vectors'];
+		$check    = Api::embedding_selftest(
+			array(
+				'model_key' => $profile['model_key'],
+				'source'    => 'worker',
+				'queries'   => array_slice( $ref_vecs, 0, count( $ref['queries'] ) ),
+				'documents' => array_slice( $ref_vecs, count( $ref['queries'] ) ),
+			)
+		);
+		$this->assertTrue( $check['verified'], 'server-side self-test: ' . wp_json_encode( $check ) );
 
 		$stored  = 0;
 		$t0      = microtime( true );
@@ -106,7 +141,7 @@ final class HybridEvaluationTest extends TestCase {
 			}
 			$req = array( 'items' => array() );
 			foreach ( $claim['items'] as $item ) {
-				$req['items'][]  = array(
+				$req['items'][]         = array(
 					'text' => $item['text'],
 					'role' => $item['role'],
 				);
@@ -123,7 +158,7 @@ final class HybridEvaluationTest extends TestCase {
 					'vector'   => $out['vectors'][ $n ],
 				);
 			}
-			$res     = Api::embedding_complete(
+			$res = Api::embedding_complete(
 				array(
 					'lease_token' => $claim['lease_token'],
 					'model_key'   => $profile['model_key'],
@@ -222,11 +257,11 @@ final class HybridEvaluationTest extends TestCase {
 				)
 			);
 			$xlang[] = array(
-				'threshold'  => $t,
-				'suggested'  => count( $c['pairs'] ),
-				'correct'    => $correct,
-				'precision'  => count( $c['pairs'] ) ? round( $correct / count( $c['pairs'] ), 3 ) : null,
-				'recall'     => $true_pairs ? round( $correct / $true_pairs, 3 ) : null,
+				'threshold' => $t,
+				'suggested' => count( $c['pairs'] ),
+				'correct'   => $correct,
+				'precision' => count( $c['pairs'] ) ? round( $correct / count( $c['pairs'] ), 3 ) : null,
+				'recall'    => $true_pairs ? round( $correct / $true_pairs, 3 ) : null,
 			);
 		}
 		Settings::update( array( 'translation_min_similarity' => 0.70 ) );
@@ -252,8 +287,8 @@ final class HybridEvaluationTest extends TestCase {
 			}
 			Settings::update( array( 'w_semantic' => $w ) );
 			$this->reanalyze();
-			$m      = $this->measure( $labels );
-			$grid[] = array(
+			$m                        = $this->measure( $labels );
+			$grid[]                   = array(
 				'w_semantic'  => $w,
 				'calibration' => $mode,
 				'links'       => $m['links'],
@@ -268,35 +303,44 @@ final class HybridEvaluationTest extends TestCase {
 		Settings::update( array( 'w_semantic' => 0.35 ) );
 
 		$report = array(
-			'source'           => 'LABELLED TEST FIXTURE (tests/fixtures/corpus.php) + REAL Qwen3-Embedding-0.6B vectors (' . $profile['model_id'] . '@' . substr( $profile['revision'], 0, 12 ) . ', ' . $dtype . ', dim ' . $profile['dimension'] . ')',
-			'docs'             => count( $this->key_by_doc ),
-			'queued_items'     => $queued,
-			'roles'            => $roles,
-			'chunk_kinds'      => $kinds,
-			'stored_vectors'   => $stored,
-			'embed_seconds'    => $seconds,
-			'model_selftest'   => $ready['selftest'],
-			'lexical_baseline' => array(
+			'source'                    => 'LABELLED TEST FIXTURE (tests/fixtures/corpus.php) + REAL Qwen3-Embedding-0.6B vectors (' . $profile['model_id'] . '@' . substr( $profile['revision'], 0, 12 ) . ', ' . $dtype . ', dim ' . $profile['dimension'] . ')',
+			'docs'                      => count( $this->key_by_doc ),
+			'queued_items'              => $queued,
+			'roles'                     => $roles,
+			'chunk_kinds'               => $kinds,
+			'stored_vectors'            => $stored,
+			'embed_seconds'             => $seconds,
+			'model_selftest'            => $ready['selftest'],
+			'lexical_baseline'          => array(
 				'links'   => $baseline['links'],
 				'related' => $baseline['related'],
 				'overlap' => array_diff_key( $baseline['overlap'], array( 'pairs' => 1 ) ),
 			),
-			'hybrid_grid'      => $grid,
-			'site_baseline'    => get_option( 'sseo_similarity_baseline' ),
+			'hybrid_grid'               => $grid,
+			'site_baseline'             => get_option( 'sseo_similarity_baseline' ),
 			'possible_translation_rule' => $xlang,
-			'similarity'       => array(
-				'same_locale_relevant_pairs'      => self::stats( $relevant ),
-				'same_locale_other_pairs'         => self::stats( $other ),
-				'must_not_compete_controls'       => self::stats( $controls ),
-				'expected_overlaps'               => self::stats( $overlaps ),
-				'vi_en_translation_pairs'         => self::stats( $translations ),
-				'vi_en_non_translation_pairs'     => self::stats( $cross_other ),
+			'similarity'                => array(
+				'same_locale_relevant_pairs'  => self::stats( $relevant ),
+				'same_locale_other_pairs'     => self::stats( $other ),
+				'must_not_compete_controls'   => self::stats( $controls ),
+				'expected_overlaps'           => self::stats( $overlaps ),
+				'vi_en_translation_pairs'     => self::stats( $translations ),
+				'vi_en_non_translation_pairs' => self::stats( $cross_other ),
 			),
 		);
 		self::write_artifact( 'evaluation-hybrid.json', $report );
 		fwrite( STDERR, "\nHYBRID " . wp_json_encode( array_diff_key( $report, array( 'hybrid_grid' => 1 ) ) ) . "\n" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite
 		foreach ( $grid as $g ) {
-			fwrite( STDERR, 'w_semantic=' . $g['w_semantic'] . ' overlap-gate calibration=' . $g['calibration'] . ' ' . wp_json_encode( array( 'links' => $g['links'], 'related' => $g['related'], 'overlap' => $g['overlap'] ) ) . "\n" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite
+			fwrite(
+				STDERR,
+				'w_semantic=' . $g['w_semantic'] . ' overlap-gate calibration=' . $g['calibration'] . ' ' . wp_json_encode(
+					array(
+						'links'   => $g['links'],
+						'related' => $g['related'],
+						'overlap' => $g['overlap'],
+					)
+				) . "\n"
+			); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite
 		}
 
 		// Product guarantees that must hold with real vectors at the default weight.

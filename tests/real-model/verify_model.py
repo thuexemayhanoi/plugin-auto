@@ -136,7 +136,7 @@ def main():
             t0 = time.time()
             emb = w.Embedder(manifest["root"], profile, threads=args.threads)
             entry["load_seconds"] = round(time.time() - t0, 2)
-            ok, diff, tol, measured = w.selftest(emb, prof["reference"], dtype)
+            ok, diff, tol, measured, _ = w.selftest(emb, prof["reference"], dtype)
             card = prof["reference"]["scores"]
             entry["selftest"] = {
                 "passed": bool(ok), "max_abs_diff": round(float(diff), 5), "tolerance": tol,
