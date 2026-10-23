@@ -5,10 +5,11 @@
 #   tests/e2e/compat-plugins.sh <wp-version> <port>
 #
 # Checks: activation next to them without PHP errors; public pages (home, post, page, product,
-# shop) byte-identical before/after activation and after a full inventory + analysis (pages that
-# are not even stable between two identical requests are checked for the absence of plugin
-# assets instead); products are not inventoried by default; deactivation leaves the others
-# active. Writes tests/e2e/artifacts/compat-plugins.json.
+# shop) byte-identical with this plugin on and off, compared at the same moment after warming the
+# site (right after activation and after a full inventory + analysis; a page that differs between
+# two identical requests even without this plugin is checked for the absence of plugin assets
+# instead); products are not inventoried by default; deactivation leaves the others active and no
+# output of this plugin. Writes tests/e2e/artifacts/compat-plugins.json.
 set -uo pipefail
 
 V="$1"
@@ -49,27 +50,33 @@ URLS=( "$BASE/" "$POST_URL" "$PAGE_URL" "$PRODUCT_URL" "$SHOP_URL" )
 : > "$DIR/wp-content/debug.log"
 
 fetch() { curl -s -o - "$1"; }
-declare -A BEFORE STABLE
-for u in "${URLS[@]}"; do
-	a="$(fetch "$u" | sha256sum | cut -d' ' -f1)"
-	b="$(fetch "$u" | sha256sum | cut -d' ' -f1)"
-	BEFORE[$u]="$a"
-	[ "$a" = "$b" ] && STABLE[$u]=1 || STABLE[$u]=0
-done
+# Warm the site first: WooCommerce and Yoast SEO build data (indexables, transients) on the first
+# visits, so a page can change between the first and later requests without any other plugin.
+for _ in 1 2 3; do for u in "${URLS[@]}"; do fetch "$u" >/dev/null; done; done
+$WP cron event run --due-now >/dev/null 2>&1 || true
 
+# Same-moment comparison: this plugin ON vs OFF, with an OFF/OFF control for determinism.
 compare_pages() {
 	local stage="$1"
+	declare -A ON
+	for u in "${URLS[@]}"; do ON[$u]="$(fetch "$u")"; done
+	$WP plugin deactivate semantic-seo-engine-vi-en >/dev/null 2>&1
 	for u in "${URLS[@]}"; do
-		local html
-		html="$(fetch "$u")"
-		if [ "${STABLE[$u]}" = "1" ]; then
-			[ "$(printf '%s' "$html" | sha256sum | cut -d' ' -f1)" = "${BEFORE[$u]}" ]
-			check "$stage: $u byte-identical" "$?"
+		local off1 off2
+		off1="$(fetch "$u")"
+		off2="$(fetch "$u")"
+		if [ "$off1" = "$off2" ]; then
+			[ "${ON[$u]}" = "$off1" ]
+			local rc=$?
+			local where=""
+			[ $rc -ne 0 ] && where="$(diff <(printf '%s\n' "$off1") <(printf '%s\n' "${ON[$u]}") | head -4 | tr '\n' ' ' | cut -c1-300)"
+			check "$stage: $u identical with this plugin on and off" "$rc" "$where"
 		else
-			! printf '%s' "$html" | grep -qE 'semantic-seo-engine-vi-en/(assets|admin)|transformers|onnx'
-			check "$stage: $u (changes on every request without this plugin) has no plugin asset or model runtime" "$?"
+			! printf '%s' "${ON[$u]}" | grep -qE 'semantic-seo-engine-vi-en/(assets|admin)|transformers|onnx'
+			check "$stage: $u (differs between two identical requests even without this plugin) has no plugin asset or model runtime" "$?"
 		fi
 	done
+	$WP plugin activate semantic-seo-engine-vi-en >/dev/null 2>&1
 }
 
 $WP plugin install "$ZIP" --activate >/dev/null 2>&1
@@ -94,7 +101,10 @@ check "no PHP error, warning, notice or deprecation from this plugin in debug.lo
 
 $WP plugin deactivate semantic-seo-engine-vi-en >/dev/null 2>&1
 check "deactivation leaves WooCommerce, Yoast SEO and Polylang active" "$($WP plugin is-active woocommerce && $WP plugin is-active wordpress-seo && $WP plugin is-active polylang; echo $?)"
-compare_pages "after deactivation"
+for u in "${URLS[@]}"; do
+	! fetch "$u" | grep -qE 'semantic-seo-engine-vi-en/|sseo-'
+	check "after deactivation: $u has no output of this plugin" "$?"
+done
 
 VERSIONS="$($WP plugin list --fields=name,version --format=json)"
 printf '{"wordpress":"%s","plugins":%s,"checks":[%s],"failed":%d}\n' "$V" "$VERSIONS" "$(IFS=,; echo "${RESULTS[*]}")" "$FAILS" > "$OUT/compat-plugins.json"
