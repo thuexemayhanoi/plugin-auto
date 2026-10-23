@@ -7,6 +7,7 @@
 
 namespace SemanticSEO\Cannibalization;
 
+use SemanticSEO\Language\Places;
 use SemanticSEO\Settings;
 
 defined( 'ABSPATH' ) || exit;
@@ -17,6 +18,7 @@ defined( 'ABSPATH' ) || exit;
  *  potential_competition                      — same topic + same intent + title/keyword/GSC evidence
  *  same_topic_different_intent                — related, likely complementary
  *  distinct_facet                             — titles differ by a distinguishing modifier (theo ngày / theo tháng)
+ *                                               or name different places (Hà Giang / Sa Pa)
  *  pillar_supporting                          — valid cluster relationship
  *  translation_mapping_conflict               — same-locale pages inside one translation group
  *  manual_review                              — ambiguous
@@ -24,7 +26,7 @@ defined( 'ABSPATH' ) || exit;
  */
 final class CannibalizationAnalyzer {
 
-	const VERSION = 'cannibal-4';
+	const VERSION = 'cannibal-5';
 
 	const FACET_WORDS = array( 'giờ', 'ngày', 'tuần', 'tháng', 'năm', 'hour', 'hourly', 'day', 'daily', 'week', 'weekly', 'month', 'monthly', 'year', 'yearly', 'annual' );
 
@@ -58,9 +60,11 @@ final class CannibalizationAnalyzer {
 			return null;
 		}
 		$threshold = (float) Settings::get( 'cannibal_min_score', 0.30 );
+		$places    = Places::distinct( (string) $a['title'], (string) $b['title'] );
 		$near      = (float) Settings::get( 'near_duplicate', 0.80 );
 		$category  = null;
 		$conf      = 'low';
+		$basis     = '';
 		$notes     = array();
 
 		if ( '' !== $a['translation_group'] && $a['translation_group'] === $b['translation_group'] ) {
@@ -93,6 +97,11 @@ final class CannibalizationAnalyzer {
 			$category = 'same_topic_different_intent';
 			$conf     = 'medium';
 			$notes[]  = 'Related topic but different heuristic intents (' . implode( ' / ', $f['intents'] ) . ').';
+		} elseif ( null !== $places ) {
+			// Near-duplicates were caught above: different places with different text are separate searches.
+			$category = 'distinct_facet';
+			$conf     = 'manual_review';
+			$notes[]  = 'Titles name different places (' . implode( ', ', $places[0] ) . ' vs ' . implode( ', ', $places[1] ) . '); different local searches, not the same target query.';
 		} elseif ( self::is_distinct_facet( $f ) ) {
 			$category = 'distinct_facet';
 			$conf     = 'manual_review';
@@ -101,6 +110,12 @@ final class CannibalizationAnalyzer {
 			$category = 'potential_competition';
 			$conf     = self::overlap_topic( $f ) >= $threshold ? 'medium' : 'low';
 			$notes[]  = self::title_contained( $f ) ? 'Same heuristic intent; one title is almost entirely contained in the other (' . implode( ' ', $f['title_shared'] ) . ').' : 'Same heuristic intent with strong title overlap.';
+		} elseif ( self::semantic_only( $f ) ) {
+			// No query-level evidence at all: reported, but as the weakest hypothesis.
+			$category = 'manual_review';
+			$conf     = 'low';
+			$basis    = 'semantic_only';
+			$notes[]  = 'Similar meaning only: no shared title, heading or keyword evidence. Usually related content rather than competition; review only if both pages target the same search.';
 		} else {
 			$category = 'manual_review';
 			$conf     = 'manual_review';
@@ -111,9 +126,16 @@ final class CannibalizationAnalyzer {
 		if ( ! $f['gsc_available'] ) {
 			$notes[] = 'No imported Search Console data for this pair: this is a risk hypothesis, not confirmed cannibalization.';
 		}
-		$label = in_array( $category, array( 'exact_duplicate' ), true ) ? 'warning' : ( 'pillar_supporting' === $category ? 'info' : 'risk_hypothesis' );
-		$lo    = min( $a['id'], $b['id'] );
-		$hi    = max( $a['id'], $b['id'] );
+		// Valid hierarchy and different intents are complementary pages: shown as information.
+		if ( 'exact_duplicate' === $category ) {
+			$label = 'warning';
+		} elseif ( in_array( $category, array( 'pillar_supporting', 'same_topic_different_intent' ), true ) ) {
+			$label = 'info';
+		} else {
+			$label = 'risk_hypothesis';
+		}
+		$lo = min( $a['id'], $b['id'] );
+		$hi = max( $a['id'], $b['id'] );
 		return array(
 			'type'              => 'cannibalization',
 			'check_id'          => $category,
@@ -128,6 +150,8 @@ final class CannibalizationAnalyzer {
 			'algorithm_version' => self::VERSION,
 			'evidence'          => array(
 				'category'          => $category,
+				'basis'             => '' !== $basis ? $basis : null,
+				'places'            => null !== $places ? $places : null,
 				'notes'             => $notes,
 				'topic'             => $f['topic'],
 				'topic_calibrated'  => isset( $f['topic_calibrated'] ) ? $f['topic_calibrated'] : null,
@@ -183,6 +207,16 @@ final class CannibalizationAnalyzer {
 	 */
 	private static function overlap_topic( array $f ) {
 		return isset( $f['topic_calibrated'] ) ? (float) $f['topic_calibrated'] : (float) $f['topic'];
+	}
+
+	/**
+	 * Vectors are the only evidence: titles, headings and words barely overlap.
+	 *
+	 * @param array $f Features.
+	 * @return bool
+	 */
+	private static function semantic_only( array $f ) {
+		return null !== $f['semantic'] && $f['title_overlap'] < 0.2 && $f['heading_overlap'] < 0.2 && $f['lexical'] < 0.1;
 	}
 
 	/**

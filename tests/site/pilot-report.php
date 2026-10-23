@@ -52,6 +52,13 @@ $report = array(
 		return is_array( $b ) && isset( $b['locales'] ) ? $b['locales'] : null;
 	} )(),
 	'cannibalization_by_category_confidence' => $kv( $rows( "SELECT CONCAT(check_id, '/', confidence) AS k, COUNT(*) AS n FROM {findings} WHERE type = 'cannibalization' AND status = 'open' GROUP BY k ORDER BY n DESC" ), 'k', 'n' ),
+	'cannibalization_tiers'    => array(
+		'risk'          => (int) Db::value( "SELECT COUNT(*) FROM {findings} WHERE type = 'cannibalization' AND status = 'open' AND check_id IN ('exact_duplicate','near_duplicate','potential_competition','translation_mapping_conflict')" ),
+		'review'        => (int) Db::value( "SELECT COUNT(*) FROM {findings} WHERE type = 'cannibalization' AND status = 'open' AND ((check_id = 'manual_review' AND confidence <> 'low') OR check_id = 'distinct_facet')" ),
+		'semantic_only' => (int) Db::value( "SELECT COUNT(*) FROM {findings} WHERE type = 'cannibalization' AND status = 'open' AND check_id = 'manual_review' AND confidence = 'low'" ),
+		'information'   => (int) Db::value( "SELECT COUNT(*) FROM {findings} WHERE type = 'cannibalization' AND status = 'open' AND check_id IN ('pillar_supporting','same_topic_different_intent')" ),
+		'different_places' => (int) Db::value( "SELECT COUNT(*) FROM {findings} WHERE type = 'cannibalization' AND status = 'open' AND evidence LIKE %s", array( '%\"places\":[[%' ) ),
+	),
 	'peak_memory_mb_this_process' => round( memory_get_peak_usage( true ) / 1048576, 1 ),
 );
 

@@ -96,11 +96,21 @@ jobs:
         run: |
           python -m pip install --quiet -r tools/private-worker/requirements.txt
           python -I tests/real-model/fetch_verify.py --cache-dir "$HOME/.cache/sseo-worker" --dtypes q4f16 --manifest "$RUNNER_TEMP/manifest.json"
+      # Vectors of unchanged chunks from an earlier pilot run (same URL path, chunk, text hash and model
+      # key only). Kept in this repository's Actions cache, never in artifacts or logs.
+      - name: Restore cached pilot vectors
+        if: github.event_name == 'push' || inputs.embed
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ runner.temp }}/pilot-vectors.jsonl
+          key: pilot-vectors-q4f16-${{ github.run_id }}
+          restore-keys: pilot-vectors-q4f16-
       - name: Embed the copy with the real model through the private worker (REST + Application Password), re-analyse
         if: github.event_name == 'push' || inputs.embed
         run: |
           WP="wp --allow-root --path=$RUNNER_TEMP/pilot"
           $WP eval '\SemanticSEO\Settings::update( array( "model_dtype" => "q4f16" ) ); \SemanticSEO\Capabilities::ensure_agent_roles();'
+          SSEO_VECTOR_CACHE="$RUNNER_TEMP/pilot-vectors.jsonl" SSEO_VECTOR_CACHE_MODE=import $WP eval-file tests/site/vector-cache.php
           $WP user create pilot_worker pilot_worker@example.test --role=sseo_worker --user_pass="$(head -c 18 /dev/urandom | base64)" > /dev/null
           APP="$($WP user application-password create pilot_worker pilot --porcelain)"
           $WP sseo start embed --user=admin
@@ -108,6 +118,7 @@ jobs:
           START=$(date +%s)
           SSEO_APP_PASSWORD="$APP" python -I tools/private-worker/sseo_worker.py --site http://127.0.0.1:8080 --user pilot_worker --allow-http --once --batch 16 --threads 4 --cache-dir "$HOME/.cache/sseo-worker" --quiet
           echo "embedding seconds: $(( $(date +%s) - START ))"
+          SSEO_VECTOR_CACHE="$RUNNER_TEMP/pilot-vectors.jsonl" SSEO_VECTOR_CACHE_MODE=export $WP eval-file tests/site/vector-cache.php
           for _ in 1 2 3; do $WP eval '\SemanticSEO\Jobs\JobRunner::tick( 15 );' > /dev/null; done
           # Comparison: overlap gate with the model's fixed calibration floor only (site baseline off).
           mkdir -p "$RUNNER_TEMP/pilot/wp-content/mu-plugins"
@@ -122,6 +133,12 @@ jobs:
           $WP sseo start analyze --run --user=admin > /dev/null
           echo "hybrid re-analysis seconds: $(( $(date +%s) - START ))"
           $WP eval-file tests/site/pilot-report.php | tee tests/e2e/artifacts/site-pilot-hybrid.json
+      - name: Save pilot vectors for the next run
+        if: (github.event_name == 'push' || inputs.embed) && success()
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ runner.temp }}/pilot-vectors.jsonl
+          key: pilot-vectors-q4f16-${{ github.run_id }}
       - name: Front end of the copy unchanged by the plugin (no plugin assets, no model requests)
         run: |
           curl -fsS http://127.0.0.1:8080/ -o "$RUNNER_TEMP/home.html"
