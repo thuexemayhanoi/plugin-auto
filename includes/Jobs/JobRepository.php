@@ -248,6 +248,18 @@ final class JobRepository {
 	}
 
 	/**
+	 * Marks a completed job as failed after the fact (its follow-up could not run), with the reason
+	 * shown on the dashboard.
+	 *
+	 * @param int    $id      Job ID.
+	 * @param string $message Reason.
+	 * @return bool
+	 */
+	public static function fail_completed( $id, $message ) {
+		return 1 === Db::query( "UPDATE {jobs} SET status = 'failed', last_error = %s, updated_at = %s WHERE id = %d AND status = 'completed'", array( Util::truncate( (string) $message, 1000 ), Util::now(), (int) $id ) );
+	}
+
+	/**
 	 * Queues an analysis after an inventory. When another analysis is already active, a narrower
 	 * one (a pilot) that is not running yet is replaced by a site-wide one, which covers its pages;
 	 * otherwise the request is kept as pending and started when no analysis is active any more —
@@ -270,14 +282,32 @@ final class JobRepository {
 				return $job;
 			}
 		}
-		$pending = get_option( self::PENDING_OPTION, array() );
-		if ( is_array( $pending ) && isset( $pending['params'] ) ) {
-			if ( empty( $pending['params']['doc_ids'] ) || empty( $params['doc_ids'] ) ) {
-				// One of them is site-wide: it covers the other.
-				unset( $params['doc_ids'], $params['pilot'] );
-			} else {
-				$params['doc_ids'] = array_values( array_unique( array_merge( (array) $pending['params']['doc_ids'], (array) $params['doc_ids'] ) ) );
+		// Read-merge-write under the same lock as start_pending_analysis(), so a request stored
+		// while the pending one is being started is never deleted with it.
+		$lock    = self::pending_lock();
+		$pending = self::pending();
+		if ( null !== $pending ) {
+			$old = (array) $pending['params'];
+			if ( empty( $old['doc_ids'] ) ) {
+				// The pending request is site-wide: it covers this one (and keeps its own inventory).
+				$params   = $old;
+				$owner_id = (int) $pending['owner_id'];
+			} elseif ( ! empty( $params['doc_ids'] ) ) {
+				$merged = array_values( array_unique( array_map( 'intval', array_merge( (array) $old['doc_ids'], (array) $params['doc_ids'] ) ) ) );
+				// Two scopes: the read-only evidence of one inventory does not cover both.
+				unset( $params['source_job'] );
+				if ( empty( $old['pilot'] ) ) {
+					unset( $params['pilot'] );
+				}
+				if ( count( $merged ) > \SemanticSEO\Analysis\AnalysisRunner::SCOPE_LIMIT ) {
+					// More pages than one scoped analysis takes: analyse the whole site instead of
+					// silently leaving some out.
+					unset( $params['doc_ids'], $params['pilot'] );
+				} else {
+					$params['doc_ids'] = $merged;
+				}
 			}
+			// Otherwise this request is site-wide and covers the pending one.
 		}
 		update_option(
 			self::PENDING_OPTION,
@@ -288,6 +318,9 @@ final class JobRepository {
 			),
 			false
 		);
+		if ( false !== $lock ) {
+			Mutex::release( 'pending_analysis', $lock );
+		}
 		return null;
 	}
 
@@ -297,16 +330,65 @@ final class JobRepository {
 	 * @return int Created job ID (0 = nothing to do or still blocked).
 	 */
 	public static function start_pending_analysis() {
-		$pending = get_option( self::PENDING_OPTION, array() );
-		if ( ! is_array( $pending ) || ! isset( $pending['params'] ) ) {
+		if ( null === self::pending() ) {
 			return 0;
 		}
-		$job = self::create( 'analyze', (array) $pending['params'], (int) $pending['owner_id'], 'chain' );
-		if ( is_wp_error( $job ) ) {
+		$lock = self::pending_lock();
+		if ( false === $lock ) {
 			return 0;
 		}
-		delete_option( self::PENDING_OPTION );
-		return (int) $job['id'];
+		try {
+			$pending = self::pending();
+			if ( null === $pending ) {
+				return 0;
+			}
+			$job = self::create( 'analyze', (array) $pending['params'], (int) $pending['owner_id'], 'chain' );
+			if ( is_wp_error( $job ) ) {
+				return 0;
+			}
+			delete_option( self::PENDING_OPTION );
+			return (int) $job['id'];
+		} finally {
+			Mutex::release( 'pending_analysis', $lock );
+		}
+	}
+
+	/**
+	 * The pending analysis request, read from the database (not the option cache: another process,
+	 * such as WP-Cron next to an open dashboard, may have changed it during this request).
+	 *
+	 * @return array|null {params, owner_id, at}
+	 */
+	private static function pending() {
+		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		$raw   = $wpdb->get_var( $wpdb->prepare( "SELECT option_value FROM {$wpdb->options} WHERE option_name = %s", self::PENDING_OPTION ) );
+		$value = null === $raw ? null : maybe_unserialize( $raw );
+		// Drop the cached copy (and a cached "does not exist") so update_option() compares with the
+		// database and inserts or updates correctly.
+		wp_cache_delete( self::PENDING_OPTION, 'options' );
+		$none = wp_cache_get( 'notoptions', 'options' );
+		if ( is_array( $none ) && isset( $none[ self::PENDING_OPTION ] ) ) {
+			unset( $none[ self::PENDING_OPTION ] );
+			wp_cache_set( 'notoptions', $none, 'options' );
+		}
+		return is_array( $value ) && isset( $value['params'] ) && is_array( $value['params'] ) ? $value : null;
+	}
+
+	/**
+	 * Lock around the pending analysis request (waits up to about 2 seconds).
+	 *
+	 * @return string|false Lock token.
+	 */
+	private static function pending_lock() {
+		for ( $i = 0; $i < 20; $i++ ) {
+			$lock = Mutex::acquire( 'pending_analysis', 30 );
+			if ( false !== $lock ) {
+				return $lock;
+			}
+			usleep( 100000 );
+		}
+		return false;
 	}
 
 	/**

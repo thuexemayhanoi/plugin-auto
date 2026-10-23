@@ -106,10 +106,12 @@ final class Menu {
 			'sseo-admin',
 			'SSEO',
 			array(
-				'rest'    => esc_url_raw( rest_url( 'semantic-seo/v1' ) ),
-				'nonce'   => wp_create_nonce( 'wp_rest' ),
-				'cronOff' => defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON,
-				'i18n'    => array(
+				'rest'     => esc_url_raw( rest_url( 'semantic-seo/v1' ) ),
+				'nonce'    => wp_create_nonce( 'wp_rest' ),
+				'cronOff'  => defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON,
+				// Only users who may run analyses advance a job; readers just follow its progress.
+				'canDrive' => current_user_can( Capabilities::ANALYZE ),
+				'i18n'     => array(
 					'confirm'      => __( 'Are you sure?', 'semantic-seo-engine-vi-en' ),
 					'processing'   => __( 'Processing…', 'semantic-seo-engine-vi-en' ),
 					'completed'    => __( 'Completed', 'semantic-seo-engine-vi-en' ),

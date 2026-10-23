@@ -9,6 +9,7 @@
 namespace SemanticSEO\Tests\Integration;
 
 use SemanticSEO\Analysis\PriorityQueue;
+use SemanticSEO\Analysis\ScanHistory;
 use SemanticSEO\Capabilities;
 use SemanticSEO\Database\Db;
 use SemanticSEO\Services\HealthReport;
@@ -115,6 +116,98 @@ final class DashboardDataTest extends TestCase {
 		$this->assertSame( 'priority', $rows[0][0] );
 		$this->assertStringNotContainsString( ',=HYPERLINK', $csv, 'a cell never starts with a formula' );
 		$this->assertStringContainsString( "'=HYPERLINK", $csv );
+	}
+
+	public function test_pages_that_are_not_published_stay_hidden_from_readers() {
+		\SemanticSEO\Settings::update( array( 'include_drafts' => true ) );
+		$draft = self::factory()->post->create(
+			array(
+				'post_status'  => 'draft',
+				'post_title'   => 'Bản nháp chưa công bố Zeta',
+				'post_content' => '<p>' . str_repeat( 'Nội dung nháp về thuê xe máy. ', 30 ) . '</p>',
+			)
+		);
+		self::factory()->post->create(
+			array(
+				'post_title'   => 'Bài công khai trỏ tới bản nháp',
+				'post_content' => '<p>' . str_repeat( 'Hướng dẫn thuê xe máy ở Hà Nội. ', 30 ) . '<a href="' . esc_url( home_url( '/?p=' . $draft ) ) . '">xem thêm</a></p>',
+			)
+		);
+		$this->load_corpus();
+		$this->run_full_pipeline();
+
+		$all = wp_json_encode( PriorityQueue::items( array( 'limit' => 500 ) )['items'] );
+		$this->assertStringContainsString( 'Zeta', $all, 'scenario: an editor sees the draft named as the link target' );
+		$public = PriorityQueue::items(
+			array(
+				'limit'       => 500,
+				'public_only' => true,
+			)
+		);
+		$this->assertStringNotContainsString( 'Zeta', wp_json_encode( $public['items'] ) );
+		$this->assertSame(
+			0,
+			PriorityQueue::items(
+				array(
+					'search'      => 'Zeta',
+					'public_only' => true,
+				)
+			)['total'],
+			'the title of a draft cannot be probed through search'
+		);
+		$this->assertSame( array_sum( PriorityQueue::counts( array( 'public_only' => true ) ) ), $public['total'] );
+
+		// Over REST, a reader without the right to edit others' posts gets the public view.
+		do_action( 'rest_api_init' );
+		$reader = self::factory()->user->create( array( 'role' => 'author' ) );
+		( new \WP_User( $reader ) )->add_cap( Capabilities::READ );
+		wp_set_current_user( $reader );
+		$res = rest_do_request( new \WP_REST_Request( 'GET', '/semantic-seo/v1/priorities' ) );
+		$this->assertSame( 200, $res->get_status() );
+		$this->assertStringNotContainsString( 'Zeta', wp_json_encode( $res->get_data() ) );
+		wp_set_current_user( $this->admin );
+	}
+
+	public function test_scan_comparison_is_fixed_when_the_scan_ends_and_hides_private_pages() {
+		$this->load_corpus();
+		$this->run_full_pipeline();
+		$this->run_full_pipeline();
+		$diff = ScanHistory::diff( 50 );
+		$this->assertNotNull( $diff['previous'] );
+		$this->assertIsInt( $diff['new_count'] );
+
+		// A later trial or partial analysis adds findings: the comparison of the completed scan
+		// does not change.
+		$doc = (int) Db::value( "SELECT id FROM {documents} WHERE status = 'publish' ORDER BY id LIMIT 1" );
+		$id  = Db::insert(
+			'findings',
+			array(
+				'type'        => 'qa',
+				'check_id'    => 'missing_title',
+				'document_id' => $doc,
+				'fingerprint' => sha1( 'later-finding' ),
+				'label'       => 'verified_error',
+				'confidence'  => 'high',
+				'status'      => 'open',
+				'evidence'    => '{}',
+				'created_at'  => current_time( 'mysql', true ),
+				'updated_at'  => current_time( 'mysql', true ),
+			)
+		);
+		$this->assertGreaterThan( 0, $id );
+		$after = ScanHistory::diff( 50 );
+		$this->assertSame( $diff['new_count'], $after['new_count'] );
+		$this->assertNotContains( $id, array_map( 'intval', wp_list_pluck( $after['new'], 'id' ) ) );
+
+		// A finding of a page that is no longer published is listed only for editors.
+		$hidden = (int) Db::value( 'SELECT document_id FROM {findings} WHERE id = %d', array( $id ) );
+		Db::query( "UPDATE {documents} SET status = 'private' WHERE id = %d", array( $hidden ) );
+		$all             = ScanHistory::all();
+		$last            = count( $all ) - 1;
+		$all[ $last ]['new_ids'] = array( $id );
+		update_option( ScanHistory::OPTION, $all, false );
+		$this->assertSame( array( $id ), array_map( 'intval', wp_list_pluck( ScanHistory::diff( 50 )['new'], 'id' ) ) );
+		$this->assertSame( array(), ScanHistory::diff( 50, true )['new'] );
 	}
 
 	public function test_rest_endpoints_are_authorised_and_never_cached() {

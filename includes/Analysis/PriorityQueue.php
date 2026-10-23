@@ -96,12 +96,17 @@ final class PriorityQueue {
 	/**
 	 * Filter clause.
 	 *
-	 * @param array $f      Filters: locale, category, priority, search.
+	 * @param array $f      Filters: locale, category, priority, search, public_only.
 	 * @param array $args   Query arguments (appended).
 	 * @return string
 	 */
 	private static function where( array $f, array &$args ) {
-		$w = array( '1=1' );
+		$w      = array( '1=1' );
+		$public = ! empty( $f['public_only'] );
+		if ( $public ) {
+			// Items about a draft, private or pending page are only shown to people who can edit it.
+			$w[] = "d.status = 'publish'";
+		}
 		if ( ! empty( $f['locale'] ) ) {
 			$w[]    = 'q.locale = %s';
 			$args[] = (string) $f['locale'];
@@ -117,7 +122,7 @@ final class PriorityQueue {
 		if ( isset( $f['search'] ) && '' !== trim( (string) $f['search'] ) ) {
 			global $wpdb;
 			$like   = '%' . $wpdb->esc_like( trim( (string) $f['search'] ) ) . '%';
-			$w[]    = '(d.url LIKE %s OR d.title LIKE %s OR t.url LIKE %s OR t.title LIKE %s)';
+			$w[]    = $public ? "(d.url LIKE %s OR d.title LIKE %s OR (t.status = 'publish' AND (t.url LIKE %s OR t.title LIKE %s)))" : '(d.url LIKE %s OR d.title LIKE %s OR t.url LIKE %s OR t.title LIKE %s)';
 			$args[] = $like;
 			$args[] = $like;
 			$args[] = $like;
@@ -129,18 +134,20 @@ final class PriorityQueue {
 	/**
 	 * Paginated, ordered items.
 	 *
-	 * @param array $f Filters (locale, category, priority, search) plus limit (1-500) and offset.
+	 * @param array $f Filters (locale, category, priority, search, public_only = hide pages that are
+	 *                 not published) plus limit (1-500) and offset.
 	 * @return array{items:array[],total:int}
 	 */
 	public static function items( array $f = array() ) {
-		$args  = array();
-		$where = self::where( $f, $args );
-		$from  = '(' . self::source_sql() . ') q LEFT JOIN {documents} d ON d.id = q.document_id LEFT JOIN {documents} t ON t.id = q.target_id';
-		$total = (int) Db::value( "SELECT COUNT(*) FROM {$from} WHERE {$where}", $args );
-		$limit = Util::clamp_int( isset( $f['limit'] ) ? $f['limit'] : 20, 1, 500 );
-		$off   = max( 0, isset( $f['offset'] ) ? (int) $f['offset'] : 0 );
-		$rows  = Db::rows(
-			"SELECT q.*, d.title AS page_title, d.url AS page_url, d.object_id AS page_object_id, t.title AS target_title, t.url AS target_url FROM {$from} WHERE {$where} ORDER BY q.priority ASC, FIELD(q.confidence, 'high', 'medium', 'low', 'manual_review'), q.score DESC, q.kind ASC, q.id ASC LIMIT %d OFFSET %d",
+		$args   = array();
+		$where  = self::where( $f, $args );
+		$from   = '(' . self::source_sql() . ') q LEFT JOIN {documents} d ON d.id = q.document_id LEFT JOIN {documents} t ON t.id = q.target_id';
+		$total  = (int) Db::value( "SELECT COUNT(*) FROM {$from} WHERE {$where}", $args );
+		$limit  = Util::clamp_int( isset( $f['limit'] ) ? $f['limit'] : 20, 1, 500 );
+		$off    = max( 0, isset( $f['offset'] ) ? (int) $f['offset'] : 0 );
+		$target = empty( $f['public_only'] ) ? 't.title AS target_title, t.url AS target_url' : "CASE WHEN t.status = 'publish' THEN t.title ELSE '' END AS target_title, CASE WHEN t.status = 'publish' THEN t.url ELSE '' END AS target_url";
+		$rows   = Db::rows(
+			"SELECT q.*, d.title AS page_title, d.url AS page_url, d.object_id AS page_object_id, {$target} FROM {$from} WHERE {$where} ORDER BY q.priority ASC, FIELD(q.confidence, 'high', 'medium', 'low', 'manual_review'), q.score DESC, q.kind ASC, q.id ASC LIMIT %d OFFSET %d",
 			array_merge( $args, array( $limit, $off ) )
 		);
 		return array(

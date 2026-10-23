@@ -403,7 +403,12 @@ final class OverviewPage {
 	 * @return void
 	 */
 	private static function priorities() {
-		$res = PriorityQueue::items( array( 'limit' => 10 ) );
+		$res = PriorityQueue::items(
+			array(
+				'limit'       => 10,
+				'public_only' => ! Api::can_see_private(),
+			)
+		);
 		echo '<section class="sseo-panel"><h2>' . esc_html__( 'What to do first', 'semantic-seo-engine-vi-en' ) . '</h2><p class="description">' . esc_html__( 'Ordered by verified errors first, then likely problems, linking work and editorial improvements. A work plan, not a ranking prediction.', 'semantic-seo-engine-vi-en' ) . '</p>';
 		PrioritiesPage::table( $res['items'] );
 		/* translators: %s: number of items */

@@ -29,6 +29,21 @@ Report: [docs/QA-REPORT-BETA4.md](docs/QA-REPORT-BETA4.md).
   (P1): a waiting trial analysis is now superseded, otherwise the request is kept pending and
   started when no analysis is active (`JobChainTest`).
 
+### Fixed — review of PR #3 (regression tests fail before)
+- Titles and URLs of drafts, private or pending pages no longer reach readers without the right to
+  edit them (agents included): link targets, search and every list of the priority queue, its CSV,
+  the dashboard and the scan comparison of `/scans` and `/health` (P1).
+- The comparison with the previous scan is fixed when the scan ends; a later trial or partial
+  analysis no longer changes it.
+- A failed rename of the old vector column stops the migration (retried later) instead of letting
+  `dbDelta()` add an empty column; a leftover old column counts as an incomplete schema.
+- Pending analyses merged beyond one scoped run (500 pages) become a site-wide analysis instead of
+  silently leaving pages out; the pending request is locked and read from the database.
+- A 20-page trial whose pages could not be inventoried no longer turns into a site-wide analysis;
+  the dashboard shows why.
+- Readers without the right to run analyses follow a scan's progress on the dashboard instead of
+  receiving 403 every few seconds.
+
 ### Added
 - **SEO Dashboard** (first admin page, Vietnamese by default): health banner; quick start in 3
   steps (system check; "Analyze 20 pages" read-only trial; "Analyze the whole site" with the time

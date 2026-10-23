@@ -95,6 +95,16 @@ Mỗi lỗi có test hồi quy. Test thất bại trước bản sửa và đạ
 | D5 | P3 | Bằng chứng "chỉ đọc" báo sai là bài viết đã đổi: WP-Cron của WordPress tự xóa cờ `_pingme`/`_encloseme` sau khi đăng bài. Các meta này nay được loại trừ, cùng với khóa soạn thảo. | `dashboard-e2e.mjs` |
 | D6 | P3 | Độ tương phản màu và link trong đoạn văn không đạt axe (WCAG 2.1 AA) trên trang mới. | `dashboard-e2e.mjs` (axe 0 lỗi) |
 | CI | — | Script e2e private worker còn đọc cột cũ `e.vector`. | Workflow Real Qwen3 |
+| D7 | P1 | Hàng đợi ưu tiên, CSV, top 10 trên dashboard, `/scans` và `/health` lộ tiêu đề/URL của bài nháp/private (bài đích của link, ô tìm kiếm, danh sách so sánh scan) cho người chỉ có quyền đọc và cho AI agent. | `DashboardDataTest::test_pages_that_are_not_published_stay_hidden_from_readers`, `…test_scan_comparison_is_fixed…` |
+| D8 | P2 | Phần "So với lần quét trước" bị tính lại theo dữ liệu hiện tại, nên một lần phân tích thử sau đó làm thay đổi kết quả của lần quét đã xong. Nay kết quả được ghi cố định khi quét xong. | `DashboardDataTest::test_scan_comparison_is_fixed…` |
+| D9 | P2 | Nếu lệnh đổi tên cột `vector` thất bại (ví dụ khóa metadata), `dbDelta()` vẫn thêm cột `vector_data` rỗng và migration báo thành công, làm vector cũ biến mất khỏi phân tích. Nay migration dừng lại và thử lại sau; cột cũ còn sót được coi là schema chưa hoàn chỉnh. | `SchemaCompatibilityTest::test_a_failed_rename_stops_the_migration…` |
+| D10 | P2 | Gộp nhiều yêu cầu phân tích đang chờ vượt 500 trang thì phần dư bị bỏ âm thầm. Nay vượt 500 trang thì chuyển thành phân tích toàn site. | `JobChainTest::test_pending_scopes_merged_beyond_one_analysis_become_site_wide` |
+| D11 | P2 | "Phân tích thử 20 bài" mà không bài nào vào được inventory (đạt giới hạn tài liệu hoặc bị loại trừ) thì tự thành phân tích toàn site. Nay không phân tích, và dashboard báo lý do. | `JobChainTest::test_a_trial_whose_pages_are_not_inventoried…` |
+| D12 | P3 | Yêu cầu phân tích đang chờ có thể bị mất khi hai tiến trình (WP-Cron và dashboard) cùng xử lý, hoặc bị đọc từ cache cũ. Nay có khóa và đọc thẳng từ database. | `JobChainTest::test_a_pending_request_stored_by_another_process_is_started` |
+| D13 | P3 | Người chỉ có quyền đọc mở dashboard thì nhận lỗi 403 mỗi 4 giây và không thấy tiến độ. Nay chỉ theo dõi tiến độ, và giãn nhịp khi bị từ chối. | Kiểm tra code (`admin.js`) |
+
+Các mục D7–D13 đến từ review tự động của Codex trên PR #3 và một review độc lập. Mỗi mục đã được
+kiểm chứng trên code. Bảy test hồi quy mới đều **thất bại trên code trước bản sửa** và đạt sau bản sửa.
 
 Audit theo yêu cầu, không tìm thấy lỗi mới có bằng chứng ở các phần sau:
 - REST: auth, quyền, nonce, SQLi/XSS/CSRF, SSRF, rate limit.
@@ -174,7 +184,7 @@ Chưa làm, hoặc chỉ có trên giao diện thiết kế:
 | Bộ test | Kết quả | Môi trường |
 | --- | --- | --- |
 | Unit PHPUnit | 22/22 | PHP 8.3 |
-| Integration PHPUnit (WordPress thật) | **139/139** (2–3 skipped có điều kiện) | WP 7.1.3 test lib + MariaDB **10.11.14**, **11.8.9**, MySQL **8.4** |
+| Integration PHPUnit (WordPress thật) | **145/145** (2–3 skipped có điều kiện) | WP 7.1.3 test lib + MariaDB **10.11.14**, **11.8.9**, MySQL **8.4** |
 | Nâng cấp MariaDB (`upgrade-mariadb.sh`) | **34/34** | beta.3 → beta.4 trên MariaDB 11.8.9 và 10.11.14 |
 | Dashboard trong Chromium (`dashboard-e2e.mjs`) | **9/9** | WP 7.1.3, MariaDB 11.8.9. Thử 20 bài 8,5 s; toàn site 10,0 s có tạm dừng/tiếp tục; CSV 82 dòng; iPhone 13 giả lập 390 px; axe 0 lỗi |
 | Smoke cài ZIP | **26/26** × 3 | WP 7.1.3, 6.9.10, 6.5.13 |

@@ -244,6 +244,7 @@ T = {
     "Change robots, canonical or hreflang": "Thay đổi robots, canonical hoặc hreflang",
     "Change Yoast SEO data without approval": "Thay đổi dữ liệu Yoast SEO khi chưa được phê duyệt",
     "Let AI agents apply changes (off; even when allowed, a person must approve each change)": "Cho AI agent áp dụng thay đổi (đang tắt; kể cả khi bật, mỗi thay đổi vẫn phải được con người phê duyệt)",
+    "None of the requested pages could be added to the inventory (the maximum number of documents is reached, or they are excluded), so no analysis was started. Raise \"Max documents\" or check the excluded URLs in the analysis scope.": "Không trang nào được yêu cầu có thể đưa vào kiểm kê (đã đạt số tài liệu tối đa, hoặc các trang này bị loại trừ), nên chưa chạy phân tích. Hãy tăng \"Số tài liệu tối đa\" hoặc kiểm tra các URL bị loại trừ trong phạm vi phân tích.",
 }
 
 PLURALS = {

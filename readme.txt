@@ -83,6 +83,7 @@ Model weights are not bundled.
 * New SEO Dashboard in Vietnamese: system check, read-only 20-page trial, whole-site scan with a measured estimate, pause/resume/cancel, issue counts by priority, read-only evidence, comparison with the previous scan, optional AI model state.
 * New "What to do first" page: each item with page, evidence, confidence, expected benefit and action; filters by language, type and priority; CSV export.
 * Fixes: a cancel or pause during the last batch is honoured; a full scan after a waiting trial analyses the whole site; no scan starts on an incomplete database.
+* Privacy: titles and URLs of drafts, private or pending pages are shown only to people who can edit them (priority list, CSV, dashboard, scan comparison, REST). The comparison with the previous scan is fixed when the scan ends. A failed rename of the old vector column stops the migration instead of hiding stored vectors.
 * REST: GET /health, /priorities, /scans; API answers are never cached (LiteSpeed Cache).
 
 = 1.0.0-beta.3 =

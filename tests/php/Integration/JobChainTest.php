@@ -213,4 +213,78 @@ final class JobChainTest extends TestCase {
 		$this->assertSame( array( 'embeddings' ), $res->get_error_data()['missing'] );
 		$this->assertSame( array(), JobRepository::find( array( 'limit' => 5 ) ), 'no job created' );
 	}
+
+	public function test_pending_scopes_merged_beyond_one_analysis_become_site_wide() {
+		// An analysis is active, so every chained request is kept pending.
+		$this->assertIsArray( JobRepository::create( 'analyze', array( 'doc_ids' => array( 1 ) ), $this->admin, 'test' ) );
+		$this->assertNull( JobRepository::chain_analysis( array( 'doc_ids' => range( 1, 300 ) ), $this->admin ) );
+		$this->assertCount( 300, get_option( JobRepository::PENDING_OPTION )['params']['doc_ids'] );
+		$this->assertNull( JobRepository::chain_analysis( array( 'doc_ids' => range( 301, 600 ) ), $this->admin ) );
+		$params = get_option( JobRepository::PENDING_OPTION )['params'];
+		$this->assertArrayNotHasKey( 'doc_ids', $params, '600 pages exceed one scoped analysis: the whole site is analysed, none left out' );
+
+		// A pending site-wide request covers a later scoped one and keeps its own inventory.
+		update_option(
+			JobRepository::PENDING_OPTION,
+			array(
+				'params'   => array( 'source_job' => 77 ),
+				'owner_id' => $this->admin,
+				'at'       => '2026-01-01 00:00:00',
+			),
+			false
+		);
+		JobRepository::chain_analysis(
+			array(
+				'doc_ids'    => array( 5 ),
+				'pilot'      => true,
+				'source_job' => 78,
+			),
+			$this->admin
+		);
+		$this->assertSame( array( 'source_job' => 77 ), get_option( JobRepository::PENDING_OPTION )['params'] );
+	}
+
+	public function test_a_pending_request_stored_by_another_process_is_started() {
+		global $wpdb;
+		// This process cached "no pending request"; another process (WP-Cron next to an open
+		// dashboard) then stores one.
+		$this->assertFalse( get_option( JobRepository::PENDING_OPTION ) );
+		$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+			$wpdb->options,
+			array(
+				'option_name'  => JobRepository::PENDING_OPTION,
+				'option_value' => maybe_serialize(
+					array(
+						'params'   => array( 'doc_ids' => array( 3 ) ),
+						'owner_id' => $this->admin,
+						'at'       => '2026-01-01 00:00:00',
+					)
+				),
+				'autoload'     => 'no',
+			)
+		);
+		$this->assertGreaterThan( 0, JobRepository::start_pending_analysis(), 'read from the database, not the option cache' );
+		$this->assertFalse( get_option( JobRepository::PENDING_OPTION ) );
+		$this->assertSame( array( 3 ), $this->analyze_jobs()[0]['params']['doc_ids'] );
+	}
+
+	public function test_a_trial_whose_pages_are_not_inventoried_never_analyses_the_whole_site() {
+		$this->load_corpus();
+		$job = JobRepository::create(
+			'inventory',
+			array(
+				'post_ids'     => array( 987654 ),
+				'then_analyze' => true,
+				'pilot'        => true,
+			),
+			$this->admin,
+			'test'
+		);
+		JobRunner::run_to_completion( (int) $job['id'] );
+		$this->assertSame( array(), $this->analyze_jobs(), 'no analysis (an empty scope used to mean the whole site)' );
+		$this->assertFalse( get_option( JobRepository::PENDING_OPTION ) );
+		$inv = JobRepository::get( (int) $job['id'] );
+		$this->assertSame( 'failed', $inv['status'] );
+		$this->assertStringContainsString( 'no analysis was started', $inv['last_error'] );
+	}
 }

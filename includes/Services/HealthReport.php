@@ -244,7 +244,7 @@ final class HealthReport {
 			),
 			'last_scan'    => $latest,
 			'last_pilot'   => ScanHistory::latest( 'pilot' ),
-			'diff'         => $db['ready'] ? ScanHistory::diff( 10 ) : null,
+			'diff'         => $db['ready'] ? ScanHistory::diff( 10, ! Api::can_see_private() ) : null,
 			'estimate'     => ScanHistory::estimate( (int) $scope['total'] ),
 			'qwen'         => self::qwen( $db['ready'] ),
 			'permissions'  => self::permissions(),

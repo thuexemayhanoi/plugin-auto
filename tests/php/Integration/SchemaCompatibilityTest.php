@@ -183,6 +183,44 @@ final class SchemaCompatibilityTest extends TestCase {
 		$this->assertSame( 1, (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table}" ) ); // phpcs:ignore WordPress.DB
 	}
 
+	public function test_a_failed_rename_stops_the_migration_and_keeps_the_vectors() {
+		$this->real_ddl();
+		global $wpdb;
+		$table = Schema::table( 'embeddings' );
+		$wpdb->query( "DROP TABLE IF EXISTS {$table}" ); // phpcs:ignore WordPress.DB
+		$wpdb->query( str_replace( 'vector_data longblob', '`vector` longblob', Schema::definitions()['embeddings'] ) ); // phpcs:ignore WordPress.DB
+		$blob = VectorMath::pack( array( 0.6, 0.8 ) );
+		$wpdb->query( $wpdb->prepare( "INSERT INTO {$table} (document_id, chunk_id, model_key, model_id, revision, dtype, dimension, preprocess_version, content_hash, `vector`, norm, created_at) VALUES (9, 0, %s, 'm', 'r', 'fp32', 2, 'p2', %s, %s, 1, NOW())", str_repeat( 'k', 40 ), str_repeat( 'h', 64 ), $blob ) ); // phpcs:ignore WordPress.DB
+		update_option( Migrator::VERSION_OPTION, 3 );
+		delete_option( Migrator::RETRY_OPTION );
+
+		// The rename fails (as a lock wait timeout would): nothing may continue to dbDelta(), which
+		// would add an empty vector_data column and let the migration look complete.
+		$break = static function ( $sql ) {
+			return false !== strpos( $sql, 'CHANGE COLUMN `vector`' ) ? str_replace( 'CHANGE COLUMN', 'CHANGE COLUMNX', $sql ) : $sql;
+		};
+		add_filter( 'query', $break );
+		$res = Migrator::migrate();
+		remove_filter( 'query', $break );
+		$this->assertStringContainsString( 'could not rename', $res['error'] );
+		$this->assertArrayHasKey( 'embeddings', $res['failures'] );
+		$this->assertGreaterThan( 0, $res['failures']['embeddings']['errno'], 'MySQL error number recorded' );
+		$this->assertStringContainsString( 'CHANGE COLUMN', $res['failures']['embeddings']['statement'] );
+		$this->assertSame( 3, Migrator::installed_version(), 'not reported as migrated' );
+		$cols = $wpdb->get_col( "SHOW COLUMNS FROM {$table}" ); // phpcs:ignore WordPress.DB
+		$this->assertContains( 'vector', $cols );
+		$this->assertNotContains( 'vector_data', $cols, 'no empty vector_data column added next to the old one' );
+		$this->assertFalse( Environment::db_schema()['ready'] );
+		$this->assertTrue( Migrator::backing_off(), 'retried later, not on every request' );
+
+		// The next attempt completes it with the vector intact. (The retry marker is removed first:
+		// the rename's DDL commits the test transaction, which would otherwise keep it for later tests.)
+		delete_option( Migrator::RETRY_OPTION );
+		$this->assertSame( '', Migrator::migrate()['error'] );
+		$this->assertSame( Schema::VERSION, Migrator::installed_version() );
+		$this->assertSame( $blob, $wpdb->get_var( "SELECT vector_data FROM {$table} WHERE document_id = 9" ) ); // phpcs:ignore WordPress.DB
+	}
+
 	public function test_a_table_with_both_columns_is_repaired_without_losing_vectors() {
 		$this->real_ddl();
 		global $wpdb;
@@ -190,6 +228,7 @@ final class SchemaCompatibilityTest extends TestCase {
 		$wpdb->query( "ALTER TABLE {$table} ADD COLUMN `vector` longblob NULL" ); // phpcs:ignore WordPress.DB
 		$blob = VectorMath::pack( array( 1.0 ) );
 		$wpdb->query( $wpdb->prepare( "INSERT INTO {$table} (document_id, chunk_id, model_key, model_id, revision, dtype, dimension, preprocess_version, content_hash, vector_data, `vector`, created_at) VALUES (8, 0, %s, 'm', 'r', 'fp32', 1, 'p2', %s, '', %s, NOW())", str_repeat( 'k', 40 ), str_repeat( 'h', 64 ), $blob ) ); // phpcs:ignore WordPress.DB
+		$this->assertContains( 'embeddings.vector (old column, not yet moved to vector_data)', Migrator::verify()['missing_columns'], 'a leftover old column is not a complete schema' );
 		Migrator::step_4_rename_vector_column();
 		$this->assertNotContains( 'vector', $wpdb->get_col( "SHOW COLUMNS FROM {$table}" ) ); // phpcs:ignore WordPress.DB
 		$this->assertSame( $blob, $wpdb->get_var( "SELECT vector_data FROM {$table} WHERE document_id = 8" ) ); // phpcs:ignore WordPress.DB

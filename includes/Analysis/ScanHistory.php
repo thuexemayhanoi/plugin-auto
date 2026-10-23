@@ -25,6 +25,16 @@ final class ScanHistory {
 	const MAX    = 20;
 
 	/**
+	 * Finding IDs kept per side (new / resolved) for the comparison of a site-wide scan.
+	 */
+	const DIFF_IDS = 100;
+
+	/**
+	 * Order of the listed findings: verified errors first.
+	 */
+	const DIFF_ORDER = "FIELD(f.label,'verified_error','warning','risk_hypothesis','suggestion','info'), f.score DESC, f.id";
+
+	/**
 	 * Records a completed analysis job.
 	 *
 	 * @param array $job Analysis job (decoded).
@@ -35,7 +45,7 @@ final class ScanHistory {
 		$state  = isset( $job['state'] ) && is_array( $job['state'] ) ? $job['state'] : array();
 		$source = ! empty( $params['source_job'] ) ? JobRepository::get( (int) $params['source_job'] ) : null;
 		$inv    = null !== $source && is_array( $source['state'] ) ? $source['state'] : array();
-		$scope  = ! empty( $params['pilot'] ) ? 'pilot' : ( ! empty( $params['doc_ids'] ) ? 'partial' : 'site' );
+		$scope  = ! empty( $params['pilot'] ) ? 'pilot' : ( ! empty( $params['doc_ids'] ) || ! empty( $params['locale'] ) ? 'partial' : 'site' );
 		$docs   = ! empty( $params['doc_ids'] ) ? count( (array) $params['doc_ids'] ) : (int) Db::value( "SELECT COUNT(*) FROM {documents} WHERE status = 'publish' AND excluded = 0" );
 		$start  = null !== $source ? (string) $source['created_at'] : (string) $job['created_at'];
 		$end    = ! empty( $job['finished_at'] ) ? (string) $job['finished_at'] : Util::now();
@@ -60,6 +70,14 @@ final class ScanHistory {
 		if ( null !== $source && isset( $source['params']['readonly_snapshot'] ) && is_array( $source['params']['readonly_snapshot'] ) ) {
 			$ids               = isset( $source['params']['post_ids'] ) ? (array) $source['params']['post_ids'] : array();
 			$entry['readonly'] = ReadOnlyProof::compare( $source['params']['readonly_snapshot'], $ids );
+		}
+		if ( 'site' === $scope ) {
+			// The comparison is fixed now: later trials or partial analyses must not change what
+			// this scan found or resolved.
+			$from                  = (int) $entry['findings_from'];
+			$entry['new_count']    = (int) Db::value( "SELECT COUNT(*) FROM {findings} WHERE status = 'open' AND id > %d", array( $from ) );
+			$entry['new_ids']      = array_map( 'intval', Db::col( "SELECT f.id FROM {findings} f WHERE f.status = 'open' AND f.id > %d ORDER BY " . self::DIFF_ORDER . ' LIMIT %d', array( $from, self::DIFF_IDS ) ) );
+			$entry['resolved_ids'] = array_map( 'intval', Db::col( "SELECT f.id FROM {findings} f WHERE f.status = 'resolved' AND f.updated_at >= %s AND f.updated_at <= %s ORDER BY " . self::DIFF_ORDER . ' LIMIT %d', array( $start, $end, self::DIFF_IDS ) ) );
 		}
 		$all   = self::all();
 		$all[] = $entry;
@@ -95,10 +113,12 @@ final class ScanHistory {
 	/**
 	 * Difference between the latest site-wide scan and the one before it.
 	 *
-	 * @param int $limit Items listed per side.
+	 * @param int  $limit       Items listed per side.
+	 * @param bool $public_only List only findings of published pages (titles and URLs of drafts,
+	 *                          private or pending pages are for people who can edit them).
 	 * @return array|null Null until there is a site-wide scan.
 	 */
-	public static function diff( $limit = 20 ) {
+	public static function diff( $limit = 20, $public_only = false ) {
 		$site = array_values(
 			array_filter(
 				self::all(),
@@ -112,10 +132,7 @@ final class ScanHistory {
 		}
 		$latest   = $site[ count( $site ) - 1 ];
 		$previous = count( $site ) > 1 ? $site[ count( $site ) - 2 ] : null;
-		$since    = (string) $latest['started_at'];
-		$from     = isset( $latest['findings_from'] ) ? (int) $latest['findings_from'] : 0;
-		$limit    = max( 1, min( 100, (int) $limit ) );
-		$cols     = 'f.id, f.type, f.check_id, f.label, f.confidence, f.locale, f.document_id, f.target_id, d.title, d.url';
+		$limit    = max( 1, min( self::DIFF_IDS, (int) $limit ) );
 		$deltas   = array();
 		foreach ( (array) $latest['priorities'] as $p => $n ) {
 			$before       = null !== $previous && isset( $previous['priorities'][ $p ] ) ? (int) $previous['priorities'][ $p ] : 0;
@@ -128,11 +145,36 @@ final class ScanHistory {
 			'latest'         => $latest,
 			'previous'       => $previous,
 			'priorities'     => $deltas,
-			'new_count'      => null === $previous ? null : (int) Db::value( "SELECT COUNT(*) FROM {findings} WHERE status = 'open' AND id > %d", array( $from ) ),
+			'new_count'      => null === $previous || ! isset( $latest['new_count'] ) ? null : (int) $latest['new_count'],
 			'resolved_count' => null === $previous ? null : (int) $latest['resolved'],
-			'new'            => null === $previous ? array() : Db::rows( "SELECT {$cols} FROM {findings} f LEFT JOIN {documents} d ON d.id = f.document_id WHERE f.status = 'open' AND f.id > %d ORDER BY FIELD(f.label,'verified_error','warning','risk_hypothesis','suggestion','info'), f.score DESC, f.id LIMIT %d", array( $from, $limit ) ),
-			'resolved'       => null === $previous ? array() : Db::rows( "SELECT {$cols} FROM {findings} f LEFT JOIN {documents} d ON d.id = f.document_id WHERE f.status = 'resolved' AND f.updated_at >= %s ORDER BY FIELD(f.label,'verified_error','warning','risk_hypothesis','suggestion','info'), f.score DESC, f.id LIMIT %d", array( $since, $limit ) ),
+			'new'            => null === $previous || ! isset( $latest['new_ids'] ) ? array() : self::findings( (array) $latest['new_ids'], $limit, $public_only ),
+			'resolved'       => null === $previous || ! isset( $latest['resolved_ids'] ) ? array() : self::findings( (array) $latest['resolved_ids'], $limit, $public_only ),
 		);
+	}
+
+	/**
+	 * Findings recorded by a scan, in their recorded order, with the page they concern.
+	 *
+	 * @param int[] $ids         Finding IDs.
+	 * @param int   $limit       Maximum listed.
+	 * @param bool  $public_only Only findings of published pages.
+	 * @return array[]
+	 */
+	private static function findings( array $ids, $limit, $public_only ) {
+		$ids = array_slice( array_values( array_unique( array_filter( array_map( 'intval', $ids ) ) ) ), 0, self::DIFF_IDS );
+		if ( array() === $ids ) {
+			return array();
+		}
+		$public = $public_only ? " AND d.status = 'publish'" : '';
+		$rows   = Db::rows( 'SELECT f.id, f.type, f.check_id, f.label, f.confidence, f.locale, f.document_id, f.target_id, d.title, d.url FROM {findings} f LEFT JOIN {documents} d ON d.id = f.document_id WHERE f.id IN (' . Db::in( $ids ) . ')' . $public, $ids );
+		$pos    = array_flip( $ids );
+		usort(
+			$rows,
+			static function ( $a, $b ) use ( $pos ) {
+				return $pos[ (int) $a['id'] ] - $pos[ (int) $b['id'] ];
+			}
+		);
+		return array_slice( $rows, 0, (int) $limit );
 	}
 
 	/**

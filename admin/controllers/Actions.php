@@ -181,10 +181,11 @@ final class Actions {
 			return $g;
 		}
 		$filters = array(
-			'locale'   => sanitize_key( self::p( 'locale' ) ),
-			'category' => sanitize_key( self::p( 'category' ) ),
-			'priority' => (int) self::p( 'priority' ),
-			'search'   => self::p( 'search' ),
+			'locale'      => sanitize_key( self::p( 'locale' ) ),
+			'category'    => sanitize_key( self::p( 'category' ) ),
+			'priority'    => (int) self::p( 'priority' ),
+			'search'      => self::p( 'search' ),
+			'public_only' => ! Api::can_see_private(),
 		);
 		AuditLog::record( 'priorities.exported', 'report', 0, 'ok', $filters );
 		nocache_headers();

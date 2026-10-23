@@ -1,8 +1,8 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Semantic SEO Engine VI–EN 1.0.0-beta.3\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/plugin-auto\n"
+"Project-Id-Version: Semantic SEO Engine VI–EN 1.0.0-beta.4\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/semantic-seo-engine-vi-en\n"
 "Language: vi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -44,7 +44,7 @@ msgstr "Bạn không có quyền thực hiện thao tác này."
 msgid "Job #%1$d (%2$s) queued. Progress is shown under Jobs."
 msgstr "Đã xếp hàng tác vụ #%1$d (%2$s). Xem tiến độ tại trang Tác vụ."
 
-#: admin/controllers/Actions.php:127 admin/controllers/Actions.php:718
+#: admin/controllers/Actions.php:127 admin/controllers/Actions.php:719
 msgid "No published posts in scope."
 msgstr "Không có bài đã xuất bản nào trong phạm vi."
 
@@ -70,171 +70,171 @@ msgstr "Không hoàn thiện được database: %1$s %2$s"
 msgid "Database ready (schema %d). No data was deleted."
 msgstr "Database đã sẵn sàng (schema %d). Không có dữ liệu nào bị xóa."
 
-#: admin/controllers/Actions.php:207
+#: admin/controllers/Actions.php:208
 msgid "Job updated."
 msgstr "Đã cập nhật tác vụ."
 
-#: admin/controllers/Actions.php:217
+#: admin/controllers/Actions.php:218
 msgid "Review saved."
 msgstr "Đã lưu đánh giá."
 
-#: admin/controllers/Actions.php:234
+#: admin/controllers/Actions.php:235
 msgid "Preview created. Review the exact diff under Audit / Undo / Rollback → Proposals before approving."
 msgstr "Đã tạo bản xem trước. Hãy xem chính xác phần thay đổi tại Nhật ký / Hoàn tác → Đề xuất trước khi phê duyệt."
 
-#: admin/controllers/Actions.php:244
+#: admin/controllers/Actions.php:245
 msgid "Tick the confirmation box after reviewing the exact diff."
 msgstr "Hãy đánh dấu ô xác nhận sau khi đã xem chính xác phần thay đổi."
 
-#: admin/controllers/Actions.php:247
+#: admin/controllers/Actions.php:248
 msgid "Approved. The change can now be applied (by you, or by an agent if you allowed it)."
 msgstr "Đã phê duyệt. Thay đổi giờ có thể được áp dụng (bởi bạn, hoặc bởi agent nếu bạn cho phép)."
 
-#: admin/controllers/Actions.php:264
+#: admin/controllers/Actions.php:265
 msgid "Proposal rejected."
 msgstr "Đã từ chối đề xuất."
 
-#: admin/controllers/Actions.php:264
+#: admin/controllers/Actions.php:265
 msgid "Proposal cannot be rejected in its current state."
 msgstr "Không thể từ chối đề xuất ở trạng thái hiện tại."
 
 #. translators: %d: change id
-#: admin/controllers/Actions.php:284
+#: admin/controllers/Actions.php:285
 #, php-format
 msgid "Change #%d applied and verified by readback."
 msgstr "Đã áp dụng thay đổi #%d và xác minh bằng cách đọc lại."
 
-#: admin/controllers/Actions.php:294
+#: admin/controllers/Actions.php:295
 msgid "Confirm the rollback first."
 msgstr "Hãy xác nhận hoàn tác trước."
 
 #. translators: %s: exact|surgical
-#: admin/controllers/Actions.php:301
+#: admin/controllers/Actions.php:302
 #, php-format
 msgid "Rolled back (%s) and verified."
 msgstr "Đã hoàn tác (%s) và xác minh."
 
 #. translators: %d: approval id
-#: admin/controllers/Actions.php:312
+#: admin/controllers/Actions.php:313
 #, php-format
 msgid "Rollback approval #%d issued (single use, expiring)."
 msgstr "Đã cấp phê duyệt hoàn tác #%d (dùng một lần, có hạn)."
 
-#: admin/controllers/Actions.php:329
+#: admin/controllers/Actions.php:330
 msgid "Approval revoked."
 msgstr "Đã thu hồi phê duyệt."
 
-#: admin/controllers/Actions.php:329
+#: admin/controllers/Actions.php:330
 msgid "Approval is not active."
 msgstr "Phê duyệt không còn hiệu lực."
 
-#: admin/controllers/Actions.php:339
+#: admin/controllers/Actions.php:340
 msgid "Lock saved. It applies to WP Admin and agents alike."
 msgstr "Đã lưu khóa. Khóa áp dụng như nhau cho WP Admin và agent."
 
-#: admin/controllers/Actions.php:349
+#: admin/controllers/Actions.php:350
 msgid "Lock removed."
 msgstr "Đã gỡ khóa."
 
-#: admin/controllers/Actions.php:364
+#: admin/controllers/Actions.php:365
 msgid "Cluster unlocked."
 msgstr "Đã mở khóa cụm."
 
-#: admin/controllers/Actions.php:376
+#: admin/controllers/Actions.php:377
 msgid "Locked."
 msgstr "Đã khóa."
 
-#: admin/controllers/Actions.php:397
+#: admin/controllers/Actions.php:398
 msgid "Editorial settings saved (plugin data only; WordPress content unchanged)."
 msgstr "Đã lưu thiết lập biên tập (chỉ dữ liệu của plugin; nội dung WordPress không thay đổi)."
 
-#: admin/controllers/Actions.php:438
+#: admin/controllers/Actions.php:439
 msgid "To choose \"delete all data on uninstall\", type DELETE in the confirmation field."
 msgstr "Để chọn \"xóa toàn bộ dữ liệu khi gỡ cài đặt\", hãy gõ DELETE vào ô xác nhận."
 
-#: admin/controllers/Actions.php:462
+#: admin/controllers/Actions.php:463
 msgid "Settings saved."
 msgstr "Đã lưu cài đặt."
 
-#: admin/controllers/Actions.php:481
+#: admin/controllers/Actions.php:482
 msgid "Agent roles are available."
 msgstr "Các vai trò agent đã sẵn sàng."
 
-#: admin/controllers/Actions.php:501
+#: admin/controllers/Actions.php:502
 msgid "User not found."
 msgstr "Không tìm thấy người dùng."
 
-#: admin/controllers/Actions.php:504
+#: admin/controllers/Actions.php:505
 msgid "Use a dedicated, low-privilege account for agents — administrators and your own account cannot become agent accounts."
 msgstr "Hãy dùng tài khoản riêng, quyền thấp cho agent — tài khoản quản trị viên và tài khoản của chính bạn không thể trở thành tài khoản agent."
 
-#: admin/controllers/Actions.php:510
+#: admin/controllers/Actions.php:511
 msgid "Agent role removed (user is now a subscriber)."
 msgstr "Đã gỡ vai trò agent (người dùng giờ là Người đăng ký)."
 
-#: admin/controllers/Actions.php:513
+#: admin/controllers/Actions.php:514
 msgid "Create the agent roles first."
 msgstr "Hãy tạo các vai trò agent trước."
 
-#: admin/controllers/Actions.php:518
+#: admin/controllers/Actions.php:519
 msgid "Agent role assigned. Create an Application Password on that user’s profile and give it only to the agent."
 msgstr "Đã gán vai trò agent. Hãy tạo Mật khẩu ứng dụng trong hồ sơ người dùng đó và chỉ giao cho agent."
 
-#: admin/controllers/Actions.php:574
+#: admin/controllers/Actions.php:575
 msgid "Upload failed."
 msgstr "Tải lên thất bại."
 
-#: admin/controllers/Actions.php:578
+#: admin/controllers/Actions.php:579
 msgid "Only .csv files are accepted."
 msgstr "Chỉ chấp nhận tệp .csv."
 
-#: admin/controllers/Actions.php:581 includes/Matrix/CsvReader.php:32
+#: admin/controllers/Actions.php:582 includes/Matrix/CsvReader.php:32
 msgid "The file is larger than 5 MB."
 msgstr "Tệp lớn hơn 5 MB."
 
-#: admin/controllers/Actions.php:626
+#: admin/controllers/Actions.php:627
 msgid "Preview ready below. Nothing has been written yet."
 msgstr "Bản xem trước ở bên dưới. Chưa có gì được ghi."
 
 #. translators: %d: number of rows
-#: admin/controllers/Actions.php:646
+#: admin/controllers/Actions.php:647
 #, php-format
 msgid "Import applied to %d documents (plugin fields only)."
 msgstr "Đã nhập cho %d tài liệu (chỉ các trường của plugin)."
 
 #. translators: 1: valid rows, 2: total rows, 3: matched rows
-#: admin/controllers/Actions.php:674
+#: admin/controllers/Actions.php:675
 #, php-format
 msgid "%1$d of %2$d rows valid, %3$d matched to inventoried URLs."
 msgstr "%1$d/%2$d dòng hợp lệ, %3$d dòng khớp với URL đã kiểm kê."
 
-#: admin/controllers/Actions.php:675
+#: admin/controllers/Actions.php:676
 msgid "Dry run only:"
 msgstr "Chạy thử (không ghi):"
 
-#: admin/controllers/Actions.php:675
+#: admin/controllers/Actions.php:676
 msgid "Imported:"
 msgstr "Đã nhập:"
 
-#: admin/controllers/Actions.php:690
+#: admin/controllers/Actions.php:691
 msgid "Import deleted."
 msgstr "Đã xóa lần nhập."
 
-#: admin/controllers/Actions.php:702
+#: admin/controllers/Actions.php:703
 msgid "Scope saved."
 msgstr "Đã lưu phạm vi."
 
 #. translators: %d: number of posts
-#: admin/controllers/Actions.php:729
+#: admin/controllers/Actions.php:730
 #, php-format
 msgid "Read-only pilot started on the %d most recently updated posts."
 msgstr "Đã bắt đầu chạy thử chỉ-đọc trên %d bài cập nhật gần nhất."
 
-#: admin/controllers/Actions.php:737
+#: admin/controllers/Actions.php:738
 msgid "Setup finished. Read-only mode stays on; nothing changes on the site without your approval."
 msgstr "Hoàn tất thiết lập. Chế độ chỉ-đọc vẫn bật; không có gì trên website thay đổi nếu bạn chưa phê duyệt."
 
-#: admin/controllers/Actions.php:739
+#: admin/controllers/Actions.php:740
 msgid "Unknown step."
 msgstr "Bước không hợp lệ."
 
@@ -950,7 +950,7 @@ msgid "I understand about %s will be downloaded to this browser from huggingface
 msgstr "Tôi hiểu khoảng %s sẽ được tải về trình duyệt này từ huggingface.co."
 
 #. translators: %s: size
-#: admin/controllers/JobsPage.php:163 admin/controllers/OverviewPage.php:446
+#: admin/controllers/JobsPage.php:163 admin/controllers/OverviewPage.php:451
 msgid "Check this device"
 msgstr "Kiểm tra thiết bị này"
 
@@ -1340,7 +1340,7 @@ msgstr "Số dòng / khớp"
 msgid "SEO Dashboard"
 msgstr "Bảng điều khiển SEO"
 
-#: admin/controllers/Menu.php:30 admin/controllers/OverviewPage.php:407 admin/controllers/PrioritiesPage.php:43
+#: admin/controllers/Menu.php:30 admin/controllers/OverviewPage.php:412 admin/controllers/PrioritiesPage.php:43
 msgid "What to do first"
 msgstr "Việc nên làm trước"
 
@@ -1368,165 +1368,165 @@ msgstr "Semantic SEO"
 msgid "You do not have permission to view this page."
 msgstr "Bạn không có quyền xem trang này."
 
-#: admin/controllers/Menu.php:113
+#: admin/controllers/Menu.php:115
 msgid "Are you sure?"
 msgstr "Bạn chắc chắn chứ?"
 
-#: admin/controllers/Menu.php:114
+#: admin/controllers/Menu.php:116
 msgid "Processing…"
 msgstr "Đang xử lý…"
 
-#: admin/controllers/Menu.php:115 admin/controllers/Ui.php:138
+#: admin/controllers/Menu.php:117 admin/controllers/Ui.php:138
 msgid "Completed"
 msgstr "Hoàn thành"
 
-#: admin/controllers/Menu.php:116 admin/controllers/Ui.php:139
+#: admin/controllers/Menu.php:118 admin/controllers/Ui.php:139
 msgid "Failed"
 msgstr "Thất bại"
 
-#: admin/controllers/Menu.php:117
+#: admin/controllers/Menu.php:119
 msgid "Job finished — reload to see results."
 msgstr "Tác vụ đã xong — tải lại trang để xem kết quả."
 
-#: admin/controllers/Menu.php:118
+#: admin/controllers/Menu.php:120
 msgid "Copied to clipboard."
 msgstr "Đã sao chép vào bộ nhớ tạm."
 
-#: admin/controllers/Menu.php:119
+#: admin/controllers/Menu.php:121
 msgid "Network error; will retry."
 msgstr "Lỗi mạng; sẽ thử lại."
 
-#: admin/controllers/Menu.php:120
+#: admin/controllers/Menu.php:122
 msgid "Suitable: WebGPU is available, the model can run fast in this browser."
 msgstr "Phù hợp: trình duyệt có WebGPU, mô hình chạy nhanh trên trình duyệt này."
 
-#: admin/controllers/Menu.php:121
+#: admin/controllers/Menu.php:123
 msgid "Works but slowly: no usable WebGPU, the model would run on the CPU (WebAssembly). Fine for a few pages; for the whole site use a desktop browser with WebGPU."
 msgstr "Chạy được nhưng chậm: không dùng được WebGPU, mô hình sẽ chạy bằng CPU (WebAssembly). Đủ cho vài trang; với toàn website nên dùng trình duyệt máy tính có WebGPU."
 
-#: admin/controllers/Menu.php:122
+#: admin/controllers/Menu.php:124
 msgid "Not compatible: this browser supports neither WebGPU nor WebAssembly. The SEO analysis still works without the model."
 msgstr "Không tương thích: trình duyệt này không hỗ trợ WebGPU lẫn WebAssembly. Phân tích SEO vẫn chạy bình thường khi không có mô hình."
 
-#: admin/controllers/Menu.php:123
+#: admin/controllers/Menu.php:125
 msgid "iPhone/iPad: possible but slow and limited by memory; keep the screen on."
 msgstr "iPhone/iPad: chạy được nhưng chậm và bị giới hạn bộ nhớ; hãy giữ màn hình luôn sáng."
 
-#: admin/controllers/Menu.php:124 admin/controllers/Menu.php:158
+#: admin/controllers/Menu.php:126 admin/controllers/Menu.php:160
 msgid "Device memory"
 msgstr "Bộ nhớ thiết bị"
 
-#: admin/controllers/Menu.php:125
+#: admin/controllers/Menu.php:127
 msgid "CPU threads"
 msgstr "Luồng CPU"
 
-#: admin/controllers/Menu.php:143
+#: admin/controllers/Menu.php:145
 msgid "Unsupported on this device: neither WebGPU nor WebAssembly is usable here. The lexical tier keeps working."
 msgstr "Thiết bị này không hỗ trợ: không dùng được WebGPU lẫn WebAssembly. Tầng từ vựng vẫn hoạt động."
 
-#: admin/controllers/Menu.php:144
+#: admin/controllers/Menu.php:146
 msgid "Please confirm the download first."
 msgstr "Vui lòng xác nhận việc tải xuống trước."
 
-#: admin/controllers/Menu.php:145
+#: admin/controllers/Menu.php:147
 msgid "Downloading and verifying model files…"
 msgstr "Đang tải và kiểm tra tệp mô hình…"
 
-#: admin/controllers/Menu.php:146
+#: admin/controllers/Menu.php:148
 msgid "Model loaded"
 msgstr "Đã tải mô hình"
 
-#: admin/controllers/Menu.php:147
+#: admin/controllers/Menu.php:149
 msgid "Self-test passed: similarities match the model card reference within tolerance."
 msgstr "Tự kiểm thử đạt: độ tương đồng khớp giá trị tham chiếu của model card trong ngưỡng cho phép."
 
-#: admin/controllers/Menu.php:148
+#: admin/controllers/Menu.php:150
 msgid "Self-test failed: results differ from the reference; vectors will not be uploaded."
 msgstr "Tự kiểm thử không đạt: kết quả khác giá trị tham chiếu; vector sẽ không được gửi lên."
 
-#: admin/controllers/Menu.php:149
+#: admin/controllers/Menu.php:151
 msgid "checked by the server, max Δ"
 msgstr "máy chủ đã kiểm tra, Δ tối đa"
 
-#: admin/controllers/Menu.php:150
+#: admin/controllers/Menu.php:152
 msgid "Queue empty — nothing to embed."
 msgstr "Hàng đợi trống — không có gì để nhúng."
 
-#: admin/controllers/Menu.php:151
+#: admin/controllers/Menu.php:153
 msgid "Keep this tab open and the device awake; closing the tab or locking an iPhone interrupts processing (claimed items are returned to the queue automatically)."
 msgstr "Giữ tab này mở và thiết bị không ngủ; đóng tab hoặc khóa màn hình iPhone sẽ làm gián đoạn xử lý (các mục đã nhận tự động được trả lại hàng đợi)."
 
-#: admin/controllers/Menu.php:152
+#: admin/controllers/Menu.php:154
 msgid "The browser runtime files are not bundled in this build; browser inference is unavailable."
 msgstr "Bản build này không kèm tệp runtime cho trình duyệt; không thể suy luận trong trình duyệt."
 
-#: admin/controllers/Menu.php:153 admin/controllers/SemanticPage.php:87
+#: admin/controllers/Menu.php:155 admin/controllers/SemanticPage.php:87
 msgid "yes"
 msgstr "có"
 
-#: admin/controllers/Menu.php:154 admin/controllers/SemanticPage.php:87
+#: admin/controllers/Menu.php:156 admin/controllers/SemanticPage.php:87
 msgid "no"
 msgstr "không"
 
-#: admin/controllers/Menu.php:155
+#: admin/controllers/Menu.php:157
 msgid "no shader-f16"
 msgstr "không có shader-f16"
 
-#: admin/controllers/Menu.php:156
+#: admin/controllers/Menu.php:158
 msgid "Threads"
 msgstr "Luồng"
 
-#: admin/controllers/Menu.php:157
+#: admin/controllers/Menu.php:159
 msgid "1 (page is not cross-origin isolated)"
 msgstr "1 (trang không ở chế độ cross-origin isolated)"
 
-#: admin/controllers/Menu.php:159
+#: admin/controllers/Menu.php:161
 msgid "yes — may be too slow or run out of memory; keep the screen on"
 msgstr "có — có thể quá chậm hoặc hết bộ nhớ; hãy giữ màn hình luôn sáng"
 
-#: admin/controllers/Menu.php:160
+#: admin/controllers/Menu.php:162
 msgid "WebAssembly (CPU) — slower"
 msgstr "WebAssembly (CPU) — chậm hơn"
 
 #. translators: %s: precision such as q4f16
-#: admin/controllers/Menu.php:162
+#: admin/controllers/Menu.php:164
 #, php-format
 msgid "No WebGPU with 16-bit shaders on this device: %s runs on the CPU (WebAssembly), which is slower. For many pages, a desktop browser with WebGPU or the private worker is faster."
 msgstr "Thiết bị này không có WebGPU hỗ trợ shader 16-bit: %s sẽ chạy bằng CPU (WebAssembly), chậm hơn. Với nhiều trang, trình duyệt máy tính có WebGPU hoặc máy xử lý riêng sẽ nhanh hơn."
 
-#: admin/controllers/Menu.php:163
+#: admin/controllers/Menu.php:165
 msgid "Worker error:"
 msgstr "Lỗi worker:"
 
-#: admin/controllers/Menu.php:164
+#: admin/controllers/Menu.php:166
 msgid "The model profile changed on the server; reload this page."
 msgstr "Hồ sơ mô hình trên máy chủ đã thay đổi; hãy tải lại trang."
 
 #. translators: 1: stored, 2: rejected, 3: milliseconds, 4: running total
-#: admin/controllers/Menu.php:166
+#: admin/controllers/Menu.php:168
 #, php-format
 msgid "%1$d stored, %2$d rejected (%3$d ms) — total %4$d"
 msgstr "Đã lưu %1$d, từ chối %2$d (%3$d ms) — tổng %4$d"
 
-#: admin/controllers/Menu.php:167
+#: admin/controllers/Menu.php:169
 msgid "from cache"
 msgstr "từ bộ nhớ đệm"
 
 #. translators: 1: free browser storage, 2: model download size
-#: admin/controllers/Menu.php:169
+#: admin/controllers/Menu.php:171
 #, php-format
 msgid "Browser storage has %1$s free but the model needs %2$s: it will work, but may be downloaded again next time."
 msgstr "Bộ nhớ trình duyệt còn trống %1$s nhưng mô hình cần %2$s: vẫn chạy được, nhưng lần sau có thể phải tải lại."
 
-#: admin/controllers/Menu.php:170
+#: admin/controllers/Menu.php:172
 msgid "Stopped; claimed items were returned to the queue."
 msgstr "Đã dừng; các mục đã nhận được trả lại hàng đợi."
 
-#: admin/controllers/Menu.php:188
+#: admin/controllers/Menu.php:190
 msgid "Agent-native WordPress Abilities are unavailable on this WordPress version (6.9+ required). The REST API and all modules still work."
 msgstr "WordPress Abilities cho agent không có trên phiên bản WordPress này (cần 6.9+). REST API và mọi mô-đun vẫn hoạt động."
 
-#: admin/controllers/Menu.php:190
+#: admin/controllers/Menu.php:192
 msgid "MCP exposure is enabled but the official MCP Adapter plugin is not active, so no MCP client can connect."
 msgstr "Đã bật MCP nhưng plugin MCP Adapter chính thức chưa kích hoạt, nên không client MCP nào kết nối được."
 
@@ -1797,78 +1797,78 @@ msgstr "Dữ kiện đã kiểm tra trong database của bạn: nên sửa trư�
 msgid "See details"
 msgstr "Xem chi tiết"
 
-#: admin/controllers/OverviewPage.php:407
+#: admin/controllers/OverviewPage.php:412
 msgid "Ordered by verified errors first, then likely problems, linking work and editorial improvements. A work plan, not a ranking prediction."
 msgstr "Sắp xếp: lỗi đã xác minh trước, sau đó là vấn đề có khả năng xảy ra, việc liên kết và cải thiện biên tập. Đây là kế hoạch làm việc, không phải dự đoán thứ hạng."
 
 #. translators: %s: number of items
-#: admin/controllers/OverviewPage.php:410
+#: admin/controllers/OverviewPage.php:415
 #, php-format
 msgid "See all %s items, filter and export"
 msgstr "Xem tất cả %s mục, lọc và xuất báo cáo"
 
-#: admin/controllers/OverviewPage.php:424
+#: admin/controllers/OverviewPage.php:429
 msgid "Compared with the previous scan"
 msgstr "So với lần quét trước"
 
-#: admin/controllers/OverviewPage.php:426
+#: admin/controllers/OverviewPage.php:431
 msgid "This is the first full scan: the next one will be compared with it."
 msgstr "Đây là lần quét toàn site đầu tiên: lần sau sẽ được so sánh với lần này."
 
 #. translators: 1: new findings, 2: resolved findings
-#: admin/controllers/OverviewPage.php:430
+#: admin/controllers/OverviewPage.php:435
 #, php-format
 msgid "%1$d new findings, %2$d resolved since the previous scan."
 msgstr "%1$d phát hiện mới, %2$d đã hết kể từ lần quét trước."
 
-#: admin/controllers/OverviewPage.php:445
+#: admin/controllers/OverviewPage.php:450
 msgid "AI model Qwen3-Embedding-0.6B (optional)"
 msgstr "Mô hình AI Qwen3-Embedding-0.6B (tùy chọn)"
 
-#: admin/controllers/OverviewPage.php:447
+#: admin/controllers/OverviewPage.php:452
 msgid "The check reads your browser capabilities only (WebGPU, WebAssembly, memory); nothing is downloaded. No paid AI service or API key is used."
 msgstr "Phép kiểm tra chỉ đọc khả năng của trình duyệt (WebGPU, WebAssembly, bộ nhớ); không tải gì về. Không dùng dịch vụ AI trả phí hay API key nào."
 
-#: admin/controllers/OverviewPage.php:448
+#: admin/controllers/OverviewPage.php:453
 msgid "Start the model on this device"
 msgstr "Chạy mô hình trên thiết bị này"
 
-#: admin/controllers/OverviewPage.php:458
+#: admin/controllers/OverviewPage.php:463
 msgid "What the plugin may do"
 msgstr "Plugin được phép làm gì"
 
-#: admin/controllers/OverviewPage.php:462
+#: admin/controllers/OverviewPage.php:467
 msgid "What it never does on its own"
 msgstr "Những việc plugin không bao giờ tự làm"
 
-#: admin/controllers/OverviewPage.php:476
+#: admin/controllers/OverviewPage.php:481
 msgid "Scope of the analysis (advanced)"
 msgstr "Phạm vi phân tích (nâng cao)"
 
-#: admin/controllers/OverviewPage.php:479
+#: admin/controllers/OverviewPage.php:484
 msgid "Content types"
 msgstr "Loại nội dung"
 
-#: admin/controllers/OverviewPage.php:486
+#: admin/controllers/OverviewPage.php:491
 msgid "Exclude URL path fragments (one per line)"
 msgstr "Loại trừ URL chứa đoạn đường dẫn (mỗi dòng một mục)"
 
-#: admin/controllers/OverviewPage.php:487 admin/controllers/SettingsPage.php:46
+#: admin/controllers/OverviewPage.php:492 admin/controllers/SettingsPage.php:46
 msgid "Batch size"
 msgstr "Kích thước lô"
 
-#: admin/controllers/OverviewPage.php:487 admin/controllers/SettingsPage.php:48
+#: admin/controllers/OverviewPage.php:492 admin/controllers/SettingsPage.php:48
 msgid "Max documents"
 msgstr "Số tài liệu tối đa"
 
 #. translators: 1: posts, 2: terms
-#: admin/controllers/OverviewPage.php:488
+#: admin/controllers/OverviewPage.php:493
 #, php-format
 msgid "In scope now: %1$d posts/pages and %2$d category archives (real database counts)."
 msgstr "Hiện trong phạm vi: %1$d bài viết/trang và %2$d trang chuyên mục (đếm thật từ cơ sở dữ liệu)."
 
 #. translators: 1: posts, 2: terms
-#: admin/controllers/OverviewPage.php:489
+#: admin/controllers/OverviewPage.php:494
 msgid "Save scope"
 msgstr "Lưu phạm vi"
 
@@ -2828,408 +2828,408 @@ msgstr "Hoàn tác một thay đổi"
 msgid "Restores a change made by this plugin. Non-interactive callers need a separate human-issued rollback approval."
 msgstr "Khôi phục thay đổi do plugin này thực hiện. Bên gọi không tương tác cần một phê duyệt hoàn tác riêng do con người cấp."
 
-#: includes/Analysis/PriorityQueue.php:307
+#: includes/Analysis/PriorityQueue.php:314
 msgid "Edit the post and point the link to a live page, or remove it."
 msgstr "Sửa bài: trỏ liên kết tới một trang còn hoạt động, hoặc gỡ liên kết."
 
-#: includes/Analysis/PriorityQueue.php:308
+#: includes/Analysis/PriorityQueue.php:315
 msgid "Readers and search engines no longer reach an error page, and the link passes value again."
 msgstr "Người đọc và công cụ tìm kiếm không còn gặp trang lỗi, liên kết lại có giá trị."
 
-#: includes/Analysis/PriorityQueue.php:314
+#: includes/Analysis/PriorityQueue.php:321
 msgid "Write a title that names the topic of the page."
 msgstr "Viết tiêu đề nêu rõ chủ đề của trang."
 
-#: includes/Analysis/PriorityQueue.php:315
+#: includes/Analysis/PriorityQueue.php:322
 msgid "Search results and browser tabs show what the page is about."
 msgstr "Kết quả tìm kiếm và tab trình duyệt cho biết trang nói về gì."
 
-#: includes/Analysis/PriorityQueue.php:318
+#: includes/Analysis/PriorityQueue.php:325
 msgid "Check the canonical in the SEO plugin: each language version should normally point to itself and be linked with hreflang."
 msgstr "Kiểm tra canonical trong plugin SEO: thông thường mỗi phiên bản ngôn ngữ trỏ canonical về chính nó và được nối với nhau bằng hreflang."
 
-#: includes/Analysis/PriorityQueue.php:319
+#: includes/Analysis/PriorityQueue.php:326
 msgid "The page can be indexed in its own language instead of being folded into the other one."
 msgstr "Trang được lập chỉ mục bằng ngôn ngữ của nó thay vì bị gộp vào phiên bản ngôn ngữ kia."
 
-#: includes/Analysis/PriorityQueue.php:322
+#: includes/Analysis/PriorityQueue.php:329
 msgid "Give each page a title that says how it differs from the other one."
 msgstr "Đặt cho mỗi trang một tiêu đề nói rõ điểm khác với trang kia."
 
-#: includes/Analysis/PriorityQueue.php:323
+#: includes/Analysis/PriorityQueue.php:330
 msgid "Search engines and readers can tell the pages apart."
 msgstr "Công cụ tìm kiếm và người đọc phân biệt được các trang."
 
-#: includes/Analysis/PriorityQueue.php:326
+#: includes/Analysis/PriorityQueue.php:333
 msgid "Confirm the canonical is intentional; if not, correct it in the SEO plugin."
 msgstr "Xác nhận canonical là có chủ ý; nếu không, sửa lại trong plugin SEO."
 
-#: includes/Analysis/PriorityQueue.php:327
+#: includes/Analysis/PriorityQueue.php:334
 msgid "The page you want indexed is the one search engines keep."
 msgstr "Trang bạn muốn được lập chỉ mục chính là trang công cụ tìm kiếm giữ lại."
 
-#: includes/Analysis/PriorityQueue.php:330
+#: includes/Analysis/PriorityQueue.php:337
 msgid "Check that the post is assigned to the right language."
 msgstr "Kiểm tra bài đã được gán đúng ngôn ngữ chưa."
 
-#: includes/Analysis/PriorityQueue.php:331
+#: includes/Analysis/PriorityQueue.php:338
 msgid "Visitors of each language find content in their language; hreflang stays consistent."
 msgstr "Người đọc mỗi ngôn ngữ thấy nội dung đúng ngôn ngữ của mình; hreflang nhất quán."
 
-#: includes/Analysis/PriorityQueue.php:334
+#: includes/Analysis/PriorityQueue.php:341
 msgid "Compare the two pages; make each one answer a different need, or keep one as the main page."
 msgstr "So sánh hai trang; để mỗi trang đáp ứng một nhu cầu khác nhau, hoặc chọn một trang làm trang chính."
 
-#: includes/Analysis/PriorityQueue.php:335 includes/Analysis/PriorityQueue.php:415
+#: includes/Analysis/PriorityQueue.php:342 includes/Analysis/PriorityQueue.php:422
 msgid "Fewer pages competing with each other for the same searches."
 msgstr "Ít trang cạnh tranh nhau cho cùng một truy vấn hơn."
 
-#: includes/Analysis/PriorityQueue.php:338
+#: includes/Analysis/PriorityQueue.php:345
 msgid "Add a link to this page from one or two related posts (see the link suggestions)."
 msgstr "Thêm liên kết tới trang này từ một hai bài liên quan (xem gợi ý liên kết)."
 
-#: includes/Analysis/PriorityQueue.php:339
+#: includes/Analysis/PriorityQueue.php:346
 msgid "Readers and crawlers can reach the page from the rest of the site."
 msgstr "Người đọc và bot tìm kiếm đến được trang này từ các phần khác của website."
 
-#: includes/Analysis/PriorityQueue.php:342
+#: includes/Analysis/PriorityQueue.php:349
 msgid "Update the link to the final URL."
 msgstr "Cập nhật liên kết về URL cuối cùng."
 
-#: includes/Analysis/PriorityQueue.php:343
+#: includes/Analysis/PriorityQueue.php:350
 msgid "One redirect less for readers and crawlers."
 msgstr "Bớt một lần chuyển hướng cho người đọc và bot tìm kiếm."
 
-#: includes/Analysis/PriorityQueue.php:346
+#: includes/Analysis/PriorityQueue.php:353
 msgid "Open the link once; fix it if it does not lead to the intended page."
 msgstr "Mở thử liên kết; sửa nếu nó không dẫn tới đúng trang."
 
-#: includes/Analysis/PriorityQueue.php:347
+#: includes/Analysis/PriorityQueue.php:354
 msgid "No hidden broken links."
 msgstr "Không còn liên kết hỏng bị ẩn."
 
-#: includes/Analysis/PriorityQueue.php:350
+#: includes/Analysis/PriorityQueue.php:357
 msgid "Check whether the page should really be noindex; if so, consider linking to an indexable page instead."
 msgstr "Kiểm tra trang có thật sự cần noindex không; nếu có, cân nhắc liên kết tới một trang được lập chỉ mục."
 
-#: includes/Analysis/PriorityQueue.php:351
+#: includes/Analysis/PriorityQueue.php:358
 msgid "Internal links point to pages that can appear in search."
 msgstr "Liên kết nội bộ trỏ tới các trang có thể xuất hiện trên kết quả tìm kiếm."
 
-#: includes/Analysis/PriorityQueue.php:354
+#: includes/Analysis/PriorityQueue.php:361
 msgid "Link to the main pages of the same topic group."
 msgstr "Liên kết tới các trang chính trong cùng nhóm chủ đề."
 
-#: includes/Analysis/PriorityQueue.php:355
+#: includes/Analysis/PriorityQueue.php:362
 msgid "The topic group is easier to navigate and its structure is clearer."
 msgstr "Nhóm chủ đề dễ điều hướng hơn và cấu trúc rõ ràng hơn."
 
-#: includes/Analysis/PriorityQueue.php:358
+#: includes/Analysis/PriorityQueue.php:365
 msgid "Write a meta description specific to each page."
 msgstr "Viết meta description riêng cho từng trang."
 
-#: includes/Analysis/PriorityQueue.php:359
+#: includes/Analysis/PriorityQueue.php:366
 msgid "Search snippets describe each page instead of repeating the same text."
 msgstr "Đoạn mô tả trên kết quả tìm kiếm nói đúng về từng trang thay vì lặp lại cùng một nội dung."
 
-#: includes/Analysis/PriorityQueue.php:362
+#: includes/Analysis/PriorityQueue.php:369
 msgid "Write a short meta description in the SEO plugin."
 msgstr "Viết một meta description ngắn trong plugin SEO."
 
-#: includes/Analysis/PriorityQueue.php:363
+#: includes/Analysis/PriorityQueue.php:370
 msgid "You choose the snippet text instead of leaving it to the search engine."
 msgstr "Bạn tự chọn đoạn mô tả thay vì để công cụ tìm kiếm tự lấy."
 
-#: includes/Analysis/PriorityQueue.php:366
+#: includes/Analysis/PriorityQueue.php:373
 msgid "Check the page with a structured data testing tool and keep one source of each schema type."
 msgstr "Kiểm tra trang bằng công cụ kiểm tra dữ liệu có cấu trúc và chỉ giữ một nguồn cho mỗi loại schema."
 
-#: includes/Analysis/PriorityQueue.php:367
+#: includes/Analysis/PriorityQueue.php:374
 msgid "Structured data stays valid and unambiguous."
 msgstr "Dữ liệu có cấu trúc hợp lệ và không mơ hồ."
 
-#: includes/Analysis/PriorityQueue.php:370
+#: includes/Analysis/PriorityQueue.php:377
 msgid "Check whether the page fully answers the question; add the missing details (prices, steps, conditions, examples) if not."
 msgstr "Kiểm tra trang đã trả lời đầy đủ câu hỏi chưa; nếu chưa, bổ sung chi tiết còn thiếu (giá, các bước, điều kiện, ví dụ)."
 
-#: includes/Analysis/PriorityQueue.php:371
+#: includes/Analysis/PriorityQueue.php:378
 msgid "A more complete answer for readers. Length alone is not a goal."
 msgstr "Câu trả lời đầy đủ hơn cho người đọc. Độ dài tự nó không phải mục tiêu."
 
-#: includes/Analysis/PriorityQueue.php:374
+#: includes/Analysis/PriorityQueue.php:381
 msgid "Split the text into sections with H2 subheadings."
 msgstr "Chia nội dung thành các phần có tiêu đề phụ H2."
 
-#: includes/Analysis/PriorityQueue.php:375
+#: includes/Analysis/PriorityQueue.php:382
 msgid "Easier to scan and to quote in search answers."
 msgstr "Dễ đọc lướt và dễ được trích dẫn trong câu trả lời tìm kiếm."
 
-#: includes/Analysis/PriorityQueue.php:378
+#: includes/Analysis/PriorityQueue.php:385
 msgid "Use heading levels in order (H2, then H3)."
 msgstr "Dùng cấp tiêu đề theo thứ tự (H2 rồi đến H3)."
 
-#: includes/Analysis/PriorityQueue.php:379
+#: includes/Analysis/PriorityQueue.php:386
 msgid "A clearer outline for readers and assistive technology."
 msgstr "Dàn ý rõ ràng hơn cho người đọc và công nghệ hỗ trợ."
 
-#: includes/Analysis/PriorityQueue.php:382
+#: includes/Analysis/PriorityQueue.php:389
 msgid "Check that the page has a single H1 (the theme usually prints the title as H1)."
 msgstr "Kiểm tra trang chỉ có một H1 (giao diện thường đã in tiêu đề bài thành H1)."
 
-#: includes/Analysis/PriorityQueue.php:383
+#: includes/Analysis/PriorityQueue.php:390
 msgid "A clear main heading."
 msgstr "Tiêu đề chính rõ ràng."
 
-#: includes/Analysis/PriorityQueue.php:386
+#: includes/Analysis/PriorityQueue.php:393
 msgid "Add a short alt text that describes each image."
 msgstr "Thêm mô tả alt ngắn cho từng ảnh."
 
-#: includes/Analysis/PriorityQueue.php:387
+#: includes/Analysis/PriorityQueue.php:394
 msgid "Accessible images that image search can understand."
 msgstr "Ảnh dễ tiếp cận và công cụ tìm kiếm hình ảnh hiểu được."
 
-#: includes/Analysis/PriorityQueue.php:390
+#: includes/Analysis/PriorityQueue.php:397
 msgid "Where facts are stated, cite a reliable source."
 msgstr "Khi nêu số liệu hay dữ kiện, hãy dẫn nguồn đáng tin cậy."
 
-#: includes/Analysis/PriorityQueue.php:391
+#: includes/Analysis/PriorityQueue.php:398
 msgid "Statements readers can verify."
 msgstr "Người đọc kiểm chứng được thông tin."
 
-#: includes/Analysis/PriorityQueue.php:394
+#: includes/Analysis/PriorityQueue.php:401
 msgid "Reword the repeated phrase where it does not read naturally."
 msgstr "Diễn đạt lại cụm từ bị lặp ở những chỗ đọc chưa tự nhiên."
 
-#: includes/Analysis/PriorityQueue.php:395
+#: includes/Analysis/PriorityQueue.php:402
 msgid "More natural text; avoids looking like keyword stuffing."
 msgstr "Văn bản tự nhiên hơn; tránh bị coi là nhồi nhét từ khóa."
 
-#: includes/Analysis/PriorityQueue.php:398
+#: includes/Analysis/PriorityQueue.php:405
 msgid "Check how the title looks in search results; shorten or complete it if needed."
 msgstr "Xem tiêu đề hiển thị thế nào trên kết quả tìm kiếm; rút gọn hoặc bổ sung nếu cần."
 
-#: includes/Analysis/PriorityQueue.php:399
+#: includes/Analysis/PriorityQueue.php:406
 msgid "A title that is not cut off and says enough."
 msgstr "Tiêu đề không bị cắt và nói đủ ý."
 
-#: includes/Analysis/PriorityQueue.php:402
+#: includes/Analysis/PriorityQueue.php:409
 msgid "Translate the page if it matters for visitors of the other language, then link the two versions."
 msgstr "Dịch trang nếu nó hữu ích cho người đọc ngôn ngữ kia, rồi liên kết hai phiên bản với nhau."
 
-#: includes/Analysis/PriorityQueue.php:403
+#: includes/Analysis/PriorityQueue.php:410
 msgid "Visitors of each language get the page in their language."
 msgstr "Người đọc mỗi ngôn ngữ có trang bằng ngôn ngữ của mình."
 
-#: includes/Analysis/PriorityQueue.php:406
+#: includes/Analysis/PriorityQueue.php:413
 msgid "If the two pages are translations of each other, link them in the language plugin."
 msgstr "Nếu hai trang là bản dịch của nhau, hãy liên kết chúng trong plugin đa ngôn ngữ."
 
-#: includes/Analysis/PriorityQueue.php:407
+#: includes/Analysis/PriorityQueue.php:414
 msgid "Correct hreflang between the two language versions."
 msgstr "Hreflang đúng giữa hai phiên bản ngôn ngữ."
 
-#: includes/Analysis/PriorityQueue.php:410
+#: includes/Analysis/PriorityQueue.php:417
 msgid "Decide which page to keep as the main one. Do not delete or redirect without checking traffic and links first."
 msgstr "Quyết định giữ trang nào làm trang chính. Không xóa hay chuyển hướng khi chưa kiểm tra lượt truy cập và liên kết."
 
-#: includes/Analysis/PriorityQueue.php:411
+#: includes/Analysis/PriorityQueue.php:418
 msgid "One clear page for the topic instead of two identical ones."
 msgstr "Một trang rõ ràng cho chủ đề thay vì hai trang giống hệt nhau."
 
-#: includes/Analysis/PriorityQueue.php:414
+#: includes/Analysis/PriorityQueue.php:421
 msgid "Compare the two pages; differentiate them or keep one as the main page. Similar text alone is not a reason to merge, delete or redirect."
 msgstr "So sánh hai trang; làm chúng khác biệt hoặc chọn một trang làm trang chính. Chỉ giống nhau về nội dung không phải lý do để gộp, xóa hay chuyển hướng."
 
-#: includes/Analysis/PriorityQueue.php:418
+#: includes/Analysis/PriorityQueue.php:425
 msgid "Check in Search Console whether both pages show for the same queries; if so, give each page a distinct focus and link the supporting page to the main one."
 msgstr "Kiểm tra trong Search Console xem hai trang có cùng hiển thị cho một truy vấn không; nếu có, cho mỗi trang một trọng tâm riêng và liên kết trang bổ trợ về trang chính."
 
-#: includes/Analysis/PriorityQueue.php:419
+#: includes/Analysis/PriorityQueue.php:426
 msgid "Each search need has one clear page."
 msgstr "Mỗi nhu cầu tìm kiếm có một trang rõ ràng."
 
-#: includes/Analysis/PriorityQueue.php:422
+#: includes/Analysis/PriorityQueue.php:429
 msgid "Check the translation links in the language plugin: each page should have at most one translation per language."
 msgstr "Kiểm tra liên kết bản dịch trong plugin đa ngôn ngữ: mỗi trang chỉ nên có tối đa một bản dịch cho mỗi ngôn ngữ."
 
-#: includes/Analysis/PriorityQueue.php:423
+#: includes/Analysis/PriorityQueue.php:430
 msgid "Consistent hreflang between language versions."
 msgstr "Hreflang nhất quán giữa các phiên bản ngôn ngữ."
 
-#: includes/Analysis/PriorityQueue.php:426
+#: includes/Analysis/PriorityQueue.php:433
 msgid "Add the suggested link with the proposed anchor text (preview and approval are required before anything is written)."
 msgstr "Thêm liên kết được gợi ý với anchor text đề xuất (phải xem trước và phê duyệt trước khi ghi bất cứ gì)."
 
-#: includes/Analysis/PriorityQueue.php:427
+#: includes/Analysis/PriorityQueue.php:434
 msgid "Related pages are connected for readers and crawlers."
 msgstr "Các trang liên quan được kết nối cho người đọc và bot tìm kiếm."
 
-#: includes/Analysis/PriorityQueue.php:430
+#: includes/Analysis/PriorityQueue.php:437
 msgid "Confirm the suggested pillar page for this topic group, or choose another one, and link the group members to it."
 msgstr "Xác nhận bài trụ cột được đề xuất cho nhóm chủ đề này (hoặc chọn bài khác) và liên kết các bài trong nhóm về đó."
 
-#: includes/Analysis/PriorityQueue.php:431
+#: includes/Analysis/PriorityQueue.php:438
 msgid "A clear Pillar–Hub–Silo structure for the topic."
 msgstr "Cấu trúc Pillar–Hub–Silo rõ ràng cho chủ đề."
 
-#: includes/Analysis/PriorityQueue.php:436
+#: includes/Analysis/PriorityQueue.php:443
 msgid "Review the finding."
 msgstr "Xem lại phát hiện."
 
-#: includes/Analysis/PriorityQueue.php:456
+#: includes/Analysis/PriorityQueue.php:463
 msgid "Two pages with identical content"
 msgstr "Hai trang có nội dung giống hệt nhau"
 
-#: includes/Analysis/PriorityQueue.php:457
+#: includes/Analysis/PriorityQueue.php:464
 msgid "Two pages with nearly the same content"
 msgstr "Hai trang có nội dung gần như giống nhau"
 
-#: includes/Analysis/PriorityQueue.php:458
+#: includes/Analysis/PriorityQueue.php:465
 msgid "Two pages may compete for the same searches"
 msgstr "Hai trang có thể cạnh tranh cùng truy vấn tìm kiếm"
 
-#: includes/Analysis/PriorityQueue.php:459
+#: includes/Analysis/PriorityQueue.php:466
 msgid "Conflicting translation links"
 msgstr "Liên kết bản dịch mâu thuẫn"
 
-#: includes/Analysis/PriorityQueue.php:460
+#: includes/Analysis/PriorityQueue.php:467
 msgid "Missing internal link to a related page"
 msgstr "Thiếu liên kết nội bộ tới trang liên quan"
 
-#: includes/Analysis/PriorityQueue.php:461
+#: includes/Analysis/PriorityQueue.php:468
 msgid "Topic group without a confirmed pillar page"
 msgstr "Nhóm chủ đề chưa có bài trụ cột được xác nhận"
 
 #. translators: 1: topic group, 2: number of pages, 3: suggested pillar page
-#: includes/Analysis/PriorityQueue.php:481
+#: includes/Analysis/PriorityQueue.php:488
 #, php-format
 msgid "Group \"%1$s\": %2$d pages; suggested pillar: \"%3$s\"."
 msgstr "Nhóm \"%1$s\": %2$d trang; bài trụ cột đề xuất: \"%3$s\"."
 
 #. translators: 1: anchor text, 2: target page, 3: reason
-#: includes/Analysis/PriorityQueue.php:485
+#: includes/Analysis/PriorityQueue.php:492
 #, php-format
 msgid "Anchor \"%1$s\" → \"%2$s\". Why: %3$s."
 msgstr "Anchor \"%1$s\" → \"%2$s\". Lý do: %3$s."
 
 #. translators: 1: other page, 2: topic similarity in percent, 3: shared
 #. terms, 4: analyzer note
-#: includes/Analysis/PriorityQueue.php:491
+#: includes/Analysis/PriorityQueue.php:498
 #, php-format
 msgid "With \"%1$s\": topic similarity %2$d%%; shared terms: %3$s. %4$s"
 msgstr "Với \"%1$s\": độ tương đồng chủ đề %2$d%%; cụm từ chung: %3$s. %4$s"
 
 #. translators: %s: anchor text
-#: includes/Analysis/PriorityQueue.php:496
+#: includes/Analysis/PriorityQueue.php:503
 #, php-format
 msgid "anchor \"%s\""
 msgstr "anchor \"%s\""
 
 #. translators: %s: canonical URL
-#: includes/Analysis/PriorityQueue.php:508
+#: includes/Analysis/PriorityQueue.php:515
 #, php-format
 msgid "canonical: %s"
 msgstr "canonical: %s"
 
 #. translators: 1: words, 2: reference threshold, 3: intent
-#: includes/Analysis/PriorityQueue.php:512
+#: includes/Analysis/PriorityQueue.php:519
 #, php-format
 msgid "%1$d words; reference for %3$s pages: %2$d"
 msgstr "%1$d từ; mức tham khảo cho trang %3$s: %2$d"
 
 #. translators: 1: links, 2: pages in the group
-#: includes/Analysis/PriorityQueue.php:516
+#: includes/Analysis/PriorityQueue.php:523
 #, php-format
 msgid "%1$d links to the %2$d pages of its topic group"
 msgstr "%1$d liên kết tới %2$d trang trong nhóm chủ đề"
 
 #. translators: 1: images without alt, 2: images
-#: includes/Analysis/PriorityQueue.php:520
+#: includes/Analysis/PriorityQueue.php:527
 #, php-format
 msgid "%1$d of %2$d images without alt text"
 msgstr "%1$d/%2$d ảnh thiếu alt"
 
 #. translators: 1: phrase, 2: count
-#: includes/Analysis/PriorityQueue.php:527
+#: includes/Analysis/PriorityQueue.php:534
 #, php-format
 msgid "\"%1$s\" × %2$d"
 msgstr "\"%1$s\" × %2$d"
 
 #. translators: %s: language codes
-#: includes/Analysis/PriorityQueue.php:531
+#: includes/Analysis/PriorityQueue.php:538
 #, php-format
 msgid "missing: %s"
 msgstr "còn thiếu: %s"
 
 #. translators: 1: assigned language, 2: detected language
-#: includes/Analysis/PriorityQueue.php:535
+#: includes/Analysis/PriorityQueue.php:542
 #, php-format
 msgid "assigned %1$s, text looks %2$s"
 msgstr "được gán %1$s, nội dung có vẻ là %2$s"
 
-#: includes/Analysis/PriorityQueue.php:538
+#: includes/Analysis/PriorityQueue.php:545
 msgid "no internal link to this page was found in post content or category descriptions (menus and widgets are not observed)"
 msgstr "không tìm thấy liên kết nội bộ nào tới trang này trong nội dung bài hoặc mô tả chuyên mục (không quan sát menu và widget)"
 
 #. translators: %s: other page
-#: includes/Analysis/PriorityQueue.php:542
+#: includes/Analysis/PriorityQueue.php:549
 #, php-format
 msgid "other page: \"%s\""
 msgstr "trang kia: \"%s\""
 
-#: includes/Analysis/PriorityQueue.php:555
+#: includes/Analysis/PriorityQueue.php:562
 msgid "Do now"
 msgstr "Làm ngay"
 
-#: includes/Analysis/PriorityQueue.php:556
+#: includes/Analysis/PriorityQueue.php:563
 msgid "Do soon"
 msgstr "Nên làm sớm"
 
-#: includes/Analysis/PriorityQueue.php:557
+#: includes/Analysis/PriorityQueue.php:564
 msgid "Should do"
 msgstr "Nên làm"
 
-#: includes/Analysis/PriorityQueue.php:558
+#: includes/Analysis/PriorityQueue.php:565
 msgid "When there is time"
 msgstr "Khi có thời gian"
 
-#: includes/Analysis/PriorityQueue.php:571
+#: includes/Analysis/PriorityQueue.php:578
 msgid "Technical"
 msgstr "Kỹ thuật"
 
-#: includes/Analysis/PriorityQueue.php:572
+#: includes/Analysis/PriorityQueue.php:579
 msgid "Internal links"
 msgstr "Liên kết nội bộ"
 
-#: includes/Analysis/PriorityQueue.php:573
+#: includes/Analysis/PriorityQueue.php:580
 msgid "Keyword / intent overlap"
 msgstr "Trùng từ khóa / ý định"
 
-#: includes/Analysis/PriorityQueue.php:574
+#: includes/Analysis/PriorityQueue.php:581
 msgid "Content quality"
 msgstr "Chất lượng nội dung"
 
-#: includes/Analysis/PriorityQueue.php:575
+#: includes/Analysis/PriorityQueue.php:582
 msgid "VI–EN languages"
 msgstr "Ngôn ngữ VI–EN"
 
-#: includes/Analysis/PriorityQueue.php:576
+#: includes/Analysis/PriorityQueue.php:583
 msgid "Topic structure"
 msgstr "Cấu trúc chủ đề"
 
-#: includes/Analysis/PriorityQueue.php:589
+#: includes/Analysis/PriorityQueue.php:596
 msgid "High"
 msgstr "Cao"
 
-#: includes/Analysis/PriorityQueue.php:590
+#: includes/Analysis/PriorityQueue.php:597
 msgid "Medium"
 msgstr "Trung bình"
 
-#: includes/Analysis/PriorityQueue.php:591
+#: includes/Analysis/PriorityQueue.php:598
 msgid "Low"
 msgstr "Thấp"
 
-#: includes/Analysis/PriorityQueue.php:592
+#: includes/Analysis/PriorityQueue.php:599
 msgid "Needs a human look"
 msgstr "Cần người xem xét"
 
@@ -3401,7 +3401,7 @@ msgstr "Không tìm thấy anchor tự nhiên; gợi ý này cần biên tập v
 msgid "The anchor text is no longer present in an editable position; re-run the analysis."
 msgstr "Anchor không còn ở vị trí có thể sửa; hãy chạy lại phân tích."
 
-#: includes/Approval/ProposalService.php:215 includes/Services/Api.php:1127
+#: includes/Approval/ProposalService.php:215 includes/Services/Api.php:1129
 msgid "Document not found."
 msgstr "Không tìm thấy tài liệu."
 
@@ -3451,7 +3451,11 @@ msgstr "Cần khoảng thời gian báo cáo hợp lệ (ngày bắt đầu ≤ 
 msgid "Missing required columns. Required: %s."
 msgstr "Thiếu cột bắt buộc. Cần có: %s."
 
-#: includes/Jobs/JobRepository.php:71 includes/Services/Api.php:598
+#: includes/Jobs/InventoryJob.php:90
+msgid "None of the requested pages could be added to the inventory (the maximum number of documents is reached, or they are excluded), so no analysis was started. Raise \"Max documents\" or check the excluded URLs in the analysis scope."
+msgstr "Không trang nào được yêu cầu có thể đưa vào kiểm kê (đã đạt số tài liệu tối đa, hoặc các trang này bị loại trừ), nên chưa chạy phân tích. Hãy tăng \"Số tài liệu tối đa\" hoặc kiểm tra các URL bị loại trừ trong phạm vi phân tích."
+
+#: includes/Jobs/JobRepository.php:71 includes/Services/Api.php:603
 msgid "Unknown job type."
 msgstr "Loại tác vụ không hợp lệ."
 
@@ -3685,37 +3689,37 @@ msgstr "Vector được tạo bằng hồ sơ mô hình khác nên đã bị t�
 msgid "This device has no valid server-checked self-test for the current model profile; send the reference vectors to /embeddings/selftest first."
 msgstr "Thiết bị này chưa có lần tự kiểm thử hợp lệ được máy chủ kiểm tra cho hồ sơ model hiện tại; hãy gửi vector tham chiếu tới /embeddings/selftest trước."
 
-#: includes/Services/Api.php:212
+#: includes/Services/Api.php:217
 msgid "Only URLs of this site are accepted."
 msgstr "Chỉ chấp nhận URL của website này."
 
-#: includes/Services/Api.php:216
+#: includes/Services/Api.php:221
 msgid "Provide post_id, document_id or url."
 msgstr "Hãy cung cấp post_id, document_id hoặc url."
 
-#: includes/Services/Api.php:219 includes/Services/Api.php:222
+#: includes/Services/Api.php:224 includes/Services/Api.php:227
 msgid "This URL is not in the inventory (run an inventory first)."
 msgstr "URL này chưa có trong danh sách kiểm kê (hãy chạy kiểm kê trước)."
 
-#: includes/Services/Api.php:562 includes/Services/Api.php:773
+#: includes/Services/Api.php:567 includes/Services/Api.php:775
 msgid "Job not found."
 msgstr "Không tìm thấy tác vụ."
 
-#: includes/Services/Api.php:604
+#: includes/Services/Api.php:609
 msgid "The plugin database is incomplete, so no scan can run. Repair it from the dashboard (Settings & Diagnostics shows the SQL error)."
 msgstr "Database của plugin chưa đầy đủ nên không thể quét. Hãy sửa từ Bảng điều khiển (trang Cài đặt & Chẩn đoán hiển thị lỗi SQL)."
 
 #. translators: %d: max
-#: includes/Services/Api.php:615
+#: includes/Services/Api.php:620
 #, php-format
 msgid "At most %d targets per request."
 msgstr "Tối đa %d mục tiêu mỗi yêu cầu."
 
-#: includes/Services/Api.php:622
+#: includes/Services/Api.php:627
 msgid "None of these posts is in the inventory yet; run an inventory first."
 msgstr "Chưa bài nào trong số này có trong danh sách kiểm kê; hãy chạy kiểm kê trước."
 
-#: includes/Services/Api.php:647
+#: includes/Services/Api.php:652
 msgid "Agents may run one job at a time."
 msgstr "Mỗi agent chỉ được chạy một tác vụ tại một thời điểm."
 
@@ -3723,31 +3727,31 @@ msgstr "Mỗi agent chỉ được chạy một tác vụ tại một thời đi
 msgid "A work plan ordered by verified errors first, then likely problems, linking work and editorial improvements. It predicts no ranking."
 msgstr "Kế hoạch làm việc sắp xếp theo: lỗi đã xác minh trước, sau đó là vấn đề có khả năng xảy ra, việc liên kết và cải thiện biên tập. Không dự đoán thứ hạng."
 
-#: includes/Services/Api.php:776
+#: includes/Services/Api.php:778
 msgid "Agents can only control their own jobs."
 msgstr "Agent chỉ được điều khiển tác vụ của chính mình."
 
-#: includes/Services/Api.php:818
+#: includes/Services/Api.php:820
 msgid "Set confirm=true to rebuild. Derived data is recomputed in the background; WordPress content is not modified."
 msgstr "Đặt confirm=true để xây dựng lại. Dữ liệu dẫn xuất được tính lại ở nền; nội dung WordPress không bị sửa."
 
-#: includes/Services/Api.php:822
+#: includes/Services/Api.php:824
 msgid "model_version must match the active pinned profile (model key or revision)."
 msgstr "model_version phải khớp hồ sơ mô hình cố định đang dùng (khóa mô hình hoặc revision)."
 
-#: includes/Services/Api.php:851
+#: includes/Services/Api.php:853
 msgid "Provide 1–10 finding IDs."
 msgstr "Hãy cung cấp 1–10 ID phát hiện."
 
-#: includes/Services/Api.php:1078
+#: includes/Services/Api.php:1080
 msgid "Provide lease_token or all_mine=true."
 msgstr "Hãy cung cấp lease_token hoặc all_mine=true."
 
-#: includes/Services/Api.php:1100
+#: includes/Services/Api.php:1102
 msgid "Invalid finding or status."
 msgstr "Phát hiện hoặc trạng thái không hợp lệ."
 
-#: includes/Services/Api.php:1149
+#: includes/Services/Api.php:1151
 msgid "No valid fields."
 msgstr "Không có trường hợp lệ."
 
@@ -3898,105 +3902,105 @@ msgstr "Chế độ chỉ đọc"
 msgid "Scans never change posts, SEO data, URLs or settings of other plugins. A change happens only after you preview the exact diff and approve it, and it can be undone."
 msgstr "Việc quét không bao giờ thay đổi bài viết, dữ liệu SEO, URL hay cài đặt của plugin khác. Chỉ có thay đổi sau khi bạn xem trước diff chính xác và phê duyệt, và thay đổi đó có thể hoàn tác."
 
-#: includes/Services/HealthReport.php:173
+#: includes/Services/HealthReport.php:180
 msgid "not available in this build"
 msgstr "không có trong bản build này"
 
-#: includes/Services/HealthReport.php:176
+#: includes/Services/HealthReport.php:183
 msgid "in use"
 msgstr "đang dùng"
 
-#: includes/Services/HealthReport.php:179
+#: includes/Services/HealthReport.php:186
 msgid "ready on your device, no page embedded yet"
 msgstr "đã sẵn sàng trên thiết bị của bạn, chưa có trang nào được tạo vector"
 
-#: includes/Services/HealthReport.php:182
+#: includes/Services/HealthReport.php:189
 msgid "not enabled"
 msgstr "chưa bật"
 
 #. translators: 1: pages with a vector, 2: model ID
-#: includes/Services/HealthReport.php:185
+#: includes/Services/HealthReport.php:192
 #, php-format
 msgid "%1$d pages have a vector from %2$s. The model only measures meaning similarity (embeddings); it does not write text. It runs in your browser when you start it, never on the server and never for visitors; the SEO analysis works without it."
 msgstr "%1$d trang đã có vector từ %2$s. Mô hình chỉ đo độ tương đồng ý nghĩa (embedding); nó không viết văn bản. Mô hình chạy trong trình duyệt của bạn khi bạn bật, không bao giờ chạy trên máy chủ hay cho người xem website; phân tích SEO vẫn hoạt động khi không có nó."
 
-#: includes/Services/HealthReport.php:214
+#: includes/Services/HealthReport.php:221
 msgid "The plugin database is incomplete. Scans are blocked until it is repaired."
 msgstr "Database của plugin chưa đầy đủ. Việc quét bị chặn cho tới khi được sửa."
 
-#: includes/Services/HealthReport.php:217
+#: includes/Services/HealthReport.php:224
 msgid "The last scan stopped with an error. See the error below and run it again."
 msgstr "Lượt quét gần nhất dừng do lỗi. Xem lỗi bên dưới và chạy lại."
 
-#: includes/Services/HealthReport.php:220
+#: includes/Services/HealthReport.php:227
 msgid "Working normally: a scan is in progress."
 msgstr "Hoạt động bình thường: đang có lượt quét chạy."
 
-#: includes/Services/HealthReport.php:223
+#: includes/Services/HealthReport.php:230
 msgid "Working normally. No scan yet: start with the system check and the 20-page trial."
 msgstr "Hoạt động bình thường. Chưa có lượt quét nào: hãy bắt đầu bằng kiểm tra hệ thống và phân tích thử 20 bài."
 
-#: includes/Services/HealthReport.php:226
+#: includes/Services/HealthReport.php:233
 msgid "Working normally."
 msgstr "Hoạt động bình thường."
 
-#: includes/Services/HealthReport.php:246
+#: includes/Services/HealthReport.php:253
 msgid "There is no overall SEO score: counts are findings to review, and no ranking in Google is predicted."
 msgstr "Không có điểm SEO tổng: các con số là phát hiện cần xem xét, và plugin không dự đoán thứ hạng trên Google."
 
-#: includes/Services/HealthReport.php:323
+#: includes/Services/HealthReport.php:330
 msgid "Read your posts and SEO data to analyze them"
 msgstr "Đọc bài viết và dữ liệu SEO để phân tích"
 
-#: includes/Services/HealthReport.php:324
+#: includes/Services/HealthReport.php:331
 msgid "Show reports and export them (CSV / XLSX / JSON)"
 msgstr "Hiển thị và xuất báo cáo (CSV / XLSX / JSON)"
 
-#: includes/Services/HealthReport.php:327
+#: includes/Services/HealthReport.php:334
 msgid "Run, pause, resume and cancel scans"
 msgstr "Chạy, tạm dừng, tiếp tục và hủy lượt quét"
 
-#: includes/Services/HealthReport.php:330
+#: includes/Services/HealthReport.php:337
 msgid "Create a preview of a proposed change and approve or reject it (people only, never AI agents)"
 msgstr "Tạo bản xem trước cho thay đổi được đề xuất và phê duyệt hoặc từ chối (chỉ con người, không bao giờ là AI agent)"
 
-#: includes/Services/HealthReport.php:333
+#: includes/Services/HealthReport.php:340
 msgid "Apply a change you approved after seeing its exact diff, and undo it"
 msgstr "Áp dụng thay đổi bạn đã duyệt sau khi xem diff chính xác, và hoàn tác được"
 
-#: includes/Services/HealthReport.php:336
+#: includes/Services/HealthReport.php:343
 msgid "Edit published posts automatically"
 msgstr "Tự động sửa bài đã xuất bản"
 
-#: includes/Services/HealthReport.php:337
+#: includes/Services/HealthReport.php:344
 msgid "Publish or unpublish posts"
 msgstr "Xuất bản hoặc gỡ xuất bản bài"
 
-#: includes/Services/HealthReport.php:338
+#: includes/Services/HealthReport.php:345
 msgid "Change titles, H1 or meta descriptions in bulk"
 msgstr "Đổi tiêu đề, H1 hoặc meta description hàng loạt"
 
-#: includes/Services/HealthReport.php:339
+#: includes/Services/HealthReport.php:346
 msgid "Change slugs or permalinks"
 msgstr "Đổi slug hoặc permalink"
 
-#: includes/Services/HealthReport.php:340
+#: includes/Services/HealthReport.php:347
 msgid "Create 301 redirects"
 msgstr "Tạo chuyển hướng 301"
 
-#: includes/Services/HealthReport.php:341
+#: includes/Services/HealthReport.php:348
 msgid "Delete or merge posts"
 msgstr "Xóa hoặc gộp bài"
 
-#: includes/Services/HealthReport.php:342
+#: includes/Services/HealthReport.php:349
 msgid "Change robots, canonical or hreflang"
 msgstr "Thay đổi robots, canonical hoặc hreflang"
 
-#: includes/Services/HealthReport.php:343
+#: includes/Services/HealthReport.php:350
 msgid "Change Yoast SEO data without approval"
 msgstr "Thay đổi dữ liệu Yoast SEO khi chưa được phê duyệt"
 
-#: includes/Services/HealthReport.php:346
+#: includes/Services/HealthReport.php:353
 msgid "Let AI agents apply changes (off; even when allowed, a person must approve each change)"
 msgstr "Cho AI agent áp dụng thay đổi (đang tắt; kể cả khi bật, mỗi thay đổi vẫn phải được con người phê duyệt)"
 

@@ -148,7 +148,7 @@ final class Api {
 	 *
 	 * @return bool
 	 */
-	private static function can_see_private() {
+	public static function can_see_private() {
 		return current_user_can( 'edit_others_posts' ) && ! AuthContext::is_agent_context();
 	}
 
@@ -700,10 +700,12 @@ final class Api {
 			return $g;
 		}
 		$filters = array(
-			'locale'   => isset( $args['locale'] ) ? sanitize_key( (string) $args['locale'] ) : '',
-			'category' => isset( $args['category'] ) ? sanitize_key( (string) $args['category'] ) : '',
-			'priority' => isset( $args['priority'] ) ? (int) $args['priority'] : 0,
-			'search'   => isset( $args['search'] ) ? sanitize_text_field( (string) $args['search'] ) : '',
+			'locale'      => isset( $args['locale'] ) ? sanitize_key( (string) $args['locale'] ) : '',
+			'category'    => isset( $args['category'] ) ? sanitize_key( (string) $args['category'] ) : '',
+			'priority'    => isset( $args['priority'] ) ? (int) $args['priority'] : 0,
+			'search'      => isset( $args['search'] ) ? sanitize_text_field( (string) $args['search'] ) : '',
+			// Titles and URLs of drafts, private or pending pages only for people who can edit them.
+			'public_only' => ! self::can_see_private(),
 		);
 		$res     = PriorityQueue::items(
 			array_merge(
@@ -717,13 +719,6 @@ final class Api {
 		foreach ( $res['items'] as &$item ) {
 			$item['detail_url'] = add_query_arg( array_merge( array( 'page' => $item['detail']['page'] ), $item['detail']['args'] ), admin_url( 'admin.php' ) );
 			unset( $item['detail'] );
-			if ( ! self::can_see_private() && '' !== $item['url'] ) {
-				$doc = DocumentRepository::get( (int) $item['document_id'] );
-				if ( null !== $doc && 'publish' !== $doc['status'] ) {
-					$item['url']        = '';
-					$item['page_title'] = '';
-				}
-			}
 		}
 		unset( $item );
 		return array(
@@ -747,7 +742,7 @@ final class Api {
 		}
 		return array(
 			'history' => array_reverse( ScanHistory::all() ),
-			'diff'    => ScanHistory::diff( 50 ),
+			'diff'    => ScanHistory::diff( 50, ! self::can_see_private() ),
 		);
 	}
 

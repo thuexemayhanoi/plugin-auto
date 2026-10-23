@@ -84,6 +84,12 @@ final class InventoryJob {
 					"SELECT id FROM {documents} WHERE object_type = 'post' AND object_id IN (" . \SemanticSEO\Database\Db::in( $ids ) . ')',
 					array_map( 'intval', $ids )
 				);
+				if ( array() === $params['doc_ids'] ) {
+					// None of the requested pages is in the inventory (document limit reached, or
+					// excluded): an empty scope must never turn into a site-wide analysis.
+					JobRepository::fail_completed( (int) $job['id'], __( 'None of the requested pages could be added to the inventory (the maximum number of documents is reached, or they are excluded), so no analysis was started. Raise "Max documents" or check the excluded URLs in the analysis scope.', 'semantic-seo-engine-vi-en' ) );
+					return;
+				}
 			}
 			$params['source_job'] = (int) $job['id'];
 			if ( ! empty( $job['params']['pilot'] ) ) {

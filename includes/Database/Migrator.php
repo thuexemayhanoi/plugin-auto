@@ -97,25 +97,30 @@ final class Migrator {
 		$suppress = $wpdb->suppress_errors( true );
 		try {
 			require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-			// Renames must run before dbDelta(), which would otherwise add the new column next to
-			// the old one.
-			self::step_4_rename_vector_column();
-			foreach ( Schema::definitions() as $name => $sql ) {
-				dbDelta( $sql );
-				if ( '' !== (string) $wpdb->last_error ) {
-					$failures[ $name ] = self::sql_error( $sql );
+			// Renames must run before dbDelta(), which would otherwise add an empty new column next
+			// to the old one: a failed rename stops the migration here (retried later).
+			$rename = self::step_4_rename_vector_column();
+			if ( null !== $rename ) {
+				$failures['embeddings'] = $rename;
+				$error                  = 'could not rename embeddings.vector to vector_data';
+			} else {
+				foreach ( Schema::definitions() as $name => $sql ) {
+					dbDelta( $sql );
+					if ( '' !== (string) $wpdb->last_error ) {
+						$failures[ $name ] = self::sql_error( $sql );
+					}
 				}
-			}
-			foreach ( self::steps() as $version => $step ) {
-				if ( $version > $from && $version <= Schema::VERSION ) {
-					call_user_func( $step );
+				foreach ( self::steps() as $version => $step ) {
+					if ( $version > $from && $version <= Schema::VERSION ) {
+						call_user_func( $step );
+					}
 				}
-			}
-			$problems = self::verify();
-			if ( array() !== $problems['missing'] ) {
-				$error = 'missing tables: ' . implode( ',', $problems['missing'] );
-			} elseif ( array() !== $problems['missing_columns'] ) {
-				$error = 'missing columns: ' . implode( ',', $problems['missing_columns'] );
+				$problems = self::verify();
+				if ( array() !== $problems['missing'] ) {
+					$error = 'missing tables: ' . implode( ',', $problems['missing'] );
+				} elseif ( array() !== $problems['missing_columns'] ) {
+					$error = 'missing columns: ' . implode( ',', $problems['missing_columns'] );
+				}
 			}
 		} catch ( \Throwable $e ) {
 			$error = $e->getMessage();
@@ -192,26 +197,40 @@ final class Migrator {
 	 * install, or MariaDB 11.7+ where the old definition never ran) or is already renamed. The old
 	 * name is always quoted because it is a keyword on MariaDB 11.7+.
 	 *
-	 * @return void
+	 * @return array|null Null when done or nothing to do; the SQL error otherwise (the old column
+	 *                    and its vectors are then left untouched).
 	 */
 	public static function step_4_rename_vector_column() {
 		global $wpdb;
 		$table = Schema::table( 'embeddings' );
 		$cols  = self::columns( $table );
 		if ( ! in_array( 'vector', $cols, true ) ) {
-			return;
+			return null;
 		}
 		if ( ! in_array( 'vector_data', $cols, true ) ) {
-			$wpdb->query( "ALTER TABLE `{$table}` CHANGE COLUMN `vector` `vector_data` longblob NOT NULL" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.SchemaChange
-			return;
+			$sql = "ALTER TABLE `{$table}` CHANGE COLUMN `vector` `vector_data` longblob NOT NULL";
+			$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.SchemaChange
+			return '' === (string) $wpdb->last_error ? null : self::sql_error( $sql );
 		}
 		// Both columns (an interrupted manual repair): copy, check, then drop the old column only
 		// when no vector would be lost.
-		$wpdb->query( "UPDATE `{$table}` SET `vector_data` = `vector` WHERE LENGTH(`vector_data`) = 0 AND LENGTH(`vector`) > 0" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery
-		$left = (int) $wpdb->get_var( "SELECT COUNT(*) FROM `{$table}` WHERE LENGTH(`vector_data`) = 0 AND LENGTH(`vector`) > 0" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery
-		if ( 0 === $left && '' === (string) $wpdb->last_error ) {
-			$wpdb->query( "ALTER TABLE `{$table}` DROP COLUMN `vector`" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.SchemaChange
+		$sql = "UPDATE `{$table}` SET `vector_data` = `vector` WHERE LENGTH(`vector_data`) = 0 AND LENGTH(`vector`) > 0";
+		$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery
+		if ( '' !== (string) $wpdb->last_error ) {
+			return self::sql_error( $sql );
 		}
+		$left = (int) $wpdb->get_var( "SELECT COUNT(*) FROM `{$table}` WHERE LENGTH(`vector_data`) = 0 AND LENGTH(`vector`) > 0" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery
+		if ( 0 !== $left || '' !== (string) $wpdb->last_error ) {
+			return array(
+				'errno'     => 0,
+				'sqlstate'  => '',
+				'message'   => '' !== (string) $wpdb->last_error ? substr( (string) $wpdb->last_error, 0, 500 ) : $left . ' vectors not copied to vector_data; old column kept',
+				'statement' => 'SELECT COUNT(*) FROM ' . $table,
+			);
+		}
+		$sql = "ALTER TABLE `{$table}` DROP COLUMN `vector`";
+		$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.SchemaChange
+		return '' === (string) $wpdb->last_error ? null : self::sql_error( $sql );
 	}
 
 	/**
@@ -261,6 +280,10 @@ final class Migrator {
 			}
 			foreach ( array_diff( $expected, $have ) as $col ) {
 				$columns[] = $name . '.' . $col;
+			}
+			if ( 'embeddings' === $name && in_array( 'vector', $have, true ) ) {
+				// The pre-schema-4 column still holds vectors: not migrated until step 4 removed it.
+				$columns[] = 'embeddings.vector (old column, not yet moved to vector_data)';
 			}
 		}
 		return array(
