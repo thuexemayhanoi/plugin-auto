@@ -1,0 +1,413 @@
+{
+    "source": "LABELLED TEST FIXTURE (tests\/fixtures\/corpus.php), lexical tier, no model",
+    "docs": 26,
+    "sources": 16,
+    "links": {
+        "precision@3": 0.229,
+        "recall@3": 0.244,
+        "precision@5": 0.138,
+        "recall@5": 0.244,
+        "evaluated_sources": 16,
+        "sources_with_output": 10,
+        "precision_of_returned_items": 0.786
+    },
+    "related": {
+        "precision@3": 0.604,
+        "recall@3": 0.725,
+        "precision@5": 0.425,
+        "recall@5": 0.794,
+        "evaluated_sources": 16,
+        "sources_with_output": 16,
+        "precision_of_returned_items": 0.773
+    },
+    "overlap": {
+        "reported_pairs": 23,
+        "false_positives_on_controls": 0,
+        "controls": 7,
+        "expected_overlaps_found": 3,
+        "expected_overlaps": 3,
+        "cross_locale_pairs_compared": 0,
+        "warning_rate_per_document": 0.885,
+        "pairs": [
+            "vi-ngay (supporting) vs vi-ngay-gia-tot (hub): near_duplicate — expected near_duplicate|exact_duplicate",
+            "vi-pillar (pillar) vs vi-gia-re (supporting): potential_competition — expected potential_competition",
+            "en-pillar (pillar) vs en-cheap (supporting): potential_competition — expected potential_competition",
+            "control vi-du-lich-viet-nam vs vi-thang: not reported",
+            "control vi-du-lich-viet-nam vs vi-pillar: not reported",
+            "control vi-50cc-gia vs vi-50cc-bang-lai: not reported",
+            "control vi-ngay vs vi-thang: distinct_facet",
+            "control en-daily vs en-monthly: pillar_supporting",
+            "control vi-pillar vs en-pillar: not reported",
+            "control vi-ngay vs en-daily: not reported"
+        ]
+    },
+    "per_page": {
+        "links": {
+            "vi-ngay": {
+                "ranked": [
+                    "vi-50cc-gia"
+                ],
+                "relevant": [
+                    "vi-thang",
+                    "vi-thu-tuc",
+                    "vi-tay-ga",
+                    "vi-gia-re"
+                ],
+                "hits@5": 0
+            },
+            "vi-thang": {
+                "ranked": [
+                    "vi-tay-ga",
+                    "vi-pillar"
+                ],
+                "relevant": [
+                    "vi-pillar",
+                    "vi-ngay",
+                    "vi-tay-ga"
+                ],
+                "hits@5": 2
+            },
+            "vi-50cc-gia": {
+                "ranked": [
+                    "vi-50cc-bang-lai",
+                    "vi-tay-ga",
+                    "vi-pillar"
+                ],
+                "relevant": [
+                    "vi-pillar",
+                    "vi-50cc-bang-lai",
+                    "vi-tay-ga",
+                    "vi-ngay"
+                ],
+                "hits@5": 3
+            },
+            "vi-50cc-bang-lai": {
+                "ranked": [
+                    "vi-50cc-gia"
+                ],
+                "relevant": [
+                    "vi-50cc-gia"
+                ],
+                "hits@5": 1
+            },
+            "vi-tay-ga": {
+                "ranked": [
+                    "vi-pillar",
+                    "vi-50cc-gia"
+                ],
+                "relevant": [
+                    "vi-pillar",
+                    "vi-ngay",
+                    "vi-thang",
+                    "vi-50cc-gia",
+                    "vi-thu-tuc"
+                ],
+                "hits@5": 2
+            },
+            "vi-thu-tuc": {
+                "ranked": [
+                    "vi-pillar"
+                ],
+                "relevant": [
+                    "vi-pillar",
+                    "vi-thang",
+                    "vi-ngay",
+                    "vi-tay-ga"
+                ],
+                "hits@5": 1
+            },
+            "vi-ha-giang": {
+                "ranked": [],
+                "relevant": [
+                    "vi-ninh-binh",
+                    "vi-sapa",
+                    "vi-du-lich-viet-nam"
+                ],
+                "hits@5": 0
+            },
+            "vi-ninh-binh": {
+                "ranked": [],
+                "relevant": [
+                    "vi-du-lich-viet-nam",
+                    "vi-sapa"
+                ],
+                "hits@5": 0
+            },
+            "vi-sapa": {
+                "ranked": [
+                    "vi-ha-giang"
+                ],
+                "relevant": [
+                    "vi-ha-giang",
+                    "vi-ninh-binh",
+                    "vi-pillar"
+                ],
+                "hits@5": 1
+            },
+            "vi-an-toan": {
+                "ranked": [
+                    "vi-xe-dien"
+                ],
+                "relevant": [
+                    "vi-50cc-bang-lai",
+                    "vi-broken"
+                ],
+                "hits@5": 0
+            },
+            "vi-xe-dien": {
+                "ranked": [
+                    "vi-50cc-gia"
+                ],
+                "relevant": [
+                    "vi-pillar",
+                    "vi-thu-tuc",
+                    "vi-tay-ga"
+                ],
+                "hits@5": 0
+            },
+            "en-daily": {
+                "ranked": [],
+                "relevant": [
+                    "en-monthly",
+                    "en-cheap"
+                ],
+                "hits@5": 0
+            },
+            "en-monthly": {
+                "ranked": [
+                    "en-pillar"
+                ],
+                "relevant": [
+                    "en-pillar",
+                    "en-daily"
+                ],
+                "hits@5": 1
+            },
+            "en-50cc-license": {
+                "ranked": [],
+                "relevant": [
+                    "en-safe-riding"
+                ],
+                "hits@5": 0
+            },
+            "en-ha-giang": {
+                "ranked": [],
+                "relevant": [
+                    "en-vietnam-travel"
+                ],
+                "hits@5": 0
+            },
+            "en-safe-riding": {
+                "ranked": [],
+                "relevant": [
+                    "en-50cc-license"
+                ],
+                "hits@5": 0
+            }
+        },
+        "related": {
+            "vi-ngay": {
+                "ranked": [
+                    "vi-thang",
+                    "vi-50cc-gia",
+                    "vi-gia-re",
+                    "vi-pillar"
+                ],
+                "relevant": [
+                    "vi-pillar",
+                    "vi-thang",
+                    "vi-thu-tuc",
+                    "vi-tay-ga",
+                    "vi-gia-re"
+                ],
+                "hits@5": 3
+            },
+            "vi-thang": {
+                "ranked": [
+                    "vi-ngay",
+                    "vi-50cc-gia",
+                    "vi-pillar",
+                    "vi-tay-ga",
+                    "vi-gia-re"
+                ],
+                "relevant": [
+                    "vi-pillar",
+                    "vi-ngay",
+                    "vi-thu-tuc",
+                    "vi-tay-ga"
+                ],
+                "hits@5": 3
+            },
+            "vi-50cc-gia": {
+                "ranked": [
+                    "vi-50cc-bang-lai",
+                    "vi-tay-ga",
+                    "vi-ngay",
+                    "vi-thang",
+                    "vi-ngay-gia-tot"
+                ],
+                "relevant": [
+                    "vi-pillar",
+                    "vi-50cc-bang-lai",
+                    "vi-tay-ga",
+                    "vi-ngay"
+                ],
+                "hits@5": 3
+            },
+            "vi-50cc-bang-lai": {
+                "ranked": [
+                    "vi-an-toan",
+                    "vi-50cc-gia"
+                ],
+                "relevant": [
+                    "vi-50cc-gia",
+                    "vi-an-toan"
+                ],
+                "hits@5": 2
+            },
+            "vi-tay-ga": {
+                "ranked": [
+                    "vi-pillar",
+                    "vi-xe-dien",
+                    "vi-gia-re",
+                    "vi-50cc-gia",
+                    "vi-thu-tuc"
+                ],
+                "relevant": [
+                    "vi-pillar",
+                    "vi-ngay",
+                    "vi-thang",
+                    "vi-50cc-gia",
+                    "vi-thu-tuc"
+                ],
+                "hits@5": 3
+            },
+            "vi-thu-tuc": {
+                "ranked": [
+                    "vi-pillar",
+                    "vi-gia-re",
+                    "vi-xe-dien",
+                    "vi-tay-ga"
+                ],
+                "relevant": [
+                    "vi-pillar",
+                    "vi-thang",
+                    "vi-ngay",
+                    "vi-tay-ga"
+                ],
+                "hits@5": 2
+            },
+            "vi-ha-giang": {
+                "ranked": [
+                    "vi-ninh-binh",
+                    "vi-du-lich-viet-nam",
+                    "vi-sapa"
+                ],
+                "relevant": [
+                    "vi-ninh-binh",
+                    "vi-sapa",
+                    "vi-du-lich-viet-nam"
+                ],
+                "hits@5": 3
+            },
+            "vi-ninh-binh": {
+                "ranked": [
+                    "vi-ha-giang",
+                    "vi-du-lich-viet-nam"
+                ],
+                "relevant": [
+                    "vi-ha-giang",
+                    "vi-du-lich-viet-nam",
+                    "vi-sapa"
+                ],
+                "hits@5": 2
+            },
+            "vi-sapa": {
+                "ranked": [
+                    "vi-ha-giang"
+                ],
+                "relevant": [
+                    "vi-ha-giang",
+                    "vi-ninh-binh",
+                    "vi-pillar"
+                ],
+                "hits@5": 1
+            },
+            "vi-an-toan": {
+                "ranked": [
+                    "vi-50cc-bang-lai"
+                ],
+                "relevant": [
+                    "vi-50cc-bang-lai",
+                    "vi-broken"
+                ],
+                "hits@5": 1
+            },
+            "vi-xe-dien": {
+                "ranked": [
+                    "vi-tay-ga",
+                    "vi-thu-tuc",
+                    "vi-pillar"
+                ],
+                "relevant": [
+                    "vi-pillar",
+                    "vi-thu-tuc",
+                    "vi-tay-ga"
+                ],
+                "hits@5": 3
+            },
+            "en-daily": {
+                "ranked": [
+                    "en-monthly",
+                    "en-pillar",
+                    "en-cheap"
+                ],
+                "relevant": [
+                    "en-pillar",
+                    "en-monthly",
+                    "en-cheap"
+                ],
+                "hits@5": 3
+            },
+            "en-monthly": {
+                "ranked": [
+                    "en-daily",
+                    "en-cheap",
+                    "en-pillar"
+                ],
+                "relevant": [
+                    "en-pillar",
+                    "en-daily"
+                ],
+                "hits@5": 2
+            },
+            "en-50cc-license": {
+                "ranked": [
+                    "en-safe-riding"
+                ],
+                "relevant": [
+                    "en-safe-riding"
+                ],
+                "hits@5": 1
+            },
+            "en-ha-giang": {
+                "ranked": [
+                    "en-vietnam-travel"
+                ],
+                "relevant": [
+                    "en-vietnam-travel"
+                ],
+                "hits@5": 1
+            },
+            "en-safe-riding": {
+                "ranked": [
+                    "en-50cc-license"
+                ],
+                "relevant": [
+                    "en-50cc-license"
+                ],
+                "hits@5": 1
+            }
+        }
+    }
+}

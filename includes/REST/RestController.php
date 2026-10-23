@@ -185,9 +185,12 @@ final class RestController {
 			$embed,
 			array(
 				'lease_token' => array(
-					'type'     => 'string',
-					'required' => true,
-					'pattern'  => '^[a-f0-9]{48}$',
+					'type'    => 'string',
+					'pattern' => '^[a-f0-9]{48}$',
+				),
+				'all_mine'    => array(
+					'type'        => 'boolean',
+					'description' => 'Release every lease held by the current user (used when a browser tab closes mid-request).',
 				),
 				'error'       => array(
 					'type'      => 'string',

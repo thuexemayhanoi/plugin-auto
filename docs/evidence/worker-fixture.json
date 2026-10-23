@@ -1,0 +1,56 @@
+{
+ "when": "2026-10-23T00:56:10.478Z",
+ "browser": "chromium",
+ "results": [
+  {
+   "name": "worker loads bundled runtime + fixture model on WASM",
+   "ok": true,
+   "detail": "wasm 865 ms"
+  },
+  {
+   "name": "self-test gate passes against NumPy reference",
+   "ok": true,
+   "detail": "max Δ 2.78e-8"
+  },
+  {
+   "name": "embeddings (left padding, query instruction, MRL 32, base64) match NumPy",
+   "ok": true,
+   "detail": "max |Δ| 8.94e-8, unit norm true, 4 ms"
+  },
+  {
+   "name": "model files downloaded with verification progress",
+   "ok": true,
+   "detail": "4 progress events"
+  },
+  {
+   "name": "second load re-verifies files from the browser cache (no re-download)",
+   "ok": true,
+   "detail": "tokenizer.json, tokenizer_config.json, config.json, onnx/model.onnx"
+  },
+  {
+   "name": "tampered model file is rejected (SHA-256 mismatch)",
+   "ok": true,
+   "detail": "Integrity check failed for onnx/model.onnx: sha256 mismatch"
+  },
+  {
+   "name": "embedding refused before self-test",
+   "ok": true,
+   "detail": "Self-test has not passed; refusing to embed."
+  },
+  {
+   "name": "failed self-test blocks embedding",
+   "ok": true,
+   "detail": "Self-test has not passed; refusing to embed."
+  },
+  {
+   "name": "no request leaves the allow-list (no CDN, no unpinned files)",
+   "ok": true,
+   "detail": "external: 0, unpinned model paths: "
+  },
+  {
+   "name": "no page errors",
+   "ok": true,
+   "detail": ""
+  }
+ ]
+}

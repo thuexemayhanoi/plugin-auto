@@ -449,7 +449,12 @@
 		el.btn.cancel.addEventListener( 'click', cancel );
 	}
 	window.addEventListener( 'pagehide', function () {
-		release( 'page closed', true );
+		// A claim or an upload may still be in flight (its token unknown or already handed over), so
+		// ask the server to return every lease this user holds; nothing waits for the 180 s expiry.
+		if ( run.active || run.lease ) {
+			run.lease = '';
+			rest( '/embeddings/release', { all_mine: true, error: 'page closed' }, true ).catch( function () {} );
+		}
 	} );
 	setButtons();
 } )();

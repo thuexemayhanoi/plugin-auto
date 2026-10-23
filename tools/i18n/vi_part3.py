@@ -112,6 +112,7 @@ T = {
     "Agents can only control their own jobs.": "Agent chỉ được điều khiển tác vụ của chính mình.",
     "Set confirm=true to rebuild. Derived data is recomputed in the background; WordPress content is not modified.": "Đặt confirm=true để xây dựng lại. Dữ liệu dẫn xuất được tính lại ở nền; nội dung WordPress không bị sửa.",
     "model_version must match the active pinned profile (model key or revision).": "model_version phải khớp hồ sơ mô hình cố định đang dùng (khóa mô hình hoặc revision).",
+    "Provide lease_token or all_mine=true.": "Hãy cung cấp lease_token hoặc all_mine=true.",
     "Provide 1–10 finding IDs.": "Hãy cung cấp 1–10 ID phát hiện.",
     "Invalid finding or status.": "Phát hiện hoặc trạng thái không hợp lệ.",
     "No valid fields.": "Không có trường hợp lệ.",

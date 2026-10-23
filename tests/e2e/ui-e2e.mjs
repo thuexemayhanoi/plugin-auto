@@ -178,23 +178,88 @@ try {
 	} );
 
 	// ---------------------------------------------------------------- Browser inference (fixture model).
-	await check( 'browser inference loop on the Jobs page (TEST FIXTURE model, WASM): detect → consent → load → self-test → claim/embed/complete', async () => {
+	await check( 'browser inference loop on the Jobs page (TEST FIXTURE model, WASM): load → self-test → pause/resume → page reload releases the lease → stop → finish', async () => {
 		const key = wp( 'eval', 'echo \\SemanticSEO\\Semantic\\ModelProfile::active()["model_key"];' );
-		const queued = Number( wp( 'db', 'query', "SELECT COUNT(*) FROM wp_sseo_queue WHERE model_key = '" + key + "'", '--skip-column-names' ) );
+		const q = ( where ) => Number( wp( 'db', 'query', "SELECT COUNT(*) FROM wp_sseo_queue WHERE model_key = '" + key + "'" + where, '--skip-column-names' ) );
+		const queued = q( '' );
 		assert.ok( queued > 0, 'queue filled' );
-		await page.goto( BASE + '/wp-admin/admin.php?page=sseo-jobs' );
-		await page.click( '[data-sseo-action="detect"]' );
-		await page.waitForFunction( () => document.querySelector( '[data-sseo-device-facts]' ).children.length > 0 );
-		await page.check( '[data-sseo-consent]' );
-		await page.click( '[data-sseo-action="load"]' );
-		await page.waitForFunction( () => ! document.querySelector( '[data-sseo-action="start"]' ).disabled, null, { timeout: 120000 } );
+		// Slow uploads down (300 ms each) so pause/stop/reload happen mid-run on this tiny model.
+		await page.route( '**/semantic-seo/v1/embeddings/complete', async ( r ) => {
+			await new Promise( ( res ) => setTimeout( res, 300 ) );
+			await r.continue().catch( () => {} ); // The page may have been reloaded meanwhile.
+		} );
+		const batchLines = () => page.evaluate( () => [ ...document.querySelectorAll( '[data-sseo-log] p' ) ].filter( ( p ) => /tổng|total/.test( p.textContent ) ).length );
+		const waitBatches = ( n ) => page.waitForFunction( ( k ) => [ ...document.querySelectorAll( '[data-sseo-log] p' ) ].filter( ( p ) => /tổng|total/.test( p.textContent ) ).length >= k, n, { timeout: 60000 } );
+		const waitNoLease = async () => {
+			for ( let i = 0; i < 40 && q( " AND status = 'leased'" ) > 0; i++ ) {
+				await page.waitForTimeout( 250 );
+			}
+			return q( " AND status = 'leased'" );
+		};
+		const load = async () => {
+			await page.goto( BASE + '/wp-admin/admin.php?page=sseo-jobs' );
+			await page.click( '[data-sseo-action="detect"]' );
+			await page.waitForFunction( () => document.querySelector( '[data-sseo-device-facts]' ).children.length > 0 );
+			await page.check( '[data-sseo-consent]' );
+			await page.click( '[data-sseo-action="load"]' );
+			await page.waitForFunction( () => ! document.querySelector( '[data-sseo-action="start"]' ).disabled, null, { timeout: 120000 } );
+		};
+		const steps = [];
+		await load();
+		const selftest = await page.textContent( '[data-sseo-log]' );
+		assert.match( selftest, /Tự kiểm thử đạt|Self-test passed/ );
+
+		// Pause: the batch in flight is saved, nothing stays leased, work can resume.
 		await page.click( '[data-sseo-action="start"]' );
-		await page.waitForFunction( ( n ) => /Hàng đợi trống|Queue empty/.test( document.querySelector( '[data-sseo-log]' ).textContent ) || document.querySelector( '[data-sseo-log]' ).textContent.includes( 'tổng ' + n ), queued, { timeout: 180000 } );
+		await waitBatches( 1 );
+		await page.click( '[data-sseo-action="pause"]' );
+		await page.waitForTimeout( 1200 );
+		const pausedDone = q( " AND status = 'done'" );
+		assert.equal( await waitNoLease(), 0, 'no lease left after pause' );
+		assert.ok( pausedDone > 0 && pausedDone < queued, 'paused mid-run: ' + pausedDone + '/' + queued );
+		await page.waitForTimeout( 1000 );
+		assert.equal( q( " AND status = 'done'" ), pausedDone, 'nothing processed while paused' );
+		steps.push( 'paused at ' + pausedDone );
+
+		// Resume, then reload the page while an upload is in flight: pagehide releases the lease
+		// immediately (the token had already been handed to the upload request).
+		const uploading = page.waitForRequest( ( r ) => r.url().includes( '/embeddings/complete' ) );
+		await page.click( '[data-sseo-action="start"]' );
+		await uploading;
+		await page.reload();
+		assert.equal( await waitNoLease(), 0, 'lease released on page unload during an upload' );
+		steps.push( 'reload during upload released the lease at ' + q( " AND status = 'done'" ) );
+
+		// If the tab closes while a *claim* is in flight the browser never learns the token; those
+		// items return to the queue when the 180 s lease expires. Simulate the expiry clock.
+		await load();
+		const claiming = page.waitForRequest( ( r ) => r.url().includes( '/embeddings/claim' ) );
+		await page.click( '[data-sseo-action="start"]' );
+		await claiming;
+		await page.reload();
+		await page.waitForTimeout( 1500 );
+		const raced = q( " AND status = 'leased'" );
+		wp( 'db', 'query', "UPDATE wp_sseo_queue SET lease_expires = DATE_SUB(UTC_TIMESTAMP(), INTERVAL 1 SECOND) WHERE status = 'leased'" );
+		wp( 'eval', '\\SemanticSEO\\Semantic\\EmbeddingQueue::expire_leases();' );
+		assert.equal( q( " AND status = 'leased'" ), 0, 'expired leases return to the queue' );
+		steps.push( 'reload during claim: ' + raced + ' item(s) waited for lease expiry' );
+
+		// Load again, start, stop (releases the claimed batch), start again and finish.
+		await load();
+		await page.click( '[data-sseo-action="start"]' );
+		await waitBatches( 1 );
+		await page.click( '[data-sseo-action="cancel"]' );
+		assert.equal( await waitNoLease(), 0, 'stop releases the lease' );
+		steps.push( 'stopped at ' + q( " AND status = 'done'" ) );
+		await page.waitForFunction( () => ! document.querySelector( '[data-sseo-action="start"]' ).disabled );
+		await page.click( '[data-sseo-action="start"]' );
+		await page.waitForFunction( () => /Hàng đợi trống|Queue empty/.test( document.querySelector( '[data-sseo-log]' ).textContent ), null, { timeout: 180000 } );
+		await page.unroute( '**/semantic-seo/v1/embeddings/complete' );
 		await page.screenshot( { path: path.join( SHOTS, 'desktop', '15-jobs-inference-fixture.jpg' ), type: 'jpeg', quality: 70, fullPage: true } );
 		const stored = Number( wp( 'db', 'query', "SELECT COUNT(*) FROM wp_sseo_embeddings WHERE model_key = '" + key + "'", '--skip-column-names' ) );
-		const log = await page.textContent( '[data-sseo-log]' );
-		assert.equal( stored, queued, log.slice( -400 ) );
-		return stored + '/' + queued + ' vectors stored via inference.js + worker.js';
+		assert.equal( stored, queued );
+		assert.equal( q( " AND status <> 'done'" ), 0 );
+		return stored + '/' + queued + ' vectors stored; ' + steps.join( '; ' );
 	} );
 
 	await check( 'unsupported device (no WebAssembly, no WebGPU): clear message, model loading disabled, lexical pages still work', async () => {

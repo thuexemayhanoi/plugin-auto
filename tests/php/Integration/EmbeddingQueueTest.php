@@ -223,4 +223,29 @@ final class EmbeddingQueueTest extends TestCase {
 		$this->assertNotSame( $before, $after, 'Dimension is part of the model key: old vectors become ineligible.' );
 		$this->assertSame( 0, EmbeddingQueue::counts()['pending'], 'Items queued for the old profile are not served for the new one.' );
 	}
+
+	public function test_release_all_mine_only_touches_the_callers_leases() {
+		$this->prepare();
+		$first  = Api::embedding_claim( array( 'limit' => 2 ) );
+		$second = Api::embedding_claim( array( 'limit' => 2 ) );
+		$this->assertCount( 2, $first['items'] );
+		$this->assertCount( 2, $second['items'] );
+		$other_worker = self::factory()->user->create( array( 'role' => 'sseo_worker' ) );
+		$mine         = get_current_user_id();
+		wp_set_current_user( $other_worker );
+		$theirs = Api::embedding_claim( array( 'limit' => 2 ) );
+		$this->assertCount( 2, $theirs['items'] );
+
+		wp_set_current_user( $mine );
+		$this->assertWPError( Api::embedding_release( array() ), 'Token or all_mine required.' );
+		$res = Api::embedding_release(
+			array(
+				'all_mine' => true,
+				'error'    => 'page closed',
+			)
+		);
+		$this->assertSame( 4, $res['released'] );
+		$this->assertSame( 2, (int) Db::value( "SELECT COUNT(*) FROM {queue} WHERE status = 'leased'" ), 'Other worker keeps its lease.' );
+		$this->assertSame( 2, (int) Db::value( "SELECT COUNT(*) FROM {queue} WHERE status = 'leased' AND lease_owner = %d", array( $other_worker ) ) );
+	}
 }

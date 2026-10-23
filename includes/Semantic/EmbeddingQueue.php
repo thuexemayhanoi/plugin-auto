@@ -205,6 +205,27 @@ final class EmbeddingQueue {
 	}
 
 	/**
+	 * Releases every lease held by a user (a browser tab closing mid-request cannot know whether a
+	 * claim or an upload was still in flight). Only the caller's own leases are touched.
+	 *
+	 * @param int    $user_id Worker user.
+	 * @param string $error   Reason.
+	 * @return int Released items.
+	 */
+	public static function release_all_for_user( $user_id, $error = '' ) {
+		if ( (int) $user_id <= 0 ) {
+			return 0;
+		}
+		return max(
+			0,
+			Db::query(
+				"UPDATE {queue} SET status = IF(attempts >= %d, 'failed', 'pending'), lease_hash = '', lease_owner = 0, lease_expires = NULL, last_error = %s, updated_at = %s WHERE lease_owner = %d AND status = 'leased'",
+				array( self::MAX_ATTEMPT, Util::truncate( (string) $error, 250 ), Util::now(), (int) $user_id )
+			)
+		);
+	}
+
+	/**
 	 * Releases items of a lease (worker stopped, paused or failed).
 	 *
 	 * @param int    $user_id Worker user.

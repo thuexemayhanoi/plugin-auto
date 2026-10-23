@@ -916,7 +916,14 @@ final class Api {
 		if ( is_wp_error( $g ) ) {
 			return $g;
 		}
-		return array( 'released' => EmbeddingQueue::release( get_current_user_id(), isset( $args['lease_token'] ) ? (string) $args['lease_token'] : '', isset( $args['error'] ) ? sanitize_text_field( (string) $args['error'] ) : '' ) );
+		$error = isset( $args['error'] ) ? sanitize_text_field( (string) $args['error'] ) : '';
+		if ( ! empty( $args['all_mine'] ) ) {
+			return array( 'released' => EmbeddingQueue::release_all_for_user( get_current_user_id(), $error ) );
+		}
+		if ( empty( $args['lease_token'] ) ) {
+			return new \WP_Error( 'sseo_invalid', __( 'Provide lease_token or all_mine=true.', 'semantic-seo-engine-vi-en' ), array( 'status' => 400 ) );
+		}
+		return array( 'released' => EmbeddingQueue::release( get_current_user_id(), (string) $args['lease_token'], $error ) );
 	}
 
 	/**

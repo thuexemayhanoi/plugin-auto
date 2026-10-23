@@ -34,7 +34,7 @@ msgstr "thuexemayhanoi"
 msgid "Unknown action."
 msgstr "Thao tác không hợp lệ."
 
-#: admin/controllers/Actions.php:58 includes/REST/RestController.php:211 includes/Services/Guard.php:44
+#: admin/controllers/Actions.php:58 includes/REST/RestController.php:214 includes/Services/Guard.php:44
 msgid "You do not have permission for this action."
 msgstr "Bạn không có quyền thực hiện thao tác này."
 
@@ -166,53 +166,53 @@ msgstr "Chỉ chấp nhận tệp .csv."
 msgid "The file is larger than 5 MB."
 msgstr "Tệp lớn hơn 5 MB."
 
-#: admin/controllers/Actions.php:544
+#: admin/controllers/Actions.php:545
 msgid "Preview ready below. Nothing has been written yet."
 msgstr "Bản xem trước ở bên dưới. Chưa có gì được ghi."
 
 #. translators: %d: number of rows
-#: admin/controllers/Actions.php:564
+#: admin/controllers/Actions.php:565
 #, php-format
 msgid "Import applied to %d documents (plugin fields only)."
 msgstr "Đã nhập cho %d tài liệu (chỉ các trường của plugin)."
 
 #. translators: 1: valid rows, 2: total rows, 3: matched rows
-#: admin/controllers/Actions.php:592
+#: admin/controllers/Actions.php:593
 #, php-format
 msgid "%1$d of %2$d rows valid, %3$d matched to inventoried URLs."
 msgstr "%1$d/%2$d dòng hợp lệ, %3$d dòng khớp với URL đã kiểm kê."
 
-#: admin/controllers/Actions.php:593
+#: admin/controllers/Actions.php:594
 msgid "Dry run only:"
 msgstr "Chạy thử (không ghi):"
 
-#: admin/controllers/Actions.php:593
+#: admin/controllers/Actions.php:594
 msgid "Imported:"
 msgstr "Đã nhập:"
 
-#: admin/controllers/Actions.php:608
+#: admin/controllers/Actions.php:609
 msgid "Import deleted."
 msgstr "Đã xóa lần nhập."
 
-#: admin/controllers/Actions.php:620
+#: admin/controllers/Actions.php:621
 msgid "Scope saved."
 msgstr "Đã lưu phạm vi."
 
-#: admin/controllers/Actions.php:636
+#: admin/controllers/Actions.php:637
 msgid "No published posts in scope."
 msgstr "Không có bài đã xuất bản nào trong phạm vi."
 
 #. translators: %d: number of posts
-#: admin/controllers/Actions.php:646
+#: admin/controllers/Actions.php:647
 #, php-format
 msgid "Read-only pilot started on the %d most recently updated posts."
 msgstr "Đã bắt đầu chạy thử chỉ-đọc trên %d bài cập nhật gần nhất."
 
-#: admin/controllers/Actions.php:654
+#: admin/controllers/Actions.php:655
 msgid "Setup finished. Read-only mode stays on; nothing changes on the site without your approval."
 msgstr "Hoàn tất thiết lập. Chế độ chỉ-đọc vẫn bật; không có gì trên website thay đổi nếu bạn chưa phê duyệt."
 
-#: admin/controllers/Actions.php:656
+#: admin/controllers/Actions.php:657
 msgid "Unknown step."
 msgstr "Bước không hợp lệ."
 
@@ -268,7 +268,7 @@ msgstr "Mật khẩu ứng dụng"
 msgid "Agent accounts"
 msgstr "Tài khoản agent"
 
-#: admin/controllers/AgentsPage.php:80 admin/controllers/ClustersPage.php:100 admin/controllers/ClustersPage.php:115 admin/controllers/MatrixPage.php:149
+#: admin/controllers/AgentsPage.php:80 admin/controllers/ClustersPage.php:131 admin/controllers/ClustersPage.php:148 admin/controllers/MatrixPage.php:152
 msgid "Role"
 msgstr "Vai trò"
 
@@ -363,7 +363,7 @@ msgstr "Lưu cài đặt mở quyền"
 msgid "Recent agent activity"
 msgstr "Hoạt động agent gần đây"
 
-#: admin/controllers/AgentsPage.php:152 admin/controllers/AuditPage.php:243
+#: admin/controllers/AgentsPage.php:152 admin/controllers/AuditPage.php:272
 msgid "When (UTC)"
 msgstr "Thời điểm (UTC)"
 
@@ -371,11 +371,11 @@ msgstr "Thời điểm (UTC)"
 msgid "Agent"
 msgstr "Agent"
 
-#: admin/controllers/AgentsPage.php:154 admin/controllers/AuditPage.php:245
+#: admin/controllers/AgentsPage.php:154 admin/controllers/AuditPage.php:274
 msgid "Action"
 msgstr "Thao tác"
 
-#: admin/controllers/AgentsPage.php:155 admin/controllers/AuditPage.php:222 admin/controllers/AuditPage.php:247
+#: admin/controllers/AgentsPage.php:155 admin/controllers/AuditPage.php:249 admin/controllers/AuditPage.php:276
 msgid "Result"
 msgstr "Kết quả"
 
@@ -395,15 +395,15 @@ msgstr "Mỗi thay đổi là một diff chính xác, gắn mã băm: xem trư�
 msgid "Proposals"
 msgstr "Đề xuất"
 
-#: admin/controllers/AuditPage.php:31 admin/controllers/AuditPage.php:165
+#: admin/controllers/AuditPage.php:31 admin/controllers/AuditPage.php:182
 msgid "Applied changes"
 msgstr "Thay đổi đã áp dụng"
 
-#: admin/controllers/AuditPage.php:32 admin/controllers/AuditPage.php:197
+#: admin/controllers/AuditPage.php:32 admin/controllers/AuditPage.php:214
 msgid "Approvals"
 msgstr "Phê duyệt"
 
-#: admin/controllers/AuditPage.php:33 admin/controllers/AuditPage.php:241
+#: admin/controllers/AuditPage.php:33 admin/controllers/AuditPage.php:270
 msgid "Audit log"
 msgstr "Nhật ký kiểm toán"
 
@@ -411,171 +411,171 @@ msgstr "Nhật ký kiểm toán"
 msgid "Sections"
 msgstr "Mục"
 
-#: admin/controllers/AuditPage.php:63 admin/controllers/AuditPage.php:169 admin/controllers/AuditPage.php:202 admin/controllers/CannibalizationPage.php:51 admin/controllers/JobsPage.php:86 admin/controllers/LinksPage.php:41 admin/controllers/RelatedPage.php:29 admin/controllers/SemanticPage.php:85 admin/controllers/SemanticPage.php:195
+#: admin/controllers/AuditPage.php:76 admin/controllers/AuditPage.php:186 admin/controllers/AuditPage.php:219 admin/controllers/CannibalizationPage.php:71 admin/controllers/JobsPage.php:126 admin/controllers/LinksPage.php:74 admin/controllers/RelatedPage.php:29 admin/controllers/SemanticPage.php:85 admin/controllers/SemanticPage.php:250
 msgid "Status"
 msgstr "Trạng thái"
 
-#: admin/controllers/AuditPage.php:63 admin/controllers/AuditPage.php:222 admin/controllers/CannibalizationPage.php:52 admin/controllers/ClustersPage.php:28 admin/controllers/LinksPage.php:42 admin/controllers/MatrixPage.php:178 admin/controllers/QaPage.php:48
+#: admin/controllers/AuditPage.php:77 admin/controllers/AuditPage.php:250 admin/controllers/CannibalizationPage.php:74 admin/controllers/ClustersPage.php:38 admin/controllers/LinksPage.php:77 admin/controllers/MatrixPage.php:186 admin/controllers/QaPage.php:71
 msgid "Filter"
 msgstr "Lọc"
 
-#: admin/controllers/AuditPage.php:75
+#: admin/controllers/AuditPage.php:90
 msgid "No proposals in this state. Create previews from link or classification suggestions."
 msgstr "Không có đề xuất ở trạng thái này. Hãy tạo bản xem trước từ gợi ý liên kết hoặc gợi ý phân loại."
 
 #. translators: 1: id, 2: type
-#: admin/controllers/AuditPage.php:80
+#: admin/controllers/AuditPage.php:95
 #, php-format
 msgid "Proposal #%1$d — %2$s"
 msgstr "Đề xuất #%1$d — %2$s"
 
 #. translators: 1: id, 2: type
-#: admin/controllers/AuditPage.php:81
+#: admin/controllers/AuditPage.php:96
 msgid "Object:"
 msgstr "Đối tượng:"
 
 #. translators: 1: id, 2: type
-#: admin/controllers/AuditPage.php:81
+#: admin/controllers/AuditPage.php:96
 msgid "created via"
 msgstr "tạo qua"
 
-#: admin/controllers/AuditPage.php:82
+#: admin/controllers/AuditPage.php:97
 msgid "Why:"
 msgstr "Lý do:"
 
-#: admin/controllers/AuditPage.php:87
+#: admin/controllers/AuditPage.php:102
 msgid "Before:"
 msgstr "Trước:"
 
-#: admin/controllers/AuditPage.php:87
+#: admin/controllers/AuditPage.php:102
 msgid "After:"
 msgstr "Sau:"
 
-#: admin/controllers/AuditPage.php:89
+#: admin/controllers/AuditPage.php:104
 msgid "Unchanged:"
 msgstr "Không đổi:"
 
-#: admin/controllers/AuditPage.php:95
+#: admin/controllers/AuditPage.php:110
 msgid "I reviewed this exact change and approve it for this single object."
 msgstr "Tôi đã xem chính xác thay đổi này và phê duyệt cho riêng đối tượng này."
 
-#: admin/controllers/AuditPage.php:96
+#: admin/controllers/AuditPage.php:111
 msgid "Note (optional)"
 msgstr "Ghi chú (tùy chọn)"
 
-#: admin/controllers/AuditPage.php:97
+#: admin/controllers/AuditPage.php:112
 msgid "Approve"
 msgstr "Phê duyệt"
 
-#: admin/controllers/AuditPage.php:98
+#: admin/controllers/AuditPage.php:113
 msgid "Reject"
 msgstr "Từ chối"
 
 #. translators: 1: id, 2: expiry
-#: admin/controllers/AuditPage.php:108
+#: admin/controllers/AuditPage.php:123
 #, php-format
 msgid "Approval #%1$d active until %2$s UTC."
 msgstr "Phê duyệt #%1$d còn hiệu lực đến %2$s UTC."
 
-#: admin/controllers/AuditPage.php:117
+#: admin/controllers/AuditPage.php:133
 msgid "Apply now"
 msgstr "Áp dụng ngay"
 
-#: admin/controllers/AuditPage.php:122
+#: admin/controllers/AuditPage.php:139
 msgid "Revoke approval"
 msgstr "Thu hồi phê duyệt"
 
-#: admin/controllers/AuditPage.php:148
+#: admin/controllers/AuditPage.php:165
 msgid "Confirm"
 msgstr "Xác nhận"
 
-#: admin/controllers/AuditPage.php:148
+#: admin/controllers/AuditPage.php:165
 msgid "Roll back"
 msgstr "Hoàn tác"
 
-#: admin/controllers/AuditPage.php:151
+#: admin/controllers/AuditPage.php:168
 msgid "Authorize an agent rollback"
 msgstr "Cho phép agent hoàn tác"
 
-#: admin/controllers/AuditPage.php:159
+#: admin/controllers/AuditPage.php:176
 msgid "readback verified"
 msgstr "đã đọc lại xác minh"
 
-#: admin/controllers/AuditPage.php:159
+#: admin/controllers/AuditPage.php:176
 msgid "rollback:"
 msgstr "hoàn tác:"
 
-#: admin/controllers/AuditPage.php:167
+#: admin/controllers/AuditPage.php:184
 msgid "Change"
 msgstr "Thay đổi"
 
-#: admin/controllers/AuditPage.php:168 admin/controllers/AuditPage.php:246
+#: admin/controllers/AuditPage.php:185 admin/controllers/AuditPage.php:275
 msgid "Object"
 msgstr "Đối tượng"
 
-#: admin/controllers/AuditPage.php:170
+#: admin/controllers/AuditPage.php:187
 msgid "Verification"
 msgstr "Xác minh"
 
-#: admin/controllers/AuditPage.php:171
+#: admin/controllers/AuditPage.php:188
 msgid "Applied via"
 msgstr "Áp dụng qua"
 
-#: admin/controllers/AuditPage.php:172
+#: admin/controllers/AuditPage.php:189
 msgid "Undo"
 msgstr "Hoàn tác"
 
-#: admin/controllers/AuditPage.php:175
+#: admin/controllers/AuditPage.php:192
 msgid "No changes have been applied by this plugin."
 msgstr "Plugin này chưa áp dụng thay đổi nào."
 
 #. translators: %d: id
-#: admin/controllers/AuditPage.php:190
+#: admin/controllers/AuditPage.php:207
 #, php-format
 msgid "proposal #%d"
 msgstr "đề xuất #%d"
 
-#: admin/controllers/AuditPage.php:199
+#: admin/controllers/AuditPage.php:216
 msgid "Approval"
 msgstr "Phê duyệt"
 
-#: admin/controllers/AuditPage.php:200
+#: admin/controllers/AuditPage.php:217
 msgid "Target"
 msgstr "Đích"
 
-#: admin/controllers/AuditPage.php:201
+#: admin/controllers/AuditPage.php:218
 msgid "Approved by"
 msgstr "Người phê duyệt"
 
-#: admin/controllers/AuditPage.php:203
+#: admin/controllers/AuditPage.php:220
 msgid "Expires (UTC)"
 msgstr "Hết hạn (UTC)"
 
-#: admin/controllers/AuditPage.php:206
+#: admin/controllers/AuditPage.php:223
 msgid "No approvals yet."
 msgstr "Chưa có phê duyệt nào."
 
-#: admin/controllers/AuditPage.php:222
+#: admin/controllers/AuditPage.php:240
 msgid "Action starts with"
 msgstr "Thao tác bắt đầu bằng"
 
-#: admin/controllers/AuditPage.php:222 admin/controllers/CannibalizationPage.php:50 admin/controllers/ClustersPage.php:28 admin/controllers/LinksPage.php:39 admin/controllers/LinksPage.php:40 admin/controllers/MatrixPage.php:120 admin/controllers/MatrixPage.php:130 admin/controllers/MatrixPage.php:143 admin/controllers/QaPage.php:47
+#: admin/controllers/AuditPage.php:243 admin/controllers/CannibalizationPage.php:54 admin/controllers/ClustersPage.php:32 admin/controllers/LinksPage.php:43 admin/controllers/LinksPage.php:55 admin/controllers/MatrixPage.php:120 admin/controllers/MatrixPage.php:131 admin/controllers/MatrixPage.php:146 admin/controllers/QaPage.php:63
 msgid "All"
 msgstr "Tất cả"
 
-#: admin/controllers/AuditPage.php:244
+#: admin/controllers/AuditPage.php:273
 msgid "Who / via"
 msgstr "Ai / qua kênh"
 
-#: admin/controllers/AuditPage.php:248
+#: admin/controllers/AuditPage.php:277
 msgid "Details (redacted)"
 msgstr "Chi tiết (đã ẩn thông tin nhạy cảm)"
 
-#: admin/controllers/AuditPage.php:251
+#: admin/controllers/AuditPage.php:280
 msgid "The audit log is empty."
 msgstr "Nhật ký kiểm toán trống."
 
-#: admin/controllers/AuditPage.php:254
+#: admin/controllers/AuditPage.php:294
 msgid "Older ›"
 msgstr "Cũ hơn ›"
 
@@ -595,55 +595,55 @@ msgstr "Tất cả nhóm"
 msgid "Category"
 msgstr "Chuyên mục"
 
-#: admin/controllers/CannibalizationPage.php:50 admin/controllers/ClustersPage.php:28 admin/controllers/LinksPage.php:39 admin/controllers/LinksPage.php:111 admin/controllers/MatrixPage.php:75 admin/controllers/MatrixPage.php:126 admin/controllers/QaPage.php:47 admin/controllers/SemanticPage.php:51 admin/controllers/SemanticPage.php:86
+#: admin/controllers/CannibalizationPage.php:59 admin/controllers/ClustersPage.php:37 admin/controllers/LinksPage.php:48 admin/controllers/LinksPage.php:172 admin/controllers/MatrixPage.php:75 admin/controllers/MatrixPage.php:126 admin/controllers/QaPage.php:68 admin/controllers/SemanticPage.php:51 admin/controllers/SemanticPage.php:86
 msgid "Locale"
 msgstr "Ngôn ngữ"
 
-#: admin/controllers/CannibalizationPage.php:60
+#: admin/controllers/CannibalizationPage.php:82
 msgid "No overlap hypotheses for these filters."
 msgstr "Không có giả thuyết chồng lấn nào với bộ lọc này."
 
 #. translators: %s: group
-#: admin/controllers/CannibalizationPage.php:68
+#: admin/controllers/CannibalizationPage.php:90
 #, php-format
 msgid "Overlap group %s"
 msgstr "Nhóm chồng lấn %s"
 
-#: admin/controllers/CannibalizationPage.php:79
+#: admin/controllers/CannibalizationPage.php:101
 msgid "Topic"
 msgstr "Chủ đề"
 
-#: admin/controllers/CannibalizationPage.php:79 admin/controllers/LinksPage.php:76
+#: admin/controllers/CannibalizationPage.php:101 admin/controllers/LinksPage.php:124
 msgid "Lexical"
 msgstr "Từ vựng"
 
-#: admin/controllers/CannibalizationPage.php:79 admin/controllers/LinksPage.php:76
+#: admin/controllers/CannibalizationPage.php:101 admin/controllers/LinksPage.php:124
 msgid "Semantic"
 msgstr "Ngữ nghĩa"
 
-#: admin/controllers/CannibalizationPage.php:79
+#: admin/controllers/CannibalizationPage.php:101
 msgid "Title overlap"
 msgstr "Trùng tiêu đề"
 
-#: admin/controllers/CannibalizationPage.php:79
+#: admin/controllers/CannibalizationPage.php:101
 msgid "Shingle overlap"
 msgstr "Trùng đoạn văn (shingle)"
 
 #. translators: 1: intents, 2: shared terms
-#: admin/controllers/CannibalizationPage.php:80
+#: admin/controllers/CannibalizationPage.php:102
 #, php-format
 msgid "Intents: %1$s · Shared terms: %2$s"
 msgstr "Ý định: %1$s · Từ khóa chung: %2$s"
 
-#: admin/controllers/CannibalizationPage.php:83
+#: admin/controllers/CannibalizationPage.php:112
 msgid "Confirm as issue to fix editorially"
 msgstr "Xác nhận là vấn đề cần biên tập"
 
-#: admin/controllers/CannibalizationPage.php:83
+#: admin/controllers/CannibalizationPage.php:119
 msgid "Not a problem"
 msgstr "Không phải vấn đề"
 
-#: admin/controllers/CannibalizationPage.php:89 admin/controllers/QaPage.php:85
+#: admin/controllers/CannibalizationPage.php:139 admin/controllers/QaPage.php:130
 msgid "More ›"
 msgstr "Thêm ›"
 
@@ -655,96 +655,96 @@ msgstr "Cụm Pillar–Hub–Silo"
 msgid "Built from your existing categories. Roles are editorial recommendations you can override and lock; no category is created or changed without an approved diff."
 msgstr "Xây dựng từ các chuyên mục hiện có. Vai trò là khuyến nghị biên tập, bạn có thể ghi đè và khóa; không chuyên mục nào được tạo hay thay đổi nếu chưa có diff được phê duyệt."
 
-#: admin/controllers/ClustersPage.php:36
+#: admin/controllers/ClustersPage.php:47
 msgid "No clusters yet. Run an analysis; clusters come from categories in scope."
 msgstr "Chưa có cụm. Hãy chạy phân tích; cụm được tạo từ các chuyên mục trong phạm vi."
 
 #. translators: %d: count
-#: admin/controllers/ClustersPage.php:39
+#: admin/controllers/ClustersPage.php:50
 #, php-format
 msgid "%d published posts are not in any cluster (see classification suggestions below)."
 msgstr "%d bài đã xuất bản chưa thuộc cụm nào (xem gợi ý phân loại bên dưới)."
 
-#: admin/controllers/ClustersPage.php:57
+#: admin/controllers/ClustersPage.php:71
 msgid "No category — suggested"
 msgstr "Chưa có chuyên mục — gợi ý"
 
-#: admin/controllers/ClustersPage.php:57
+#: admin/controllers/ClustersPage.php:71
 msgid "Possibly miscategorized"
 msgstr "Có thể sai chuyên mục"
 
-#: admin/controllers/ClustersPage.php:59
+#: admin/controllers/ClustersPage.php:73
 msgid "Preview category assignment"
 msgstr "Xem trước việc gán chuyên mục"
 
-#: admin/controllers/ClustersPage.php:59 admin/controllers/LinksPage.php:70 admin/controllers/QaPage.php:67
+#: admin/controllers/ClustersPage.php:79 admin/controllers/LinksPage.php:117 admin/controllers/QaPage.php:99
 msgid "Dismiss"
 msgstr "Bỏ qua"
 
-#: admin/controllers/ClustersPage.php:63 admin/controllers/ClustersPage.php:65
+#: admin/controllers/ClustersPage.php:84 admin/controllers/ClustersPage.php:86
 msgid "Classification suggestions"
 msgstr "Gợi ý phân loại"
 
-#: admin/controllers/ClustersPage.php:67 admin/controllers/ClustersPage.php:114 admin/controllers/LinksPage.php:110 admin/controllers/LinksPage.php:133 admin/controllers/MatrixPage.php:74 admin/controllers/QaPage.php:76 admin/controllers/RelatedPage.php:69 admin/controllers/SemanticPage.php:50 admin/controllers/SemanticPage.php:161
+#: admin/controllers/ClustersPage.php:88 admin/controllers/ClustersPage.php:147 admin/controllers/LinksPage.php:171 admin/controllers/LinksPage.php:194 admin/controllers/MatrixPage.php:74 admin/controllers/QaPage.php:109 admin/controllers/RelatedPage.php:69 admin/controllers/SemanticPage.php:50 admin/controllers/SemanticPage.php:216
 msgid "Page"
 msgstr "Trang"
 
-#: admin/controllers/ClustersPage.php:68
+#: admin/controllers/ClustersPage.php:89
 msgid "Finding"
 msgstr "Phát hiện"
 
-#: admin/controllers/ClustersPage.php:69
+#: admin/controllers/ClustersPage.php:90
 msgid "Closest existing category (similarity)"
 msgstr "Chuyên mục hiện có gần nhất (độ tương đồng)"
 
-#: admin/controllers/ClustersPage.php:70 admin/controllers/LinksPage.php:87 admin/controllers/MatrixPage.php:298 admin/controllers/QaPage.php:79 admin/controllers/SettingsPage.php:118
+#: admin/controllers/ClustersPage.php:91 admin/controllers/LinksPage.php:135 admin/controllers/MatrixPage.php:306 admin/controllers/QaPage.php:112 admin/controllers/SettingsPage.php:171
 msgid "Actions"
 msgstr "Thao tác"
 
-#: admin/controllers/ClustersPage.php:73
+#: admin/controllers/ClustersPage.php:94
 msgid "No classification suggestions."
 msgstr "Không có gợi ý phân loại."
 
 #. translators: %d: members
-#: admin/controllers/ClustersPage.php:92
+#: admin/controllers/ClustersPage.php:113
 #, php-format
 msgid "%d page"
 msgid_plural "%d pages"
 msgstr[0] "%d trang"
 
-#: admin/controllers/ClustersPage.php:101
+#: admin/controllers/ClustersPage.php:134
 msgid "Lock"
 msgstr "Khóa"
 
-#: admin/controllers/ClustersPage.php:101 admin/controllers/RelatedPage.php:37 admin/controllers/SemanticPage.php:139
+#: admin/controllers/ClustersPage.php:134 admin/controllers/RelatedPage.php:37 admin/controllers/SemanticPage.php:174
 msgid "Save"
 msgstr "Lưu"
 
-#: admin/controllers/ClustersPage.php:105
+#: admin/controllers/ClustersPage.php:138
 msgid "Recommended main page"
 msgstr "Trang chính được khuyến nghị"
 
-#: admin/controllers/ClustersPage.php:116 admin/controllers/LinksPage.php:134
+#: admin/controllers/ClustersPage.php:149 admin/controllers/LinksPage.php:195
 msgid "Inbound"
 msgstr "Liên kết đến"
 
-#: admin/controllers/ClustersPage.php:117
+#: admin/controllers/ClustersPage.php:150
 msgid "Override"
 msgstr "Ghi đè"
 
-#: admin/controllers/ClustersPage.php:120
+#: admin/controllers/ClustersPage.php:153
 msgid "No member pages."
 msgstr "Không có trang thành viên."
 
-#: admin/controllers/ClustersPage.php:123
+#: admin/controllers/ClustersPage.php:156
 msgid "Main-page recommendation:"
 msgstr "Khuyến nghị trang chính:"
 
-#: admin/controllers/ClustersPage.php:126
+#: admin/controllers/ClustersPage.php:166
 msgid "Unlock cluster"
 msgstr "Mở khóa cụm"
 
-#: admin/controllers/ClustersPage.php:126
+#: admin/controllers/ClustersPage.php:166
 msgid "Lock cluster membership"
 msgstr "Khóa thành viên cụm"
 
@@ -760,174 +760,174 @@ msgstr "Công việc nền chạy theo từng lô nhỏ, có thể tiếp tục.
 msgid "Start a job"
 msgstr "Bắt đầu tác vụ"
 
-#: admin/controllers/JobsPage.php:37
+#: admin/controllers/JobsPage.php:44
 msgid "Inventory + analysis"
 msgstr "Kiểm kê + phân tích"
 
-#: admin/controllers/JobsPage.php:38
+#: admin/controllers/JobsPage.php:48
 msgid "Analysis only"
 msgstr "Chỉ phân tích"
 
-#: admin/controllers/JobsPage.php:39
+#: admin/controllers/JobsPage.php:49
 msgid "Queue embeddings"
 msgstr "Xếp hàng vector nhúng"
 
-#: admin/controllers/JobsPage.php:40
+#: admin/controllers/JobsPage.php:50
 msgid "Verify internal link HTTP status"
 msgstr "Kiểm tra mã HTTP của liên kết nội bộ"
 
-#: admin/controllers/JobsPage.php:43
+#: admin/controllers/JobsPage.php:53
 msgid "Targeted run: post IDs (max 200, comma separated)"
 msgstr "Chạy có mục tiêu: ID bài viết (tối đa 200, cách nhau bằng dấu phẩy)"
 
-#: admin/controllers/JobsPage.php:43
+#: admin/controllers/JobsPage.php:53
 msgid "Analyze these posts"
 msgstr "Phân tích các bài này"
 
-#: admin/controllers/JobsPage.php:45
+#: admin/controllers/JobsPage.php:55
 msgid "WP-Cron is disabled on this site: running jobs advance while this page stays open (or run `wp sseo run`)."
 msgstr "WP-Cron đang tắt trên website này: tác vụ chỉ chạy tiếp khi trang này đang mở (hoặc chạy `wp sseo run`)."
 
-#: admin/controllers/JobsPage.php:56
+#: admin/controllers/JobsPage.php:72
 msgid "Advance now"
 msgstr "Chạy tiếp ngay"
 
 #. translators: %s: size
-#: admin/controllers/JobsPage.php:57 admin/controllers/JobsPage.php:123
+#: admin/controllers/JobsPage.php:80 admin/controllers/JobsPage.php:163
 msgid "Pause"
 msgstr "Tạm dừng"
 
-#: admin/controllers/JobsPage.php:60
+#: admin/controllers/JobsPage.php:90
 msgid "Resume"
 msgstr "Tiếp tục"
 
-#: admin/controllers/JobsPage.php:63
+#: admin/controllers/JobsPage.php:100
 msgid "Cancel"
 msgstr "Hủy"
 
-#: admin/controllers/JobsPage.php:63
+#: admin/controllers/JobsPage.php:102
 msgid "Cancel this job?"
 msgstr "Hủy tác vụ này?"
 
 #. translators: %d: count
-#: admin/controllers/JobsPage.php:72
+#: admin/controllers/JobsPage.php:112
 #, php-format
 msgid "%d object-level errors (see summary)"
 msgstr "%d lỗi ở cấp đối tượng (xem tóm tắt)"
 
-#: admin/controllers/JobsPage.php:77 admin/controllers/JobsPage.php:87
+#: admin/controllers/JobsPage.php:117 admin/controllers/JobsPage.php:127
 msgid "Progress"
 msgstr "Tiến độ"
 
-#: admin/controllers/JobsPage.php:81 admin/controllers/JobsPage.php:83
+#: admin/controllers/JobsPage.php:121 admin/controllers/JobsPage.php:123
 msgid "Jobs"
 msgstr "Tác vụ"
 
-#: admin/controllers/JobsPage.php:85
+#: admin/controllers/JobsPage.php:125
 msgid "Job"
 msgstr "Tác vụ"
 
-#: admin/controllers/JobsPage.php:88
+#: admin/controllers/JobsPage.php:128
 msgid "Controls"
 msgstr "Điều khiển"
 
-#: admin/controllers/JobsPage.php:91
+#: admin/controllers/JobsPage.php:131
 msgid "No jobs yet."
 msgstr "Chưa có tác vụ."
 
-#: admin/controllers/JobsPage.php:106
+#: admin/controllers/JobsPage.php:146
 msgid "Inference device (Tier 1 — browser)"
 msgstr "Thiết bị suy luận (Tầng 1 — trình duyệt)"
 
-#: admin/controllers/JobsPage.php:109
+#: admin/controllers/JobsPage.php:149
 msgid "Model"
 msgstr "Mô hình"
 
-#: admin/controllers/JobsPage.php:109
+#: admin/controllers/JobsPage.php:149
 msgid "base"
 msgstr "gốc"
 
-#: admin/controllers/JobsPage.php:110
+#: admin/controllers/JobsPage.php:150
 msgid "Precision / dimension"
 msgstr "Độ chính xác / số chiều"
 
-#: admin/controllers/JobsPage.php:110
+#: admin/controllers/JobsPage.php:150
 msgid "pooling"
 msgstr "gộp"
 
-#: admin/controllers/JobsPage.php:111
+#: admin/controllers/JobsPage.php:151
 msgid "Initial download"
 msgstr "Dung lượng tải lần đầu"
 
-#: admin/controllers/JobsPage.php:111
+#: admin/controllers/JobsPage.php:151
 msgid "from huggingface.co (pinned revision, SHA-256 verified, cached by this browser)"
 msgstr "từ huggingface.co (phiên bản cố định, kiểm tra SHA-256, lưu đệm trong trình duyệt này)"
 
-#: admin/controllers/JobsPage.php:112
+#: admin/controllers/JobsPage.php:152
 msgid "Privacy"
 msgstr "Quyền riêng tư"
 
-#: admin/controllers/JobsPage.php:112
+#: admin/controllers/JobsPage.php:152
 msgid "Only model files are downloaded from Hugging Face. Your post text is processed inside this browser and the vectors are sent only to this WordPress site."
 msgstr "Chỉ tệp mô hình được tải từ Hugging Face. Nội dung bài viết được xử lý ngay trong trình duyệt này và vector chỉ được gửi về website WordPress này."
 
-#: admin/controllers/JobsPage.php:113
+#: admin/controllers/JobsPage.php:153
 msgid "Devices"
 msgstr "Thiết bị"
 
-#: admin/controllers/JobsPage.php:113
+#: admin/controllers/JobsPage.php:153
 msgid "Desktop Chrome/Edge with WebGPU is fastest; WASM works but is slower; many phones (including iPhones) may be unsupported or too slow — the lexical tier keeps working."
 msgstr "Chrome/Edge trên máy tính có WebGPU là nhanh nhất; WASM vẫn chạy nhưng chậm hơn; nhiều điện thoại (kể cả iPhone) có thể không hỗ trợ hoặc quá chậm — tầng từ vựng vẫn hoạt động bình thường."
 
-#: admin/controllers/JobsPage.php:114
+#: admin/controllers/JobsPage.php:154
 msgid "Queue"
 msgstr "Hàng đợi"
 
 #. translators: 1: pending, 2: leased, 3: done, 4: failed
-#: admin/controllers/JobsPage.php:114
+#: admin/controllers/JobsPage.php:154
 #, php-format
 msgid "%1$d pending · %2$d in progress · %3$d done · %4$d failed"
 msgstr "%1$d chờ · %2$d đang xử lý · %3$d xong · %4$d lỗi"
 
-#: admin/controllers/JobsPage.php:120
+#: admin/controllers/JobsPage.php:160
 msgid "This device:"
 msgstr "Thiết bị này:"
 
-#: admin/controllers/JobsPage.php:120
+#: admin/controllers/JobsPage.php:160
 msgid "Not tested"
 msgstr "Chưa kiểm tra"
 
 #. translators: %s: size
-#: admin/controllers/JobsPage.php:122
+#: admin/controllers/JobsPage.php:162
 #, php-format
 msgid "I understand about %s will be downloaded to this browser from huggingface.co."
 msgstr "Tôi hiểu khoảng %s sẽ được tải về trình duyệt này từ huggingface.co."
 
 #. translators: %s: size
-#: admin/controllers/JobsPage.php:123
+#: admin/controllers/JobsPage.php:163
 msgid "Check this device"
 msgstr "Kiểm tra thiết bị này"
 
 #. translators: %s: size
-#: admin/controllers/JobsPage.php:123
+#: admin/controllers/JobsPage.php:163
 msgid "Load model & run self-test"
 msgstr "Tải mô hình & tự kiểm thử"
 
 #. translators: %s: size
-#: admin/controllers/JobsPage.php:123
+#: admin/controllers/JobsPage.php:163
 msgid "Process embedding queue"
 msgstr "Xử lý hàng đợi vector nhúng"
 
 #. translators: %s: size
-#: admin/controllers/JobsPage.php:123
+#: admin/controllers/JobsPage.php:163
 msgid "Stop & release"
 msgstr "Dừng & trả lại"
 
-#: admin/controllers/JobsPage.php:124
+#: admin/controllers/JobsPage.php:164
 msgid "Keep this tab open and the device awake; closing the tab or locking an iPhone interrupts processing (claimed items return to the queue automatically)."
 msgstr "Giữ tab này mở và thiết bị không ngủ; đóng tab hoặc khóa màn hình iPhone sẽ làm gián đoạn xử lý (các mục đã nhận tự động trở lại hàng đợi)."
 
-#: admin/controllers/JobsPage.php:126
+#: admin/controllers/JobsPage.php:166
 msgid "You do not have the capability to process embeddings."
 msgstr "Bạn không có quyền xử lý vector nhúng."
 
@@ -939,90 +939,90 @@ msgstr "Gợi ý liên kết & Đồ thị"
 msgid "Suggestions only: no link is inserted until you create a preview, review the exact diff and approve it."
 msgstr "Chỉ là gợi ý: không liên kết nào được chèn cho đến khi bạn tạo bản xem trước, xem chính xác diff và phê duyệt."
 
-#: admin/controllers/LinksPage.php:40
+#: admin/controllers/LinksPage.php:61
 msgid "Confidence"
 msgstr "Độ tin cậy"
 
 #. translators: 1: anchor source, 2: byte offset
-#: admin/controllers/LinksPage.php:62
+#: admin/controllers/LinksPage.php:103
 #, php-format
 msgid "anchor from %1$s, byte offset %2$d"
 msgstr "anchor từ %1$s, vị trí byte %2$d"
 
 #. translators: 1: anchor source, 2: byte offset
-#: admin/controllers/LinksPage.php:63
+#: admin/controllers/LinksPage.php:104
 msgid "No natural anchor — editorial insertion needed"
 msgstr "Không có anchor tự nhiên — cần biên tập viên chèn thủ công"
 
-#: admin/controllers/LinksPage.php:67
+#: admin/controllers/LinksPage.php:108
 msgid "Create preview"
 msgstr "Tạo bản xem trước"
 
-#: admin/controllers/LinksPage.php:76
+#: admin/controllers/LinksPage.php:124
 msgid "Anchor"
 msgstr "Anchor"
 
-#: admin/controllers/LinksPage.php:76 admin/controllers/LinksPage.php:119
+#: admin/controllers/LinksPage.php:124 admin/controllers/LinksPage.php:180
 msgid "Graph"
 msgstr "Đồ thị"
 
-#: admin/controllers/LinksPage.php:81
+#: admin/controllers/LinksPage.php:129
 msgid "Internal link suggestions"
 msgstr "Gợi ý liên kết nội bộ"
 
-#: admin/controllers/LinksPage.php:83
+#: admin/controllers/LinksPage.php:131
 msgid "Source → target"
 msgstr "Nguồn → đích"
 
-#: admin/controllers/LinksPage.php:84
+#: admin/controllers/LinksPage.php:132
 msgid "Anchor in source"
 msgstr "Anchor trong trang nguồn"
 
-#: admin/controllers/LinksPage.php:85 admin/controllers/MatrixPage.php:251 admin/controllers/SettingsPage.php:117 admin/controllers/SettingsPage.php:126
+#: admin/controllers/LinksPage.php:133 admin/controllers/MatrixPage.php:259 admin/controllers/SettingsPage.php:170 admin/controllers/SettingsPage.php:189
 msgid "Reason"
 msgstr "Lý do"
 
-#: admin/controllers/LinksPage.php:86 admin/controllers/QaPage.php:78 admin/controllers/SemanticPage.php:194
+#: admin/controllers/LinksPage.php:134 admin/controllers/QaPage.php:111 admin/controllers/SemanticPage.php:249
 msgid "Evidence"
 msgstr "Bằng chứng"
 
-#: admin/controllers/LinksPage.php:90
+#: admin/controllers/LinksPage.php:138
 msgid "No suggestions match these filters."
 msgstr "Không có gợi ý nào khớp bộ lọc."
 
-#: admin/controllers/LinksPage.php:93
+#: admin/controllers/LinksPage.php:154
 msgid "More suggestions ›"
 msgstr "Thêm gợi ý ›"
 
-#: admin/controllers/LinksPage.php:98 admin/controllers/LinksPage.php:108 admin/controllers/MatrixPage.php:175
+#: admin/controllers/LinksPage.php:159 admin/controllers/LinksPage.php:169 admin/controllers/MatrixPage.php:183
 msgid "Orphan candidates"
 msgstr "Trang có thể bị mồ côi"
 
 #. translators: 1: docs, 2: not observed
-#: admin/controllers/LinksPage.php:98
+#: admin/controllers/LinksPage.php:159
 #, php-format
 msgid "Based on links observed by the scanner in %1$d documents. Not observed: %2$s."
 msgstr "Dựa trên liên kết mà bộ quét ghi nhận trong %1$d tài liệu. Không quét: %2$s."
 
-#: admin/controllers/LinksPage.php:112 admin/controllers/SemanticPage.php:92
+#: admin/controllers/LinksPage.php:173 admin/controllers/SemanticPage.php:92
 msgid "Words"
 msgstr "Số từ"
 
-#: admin/controllers/LinksPage.php:115
+#: admin/controllers/LinksPage.php:176
 msgid "No orphan candidates among scanned documents."
 msgstr "Không có trang mồ côi trong các tài liệu đã quét."
 
 #. translators: 1: links, 2: resolved, 3: unresolved
-#: admin/controllers/LinksPage.php:129
+#: admin/controllers/LinksPage.php:190
 #, php-format
 msgid "%1$d internal links observed, %2$d resolved to inventoried pages, %3$d unresolved or broken."
 msgstr "Ghi nhận %1$d liên kết nội bộ, %2$d trỏ tới trang đã kiểm kê, %3$d không xác định hoặc hỏng."
 
-#: admin/controllers/LinksPage.php:131
+#: admin/controllers/LinksPage.php:192
 msgid "Most linked pages"
 msgstr "Trang được liên kết nhiều nhất"
 
-#: admin/controllers/LinksPage.php:135
+#: admin/controllers/LinksPage.php:196
 msgid "Outbound"
 msgstr "Liên kết đi"
 
@@ -1060,7 +1060,7 @@ msgstr[0] "%d URL"
 msgid "SEO Matrix"
 msgstr "Ma trận SEO"
 
-#: admin/controllers/MatrixPage.php:76 admin/controllers/MatrixPage.php:138 admin/controllers/SemanticPage.php:137
+#: admin/controllers/MatrixPage.php:76 admin/controllers/MatrixPage.php:139 admin/controllers/SemanticPage.php:158
 msgid "Intent"
 msgstr "Ý định tìm kiếm"
 
@@ -1080,7 +1080,7 @@ msgstr "Robots / từ khóa chính"
 msgid "QA"
 msgstr "QA"
 
-#: admin/controllers/MatrixPage.php:81 admin/controllers/MatrixPage.php:156
+#: admin/controllers/MatrixPage.php:81 admin/controllers/MatrixPage.php:161
 msgid "Overlap risk"
 msgstr "Rủi ro chồng lấn"
 
@@ -1100,194 +1100,194 @@ msgstr "Không có URL phù hợp. Hãy chạy kiểm kê từ trang Tổng quan
 msgid "Search title or URL"
 msgstr "Tìm theo tiêu đề hoặc URL"
 
-#: admin/controllers/MatrixPage.php:154
+#: admin/controllers/MatrixPage.php:159
 msgid "Inventory order"
 msgstr "Thứ tự kiểm kê"
 
-#: admin/controllers/MatrixPage.php:155
+#: admin/controllers/MatrixPage.php:160
 msgid "Title"
 msgstr "Tiêu đề"
 
-#: admin/controllers/MatrixPage.php:157 admin/controllers/QaPage.php:73 admin/controllers/SemanticPage.php:145
+#: admin/controllers/MatrixPage.php:162 admin/controllers/QaPage.php:106 admin/controllers/SemanticPage.php:200
 msgid "QA issues"
 msgstr "Vấn đề QA"
 
-#: admin/controllers/MatrixPage.php:158
+#: admin/controllers/MatrixPage.php:163
 msgid "Inbound links"
 msgstr "Liên kết đến"
 
 #. translators: 1: scanned docs, 2: links
-#: admin/controllers/MatrixPage.php:159 admin/controllers/OverviewPage.php:122
+#: admin/controllers/MatrixPage.php:164 admin/controllers/OverviewPage.php:122
 msgid "Link suggestions"
 msgstr "Gợi ý liên kết"
 
-#: admin/controllers/MatrixPage.php:160
+#: admin/controllers/MatrixPage.php:165
 msgid "Word count"
 msgstr "Số từ"
 
-#: admin/controllers/MatrixPage.php:161
+#: admin/controllers/MatrixPage.php:166
 msgid "Modified"
 msgstr "Cập nhật"
 
-#: admin/controllers/MatrixPage.php:164
+#: admin/controllers/MatrixPage.php:169
 msgid "Sort"
 msgstr "Sắp xếp"
 
-#: admin/controllers/MatrixPage.php:169
+#: admin/controllers/MatrixPage.php:176
 msgid "Ascending"
 msgstr "Tăng dần"
 
-#: admin/controllers/MatrixPage.php:170
+#: admin/controllers/MatrixPage.php:177
 msgid "Descending"
 msgstr "Giảm dần"
 
-#: admin/controllers/MatrixPage.php:173
+#: admin/controllers/MatrixPage.php:180
 msgid "Order"
 msgstr "Thứ tự"
 
-#: admin/controllers/MatrixPage.php:176
+#: admin/controllers/MatrixPage.php:184
 msgid "Has QA issues"
 msgstr "Có vấn đề QA"
 
-#: admin/controllers/MatrixPage.php:177
+#: admin/controllers/MatrixPage.php:185
 msgid "Has overlap risk"
 msgstr "Có rủi ro chồng lấn"
 
-#: admin/controllers/MatrixPage.php:188
+#: admin/controllers/MatrixPage.php:196
 msgid "Export"
 msgstr "Xuất"
 
-#: admin/controllers/MatrixPage.php:188
+#: admin/controllers/MatrixPage.php:196
 msgid "CSV is UTF-8 with BOM (opens correctly in Excel). XLSX is a genuine Office Open XML workbook."
 msgstr "CSV mã hóa UTF-8 có BOM (mở đúng trong Excel). XLSX là tệp Office Open XML thực sự."
 
-#: admin/controllers/MatrixPage.php:191
+#: admin/controllers/MatrixPage.php:199
 msgid "XLSX needs the PHP zip extension, which is not available here."
 msgstr "XLSX cần phần mở rộng PHP zip, máy chủ này chưa có."
 
-#: admin/controllers/MatrixPage.php:198
+#: admin/controllers/MatrixPage.php:206
 msgid "Download CSV"
 msgstr "Tải CSV"
 
-#: admin/controllers/MatrixPage.php:198
+#: admin/controllers/MatrixPage.php:206
 msgid "Download XLSX"
 msgstr "Tải XLSX"
 
-#: admin/controllers/MatrixPage.php:209
+#: admin/controllers/MatrixPage.php:217
 msgid "Import editorial fields"
 msgstr "Nhập các trường biên tập"
 
-#: admin/controllers/MatrixPage.php:209
+#: admin/controllers/MatrixPage.php:217
 msgid "Only this plugin’s editorial fields can be imported (editorial intent, review state, cluster role, cluster lock, exclusion). Empty cells mean “no change”. WordPress content, SEO plugin data and URLs are never touched."
 msgstr "Chỉ nhập được các trường biên tập của plugin này (ý định biên tập, trạng thái đánh giá, vai trò trong cụm, khóa cụm, loại trừ). Ô trống nghĩa là “không thay đổi”. Nội dung WordPress, dữ liệu plugin SEO và URL không bao giờ bị động đến."
 
-#: admin/controllers/MatrixPage.php:212
+#: admin/controllers/MatrixPage.php:220
 msgid "Preview (nothing written yet)"
 msgstr "Xem trước (chưa ghi gì)"
 
-#: admin/controllers/MatrixPage.php:226
+#: admin/controllers/MatrixPage.php:234
 msgid "Changes to apply"
 msgstr "Thay đổi sẽ áp dụng"
 
-#: admin/controllers/MatrixPage.php:228 admin/controllers/MatrixPage.php:250
+#: admin/controllers/MatrixPage.php:236 admin/controllers/MatrixPage.php:258
 msgid "CSV row"
 msgstr "Dòng CSV"
 
-#: admin/controllers/MatrixPage.php:229
+#: admin/controllers/MatrixPage.php:237
 msgid "Document"
 msgstr "Tài liệu"
 
-#: admin/controllers/MatrixPage.php:230
+#: admin/controllers/MatrixPage.php:238
 msgid "Changes"
 msgstr "Thay đổi"
 
-#: admin/controllers/MatrixPage.php:233
+#: admin/controllers/MatrixPage.php:241
 msgid "No changes."
 msgstr "Không có thay đổi."
 
 #. translators: %d: count
-#: admin/controllers/MatrixPage.php:237
+#: admin/controllers/MatrixPage.php:245
 #, php-format
 msgid "%d values were not changed because the field already has a value. Tick “Allow overwriting existing values” and preview again to replace them."
 msgstr "%d giá trị không được đổi vì trường đã có giá trị. Đánh dấu “Cho phép ghi đè giá trị hiện có” rồi xem trước lại để thay thế."
 
-#: admin/controllers/MatrixPage.php:248
+#: admin/controllers/MatrixPage.php:256
 msgid "Isolated invalid rows"
 msgstr "Các dòng không hợp lệ (đã tách riêng)"
 
-#: admin/controllers/MatrixPage.php:258
+#: admin/controllers/MatrixPage.php:266
 msgid "Apply these changes"
 msgstr "Áp dụng các thay đổi này"
 
-#: admin/controllers/MatrixPage.php:262
+#: admin/controllers/MatrixPage.php:270
 msgid "CSV file (exported from this matrix or with columns document_id or url plus fields)"
 msgstr "Tệp CSV (xuất từ ma trận này, hoặc có cột document_id hoặc url cùng các trường)"
 
-#: admin/controllers/MatrixPage.php:263
+#: admin/controllers/MatrixPage.php:271
 msgid "Allow overwriting existing values"
 msgstr "Cho phép ghi đè giá trị hiện có"
 
-#: admin/controllers/MatrixPage.php:264
+#: admin/controllers/MatrixPage.php:272
 msgid "Columns are mapped automatically by header name:"
 msgstr "Cột được ánh xạ tự động theo tên tiêu đề:"
 
-#: admin/controllers/MatrixPage.php:265
+#: admin/controllers/MatrixPage.php:273
 msgid "Upload and preview"
 msgstr "Tải lên và xem trước"
 
-#: admin/controllers/MatrixPage.php:274
+#: admin/controllers/MatrixPage.php:282
 msgid "Search Console data (optional)"
 msgstr "Dữ liệu Search Console (tùy chọn)"
 
-#: admin/controllers/MatrixPage.php:274
+#: admin/controllers/MatrixPage.php:282
 msgid "Upload a genuine page × query export (columns: page, query, clicks, impressions, optional ctr, position). Metrics are shown only after an authorized import, always with the period and source. Without it, overlap reports stay hypotheses."
 msgstr "Tải lên tệp xuất thật theo trang × truy vấn (cột: page, query, clicks, impressions, tùy chọn ctr, position). Số liệu chỉ hiển thị sau khi nhập hợp lệ, luôn kèm khoảng thời gian và nguồn. Nếu không có, báo cáo chồng lấn chỉ là giả thuyết."
 
-#: admin/controllers/MatrixPage.php:276
+#: admin/controllers/MatrixPage.php:284
 msgid "CSV file"
 msgstr "Tệp CSV"
 
-#: admin/controllers/MatrixPage.php:277
+#: admin/controllers/MatrixPage.php:285
 msgid "Period start"
 msgstr "Từ ngày"
 
-#: admin/controllers/MatrixPage.php:277
+#: admin/controllers/MatrixPage.php:285
 msgid "Period end"
 msgstr "Đến ngày"
 
-#: admin/controllers/MatrixPage.php:277 admin/controllers/MatrixPage.php:296
+#: admin/controllers/MatrixPage.php:285 admin/controllers/MatrixPage.php:304
 msgid "Source"
 msgstr "Nguồn"
 
-#: admin/controllers/MatrixPage.php:278
+#: admin/controllers/MatrixPage.php:286
 msgid "Import (leave unticked for a dry run)"
 msgstr "Nhập (bỏ trống để chạy thử)"
 
-#: admin/controllers/MatrixPage.php:278
+#: admin/controllers/MatrixPage.php:286
 msgid "Upload"
 msgstr "Tải lên"
 
-#: admin/controllers/MatrixPage.php:288
+#: admin/controllers/MatrixPage.php:296
 msgid "Delete"
 msgstr "Xóa"
 
-#: admin/controllers/MatrixPage.php:288
+#: admin/controllers/MatrixPage.php:296
 msgid "Delete this import?"
 msgstr "Xóa lần nhập này?"
 
-#: admin/controllers/MatrixPage.php:292
+#: admin/controllers/MatrixPage.php:300
 msgid "Imports"
 msgstr "Các lần nhập"
 
-#: admin/controllers/MatrixPage.php:294
+#: admin/controllers/MatrixPage.php:302
 msgid "Import"
 msgstr "Lần nhập"
 
-#: admin/controllers/MatrixPage.php:295
+#: admin/controllers/MatrixPage.php:303
 msgid "Period"
 msgstr "Khoảng thời gian"
 
-#: admin/controllers/MatrixPage.php:297
+#: admin/controllers/MatrixPage.php:305
 msgid "Rows / matched"
 msgstr "Số dòng / khớp"
 
@@ -1566,137 +1566,137 @@ msgstr "Chạy phân tích"
 msgid "Inventory and analysis are read-only and run in small background batches. Large sites take several minutes."
 msgstr "Kiểm kê và phân tích chỉ đọc, chạy nền theo lô nhỏ. Website lớn cần vài phút."
 
-#: admin/controllers/OverviewPage.php:133
+#: admin/controllers/OverviewPage.php:140
 msgid "Full inventory + analysis"
 msgstr "Kiểm kê toàn bộ + phân tích"
 
-#: admin/controllers/OverviewPage.php:134
+#: admin/controllers/OverviewPage.php:144
 msgid "Re-run analysis only"
 msgstr "Chỉ chạy lại phân tích"
 
-#: admin/controllers/OverviewPage.php:149
+#: admin/controllers/OverviewPage.php:159
 msgid "Quick-start wizard"
 msgstr "Trình hướng dẫn nhanh"
 
-#: admin/controllers/OverviewPage.php:152
+#: admin/controllers/OverviewPage.php:162
 msgid "1. Compatibility check"
 msgstr "1. Kiểm tra tương thích"
 
 #. translators: 1: WP, 2: PHP
-#: admin/controllers/OverviewPage.php:154
+#: admin/controllers/OverviewPage.php:164
 #, php-format
 msgid "WordPress %1$s, PHP %2$s"
 msgstr "WordPress %1$s, PHP %2$s"
 
 #. translators: 1: WP, 2: PHP
-#: admin/controllers/OverviewPage.php:155
+#: admin/controllers/OverviewPage.php:165
 msgid "Plugin database tables"
 msgstr "Bảng cơ sở dữ liệu của plugin"
 
-#: admin/controllers/OverviewPage.php:156
+#: admin/controllers/OverviewPage.php:166
 msgid "intl extension (Unicode normalization)"
 msgstr "Phần mở rộng intl (chuẩn hóa Unicode)"
 
-#: admin/controllers/OverviewPage.php:156
+#: admin/controllers/OverviewPage.php:166
 msgid "intl missing — the built-in Vietnamese normalizer is used"
 msgstr "Thiếu intl — dùng bộ chuẩn hóa tiếng Việt tích hợp sẵn"
 
-#: admin/controllers/OverviewPage.php:157
+#: admin/controllers/OverviewPage.php:167
 msgid "WordPress Abilities API available"
 msgstr "WordPress Abilities API khả dụng"
 
-#: admin/controllers/OverviewPage.php:157
+#: admin/controllers/OverviewPage.php:167
 msgid "Abilities API unavailable (WordPress 6.9+); REST still works"
 msgstr "Abilities API không khả dụng (cần WordPress 6.9+); REST vẫn hoạt động"
 
 #. translators: %s: framework
-#: admin/controllers/OverviewPage.php:158
+#: admin/controllers/OverviewPage.php:168
 #, php-format
 msgid "Language framework: %s"
 msgstr "Nền tảng đa ngôn ngữ: %s"
 
 #. translators: %s: plugin
-#: admin/controllers/OverviewPage.php:159
+#: admin/controllers/OverviewPage.php:169
 #, php-format
 msgid "SEO metadata source: %s (read-only)"
 msgstr "Nguồn metadata SEO: %s (chỉ đọc)"
 
 #. translators: %s: plugin
-#: admin/controllers/OverviewPage.php:160
+#: admin/controllers/OverviewPage.php:170
 msgid "WP-Cron disabled — jobs advance while the Jobs page is open, or via WP-CLI"
 msgstr "WP-Cron đang tắt — tác vụ chạy tiếp khi trang Tác vụ đang mở, hoặc qua WP-CLI"
 
 #. translators: %s: plugin
-#: admin/controllers/OverviewPage.php:160
+#: admin/controllers/OverviewPage.php:170
 msgid "WP-Cron available for background batches"
 msgstr "WP-Cron sẵn sàng cho các lô xử lý nền"
 
-#: admin/controllers/OverviewPage.php:168
+#: admin/controllers/OverviewPage.php:178
 msgid "2. Compute tiers"
 msgstr "2. Các tầng xử lý"
 
-#: admin/controllers/OverviewPage.php:168
+#: admin/controllers/OverviewPage.php:178
 msgid "Tier 0 (lexical) is available now on this hosting. Tier 1 runs the Qwen3 embedding model in your browser only when you start it; Tier 2 is an optional private worker. Site visitors never load a model."
 msgstr "Tầng 0 (từ vựng) dùng được ngay trên hosting này. Tầng 1 chạy mô hình vector nhúng Qwen3 trong trình duyệt của bạn chỉ khi bạn khởi động; Tầng 2 là worker riêng tùy chọn. Khách truy cập không bao giờ tải mô hình."
 
-#: admin/controllers/OverviewPage.php:171
+#: admin/controllers/OverviewPage.php:181
 msgid "3. Scope"
 msgstr "3. Phạm vi"
 
-#: admin/controllers/OverviewPage.php:175
+#: admin/controllers/OverviewPage.php:185
 msgid "Content types"
 msgstr "Loại nội dung"
 
-#: admin/controllers/OverviewPage.php:182
+#: admin/controllers/OverviewPage.php:192
 msgid "Exclude URL path fragments (one per line)"
 msgstr "Loại trừ URL chứa đoạn đường dẫn (mỗi dòng một mục)"
 
-#: admin/controllers/OverviewPage.php:183 admin/controllers/SettingsPage.php:46
+#: admin/controllers/OverviewPage.php:193 admin/controllers/SettingsPage.php:46
 msgid "Batch size"
 msgstr "Kích thước lô"
 
-#: admin/controllers/OverviewPage.php:183 admin/controllers/SettingsPage.php:48
+#: admin/controllers/OverviewPage.php:193 admin/controllers/SettingsPage.php:48
 msgid "Max documents"
 msgstr "Số tài liệu tối đa"
 
 #. translators: 1: posts, 2: terms
-#: admin/controllers/OverviewPage.php:184
+#: admin/controllers/OverviewPage.php:194
 #, php-format
 msgid "In scope now: %1$d posts/pages and %2$d category archives (real database counts)."
 msgstr "Hiện trong phạm vi: %1$d bài viết/trang và %2$d trang chuyên mục (đếm thật từ cơ sở dữ liệu)."
 
 #. translators: 1: posts, 2: terms
-#: admin/controllers/OverviewPage.php:185
+#: admin/controllers/OverviewPage.php:195
 msgid "Save scope"
 msgstr "Lưu phạm vi"
 
-#: admin/controllers/OverviewPage.php:188
+#: admin/controllers/OverviewPage.php:198
 msgid "4. Read-only pilot"
 msgstr "4. Chạy thử chỉ-đọc"
 
-#: admin/controllers/OverviewPage.php:188
+#: admin/controllers/OverviewPage.php:198
 msgid "Analyze a small sample first and check the counts and coverage before running the whole site."
 msgstr "Phân tích một mẫu nhỏ trước, kiểm tra số liệu và phạm vi quét rồi mới chạy toàn bộ website."
 
-#: admin/controllers/OverviewPage.php:190
+#: admin/controllers/OverviewPage.php:200
 msgid "Pilot size"
 msgstr "Số bài chạy thử"
 
-#: admin/controllers/OverviewPage.php:190
+#: admin/controllers/OverviewPage.php:200
 msgid "Start pilot"
 msgstr "Bắt đầu chạy thử"
 
 #. translators: 1: documents, 2: links
-#: admin/controllers/OverviewPage.php:192
+#: admin/controllers/OverviewPage.php:202
 #, php-format
 msgid "Pilot result so far: %1$d documents, %2$d internal links observed."
 msgstr "Kết quả chạy thử đến nay: %1$d tài liệu, %2$d liên kết nội bộ được ghi nhận."
 
-#: admin/controllers/OverviewPage.php:197
+#: admin/controllers/OverviewPage.php:207
 msgid "5. Finish"
 msgstr "5. Hoàn tất"
 
-#: admin/controllers/OverviewPage.php:199
+#: admin/controllers/OverviewPage.php:209
 msgid "Finish setup"
 msgstr "Hoàn tất thiết lập"
 
@@ -1708,25 +1708,25 @@ msgstr "Lỗi đã xác minh là sự thật khách quan; cảnh báo là quy t�
 msgid "All checks"
 msgstr "Tất cả quy tắc"
 
-#: admin/controllers/QaPage.php:45
+#: admin/controllers/QaPage.php:49
 msgid "All labels"
 msgstr "Tất cả nhãn"
 
-#: admin/controllers/QaPage.php:45 admin/controllers/QaPage.php:75 admin/controllers/SemanticPage.php:192
+#: admin/controllers/QaPage.php:55 admin/controllers/QaPage.php:108 admin/controllers/SemanticPage.php:247
 msgid "Label"
 msgstr "Nhãn"
 
-#: admin/controllers/QaPage.php:46 admin/controllers/QaPage.php:77 admin/controllers/SemanticPage.php:193
+#: admin/controllers/QaPage.php:58 admin/controllers/QaPage.php:110 admin/controllers/SemanticPage.php:248
 msgid "Check"
 msgstr "Quy tắc"
 
 #. translators: %d: total
-#: admin/controllers/QaPage.php:71
+#: admin/controllers/QaPage.php:104
 #, php-format
 msgid "%d open issues"
 msgstr "%d vấn đề đang mở"
 
-#: admin/controllers/QaPage.php:82
+#: admin/controllers/QaPage.php:115
 msgid "No QA issues for these filters."
 msgstr "Không có vấn đề QA nào với bộ lọc này."
 
@@ -1810,7 +1810,7 @@ msgstr "Xem trước bài liên quan"
 msgid "Shared topic terms"
 msgstr "Từ khóa chủ đề chung"
 
-#: admin/controllers/RelatedPage.php:71 admin/controllers/SemanticPage.php:162
+#: admin/controllers/RelatedPage.php:71 admin/controllers/SemanticPage.php:217
 msgid "Score"
 msgstr "Điểm"
 
@@ -1908,63 +1908,63 @@ msgstr "Từ khóa chủ đề:"
 msgid "Candidate entities:"
 msgstr "Thực thể ứng viên:"
 
-#: admin/controllers/SemanticPage.php:128
+#: admin/controllers/SemanticPage.php:138
 msgid "Detected text language:"
 msgstr "Ngôn ngữ văn bản phát hiện được:"
 
-#: admin/controllers/SemanticPage.php:130
+#: admin/controllers/SemanticPage.php:140
 msgid "Semantic vector:"
 msgstr "Vector ngữ nghĩa:"
 
-#: admin/controllers/SemanticPage.php:132
+#: admin/controllers/SemanticPage.php:142
 msgid "Cluster:"
 msgstr "Cụm:"
 
-#: admin/controllers/SemanticPage.php:136
+#: admin/controllers/SemanticPage.php:146
 msgid "Editorial override (plugin data only)"
 msgstr "Ghi đè biên tập (chỉ dữ liệu plugin)"
 
-#: admin/controllers/SemanticPage.php:137
+#: admin/controllers/SemanticPage.php:151
 msgid "(use heuristic)"
 msgstr "(dùng kết quả tự động)"
 
-#: admin/controllers/SemanticPage.php:138
+#: admin/controllers/SemanticPage.php:171
 msgid "Review state"
 msgstr "Trạng thái đánh giá"
 
-#: admin/controllers/SemanticPage.php:140
+#: admin/controllers/SemanticPage.php:184
 msgid "Lock this URL (no proposals)"
 msgstr "Khóa URL này (không tạo đề xuất)"
 
-#: admin/controllers/SemanticPage.php:140 admin/controllers/SettingsPage.php:125
+#: admin/controllers/SemanticPage.php:193 admin/controllers/SettingsPage.php:183
 msgid "Exclude from suggestions"
 msgstr "Loại khỏi gợi ý"
 
-#: admin/controllers/SemanticPage.php:146
+#: admin/controllers/SemanticPage.php:201
 msgid "Link suggestions from this page"
 msgstr "Gợi ý liên kết từ trang này"
 
-#: admin/controllers/SemanticPage.php:147
+#: admin/controllers/SemanticPage.php:202
 msgid "Overlap risks"
 msgstr "Rủi ro chồng lấn"
 
-#: admin/controllers/SemanticPage.php:156
+#: admin/controllers/SemanticPage.php:211
 msgid "Precomputed related content"
 msgstr "Bài liên quan đã tính sẵn"
 
-#: admin/controllers/SemanticPage.php:158
+#: admin/controllers/SemanticPage.php:213
 msgid "Related"
 msgstr "Liên quan"
 
-#: admin/controllers/SemanticPage.php:166
+#: admin/controllers/SemanticPage.php:221
 msgid "Provenance (raw)"
 msgstr "Nguồn gốc dữ liệu (thô)"
 
-#: admin/controllers/SemanticPage.php:198
+#: admin/controllers/SemanticPage.php:253
 msgid "None."
 msgstr "Không có."
 
-#: admin/controllers/SettingsPage.php:32 admin/controllers/SettingsPage.php:115
+#: admin/controllers/SettingsPage.php:32 admin/controllers/SettingsPage.php:168
 msgid "Scope"
 msgstr "Phạm vi"
 
@@ -2036,151 +2036,151 @@ msgstr "Cho phép tạo bản xem trước thay đổi (luôn cần phê duyệt
 msgid "Allow HTTP verification of internal link targets (same host only, no redirects followed)"
 msgstr "Cho phép kiểm tra HTTP đích liên kết nội bộ (chỉ cùng tên miền, không theo chuyển hướng)"
 
-#: admin/controllers/SettingsPage.php:57
+#: admin/controllers/SettingsPage.php:63
 msgid "Follow WordPress profile language"
 msgstr "Theo ngôn ngữ trong hồ sơ WordPress"
 
-#: admin/controllers/SettingsPage.php:57
+#: admin/controllers/SettingsPage.php:66
 msgid "Plugin admin language"
 msgstr "Ngôn ngữ giao diện plugin"
 
-#: admin/controllers/SettingsPage.php:60
+#: admin/controllers/SettingsPage.php:71
 msgid "Expert panel (tested defaults — change only with evaluation data)"
 msgstr "Thiết lập chuyên gia (giá trị mặc định đã kiểm thử — chỉ đổi khi có dữ liệu đánh giá)"
 
-#: admin/controllers/SettingsPage.php:61
+#: admin/controllers/SettingsPage.php:73
 msgid "Weight: lexical"
 msgstr "Trọng số: từ vựng"
 
-#: admin/controllers/SettingsPage.php:61
+#: admin/controllers/SettingsPage.php:74
 msgid "Weight: semantic"
 msgstr "Trọng số: ngữ nghĩa"
 
-#: admin/controllers/SettingsPage.php:61
+#: admin/controllers/SettingsPage.php:75
 msgid "Weight: anchor quality"
 msgstr "Trọng số: chất lượng anchor"
 
-#: admin/controllers/SettingsPage.php:61
+#: admin/controllers/SettingsPage.php:76
 msgid "Weight: graph usefulness"
 msgstr "Trọng số: lợi ích đồ thị liên kết"
 
-#: admin/controllers/SettingsPage.php:61
+#: admin/controllers/SettingsPage.php:77
 msgid "Minimum link score"
 msgstr "Điểm liên kết tối thiểu"
 
-#: admin/controllers/SettingsPage.php:61
+#: admin/controllers/SettingsPage.php:78
 msgid "Minimum related score"
 msgstr "Điểm bài liên quan tối thiểu"
 
-#: admin/controllers/SettingsPage.php:61
+#: admin/controllers/SettingsPage.php:79
 msgid "Overlap topic threshold"
 msgstr "Ngưỡng chồng lấn chủ đề"
 
-#: admin/controllers/SettingsPage.php:61
+#: admin/controllers/SettingsPage.php:80
 msgid "Near-duplicate threshold (MinHash)"
 msgstr "Ngưỡng gần trùng lặp (MinHash)"
 
-#: admin/controllers/SettingsPage.php:64
+#: admin/controllers/SettingsPage.php:84
 msgid "Candidates per page (BM25 top-k)"
 msgstr "Số ứng viên mỗi trang (BM25 top-k)"
 
-#: admin/controllers/SettingsPage.php:65
+#: admin/controllers/SettingsPage.php:85
 msgid "Max link suggestions per page"
 msgstr "Số gợi ý liên kết tối đa mỗi trang"
 
-#: admin/controllers/SettingsPage.php:66
+#: admin/controllers/SettingsPage.php:95
 msgid "Model precision"
 msgstr "Độ chính xác mô hình"
 
-#: admin/controllers/SettingsPage.php:67
+#: admin/controllers/SettingsPage.php:108
 msgid "Vector dimension"
 msgstr "Số chiều vector"
 
-#: admin/controllers/SettingsPage.php:68
+#: admin/controllers/SettingsPage.php:111
 msgid "Body chunks embedded per page"
 msgstr "Số đoạn thân bài được nhúng mỗi trang"
 
-#: admin/controllers/SettingsPage.php:69
+#: admin/controllers/SettingsPage.php:112
 msgid "Changing precision or dimension changes the model key: existing vectors are kept but ignored until you re-run embeddings."
 msgstr "Đổi độ chính xác hoặc số chiều sẽ đổi khóa mô hình: vector cũ được giữ nhưng bị bỏ qua cho đến khi bạn chạy lại vector nhúng."
 
-#: admin/controllers/SettingsPage.php:71
+#: admin/controllers/SettingsPage.php:114
 msgid "Uninstall policy"
 msgstr "Chính sách gỡ cài đặt"
 
-#: admin/controllers/SettingsPage.php:72
+#: admin/controllers/SettingsPage.php:119
 msgid "Preserve all plugin data (default)"
 msgstr "Giữ toàn bộ dữ liệu plugin (mặc định)"
 
-#: admin/controllers/SettingsPage.php:72
+#: admin/controllers/SettingsPage.php:120
 msgid "Delete all plugin data when the plugin is deleted"
 msgstr "Xóa toàn bộ dữ liệu plugin khi xóa plugin"
 
-#: admin/controllers/SettingsPage.php:72
+#: admin/controllers/SettingsPage.php:123
 msgid "When the plugin is deleted"
 msgstr "Khi xóa plugin"
 
-#: admin/controllers/SettingsPage.php:73
+#: admin/controllers/SettingsPage.php:126
 msgid "Type DELETE to confirm the delete policy"
 msgstr "Gõ DELETE để xác nhận chính sách xóa"
 
-#: admin/controllers/SettingsPage.php:74
+#: admin/controllers/SettingsPage.php:127
 msgid "Deleting plugin data also deletes the change log and rollback snapshots. WordPress posts are never deleted."
 msgstr "Xóa dữ liệu plugin cũng xóa nhật ký thay đổi và bản lưu để hoàn tác. Bài viết WordPress không bao giờ bị xóa."
 
-#: admin/controllers/SettingsPage.php:75
+#: admin/controllers/SettingsPage.php:128
 msgid "Save settings"
 msgstr "Lưu cài đặt"
 
-#: admin/controllers/SettingsPage.php:102
+#: admin/controllers/SettingsPage.php:155
 msgid "Locks & exclusions"
 msgstr "Khóa & loại trừ"
 
-#: admin/controllers/SettingsPage.php:102
+#: admin/controllers/SettingsPage.php:155
 msgid "Enforced by the shared service layer for humans and agents alike."
 msgstr "Được cưỡng chế ở tầng dịch vụ chung, như nhau cho con người và agent."
 
-#: admin/controllers/SettingsPage.php:109
+#: admin/controllers/SettingsPage.php:162
 msgid "Remove"
 msgstr "Gỡ"
 
-#: admin/controllers/SettingsPage.php:113
+#: admin/controllers/SettingsPage.php:166
 msgid "Locks"
 msgstr "Khóa"
 
-#: admin/controllers/SettingsPage.php:116 admin/controllers/SettingsPage.php:125
+#: admin/controllers/SettingsPage.php:169 admin/controllers/SettingsPage.php:186
 msgid "Type"
 msgstr "Loại"
 
-#: admin/controllers/SettingsPage.php:121
+#: admin/controllers/SettingsPage.php:174
 msgid "No locks."
 msgstr "Không có khóa."
 
-#: admin/controllers/SettingsPage.php:124
+#: admin/controllers/SettingsPage.php:177
 msgid "Lock a URL path fragment"
 msgstr "Khóa theo đoạn đường dẫn URL"
 
-#: admin/controllers/SettingsPage.php:125
+#: admin/controllers/SettingsPage.php:182
 msgid "Lock (no proposals)"
 msgstr "Khóa (không tạo đề xuất)"
 
-#: admin/controllers/SettingsPage.php:126
+#: admin/controllers/SettingsPage.php:189
 msgid "Add"
 msgstr "Thêm"
 
-#: admin/controllers/SettingsPage.php:136
+#: admin/controllers/SettingsPage.php:199
 msgid "Diagnostics"
 msgstr "Chẩn đoán"
 
-#: admin/controllers/SettingsPage.php:140
+#: admin/controllers/SettingsPage.php:203
 msgid "Migration log"
 msgstr "Nhật ký nâng cấp CSDL"
 
-#: admin/controllers/SettingsPage.php:141
+#: admin/controllers/SettingsPage.php:204
 msgid "Copy diagnostics JSON"
 msgstr "Sao chép JSON chẩn đoán"
 
-#: admin/controllers/SettingsPage.php:141
+#: admin/controllers/SettingsPage.php:204
 msgid "Diagnostics JSON"
 msgstr "JSON chẩn đoán"
 
@@ -2424,37 +2424,37 @@ msgstr "Kiểm tra liên kết"
 msgid "Nothing to show yet."
 msgstr "Chưa có dữ liệu để hiển thị."
 
-#: admin/controllers/Ui.php:316
+#: admin/controllers/Ui.php:327
 msgid "Pagination"
 msgstr "Phân trang"
 
 #. translators: 1: current page, 2: total pages, 3: total items
-#: admin/controllers/Ui.php:318
+#: admin/controllers/Ui.php:329
 #, php-format
 msgid "Page %1$d of %2$d (%3$d items)"
 msgstr "Trang %1$d/%2$d (%3$d mục)"
 
-#: admin/controllers/Ui.php:320
+#: admin/controllers/Ui.php:331
 msgid "‹ Previous"
 msgstr "‹ Trước"
 
-#: admin/controllers/Ui.php:323
+#: admin/controllers/Ui.php:334
 msgid "Next ›"
 msgstr "Sau ›"
 
-#: admin/controllers/Ui.php:373
+#: admin/controllers/Ui.php:384
 msgid "n/a"
 msgstr "không có"
 
-#: admin/controllers/Ui.php:388
+#: admin/controllers/Ui.php:399
 msgid "(no title)"
 msgstr "(không có tiêu đề)"
 
-#: admin/controllers/Ui.php:419
+#: admin/controllers/Ui.php:432
 msgid "Before"
 msgstr "Trước"
 
-#: admin/controllers/Ui.php:419
+#: admin/controllers/Ui.php:432
 msgid "After"
 msgstr "Sau"
 
@@ -2598,31 +2598,31 @@ msgstr "Nội dung đã thay đổi sau khi tạo bản xem trước này. Hãy 
 msgid "Only applied changes can be rolled back."
 msgstr "Chỉ có thể hoàn tác thay đổi đã áp dụng."
 
-#: includes/Approval/ApprovalService.php:167
+#: includes/Approval/ApprovalService.php:176
 msgid "Approval not found."
 msgstr "Không tìm thấy phê duyệt."
 
-#: includes/Approval/ApprovalService.php:171
+#: includes/Approval/ApprovalService.php:180
 msgid "The approval does not match this change."
 msgstr "Phê duyệt không khớp với thay đổi này."
 
-#: includes/Approval/ApprovalService.php:174
+#: includes/Approval/ApprovalService.php:183
 msgid "The approval was already used, revoked or invalidated."
 msgstr "Phê duyệt đã được dùng, bị thu hồi hoặc bị vô hiệu."
 
-#: includes/Approval/ApprovalService.php:178
+#: includes/Approval/ApprovalService.php:187
 msgid "The approval has expired; approve again."
 msgstr "Phê duyệt đã hết hạn; hãy phê duyệt lại."
 
-#: includes/Approval/ApprovalService.php:185
+#: includes/Approval/ApprovalService.php:194
 msgid "The approval was already used."
 msgstr "Phê duyệt đã được sử dụng."
 
-#: includes/Approval/ApprovalService.php:235
+#: includes/Approval/ApprovalService.php:253
 msgid "Approvals can only be given by a human administrator in WP Admin."
 msgstr "Chỉ quản trị viên là con người, thao tác trong WP Admin, mới được phê duyệt."
 
-#: includes/Approval/ApprovalService.php:239
+#: includes/Approval/ApprovalService.php:257
 msgid "You do not have permission to approve changes."
 msgstr "Bạn không có quyền phê duyệt thay đổi."
 
@@ -2670,11 +2670,11 @@ msgstr "Kết quả tính toán không khớp diff đã phê duyệt; chưa ghi 
 msgid "A concurrent apply with the same idempotency key is in progress."
 msgstr "Đang có một lần áp dụng đồng thời với cùng idempotency key."
 
-#: includes/Approval/ChangeExecutor.php:207
+#: includes/Approval/ChangeExecutor.php:218
 msgid "The write could not be verified and was reverted automatically."
 msgstr "Không xác minh được lần ghi nên đã tự động hoàn nguyên."
 
-#: includes/Approval/ChangeExecutor.php:207
+#: includes/Approval/ChangeExecutor.php:218
 msgid "The write could not be verified and the automatic revert also failed: manual recovery is needed (see change log)."
 msgstr "Không xác minh được lần ghi và tự động hoàn nguyên cũng thất bại: cần khôi phục thủ công (xem nhật ký thay đổi)."
 
@@ -2726,7 +2726,7 @@ msgstr "Không tìm thấy anchor tự nhiên; gợi ý này cần biên tập v
 msgid "The anchor text is no longer present in an editable position; re-run the analysis."
 msgstr "Anchor không còn ở vị trí có thể sửa; hãy chạy lại phân tích."
 
-#: includes/Approval/ProposalService.php:209 includes/Services/Api.php:946
+#: includes/Approval/ProposalService.php:209 includes/Services/Api.php:973
 msgid "Document not found."
 msgstr "Không tìm thấy tài liệu."
 
@@ -2828,15 +2828,15 @@ msgstr "Hãy ánh xạ ít nhất một trường có thể nhập."
 msgid "The import preview expired or does not belong to you. Upload the file again."
 msgstr "Bản xem trước nhập đã hết hạn hoặc không thuộc về bạn. Hãy tải tệp lên lại."
 
-#: includes/REST/RestController.php:209 includes/Services/Guard.php:31
+#: includes/REST/RestController.php:212 includes/Services/Guard.php:31
 msgid "Authentication required."
 msgstr "Cần xác thực."
 
-#: includes/REST/RestController.php:304
+#: includes/REST/RestController.php:307
 msgid "Request body too large."
 msgstr "Dữ liệu gửi lên quá lớn."
 
-#: includes/REST/RestController.php:309
+#: includes/REST/RestController.php:312
 msgid "Internal error; see the audit log."
 msgstr "Lỗi nội bộ; xem nhật ký kiểm toán."
 
@@ -2880,7 +2880,7 @@ msgstr "Hãy cung cấp post_id, document_id hoặc url."
 msgid "This URL is not in the inventory (run an inventory first)."
 msgstr "URL này chưa có trong danh sách kiểm kê (hãy chạy kiểm kê trước)."
 
-#: includes/Services/Api.php:532 includes/Services/Api.php:634
+#: includes/Services/Api.php:532 includes/Services/Api.php:644
 msgid "Job not found."
 msgstr "Không tìm thấy tác vụ."
 
@@ -2898,27 +2898,31 @@ msgstr "Chưa bài nào trong số này có trong danh sách kiểm kê; hãy ch
 msgid "Agents may run one job at a time."
 msgstr "Mỗi agent chỉ được chạy một tác vụ tại một thời điểm."
 
-#: includes/Services/Api.php:637
+#: includes/Services/Api.php:647
 msgid "Agents can only control their own jobs."
 msgstr "Agent chỉ được điều khiển tác vụ của chính mình."
 
-#: includes/Services/Api.php:675
+#: includes/Services/Api.php:685
 msgid "Set confirm=true to rebuild. Derived data is recomputed in the background; WordPress content is not modified."
 msgstr "Đặt confirm=true để xây dựng lại. Dữ liệu dẫn xuất được tính lại ở nền; nội dung WordPress không bị sửa."
 
-#: includes/Services/Api.php:679
+#: includes/Services/Api.php:689
 msgid "model_version must match the active pinned profile (model key or revision)."
 msgstr "model_version phải khớp hồ sơ mô hình cố định đang dùng (khóa mô hình hoặc revision)."
 
-#: includes/Services/Api.php:708
+#: includes/Services/Api.php:718
 msgid "Provide 1–10 finding IDs."
 msgstr "Hãy cung cấp 1–10 ID phát hiện."
 
-#: includes/Services/Api.php:919
+#: includes/Services/Api.php:924
+msgid "Provide lease_token or all_mine=true."
+msgstr "Hãy cung cấp lease_token hoặc all_mine=true."
+
+#: includes/Services/Api.php:946
 msgid "Invalid finding or status."
 msgstr "Phát hiện hoặc trạng thái không hợp lệ."
 
-#: includes/Services/Api.php:968
+#: includes/Services/Api.php:995
 msgid "No valid fields."
 msgstr "Không có trường hợp lệ."
 

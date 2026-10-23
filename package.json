@@ -8,7 +8,7 @@
   "scripts": {
     "build:vendor": "node bin/build-vendor.mjs",
     "test:js": "node --test tests/js/*.test.mjs",
-    "test:e2e": "node tests/e2e/run.mjs",
+    "test:e2e": "bash tests/e2e/run-all.sh",
     "lint:js": "node --check assets/js/ai-worker/embedder-core.js && node --check assets/js/ai-worker/worker.js && node --check admin/assets/js/inference.js && node --check admin/assets/js/admin.js"
   },
   "devDependencies": {
