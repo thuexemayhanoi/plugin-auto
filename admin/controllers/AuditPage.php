@@ -60,7 +60,22 @@ final class AuditPage {
 	 */
 	private static function proposals() {
 		$status = Ui::get( 'status', 'previewed' );
-		echo '<form method="get" class="sseo-filters"><input type="hidden" name="page" value="sseo-audit"><input type="hidden" name="tab" value="proposals">' . Ui::select( 'status', array( 'previewed' => Ui::term( 'previewed' ), 'approved' => Ui::term( 'approved' ), 'applied' => Ui::term( 'applied' ), 'rolled_back' => Ui::term( 'rolled_back' ), 'stale' => Ui::term( 'stale' ), 'rejected' => Ui::term( 'rejected' ), 'failed' => Ui::term( 'failed' ) ), $status, __( 'Status', 'semantic-seo-engine-vi-en' ) ) . ' <button class="button">' . esc_html__( 'Filter', 'semantic-seo-engine-vi-en' ) . '</button></form>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		Ui::out(
+			'<form method="get" class="sseo-filters"><input type="hidden" name="page" value="sseo-audit"><input type="hidden" name="tab" value="proposals">' . Ui::select(
+				'status',
+				array(
+					'previewed'   => Ui::term( 'previewed' ),
+					'approved'    => Ui::term( 'approved' ),
+					'applied'     => Ui::term( 'applied' ),
+					'rolled_back' => Ui::term( 'rolled_back' ),
+					'stale'       => Ui::term( 'stale' ),
+					'rejected'    => Ui::term( 'rejected' ),
+					'failed'      => Ui::term( 'failed' ),
+				),
+				$status,
+				__( 'Status', 'semantic-seo-engine-vi-en' )
+			) . ' <button class="button">' . esc_html__( 'Filter', 'semantic-seo-engine-vi-en' ) . '</button></form>'
+		);
 		$res = Api::proposals(
 			array(
 				'status' => $status,
@@ -82,7 +97,7 @@ final class AuditPage {
 			echo '<p><strong>' . esc_html__( 'Why:', 'semantic-seo-engine-vi-en' ) . '</strong> ' . esc_html( (string) $p['rationale'] ) . '</p>';
 			$d = $p['diff'];
 			if ( 'insert_internal_link' === $p['type'] ) {
-				echo Ui::diff( isset( $d['before'] ) ? $d['before'] : '', isset( $d['after'] ) ? $d['after'] : '' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside.
+				Ui::out( Ui::diff( isset( $d['before'] ) ? $d['before'] : '', isset( $d['after'] ) ? $d['after'] : '' ) );
 			} else {
 				echo '<p>' . esc_html__( 'Before:', 'semantic-seo-engine-vi-en' ) . ' ' . esc_html( implode( ', ', (array) $d['before'] ) ) . '<br>' . esc_html__( 'After:', 'semantic-seo-engine-vi-en' ) . ' ' . esc_html( implode( ', ', (array) $d['after'] ) ) . '</p>';
 			}
@@ -95,7 +110,7 @@ final class AuditPage {
 				echo '<p><label><input type="checkbox" name="confirm" value="1" required> ' . esc_html__( 'I reviewed this exact change and approve it for this single object.', 'semantic-seo-engine-vi-en' ) . '</label></p>';
 				echo '<p><label for="sseo-note-' . esc_attr( (string) $p['id'] ) . '">' . esc_html__( 'Note (optional)', 'semantic-seo-engine-vi-en' ) . '</label> <input id="sseo-note-' . esc_attr( (string) $p['id'] ) . '" type="text" name="note" maxlength="200"></p>';
 				echo '<button class="button button-primary">' . esc_html__( 'Approve', 'semantic-seo-engine-vi-en' ) . '</button></form> ';
-				echo Ui::action_button( 'reject', array( 'proposal_id' => $p['id'] ), __( 'Reject', 'semantic-seo-engine-vi-en' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				Ui::out( Ui::action_button( 'reject', array( 'proposal_id' => $p['id'] ), __( 'Reject', 'semantic-seo-engine-vi-en' ) ) );
 			}
 			if ( 'approved' === $p['status'] ) {
 				$approvals = ApprovalService::query(
@@ -107,19 +122,21 @@ final class AuditPage {
 				foreach ( $approvals as $a ) {
 					echo '<p>' . esc_html( sprintf( /* translators: 1: id, 2: expiry */ __( 'Approval #%1$d active until %2$s UTC.', 'semantic-seo-engine-vi-en' ), $a['id'], $a['expires_at'] ) ) . '</p>';
 					if ( current_user_can( Capabilities::APPLY ) ) {
-						echo Ui::action_button( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-							'apply',
-							array(
-								'proposal_id'     => $p['id'],
-								'approval_id'     => $a['id'],
-								'idempotency_key' => 'ui-' . wp_generate_uuid4(),
-							),
-							__( 'Apply now', 'semantic-seo-engine-vi-en' ),
-							'button button-primary'
+						Ui::out(
+							Ui::action_button( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+								'apply',
+								array(
+									'proposal_id'     => $p['id'],
+									'approval_id'     => $a['id'],
+									'idempotency_key' => 'ui-' . wp_generate_uuid4(),
+								),
+								__( 'Apply now', 'semantic-seo-engine-vi-en' ),
+								'button button-primary'
+							)
 						);
 					}
 					if ( current_user_can( Capabilities::REVIEW ) ) {
-						echo ' ' . Ui::action_button( 'revoke_approval', array( 'approval_id' => $a['id'] ), __( 'Revoke approval', 'semantic-seo-engine-vi-en' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						Ui::out( ' ' . Ui::action_button( 'revoke_approval', array( 'approval_id' => $a['id'] ), __( 'Revoke approval', 'semantic-seo-engine-vi-en' ) ) );
 					}
 				}
 			}
@@ -219,7 +236,19 @@ final class AuditPage {
 			'before_id' => (int) Ui::get( 'before', '0' ),
 			'limit'     => 50,
 		);
-		echo '<form method="get" class="sseo-filters"><input type="hidden" name="page" value="sseo-audit"><input type="hidden" name="tab" value="log"><label for="sseo-af">' . esc_html__( 'Action starts with', 'semantic-seo-engine-vi-en' ) . '</label> <input id="sseo-af" type="text" name="action_filter" value="' . esc_attr( $args['action'] ) . '"> ' . Ui::select( 'result', array( '' => __( 'All', 'semantic-seo-engine-vi-en' ), 'ok' => 'ok', 'denied' => 'denied', 'error' => 'error' ), $args['result'], __( 'Result', 'semantic-seo-engine-vi-en' ) ) . ' <button class="button">' . esc_html__( 'Filter', 'semantic-seo-engine-vi-en' ) . '</button></form>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		Ui::out(
+			'<form method="get" class="sseo-filters"><input type="hidden" name="page" value="sseo-audit"><input type="hidden" name="tab" value="log"><label for="sseo-af">' . esc_html__( 'Action starts with', 'semantic-seo-engine-vi-en' ) . '</label> <input id="sseo-af" type="text" name="action_filter" value="' . esc_attr( $args['action'] ) . '"> ' . Ui::select(
+				'result',
+				array(
+					''       => __( 'All', 'semantic-seo-engine-vi-en' ),
+					'ok'     => 'ok',
+					'denied' => 'denied',
+					'error'  => 'error',
+				),
+				$args['result'],
+				__( 'Result', 'semantic-seo-engine-vi-en' )
+			) . ' <button class="button">' . esc_html__( 'Filter', 'semantic-seo-engine-vi-en' ) . '</button></form>'
+		);
 		$res = Api::audit_log( $args );
 		if ( is_wp_error( $res ) ) {
 			Ui::error_state( $res );
@@ -251,7 +280,19 @@ final class AuditPage {
 			__( 'The audit log is empty.', 'semantic-seo-engine-vi-en' )
 		);
 		if ( $res['next_before_id'] > 0 ) {
-			echo '<p><a class="button" href="' . esc_url( Ui::url( 'sseo-audit', array( 'tab' => 'log', 'before' => $res['next_before_id'], 'action_filter' => $args['action'], 'result' => $args['result'] ) ) ) . '">' . esc_html__( 'Older ›', 'semantic-seo-engine-vi-en' ) . '</a></p>';
+			Ui::out(
+				'<p><a class="button" href="' . esc_url(
+					Ui::url(
+						'sseo-audit',
+						array(
+							'tab'           => 'log',
+							'before'        => $res['next_before_id'],
+							'action_filter' => $args['action'],
+							'result'        => $args['result'],
+						)
+					)
+				) . '">' . esc_html__( 'Older ›', 'semantic-seo-engine-vi-en' ) . '</a></p>'
+			);
 		}
 	}
 }

@@ -85,11 +85,11 @@ final class LexicalIndex {
 			if ( '' === $term || strlen( $term ) > 96 ) {
 				continue;
 			}
-			$len     += $w;
-			$batch[]  = '(%s,%d,%f)';
-			$args[]   = $term;
-			$args[]   = $doc_id;
-			$args[]   = round( (float) $w, 3 );
+			$len    += $w;
+			$batch[] = '(%s,%d,%f)';
+			$args[]  = $term;
+			$args[]  = $doc_id;
+			$args[]  = round( (float) $w, 3 );
 			if ( count( $batch ) >= 300 ) {
 				Db::query( 'INSERT INTO {postings} (term, document_id, tf) VALUES ' . implode( ',', $batch ), $args );
 				$batch = array();
@@ -208,9 +208,9 @@ final class LexicalIndex {
 			if ( isset( $ex[ $doc ] ) ) {
 				continue;
 			}
-			$tf   = (float) $r['tf'];
-			$norm = $tf * ( self::K1 + 1 ) / ( $tf + self::K1 * ( 1 - self::B + self::B * ( (float) $r['doc_len'] / $stats['avgdl'] ) ) );
-			$idf  = self::idf( $df[ $r['term'] ], $stats['n'] );
+			$tf             = (float) $r['tf'];
+			$norm           = $tf * ( self::K1 + 1 ) / ( $tf + self::K1 * ( 1 - self::B + self::B * ( (float) $r['doc_len'] / $stats['avgdl'] ) ) );
+			$idf            = self::idf( $df[ $r['term'] ], $stats['n'] );
 			$scores[ $doc ] = ( isset( $scores[ $doc ] ) ? $scores[ $doc ] : 0.0 ) + $norm * $idf * ( isset( $query[ $r['term'] ] ) ? $query[ $r['term'] ] : 1.0 );
 		}
 		arsort( $scores );

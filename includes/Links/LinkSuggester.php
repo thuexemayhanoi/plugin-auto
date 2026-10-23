@@ -29,8 +29,8 @@ final class LinkSuggester {
 	/**
 	 * Suggestions for one source document.
 	 *
-	 * @param array $source     Source profile.
-	 * @param array $candidates List of [profile, features].
+	 * @param array  $source     Source profile.
+	 * @param array  $candidates List of [profile, features].
 	 * @param string $content   Source raw content (post_content).
 	 * @return array<int,array> Findings.
 	 */
@@ -47,7 +47,7 @@ final class LinkSuggester {
 
 		foreach ( $candidates as $pair ) {
 			list( $target, $f ) = $pair;
-			$gates = self::gates( $source, $target, $linked );
+			$gates              = self::gates( $source, $target, $linked );
 			if ( true !== $gates ) {
 				continue;
 			}
@@ -122,26 +122,26 @@ final class LinkSuggester {
 				'score'             => $score['score'],
 				'algorithm_version' => self::VERSION . '/' . Scorer::VERSION,
 				'evidence'          => array(
-					'reason'          => implode( '; ', $reason ),
-					'components'      => $score['components'],
-					'features'        => array(
+					'reason'            => implode( '; ', $reason ),
+					'components'        => $score['components'],
+					'features'          => array(
 						'topic'          => $f['topic'],
 						'title_overlap'  => $f['title_overlap'],
 						'near_duplicate' => $f['near_duplicate'],
 						'shared_terms'   => $f['shared_terms'],
 					),
-					'anchor'          => $anchor,
+					'anchor'            => $anchor,
 					'phrase_candidates' => array_slice( array_column( $phrases, 'phrase' ), 0, 5 ),
-					'target'          => array(
+					'target'            => array(
 						'url'           => $target['url'],
 						'title'         => $target['title'],
 						'inbound_count' => $target['inbound_count'],
 						'cluster_role'  => $target['cluster_role'],
 					),
-					'source_locked'   => $source_locked,
-					'source_hash'     => Util::sha256( $content ),
-					'notes'           => $notes,
-					'gates'           => array( 'same_locale', 'target_published', 'target_indexable', 'not_already_linked', 'not_self', 'not_excluded', 'not_translation', 'not_navigational_page' ),
+					'source_locked'     => $source_locked,
+					'source_hash'       => Util::sha256( $content ),
+					'notes'             => $notes,
+					'gates'             => array( 'same_locale', 'target_published', 'target_indexable', 'not_already_linked', 'not_self', 'not_excluded', 'not_translation', 'not_navigational_page' ),
 				),
 			);
 			if ( null !== $anchor ) {

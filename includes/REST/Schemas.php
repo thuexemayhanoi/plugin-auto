@@ -324,19 +324,19 @@ final class Schemas {
 		$finding = array(
 			'type'       => 'object',
 			'properties' => array(
-				'id'          => array( 'type' => 'integer' ),
-				'type'        => array( 'type' => 'string' ),
-				'check_id'    => array( 'type' => 'string' ),
-				'label'       => array(
+				'id'         => array( 'type' => 'integer' ),
+				'type'       => array( 'type' => 'string' ),
+				'check_id'   => array( 'type' => 'string' ),
+				'label'      => array(
 					'type' => 'string',
 					'enum' => FindingRepository::LABELS,
 				),
-				'confidence'  => array(
+				'confidence' => array(
 					'type' => 'string',
 					'enum' => FindingRepository::CONFIDENCES,
 				),
-				'evidence'    => array( 'type' => array( 'object', 'array' ) ),
-				'status'      => array(
+				'evidence'   => array( 'type' => array( 'object', 'array' ) ),
+				'status'     => array(
 					'type' => 'string',
 					'enum' => FindingRepository::STATUSES,
 				),
@@ -508,10 +508,10 @@ final class Schemas {
 		$args     = array();
 		$props    = is_array( $schema['properties'] ) ? $schema['properties'] : array();
 		foreach ( $props as $name => $prop ) {
-			$prop['required']  = in_array( $name, $required, true );
+			$prop['required']          = in_array( $name, $required, true );
 			$prop['validate_callback'] = 'rest_validate_request_arg';
 			$prop['sanitize_callback'] = 'rest_sanitize_request_arg';
-			$args[ $name ]     = $prop;
+			$args[ $name ]             = $prop;
 		}
 		return $args;
 	}

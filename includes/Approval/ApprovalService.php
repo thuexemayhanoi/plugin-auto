@@ -133,7 +133,16 @@ final class ApprovalService {
 				'created_at'      => Util::now(),
 			)
 		);
-		AuditLog::record( 'approval.rollback_created', $c['object_type'], (int) $c['object_id'], 'ok', array( 'change_id' => (int) $c['id'], 'approval_id' => $id ) );
+		AuditLog::record(
+			'approval.rollback_created',
+			$c['object_type'],
+			(int) $c['object_id'],
+			'ok',
+			array(
+				'change_id'   => (int) $c['id'],
+				'approval_id' => $id,
+			)
+		);
 		return self::get( $id );
 	}
 
@@ -231,7 +240,16 @@ final class ApprovalService {
 	 */
 	private static function preconditions( $action ) {
 		if ( ! AuthContext::is_interactive_human() ) {
-			AuditLog::record( 'denied.' . $action, '', 0, 'denied', array( 'reason' => 'not an interactive human session', 'via' => AuthContext::via() ) );
+			AuditLog::record(
+				'denied.' . $action,
+				'',
+				0,
+				'denied',
+				array(
+					'reason' => 'not an interactive human session',
+					'via'    => AuthContext::via(),
+				)
+			);
 			return new \WP_Error( 'sseo_human_required', __( 'Approvals can only be given by a human administrator in WP Admin.', 'semantic-seo-engine-vi-en' ), array( 'status' => 403 ) );
 		}
 		if ( ! current_user_can( Capabilities::REVIEW ) ) {

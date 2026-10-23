@@ -76,7 +76,7 @@ final class CsvReader {
 			},
 			$header
 		);
-		$rows = array();
+		$rows   = array();
 		while ( false !== ( $row = fgetcsv( $fh, 0, $delimiter, '"', '\\' ) ) ) { // phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
 			if ( array( null ) === $row ) {
 				continue;

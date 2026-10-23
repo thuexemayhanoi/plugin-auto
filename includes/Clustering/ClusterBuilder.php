@@ -50,8 +50,8 @@ final class ClusterBuilder {
 		$term_rows = Db::rows( "SELECT * FROM {documents} WHERE object_type = 'term' AND status = 'publish' AND locale = %s ORDER BY id ASC", array( $locale ) );
 		$terms     = array();
 		foreach ( $term_rows as $row ) {
-			$tj = json_decode( (string) $row['terms_json'], true );
-			$t  = is_array( $tj ) && isset( $tj[0] ) ? $tj[0] : array();
+			$tj                               = json_decode( (string) $row['terms_json'], true );
+			$t                                = is_array( $tj ) && isset( $tj[0] ) ? $tj[0] : array();
 			$terms[ (int) $row['object_id'] ] = array(
 				'doc_id'   => (int) $row['id'],
 				'taxonomy' => (string) $row['subtype'],
@@ -67,8 +67,8 @@ final class ClusterBuilder {
 			if ( $term_id === $default_cat && 'category' === $t['taxonomy'] ) {
 				continue;
 			}
-			$depth = self::depth( $term_id, $terms );
-			$role  = 0 === $depth ? 'pillar' : ( 1 === $depth ? 'hub' : 'silo' );
+			$depth    = self::depth( $term_id, $terms );
+			$role     = 0 === $depth ? 'pillar' : ( 1 === $depth ? 'hub' : 'silo' );
 			$existing = Db::row( 'SELECT * FROM {clusters} WHERE locale = %s AND taxonomy = %s AND term_id = %d', array( $locale, $t['taxonomy'], $term_id ) );
 			if ( null === $existing ) {
 				$id = Db::insert(
@@ -145,7 +145,7 @@ final class ClusterBuilder {
 				$children[ $cluster_of[ $parent_term ] ][] = $cid;
 			}
 		}
-		$subtree = static function ( $cid ) use ( &$subtree, $children, $members ) {
+		$subtree   = static function ( $cid ) use ( &$subtree, $children, $members ) {
 			$ids = isset( $members[ $cid ] ) ? $members[ $cid ] : array();
 			foreach ( isset( $children[ $cid ] ) ? $children[ $cid ] : array() as $child ) {
 				$ids = array_merge( $ids, $subtree( $child ) );
@@ -154,9 +154,9 @@ final class ClusterBuilder {
 		};
 		$centroids = array();
 		foreach ( Db::rows( 'SELECT * FROM {clusters} WHERE locale = %s', array( $locale ) ) as $c ) {
-			$cid    = (int) $c['id'];
-			$ids    = isset( $members[ $cid ] ) ? $members[ $cid ] : array();
-			$cent   = self::centroid( $ids, $profiles );
+			$cid               = (int) $c['id'];
+			$ids               = isset( $members[ $cid ] ) ? $members[ $cid ] : array();
+			$cent              = self::centroid( $ids, $profiles );
 			$centroids[ $cid ] = array(
 				'vec'   => $cent,
 				'label' => $c['label'],
@@ -164,22 +164,22 @@ final class ClusterBuilder {
 				'tax'   => (string) $c['taxonomy'],
 				'role'  => (string) $c['role'],
 			);
-			$best       = 0;
-			$best_score = -1.0;
-			$evidence   = array();
-			$tree = array() === $ids ? array() : array_values( array_unique( $subtree( $cid ) ) );
+			$best              = 0;
+			$best_score        = -1.0;
+			$evidence          = array();
+			$tree              = array() === $ids ? array() : array_values( array_unique( $subtree( $cid ) ) );
 			foreach ( $ids as $id ) {
-				$p        = $profiles[ $id ];
-				$inbound  = (int) Db::value(
+				$p               = $profiles[ $id ];
+				$inbound         = (int) Db::value(
 					'SELECT COUNT(DISTINCT source_id) FROM {links} WHERE target_id = %d AND source_id IN (' . Db::in( $tree ) . ')',
 					array_merge( array( $id ), $tree )
 				);
-				$outbound = (int) Db::value(
+				$outbound        = (int) Db::value(
 					'SELECT COUNT(DISTINCT target_id) FROM {links} WHERE source_id = %d AND target_id IN (' . Db::in( $tree ) . ')',
 					array_merge( array( $id ), $tree )
 				);
-				$central  = LexicalIndex::cosine( $p['lexvec'], $cent );
-				$score    = 2 * $inbound + 1.5 * $outbound + 3 * $central + ( 'page' === $p['subtype'] ? 0.5 : 0 ) + min( 1.0, $p['word_count'] / 1500 );
+				$central         = LexicalIndex::cosine( $p['lexvec'], $cent );
+				$score           = 2 * $inbound + 1.5 * $outbound + 3 * $central + ( 'page' === $p['subtype'] ? 0.5 : 0 ) + min( 1.0, $p['word_count'] / 1500 );
 				$evidence[ $id ] = array(
 					'inbound_from_cluster' => $inbound,
 					'outbound_to_cluster'  => $outbound,
@@ -273,11 +273,11 @@ final class ClusterBuilder {
 					'score'             => round( $best, 4 ),
 					'algorithm_version' => self::VERSION,
 					'evidence'          => array(
-						'current_cluster'  => $current,
+						'current_cluster'    => $current,
 						'current_similarity' => round( $cur_sim, 3 ),
-						'suggested'        => $alts[0],
-						'alternatives'     => $alts,
-						'note'             => 'Existing categories only; no category is created. Applying requires an approved change.',
+						'suggested'          => $alts[0],
+						'alternatives'       => $alts,
+						'note'               => 'Existing categories only; no category is created. Applying requires an approved change.',
 					),
 				),
 				$run_id
@@ -285,8 +285,8 @@ final class ClusterBuilder {
 			++$suggested;
 		}
 		return array(
-			'clusters'        => count( $cluster_of ),
-			'posts'           => count( $profiles ),
+			'clusters'                   => count( $cluster_of ),
+			'posts'                      => count( $profiles ),
 			'classification_suggestions' => $suggested,
 		);
 	}
@@ -337,7 +337,8 @@ final class ClusterBuilder {
 		usort(
 			$assigned,
 			static function ( $a, $b ) use ( $terms ) {
-				return self::depth( $b, $terms ) <=> self::depth( $a, $terms ) ?: $a <=> $b;
+				$by_depth = self::depth( $b, $terms ) <=> self::depth( $a, $terms );
+				return 0 !== $by_depth ? $by_depth : $a <=> $b;
 			}
 		);
 		return $assigned[0];

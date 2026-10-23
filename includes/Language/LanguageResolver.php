@@ -68,7 +68,7 @@ final class LanguageResolver {
 			return array_map( array( __CLASS__, 'short' ), (array) pll_languages_list( array( 'fields' => 'slug' ) ) );
 		}
 		if ( 'wpml' === $fw ) {
-			$langs = apply_filters( 'wpml_active_languages', null, 'skip_missing=0' );
+			$langs = apply_filters( 'wpml_active_languages', null, 'skip_missing=0' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML public API.
 			return is_array( $langs ) ? array_map( array( __CLASS__, 'short' ), array_keys( $langs ) ) : array();
 		}
 		$out = array( Settings::get( 'default_locale', 'en' ) );
@@ -96,7 +96,7 @@ final class LanguageResolver {
 				);
 			}
 		} elseif ( 'wpml' === $fw ) {
-			$details = apply_filters( 'wpml_post_language_details', null, (int) $post_id );
+			$details = apply_filters( 'wpml_post_language_details', null, (int) $post_id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML public API.
 			if ( is_array( $details ) && ! empty( $details['language_code'] ) ) {
 				return array(
 					'locale' => self::short( $details['language_code'] ),
@@ -127,7 +127,7 @@ final class LanguageResolver {
 			}
 		} elseif ( 'wpml' === $fw ) {
 			$details = apply_filters(
-				'wpml_element_language_details',
+				'wpml_element_language_details', // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML public API.
 				null,
 				array(
 					'element_id'   => (int) $term_id,
@@ -160,9 +160,9 @@ final class LanguageResolver {
 			}
 		} elseif ( 'wpml' === $fw ) {
 			$type = 'post_' . $post_type;
-			$trid = apply_filters( 'wpml_element_trid', null, (int) $post_id, $type );
+			$trid = apply_filters( 'wpml_element_trid', null, (int) $post_id, $type ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML public API.
 			if ( $trid ) {
-				$rows = apply_filters( 'wpml_get_element_translations', null, $trid, $type );
+				$rows = apply_filters( 'wpml_get_element_translations', null, $trid, $type ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML public API.
 				foreach ( (array) $rows as $row ) {
 					if ( is_object( $row ) && ! empty( $row->language_code ) && ! empty( $row->element_id ) ) {
 						$out[ self::short( $row->language_code ) ] = (int) $row->element_id;

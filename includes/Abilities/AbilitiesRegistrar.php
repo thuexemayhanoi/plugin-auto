@@ -200,9 +200,9 @@ final class AbilitiesRegistrar {
 				),
 				'access_level' => $def['access'],
 			);
-			$cap  = $def['cap'];
-			$cb   = $def['callback'];
-			$args = array(
+			$cap       = $def['cap'];
+			$cb        = $def['callback'];
+			$args      = array(
 				'label'               => $def['label'],
 				'description'         => $def['description'],
 				'category'            => self::CATEGORY,

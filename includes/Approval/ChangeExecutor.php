@@ -185,11 +185,11 @@ final class ChangeExecutor {
 					'error'  => is_wp_error( $write ) ? $write->get_error_message() : 'readback hash mismatch (another filter changed the saved value)',
 					'verify' => Util::json(
 						array(
-							'readback_hash'       => $read,
-							'expected_hash'       => $p['expected_hash'],
-							'reverted'            => 'failed' === $status,
-							'revert_error'        => is_wp_error( $revert ) ? $revert->get_error_message() : '',
-							'manual_recovery'     => 'rollback_failed' === $status ? 'Restore the "before" snapshot from the change log or a WordPress revision.' : '',
+							'readback_hash'   => $read,
+							'expected_hash'   => $p['expected_hash'],
+							'reverted'        => 'failed' === $status,
+							'revert_error'    => is_wp_error( $revert ) ? $revert->get_error_message() : '',
+							'manual_recovery' => 'rollback_failed' === $status ? 'Restore the "before" snapshot from the change log or a WordPress revision.' : '',
 						)
 					),
 				),
@@ -203,8 +203,24 @@ final class ChangeExecutor {
 				),
 				array( 'id' => (int) $p['id'] )
 			);
-			AuditLog::record( 'change.failed', $p['object_type'], $post_id, 'error', array( 'change_id' => $change_id, 'status' => $status ) );
-			return new \WP_Error( 'sseo_apply_failed', 'failed' === $status ? __( 'The write could not be verified and was reverted automatically.', 'semantic-seo-engine-vi-en' ) : __( 'The write could not be verified and the automatic revert also failed: manual recovery is needed (see change log).', 'semantic-seo-engine-vi-en' ), array( 'status' => 500, 'change_id' => $change_id ) );
+			AuditLog::record(
+				'change.failed',
+				$p['object_type'],
+				$post_id,
+				'error',
+				array(
+					'change_id' => $change_id,
+					'status'    => $status,
+				)
+			);
+			return new \WP_Error(
+				'sseo_apply_failed',
+				'failed' === $status ? __( 'The write could not be verified and was reverted automatically.', 'semantic-seo-engine-vi-en' ) : __( 'The write could not be verified and the automatic revert also failed: manual recovery is needed (see change log).', 'semantic-seo-engine-vi-en' ),
+				array(
+					'status'    => 500,
+					'change_id' => $change_id,
+				)
+			);
 		}
 		Db::update(
 			'changes',

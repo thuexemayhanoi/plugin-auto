@@ -24,10 +24,10 @@ final class UrlGuard {
 		foreach ( array( home_url( '/' ), site_url( '/' ) ) as $u ) {
 			$h = wp_parse_url( $u, PHP_URL_HOST );
 			if ( is_string( $h ) && '' !== $h ) {
-				$h                 = strtolower( $h );
-				$hosts[ $h ]       = $h;
-				$alt               = 0 === strpos( $h, 'www.' ) ? substr( $h, 4 ) : 'www.' . $h;
-				$hosts[ $alt ]     = $alt;
+				$h             = strtolower( $h );
+				$hosts[ $h ]   = $h;
+				$alt           = 0 === strpos( $h, 'www.' ) ? substr( $h, 4 ) : 'www.' . $h;
+				$hosts[ $alt ] = $alt;
 			}
 		}
 		return array_values( $hosts );

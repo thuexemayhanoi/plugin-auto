@@ -36,9 +36,44 @@ final class LinksPage {
 			$args['document_id'] = (int) Ui::get( 'doc' );
 		}
 		echo '<form method="get" class="sseo-filters"><input type="hidden" name="page" value="sseo-links">';
-		echo Ui::select( 'locale', array( '' => __( 'All', 'semantic-seo-engine-vi-en' ), 'vi' => 'VI', 'en' => 'EN' ), $args['locale'], __( 'Locale', 'semantic-seo-engine-vi-en' ) ) . ' '; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo Ui::select( 'confidence', array( '' => __( 'All', 'semantic-seo-engine-vi-en' ), 'high' => Ui::term( 'high' ), 'medium' => Ui::term( 'medium' ), 'low' => Ui::term( 'low' ) ), $args['confidence'], __( 'Confidence', 'semantic-seo-engine-vi-en' ) ) . ' '; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo Ui::select( 'status', array( 'open' => Ui::term( 'open' ), 'proposed' => Ui::term( 'proposed' ), 'accepted' => Ui::term( 'accepted' ), 'dismissed' => Ui::term( 'dismissed' ) ), $args['status'], __( 'Status', 'semantic-seo-engine-vi-en' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		Ui::out(
+			Ui::select(
+				'locale',
+				array(
+					''   => __( 'All', 'semantic-seo-engine-vi-en' ),
+					'vi' => 'VI',
+					'en' => 'EN',
+				),
+				$args['locale'],
+				__( 'Locale', 'semantic-seo-engine-vi-en' )
+			) . ' '
+		); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		Ui::out(
+			Ui::select(
+				'confidence',
+				array(
+					''       => __( 'All', 'semantic-seo-engine-vi-en' ),
+					'high'   => Ui::term( 'high' ),
+					'medium' => Ui::term( 'medium' ),
+					'low'    => Ui::term( 'low' ),
+				),
+				$args['confidence'],
+				__( 'Confidence', 'semantic-seo-engine-vi-en' )
+			) . ' '
+		); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		Ui::out(
+			Ui::select(
+				'status',
+				array(
+					'open'      => Ui::term( 'open' ),
+					'proposed'  => Ui::term( 'proposed' ),
+					'accepted'  => Ui::term( 'accepted' ),
+					'dismissed' => Ui::term( 'dismissed' ),
+				),
+				$args['status'],
+				__( 'Status', 'semantic-seo-engine-vi-en' )
+			)
+		); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo ' <button class="button">' . esc_html__( 'Filter', 'semantic-seo-engine-vi-en' ) . '</button></form>';
 
 		$res = Api::link_suggestions( $args );
@@ -55,10 +90,16 @@ final class LinksPage {
 		$meta = \SemanticSEO\Inventory\DocumentRepository::many( $docs );
 		$rows = array();
 		foreach ( $res['items'] as $f ) {
-			$e   = $f['evidence'];
-			$src = isset( $meta[ (int) $f['document_id'] ] ) ? $meta[ (int) $f['document_id'] ] : array( 'title' => '?', 'url' => '' );
-			$tgt = isset( $meta[ (int) $f['target_id'] ] ) ? $meta[ (int) $f['target_id'] ] : array( 'title' => '?', 'url' => '' );
-			$anchor = is_array( $e['anchor'] )
+			$e       = $f['evidence'];
+			$src     = isset( $meta[ (int) $f['document_id'] ] ) ? $meta[ (int) $f['document_id'] ] : array(
+				'title' => '?',
+				'url'   => '',
+			);
+			$tgt     = isset( $meta[ (int) $f['target_id'] ] ) ? $meta[ (int) $f['target_id'] ] : array(
+				'title' => '?',
+				'url'   => '',
+			);
+			$anchor  = is_array( $e['anchor'] )
 				? '<code class="sseo-snippet">' . esc_html( $e['anchor']['snippet'] ) . '</code><br><small>' . esc_html( sprintf( /* translators: 1: anchor source, 2: byte offset */ __( 'anchor from %1$s, byte offset %2$d', 'semantic-seo-engine-vi-en' ), $e['anchor']['phrase_source'], $e['anchor']['offset'] ) ) . '</small>'
 				: '<em>' . esc_html__( 'No natural anchor — editorial insertion needed', 'semantic-seo-engine-vi-en' ) . '</em>';
 			$c       = $e['components'];
@@ -67,7 +108,14 @@ final class LinksPage {
 				$actions .= Ui::action_button( 'create_preview', array( 'finding_id' => $f['id'] ), __( 'Create preview', 'semantic-seo-engine-vi-en' ), 'button button-primary' );
 			}
 			if ( 'open' === $f['status'] && current_user_can( Capabilities::REVIEW ) ) {
-				$actions .= Ui::action_button( 'review_finding', array( 'finding_id' => $f['id'], 'status' => 'dismissed' ), __( 'Dismiss', 'semantic-seo-engine-vi-en' ) );
+				$actions .= Ui::action_button(
+					'review_finding',
+					array(
+						'finding_id' => $f['id'],
+						'status'     => 'dismissed',
+					),
+					__( 'Dismiss', 'semantic-seo-engine-vi-en' )
+				);
 			}
 			$rows[] = array(
 				'pair'     => Ui::doc_link( $f['document_id'], $src['title'], $src['url'] ) . '<div class="sseo-arrow" aria-hidden="true">↓</div>' . Ui::doc_link( $f['target_id'], $tgt['title'], $tgt['url'] ),
@@ -90,7 +138,20 @@ final class LinksPage {
 			__( 'No suggestions match these filters.', 'semantic-seo-engine-vi-en' )
 		);
 		if ( ! empty( $res['next_cursor'] ) ) {
-			echo '<p><a class="button" href="' . esc_url( Ui::url( 'sseo-links', array_filter( array_merge( $args, array( 'cursor' => $res['next_cursor'], 'limit' => null ) ) ) ) ) . '">' . esc_html__( 'More suggestions ›', 'semantic-seo-engine-vi-en' ) . '</a></p>';
+			echo '<p><a class="button" href="' . esc_url(
+				Ui::url(
+					'sseo-links',
+					array_filter(
+						array_merge(
+							$args,
+							array(
+								'cursor' => $res['next_cursor'],
+								'limit'  => null,
+							)
+						)
+					)
+				)
+			) . '">' . esc_html__( 'More suggestions ›', 'semantic-seo-engine-vi-en' ) . '</a></p>';
 		}
 
 		// Orphans.

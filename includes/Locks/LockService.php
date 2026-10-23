@@ -14,7 +14,7 @@ use SemanticSEO\Support\Util;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * lock    = object may not be modified by any proposal; editorial fields are frozen.
+ * Types: lock = object may not be modified by any proposal; editorial fields are frozen.
  * exclude = object is inventoried but never suggested, proposed or used as a link target.
  */
 final class LockService {

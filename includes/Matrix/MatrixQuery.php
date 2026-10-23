@@ -41,13 +41,13 @@ final class MatrixQuery {
 	 */
 	public static function query( array $f ) {
 		list( $where, $args ) = self::where( $f );
-		$per_page = Util::clamp_int( isset( $f['per_page'] ) ? $f['per_page'] : 25, 1, 100 );
-		$page     = max( 1, isset( $f['page'] ) ? (int) $f['page'] : 1 );
-		$sort_key = isset( $f['sort'] ) && isset( self::SORTS[ $f['sort'] ] ) ? $f['sort'] : 'id';
-		$order    = isset( $f['order'] ) && 'desc' === strtolower( (string) $f['order'] ) ? 'DESC' : 'ASC';
-		$total    = (int) Db::value( 'SELECT COUNT(*) FROM {documents} d WHERE ' . $where, $args );
-		$sql      = 'SELECT d.*, ' . self::aggregates() . ' FROM {documents} d WHERE ' . $where . ' ORDER BY ' . self::SORTS[ $sort_key ] . ' ' . $order . ', d.id ASC LIMIT %d OFFSET %d';
-		$rows     = Db::rows( $sql, array_merge( $args, array( $per_page, ( $page - 1 ) * $per_page ) ) );
+		$per_page             = Util::clamp_int( isset( $f['per_page'] ) ? $f['per_page'] : 25, 1, 100 );
+		$page                 = max( 1, isset( $f['page'] ) ? (int) $f['page'] : 1 );
+		$sort_key             = isset( $f['sort'] ) && isset( self::SORTS[ $f['sort'] ] ) ? $f['sort'] : 'id';
+		$order                = isset( $f['order'] ) && 'desc' === strtolower( (string) $f['order'] ) ? 'DESC' : 'ASC';
+		$total                = (int) Db::value( 'SELECT COUNT(*) FROM {documents} d WHERE ' . $where, $args );
+		$sql                  = 'SELECT d.*, ' . self::aggregates() . ' FROM {documents} d WHERE ' . $where . ' ORDER BY ' . self::SORTS[ $sort_key ] . ' ' . $order . ', d.id ASC LIMIT %d OFFSET %d';
+		$rows                 = Db::rows( $sql, array_merge( $args, array( $per_page, ( $page - 1 ) * $per_page ) ) );
 		return array(
 			'items'    => array_map( array( __CLASS__, 'present' ), $rows ),
 			'total'    => $total,
@@ -66,8 +66,8 @@ final class MatrixQuery {
 	 */
 	public static function each( array $f, callable $callback ) {
 		list( $where, $args ) = self::where( $f );
-		$after = 0;
-		$count = 0;
+		$after                = 0;
+		$count                = 0;
 		do {
 			$rows = Db::rows( 'SELECT d.*, ' . self::aggregates() . ' FROM {documents} d WHERE ' . $where . ' AND d.id > %d ORDER BY d.id ASC LIMIT 200', array_merge( $args, array( $after ) ) );
 			foreach ( $rows as $r ) {
@@ -75,7 +75,8 @@ final class MatrixQuery {
 				call_user_func( $callback, self::present( $r ) );
 				++$count;
 			}
-		} while ( count( $rows ) === 200 && $count < 100000 );
+			$page_size = count( $rows );
+		} while ( 200 === $page_size && $count < 100000 );
 		return $count;
 	}
 

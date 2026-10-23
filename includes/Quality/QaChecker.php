@@ -15,7 +15,7 @@ use SemanticSEO\Language\TextNormalizer;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * verified_error  — objectively checkable fact (e.g. link to a trashed post, missing title).
+ * Labels: verified_error — objectively checkable fact (e.g. link to a trashed post, missing title).
  * warning         — rule-based problem that needs human judgement.
  * suggestion      — heuristic hint (thin relative to intent, repetitive phrasing…).
  * No quality/E-E-A-T score and no truth verification are produced.
@@ -25,30 +25,30 @@ final class QaChecker {
 	const VERSION = 'qa-1';
 
 	const CHECKS = array(
-		'missing_title'          => 'Missing title',
-		'title_length'           => 'Title length outside 15–65 characters (heuristic)',
-		'duplicate_title'        => 'Duplicate title in the same locale',
-		'missing_meta_description' => 'Missing meta description (SEO plugin active)',
+		'missing_title'              => 'Missing title',
+		'title_length'               => 'Title length outside 15–65 characters (heuristic)',
+		'duplicate_title'            => 'Duplicate title in the same locale',
+		'missing_meta_description'   => 'Missing meta description (SEO plugin active)',
 		'duplicate_meta_description' => 'Duplicate meta description in the same locale',
-		'h1_in_content'          => 'H1 heading inside content',
-		'heading_skip'           => 'Heading level skipped',
-		'no_subheadings'         => 'Long content without H2 subheadings',
-		'broken_internal_link'   => 'Internal link to a non-public or deleted object',
-		'unresolved_internal_link' => 'Internal link not matched to an inventoried URL',
-		'http_error_link'        => 'Internal link returned an HTTP error when verified',
-		'redirected_internal_link' => 'Internal link points to an old URL that redirects',
-		'missing_translation'    => 'Missing translation in another site language',
-		'canonical_conflict'     => 'Canonical points to a different URL',
-		'canonical_cross_locale' => 'Canonical points to a page in another locale',
-		'noindex_linked'         => 'Noindex page receives internal links',
-		'language_mismatch'      => 'Detected text language differs from assigned locale',
-		'near_duplicate'         => 'Near-duplicate content (same locale)',
-		'repetitive_phrasing'    => 'Excessively repeated phrase',
-		'thin_for_intent'        => 'Short content relative to heuristic intent',
-		'orphan'                 => 'No observed inbound internal links',
-		'few_cluster_links'      => 'Few links to pages in the same topic cluster',
-		'schema_duplication_risk' => 'Possible duplicate structured data',
-		'images_missing_alt'     => 'Images without alt text',
+		'h1_in_content'              => 'H1 heading inside content',
+		'heading_skip'               => 'Heading level skipped',
+		'no_subheadings'             => 'Long content without H2 subheadings',
+		'broken_internal_link'       => 'Internal link to a non-public or deleted object',
+		'unresolved_internal_link'   => 'Internal link not matched to an inventoried URL',
+		'http_error_link'            => 'Internal link returned an HTTP error when verified',
+		'redirected_internal_link'   => 'Internal link points to an old URL that redirects',
+		'missing_translation'        => 'Missing translation in another site language',
+		'canonical_conflict'         => 'Canonical points to a different URL',
+		'canonical_cross_locale'     => 'Canonical points to a page in another locale',
+		'noindex_linked'             => 'Noindex page receives internal links',
+		'language_mismatch'          => 'Detected text language differs from assigned locale',
+		'near_duplicate'             => 'Near-duplicate content (same locale)',
+		'repetitive_phrasing'        => 'Excessively repeated phrase',
+		'thin_for_intent'            => 'Short content relative to heuristic intent',
+		'orphan'                     => 'No observed inbound internal links',
+		'few_cluster_links'          => 'Few links to pages in the same topic cluster',
+		'schema_duplication_risk'    => 'Possible duplicate structured data',
+		'images_missing_alt'         => 'Images without alt text',
 	);
 
 	/**
@@ -127,7 +127,16 @@ final class QaChecker {
 		} elseif ( $is_post ) {
 			$len = mb_strlen( $title, 'UTF-8' );
 			if ( $len < 15 || $len > 65 ) {
-				$add( 'title_length', 'suggestion', 'info', array( 'length' => $len, 'note' => 'Display width, not character count, decides truncation; treat as a hint.' ), 'low' );
+				$add(
+					'title_length',
+					'suggestion',
+					'info',
+					array(
+						'length' => $len,
+						'note'   => 'Display width, not character count, decides truncation; treat as a hint.',
+					),
+					'low'
+				);
 			}
 			$key = $p['locale'] . '|' . TextNormalizer::normalize( $title );
 			if ( isset( $ctx['titles'][ $key ] ) && count( $ctx['titles'][ $key ] ) > 1 ) {
@@ -138,7 +147,16 @@ final class QaChecker {
 		if ( $is_post && $ctx['seo_active'] ) {
 			$desc = trim( (string) $row['meta_description'] );
 			if ( '' === $desc ) {
-				$add( 'missing_meta_description', 'warning', 'warning', array( 'seo_source' => $row['seo_source'], 'note' => 'The SEO plugin may generate a description from a template; only the stored per-post value was read.' ), 'medium' );
+				$add(
+					'missing_meta_description',
+					'warning',
+					'warning',
+					array(
+						'seo_source' => $row['seo_source'],
+						'note'       => 'The SEO plugin may generate a description from a template; only the stored per-post value was read.',
+					),
+					'medium'
+				);
 			} else {
 				$key = $p['locale'] . '|' . TextNormalizer::normalize( $desc );
 				if ( isset( $ctx['descriptions'][ $key ] ) && count( $ctx['descriptions'][ $key ] ) > 1 ) {
@@ -164,7 +182,16 @@ final class QaChecker {
 			$prev = $lvl;
 		}
 		if ( $is_post && $h1 > 0 ) {
-			$add( 'h1_in_content', 'warning', 'warning', array( 'count' => $h1, 'note' => 'Most themes already print the post title as H1. Changing headings requires a separate, explicit approval.' ), 'medium' );
+			$add(
+				'h1_in_content',
+				'warning',
+				'warning',
+				array(
+					'count' => $h1,
+					'note'  => 'Most themes already print the post title as H1. Changing headings requires a separate, explicit approval.',
+				),
+				'medium'
+			);
 		}
 		if ( array() !== $skips ) {
 			$add( 'heading_skip', 'warning', 'info', array( 'skips' => array_slice( $skips, 0, 5 ) ), 'high' );
@@ -185,18 +212,60 @@ final class QaChecker {
 		$broken = Db::rows( "SELECT target_url, anchor, resolution, http_status, target_id FROM {links} WHERE source_id = %d AND is_internal = 1 AND (resolution IN ('broken','non_public') OR http_status >= 400) LIMIT 20", array( $p['id'] ) );
 		foreach ( $broken as $b ) {
 			if ( (int) $b['http_status'] >= 400 ) {
-				$add( 'http_error_link', 'verified_error', 'error', array( 'url' => $b['target_url'], 'anchor' => $b['anchor'], 'http_status' => (int) $b['http_status'] ), 'high', (int) $b['target_id'] );
+				$add(
+					'http_error_link',
+					'verified_error',
+					'error',
+					array(
+						'url'         => $b['target_url'],
+						'anchor'      => $b['anchor'],
+						'http_status' => (int) $b['http_status'],
+					),
+					'high',
+					(int) $b['target_id']
+				);
 			} else {
-				$add( 'broken_internal_link', 'verified_error', 'error', array( 'url' => $b['target_url'], 'anchor' => $b['anchor'], 'resolution' => $b['resolution'] ), 'high', (int) $b['target_id'] );
+				$add(
+					'broken_internal_link',
+					'verified_error',
+					'error',
+					array(
+						'url'        => $b['target_url'],
+						'anchor'     => $b['anchor'],
+						'resolution' => $b['resolution'],
+					),
+					'high',
+					(int) $b['target_id']
+				);
 			}
 		}
 		$redirects = Db::rows( "SELECT target_url, anchor, target_id FROM {links} WHERE source_id = %d AND resolution = 'redirect' LIMIT 10", array( $p['id'] ) );
 		foreach ( $redirects as $rd ) {
-			$add( 'redirected_internal_link', 'warning', 'info', array( 'url' => $rd['target_url'], 'anchor' => $rd['anchor'], 'note' => 'WordPress redirects this old slug; linking to the current URL avoids a redirect hop.' ), 'high', (int) $rd['target_id'] );
+			$add(
+				'redirected_internal_link',
+				'warning',
+				'info',
+				array(
+					'url'    => $rd['target_url'],
+					'anchor' => $rd['anchor'],
+					'note'   => 'WordPress redirects this old slug; linking to the current URL avoids a redirect hop.',
+				),
+				'high',
+				(int) $rd['target_id']
+			);
 		}
 		$unresolved = Db::rows( "SELECT target_url, anchor FROM {links} WHERE source_id = %d AND is_internal = 1 AND resolution = 'unresolved' LIMIT 10", array( $p['id'] ) );
 		if ( array() !== $unresolved ) {
-			$add( 'unresolved_internal_link', 'warning', 'warning', array( 'links' => $unresolved, 'note' => 'May be an archive, attachment or custom route outside the inventory; not HTTP-verified unless link verification is enabled.' ), 'low' );
+			$add(
+				'unresolved_internal_link',
+				'warning',
+				'warning',
+				array(
+					'links' => $unresolved,
+					'note'  => 'May be an archive, attachment or custom route outside the inventory; not HTTP-verified unless link verification is enabled.',
+				),
+				'low'
+			);
 		}
 
 		// Translations (only when a mapping can be verified).
@@ -204,7 +273,16 @@ final class QaChecker {
 			$tr      = isset( $s['translations'] ) ? array_keys( (array) $s['translations'] ) : array();
 			$missing = array_values( array_diff( $ctx['languages'], $tr, array( $p['locale'] ) ) );
 			if ( array() !== $missing ) {
-				$add( 'missing_translation', 'warning', 'info', array( 'missing_languages' => $missing, 'framework' => LanguageResolver::framework() ), 'high' );
+				$add(
+					'missing_translation',
+					'warning',
+					'info',
+					array(
+						'missing_languages' => $missing,
+						'framework'         => LanguageResolver::framework(),
+					),
+					'high'
+				);
 			}
 		}
 
@@ -213,9 +291,30 @@ final class QaChecker {
 		if ( in_array( 'canonical points elsewhere', $reasons, true ) ) {
 			$target = Db::row( 'SELECT id, locale FROM {documents} WHERE url_hash = %s', array( \SemanticSEO\Inventory\DocumentRepository::url_hash( (string) $row['canonical'] ) ) );
 			if ( null !== $target && $target['locale'] !== $p['locale'] ) {
-				$add( 'canonical_cross_locale', 'warning', 'warning', array( 'canonical' => $row['canonical'], 'target_locale' => $target['locale'], 'note' => 'Cross-language canonicals usually conflict with hreflang.' ), 'high', (int) $target['id'] );
+				$add(
+					'canonical_cross_locale',
+					'warning',
+					'warning',
+					array(
+						'canonical'     => $row['canonical'],
+						'target_locale' => $target['locale'],
+						'note'          => 'Cross-language canonicals usually conflict with hreflang.',
+					),
+					'high',
+					(int) $target['id']
+				);
 			} else {
-				$add( 'canonical_conflict', 'warning', 'info', array( 'canonical' => $row['canonical'], 'url' => $row['url'], 'note' => 'May be intentional; never changed by this plugin.' ), 'high' );
+				$add(
+					'canonical_conflict',
+					'warning',
+					'info',
+					array(
+						'canonical' => $row['canonical'],
+						'url'       => $row['url'],
+						'note'      => 'May be intentional; never changed by this plugin.',
+					),
+					'high'
+				);
 			}
 		}
 		if ( isset( $ctx['noindex_inbound'][ $p['id'] ] ) && in_array( 'noindex', $reasons, true ) ) {
@@ -225,7 +324,17 @@ final class QaChecker {
 		// Language mismatch (detector is a heuristic signal).
 		$det = isset( $s['detected_lang'] ) ? (array) $s['detected_lang'] : array();
 		if ( isset( $det['lang'], $det['confidence'] ) && in_array( $det['lang'], array( 'vi', 'en' ), true ) && in_array( $p['locale'], array( 'vi', 'en' ), true ) && $det['lang'] !== $p['locale'] && 'low' !== $det['confidence'] ) {
-			$add( 'language_mismatch', 'warning', 'warning', array( 'assigned' => $p['locale'], 'locale_source' => $row['locale_source'], 'detected' => $det ), $det['confidence'] );
+			$add(
+				'language_mismatch',
+				'warning',
+				'warning',
+				array(
+					'assigned'      => $p['locale'],
+					'locale_source' => $row['locale_source'],
+					'detected'      => $det,
+				),
+				$det['confidence']
+			);
 		}
 
 		// Duplication, repetition, length.
@@ -234,7 +343,17 @@ final class QaChecker {
 		}
 		$rep = isset( $s['repetition'] ) ? (array) $s['repetition'] : array();
 		if ( isset( $rep['count'] ) && $rep['count'] >= 6 && $rep['density'] >= 0.06 && $p['word_count'] >= 150 ) {
-			$add( 'repetitive_phrasing', 'suggestion', 'info', array( 'phrase' => $rep['phrase'], 'count' => $rep['count'], 'density' => $rep['density'] ), 'medium' );
+			$add(
+				'repetitive_phrasing',
+				'suggestion',
+				'info',
+				array(
+					'phrase'  => $rep['phrase'],
+					'count'   => $rep['count'],
+					'density' => $rep['density'],
+				),
+				'medium'
+			);
 		}
 		if ( $is_post ) {
 			$min = array(
@@ -244,7 +363,18 @@ final class QaChecker {
 				'navigational'  => 40,
 			);
 			if ( isset( $min[ $p['intent'] ] ) && $p['word_count'] < $min[ $p['intent'] ] ) {
-				$add( 'thin_for_intent', 'suggestion', 'info', array( 'word_count' => $p['word_count'], 'intent' => $p['intent'], 'threshold' => $min[ $p['intent'] ], 'note' => 'Length is not quality; this only flags pages that may not answer the expected question.' ), 'low' );
+				$add(
+					'thin_for_intent',
+					'suggestion',
+					'info',
+					array(
+						'word_count' => $p['word_count'],
+						'intent'     => $p['intent'],
+						'threshold'  => $min[ $p['intent'] ],
+						'note'       => 'Length is not quality; this only flags pages that may not answer the expected question.',
+					),
+					'low'
+				);
 			}
 		}
 
@@ -260,16 +390,44 @@ final class QaChecker {
 			);
 			$size       = (int) Db::value( "SELECT COUNT(*) FROM {documents} WHERE cluster_id = %d AND status = 'publish'", array( $p['cluster_id'] ) );
 			if ( $size >= 3 && $in_cluster < 1 ) {
-				$add( 'few_cluster_links', 'suggestion', 'info', array( 'links_to_cluster' => $in_cluster, 'cluster_size' => $size ), 'medium' );
+				$add(
+					'few_cluster_links',
+					'suggestion',
+					'info',
+					array(
+						'links_to_cluster' => $in_cluster,
+						'cluster_size'     => $size,
+					),
+					'medium'
+				);
 			}
 		}
 
 		// Structured data (only with evidence).
 		if ( ! empty( $s['jsonld_in_content'] ) && $ctx['schema_plugin'] ) {
-			$add( 'schema_duplication_risk', 'warning', 'warning', array( 'inline_jsonld_blocks' => (int) $s['jsonld_in_content'], 'seo_plugin' => SeoAdapter::primary(), 'note' => 'Evidence: JSON-LD inside content and an SEO plugin that outputs schema. Check the rendered page before changing anything.' ), 'medium' );
+			$add(
+				'schema_duplication_risk',
+				'warning',
+				'warning',
+				array(
+					'inline_jsonld_blocks' => (int) $s['jsonld_in_content'],
+					'seo_plugin'           => SeoAdapter::primary(),
+					'note'                 => 'Evidence: JSON-LD inside content and an SEO plugin that outputs schema. Check the rendered page before changing anything.',
+				),
+				'medium'
+			);
 		}
 		if ( ! empty( $s['images_no_alt'] ) ) {
-			$add( 'images_missing_alt', 'warning', 'info', array( 'images' => (int) $s['images'], 'missing_alt' => (int) $s['images_no_alt'] ), 'high' );
+			$add(
+				'images_missing_alt',
+				'warning',
+				'info',
+				array(
+					'images'      => (int) $s['images'],
+					'missing_alt' => (int) $s['images_no_alt'],
+				),
+				'high'
+			);
 		}
 		return $out;
 	}

@@ -99,12 +99,12 @@ final class JobRunner {
 		 */
 		$handlers = (array) apply_filters( 'sseo_job_handlers', self::HANDLERS );
 		$class    = isset( $handlers[ $job['type'] ] ) && class_exists( $handlers[ $job['type'] ] ) ? $handlers[ $job['type'] ] : null;
-		$start   = microtime( true );
-		$budget  = max( 1, (int) $budget );
-		$batches = 0;
-		$state   = $job['state'];
-		$done    = (int) $job['progress_done'];
-		$total   = (int) $job['progress_total'];
+		$start    = microtime( true );
+		$budget   = max( 1, (int) $budget );
+		$batches  = 0;
+		$state    = $job['state'];
+		$done     = (int) $job['progress_done'];
+		$total    = (int) $job['progress_total'];
 		if ( null === $class ) {
 			JobRepository::fail( $job_id, $owner, 'Unknown job type' );
 			return array(

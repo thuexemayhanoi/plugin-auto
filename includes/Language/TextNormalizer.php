@@ -145,12 +145,12 @@ final class TextNormalizer {
 		foreach ( self::ROWS as $row_base => $row ) {
 			$plain = $base[ $row_base ];
 			if ( $row_base !== $plain ) {
-				$map[ $row_base ]                                  = $plain;
-				$map[ mb_strtoupper( $row_base, 'UTF-8' ) ]        = strtoupper( $plain );
+				$map[ $row_base ]                           = $plain;
+				$map[ mb_strtoupper( $row_base, 'UTF-8' ) ] = strtoupper( $plain );
 			}
 			foreach ( self::chars( $row ) as $ch ) {
-				$map[ $ch ]                              = $plain;
-				$map[ mb_strtoupper( $ch, 'UTF-8' ) ]    = strtoupper( $plain );
+				$map[ $ch ]                           = $plain;
+				$map[ mb_strtoupper( $ch, 'UTF-8' ) ] = strtoupper( $plain );
 			}
 		}
 		self::$fold_map = $map;
@@ -193,16 +193,16 @@ final class TextNormalizer {
 					$map[ $l . $mod ] = $conv( $row_base );
 				}
 				foreach ( self::chars( $row ) as $i => $ch ) {
-					$tone                        = $tones[ $i ];
-					$map[ $l . $mod . $tone ]    = $conv( $ch );
+					$tone                     = $tones[ $i ];
+					$map[ $l . $mod . $tone ] = $conv( $ch );
 					if ( '' !== $mod ) {
 						$map[ $l . $tone . $mod ] = $conv( $ch );
 					}
 				}
 			}
 		}
-		$map['d' . "\u{0335}"] = 'đ';
-		self::$compose_map     = $map;
+		$map[ 'd' . "\u{0335}" ] = 'đ';
+		self::$compose_map       = $map;
 		return $map;
 	}
 

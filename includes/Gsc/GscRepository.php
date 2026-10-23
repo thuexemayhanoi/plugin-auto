@@ -42,13 +42,13 @@ final class GscRepository {
 		}
 		$map = array();
 		foreach ( $csv['header'] as $i => $h ) {
-			$key = strtolower( trim( preg_replace( '/[^a-z]+/i', '_', (string) $h ), '_' ) );
-			$alias = array(
-				'top_pages'   => 'page',
+			$key         = strtolower( trim( preg_replace( '/[^a-z]+/i', '_', (string) $h ), '_' ) );
+			$alias       = array(
+				'top_pages'    => 'page',
 				'landing_page' => 'page',
-				'url'         => 'page',
-				'top_queries' => 'query',
-				'queries'     => 'query',
+				'url'          => 'page',
+				'top_queries'  => 'query',
+				'queries'      => 'query',
 				'search_query' => 'query',
 			);
 			$key         = isset( $alias[ $key ] ) ? $alias[ $key ] : $key;
@@ -106,14 +106,14 @@ final class GscRepository {
 			);
 		}
 		return array(
-			'import_id'       => $dry_run ? null : $import_id,
-			'dry_run'         => (bool) $dry_run,
-			'rows_total'      => count( $csv['rows'] ),
-			'rows_valid'      => $valid,
-			'rows_invalid'    => count( $csv['rows'] ) - $valid,
-			'invalid_samples' => $invalid,
+			'import_id'            => $dry_run ? null : $import_id,
+			'dry_run'              => (bool) $dry_run,
+			'rows_total'           => count( $csv['rows'] ),
+			'rows_valid'           => $valid,
+			'rows_invalid'         => count( $csv['rows'] ) - $valid,
+			'invalid_samples'      => $invalid,
 			'matched_to_inventory' => $matched,
-			'period'          => array( $period_start, $period_end ),
+			'period'               => array( $period_start, $period_end ),
 		);
 	}
 
@@ -126,7 +126,7 @@ final class GscRepository {
 	 */
 	public static function overlaps( $source_id, array $candidates ) {
 		$has_any = null !== Db::value( 'SELECT id FROM {gsc} WHERE document_id > 0 LIMIT 1' );
-		$empty = array(
+		$empty   = array(
 			'available' => false,
 			'with_data' => array(),
 			'overlap'   => array(),

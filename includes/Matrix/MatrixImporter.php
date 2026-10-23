@@ -164,14 +164,14 @@ final class MatrixImporter {
 			30 * MINUTE_IN_SECONDS
 		);
 		return array(
-			'token'      => $token,
-			'changes'    => $changes,
-			'invalid'    => $invalid,
-			'conflicts'  => $conflicts,
-			'unchanged'  => $unchanged,
-			'rows'       => count( $csv['rows'] ),
-			'overwrite'  => (bool) $overwrite,
-			'fields'     => $fields,
+			'token'     => $token,
+			'changes'   => $changes,
+			'invalid'   => $invalid,
+			'conflicts' => $conflicts,
+			'unchanged' => $unchanged,
+			'rows'      => count( $csv['rows'] ),
+			'overwrite' => (bool) $overwrite,
+			'fields'    => $fields,
 		);
 	}
 

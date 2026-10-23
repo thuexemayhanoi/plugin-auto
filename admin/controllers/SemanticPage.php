@@ -82,14 +82,14 @@ final class SemanticPage {
 		// Facts.
 		echo '<section class="sseo-panel"><h3>' . esc_html__( 'Facts (measured)', 'semantic-seo-engine-vi-en' ) . '</h3><dl class="sseo-dl">';
 		$facts = array(
-			__( 'Status', 'semantic-seo-engine-vi-en' )           => Ui::term( $d['status'] ),
-			__( 'Locale', 'semantic-seo-engine-vi-en' )           => strtoupper( $d['locale'] ) . ' (' . $d['locale_source'] . ')',
-			__( 'Indexable', 'semantic-seo-engine-vi-en' )        => $d['indexable'] ? __( 'yes', 'semantic-seo-engine-vi-en' ) : __( 'no', 'semantic-seo-engine-vi-en' ) . ' — ' . implode( ', ', (array) $d['indexability_notes'] ),
-			__( 'Robots', 'semantic-seo-engine-vi-en' )           => $d['robots'],
-			__( 'Canonical', 'semantic-seo-engine-vi-en' )        => (string) $d['canonical'],
+			__( 'Status', 'semantic-seo-engine-vi-en' )    => Ui::term( $d['status'] ),
+			__( 'Locale', 'semantic-seo-engine-vi-en' )    => strtoupper( $d['locale'] ) . ' (' . $d['locale_source'] . ')',
+			__( 'Indexable', 'semantic-seo-engine-vi-en' ) => $d['indexable'] ? __( 'yes', 'semantic-seo-engine-vi-en' ) : __( 'no', 'semantic-seo-engine-vi-en' ) . ' — ' . implode( ', ', (array) $d['indexability_notes'] ),
+			__( 'Robots', 'semantic-seo-engine-vi-en' )    => $d['robots'],
+			__( 'Canonical', 'semantic-seo-engine-vi-en' ) => (string) $d['canonical'],
 			__( 'SEO metadata source', 'semantic-seo-engine-vi-en' ) => $d['seo_source'],
-			__( 'Focus keyword', 'semantic-seo-engine-vi-en' )    => '' !== $d['focus_keyword']['value'] ? $d['focus_keyword']['value'] . ' (' . $d['focus_keyword']['source'] . ')' : __( 'none set', 'semantic-seo-engine-vi-en' ),
-			__( 'Words', 'semantic-seo-engine-vi-en' )            => (string) $a['facts']['word_count'],
+			__( 'Focus keyword', 'semantic-seo-engine-vi-en' ) => '' !== $d['focus_keyword']['value'] ? $d['focus_keyword']['value'] . ' (' . $d['focus_keyword']['source'] . ')' : __( 'none set', 'semantic-seo-engine-vi-en' ),
+			__( 'Words', 'semantic-seo-engine-vi-en' )     => (string) $a['facts']['word_count'],
 			__( 'Internal links in / out', 'semantic-seo-engine-vi-en' ) => $a['facts']['inbound_internal'] . ' / ' . $a['facts']['outbound_internal'],
 			__( 'Images without alt', 'semantic-seo-engine-vi-en' ) => $a['facts']['images_missing_alt'] . ' / ' . $a['facts']['images'],
 		);
@@ -122,7 +122,17 @@ final class SemanticPage {
 			echo '</ul>';
 		}
 		echo '<p><strong>' . esc_html__( 'Topic terms:', 'semantic-seo-engine-vi-en' ) . '</strong> ' . esc_html( implode( ', ', array_slice( (array) $i['topics'], 0, 15 ) ) ) . '</p>';
-		echo '<p><strong>' . esc_html__( 'Candidate entities:', 'semantic-seo-engine-vi-en' ) . '</strong> ' . esc_html( implode( ', ', array_map( static function ( $e ) { return $e['text'] . ' ×' . $e['count']; }, (array) $i['entities']['items'] ) ) ) . ' <small>(' . esc_html( $i['entities']['method'] ) . ')</small></p>';
+		echo '<p><strong>' . esc_html__( 'Candidate entities:', 'semantic-seo-engine-vi-en' ) . '</strong> ' . esc_html(
+			implode(
+				', ',
+				array_map(
+					static function ( $e ) {
+						return $e['text'] . ' ×' . $e['count'];
+					},
+					(array) $i['entities']['items']
+				)
+			)
+		) . ' <small>(' . esc_html( $i['entities']['method'] ) . ')</small></p>';
 		$det = (array) $i['detected_language'];
 		if ( isset( $det['lang'] ) ) {
 			echo '<p><strong>' . esc_html__( 'Detected text language:', 'semantic-seo-engine-vi-en' ) . '</strong> ' . esc_html( strtoupper( $det['lang'] ) . ' (' . Ui::term( $det['confidence'] ) . ')' ) . '</p>';
@@ -134,10 +144,55 @@ final class SemanticPage {
 		if ( current_user_can( Capabilities::REVIEW ) ) {
 			Ui::form_open( 'editorial' );
 			echo '<input type="hidden" name="doc_id" value="' . esc_attr( (string) $d['id'] ) . '"><fieldset><legend>' . esc_html__( 'Editorial override (plugin data only)', 'semantic-seo-engine-vi-en' ) . '</legend>';
-			echo Ui::select( 'editorial_intent', array( '' => __( '(use heuristic)', 'semantic-seo-engine-vi-en' ), 'informational' => Ui::term( 'informational' ), 'transactional' => Ui::term( 'transactional' ), 'commercial' => Ui::term( 'commercial' ), 'navigational' => Ui::term( 'navigational' ) ), 'editorial override' === $i['intent']['source'] ? $i['intent']['label'] : '', __( 'Intent', 'semantic-seo-engine-vi-en' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo ' ' . Ui::select( 'review_state', array( 'unreviewed' => Ui::term( 'unreviewed' ), 'needs_review' => Ui::term( 'needs_review' ), 'reviewed' => Ui::term( 'reviewed' ), 'approved_plan' => Ui::term( 'approved_plan' ) ), $d['review_state'], __( 'Review state', 'semantic-seo-engine-vi-en' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			Ui::out(
+				Ui::select(
+					'editorial_intent',
+					array(
+						''              => __( '(use heuristic)', 'semantic-seo-engine-vi-en' ),
+						'informational' => Ui::term( 'informational' ),
+						'transactional' => Ui::term( 'transactional' ),
+						'commercial'    => Ui::term( 'commercial' ),
+						'navigational'  => Ui::term( 'navigational' ),
+					),
+					'editorial override' === $i['intent']['source'] ? $i['intent']['label'] : '',
+					__( 'Intent', 'semantic-seo-engine-vi-en' )
+				)
+			);
+			Ui::out(
+				' ' . Ui::select(
+					'review_state',
+					array(
+						'unreviewed'    => Ui::term( 'unreviewed' ),
+						'needs_review'  => Ui::term( 'needs_review' ),
+						'reviewed'      => Ui::term( 'reviewed' ),
+						'approved_plan' => Ui::term( 'approved_plan' ),
+					),
+					$d['review_state'],
+					__( 'Review state', 'semantic-seo-engine-vi-en' )
+				)
+			);
 			echo ' <button class="button">' . esc_html__( 'Save', 'semantic-seo-engine-vi-en' ) . '</button></fieldset></form>';
-			echo '<p>' . Ui::action_button( 'lock', array( 'scope' => 'document', 'value' => $d['object_type'] . ':' . $d['object_id'], 'lock_type' => 'lock', 'reason' => 'priority URL' ), __( 'Lock this URL (no proposals)', 'semantic-seo-engine-vi-en' ) ) . ' ' . Ui::action_button( 'lock', array( 'scope' => 'document', 'value' => $d['object_type'] . ':' . $d['object_id'], 'lock_type' => 'exclude', 'reason' => 'excluded from analysis' ), __( 'Exclude from suggestions', 'semantic-seo-engine-vi-en' ) ) . '</p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			Ui::out(
+				'<p>' . Ui::action_button(
+					'lock',
+					array(
+						'scope'     => 'document',
+						'value'     => $d['object_type'] . ':' . $d['object_id'],
+						'lock_type' => 'lock',
+						'reason'    => 'priority URL',
+					),
+					__( 'Lock this URL (no proposals)', 'semantic-seo-engine-vi-en' )
+				) . ' ' . Ui::action_button(
+					'lock',
+					array(
+						'scope'     => 'document',
+						'value'     => $d['object_type'] . ':' . $d['object_id'],
+						'lock_type' => 'exclude',
+						'reason'    => 'excluded from analysis',
+					),
+					__( 'Exclude from suggestions', 'semantic-seo-engine-vi-en' )
+				) . '</p>'
+			);
 		}
 		echo '</section></div>';
 

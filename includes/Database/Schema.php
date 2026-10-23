@@ -50,7 +50,7 @@ final class Schema {
 	}
 
 	/**
-	 * dbDelta statements for every table.
+	 * The dbDelta() statements for every table.
 	 *
 	 * @return string[]
 	 */

@@ -274,7 +274,7 @@ final class AnalysisRunner {
 			$ids = array_merge( $ids, array_map( 'intval', Db::col( "SELECT id FROM {documents} WHERE cluster_id = %d AND status = 'publish' AND id <> %d LIMIT 20", array( $source['cluster_id'], $source['id'] ) ) ) );
 			$ids = array_merge( $ids, ClusterTree::ancestor_pillars( $source['cluster_id'] ) );
 		}
-		$ids = array_values( array_diff( array_unique( $ids ), array( $source['id'] ) ) );
+		$ids       = array_values( array_diff( array_unique( $ids ), array( $source['id'] ) ) );
 		$rows      = DocumentRepository::many( $ids );
 		$model_key = ModelProfile::active()['model_key'];
 		$vectors   = EmbeddingRepository::summary_vectors( array_merge( array( $source['id'] ), array_keys( $rows ) ), $model_key );

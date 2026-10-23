@@ -34,10 +34,20 @@ final class JobsPage {
 		}
 		if ( current_user_can( Capabilities::ANALYZE ) ) {
 			echo '<section class="sseo-panel"><h2>' . esc_html__( 'Start a job', 'semantic-seo-engine-vi-en' ) . '</h2><p>';
-			echo Ui::action_button( 'start_job', array( 'type' => 'inventory', 'then_analyze' => '1' ), __( 'Inventory + analysis', 'semantic-seo-engine-vi-en' ), 'button button-primary' ) . ' '; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo Ui::action_button( 'start_job', array( 'type' => 'analyze' ), __( 'Analysis only', 'semantic-seo-engine-vi-en' ) ) . ' '; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo Ui::action_button( 'start_job', array( 'type' => 'embed' ), __( 'Queue embeddings', 'semantic-seo-engine-vi-en' ) ) . ' '; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo Ui::action_button( 'start_job', array( 'type' => 'verify_links' ), __( 'Verify internal link HTTP status', 'semantic-seo-engine-vi-en' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			Ui::out(
+				Ui::action_button(
+					'start_job',
+					array(
+						'type'         => 'inventory',
+						'then_analyze' => '1',
+					),
+					__( 'Inventory + analysis', 'semantic-seo-engine-vi-en' ),
+					'button button-primary'
+				) . ' '
+			); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			Ui::out( Ui::action_button( 'start_job', array( 'type' => 'analyze' ), __( 'Analysis only', 'semantic-seo-engine-vi-en' ) ) . ' ' );
+			Ui::out( Ui::action_button( 'start_job', array( 'type' => 'embed' ), __( 'Queue embeddings', 'semantic-seo-engine-vi-en' ) ) . ' ' );
+			Ui::out( Ui::action_button( 'start_job', array( 'type' => 'verify_links' ), __( 'Verify internal link HTTP status', 'semantic-seo-engine-vi-en' ) ) );
 			echo '</p>';
 			Ui::form_open( 'start_job' );
 			echo '<input type="hidden" name="type" value="inventory"><input type="hidden" name="then_analyze" value="1"><label for="sseo-ids">' . esc_html__( 'Targeted run: post IDs (max 200, comma separated)', 'semantic-seo-engine-vi-en' ) . '</label> <input id="sseo-ids" type="text" name="post_ids" size="40" pattern="[0-9,\s]*"> <button class="button">' . esc_html__( 'Analyze these posts', 'semantic-seo-engine-vi-en' ) . '</button></form>';
@@ -53,14 +63,44 @@ final class JobsPage {
 			$controls = '';
 			if ( current_user_can( Capabilities::ANALYZE ) ) {
 				if ( in_array( $j['status'], array( 'queued', 'running' ), true ) ) {
-					$controls .= Ui::action_button( 'job_control', array( 'job_id' => $j['id'], 'op' => 'tick' ), __( 'Advance now', 'semantic-seo-engine-vi-en' ) );
-					$controls .= Ui::action_button( 'job_control', array( 'job_id' => $j['id'], 'op' => 'pause' ), __( 'Pause', 'semantic-seo-engine-vi-en' ) );
+					$controls .= Ui::action_button(
+						'job_control',
+						array(
+							'job_id' => $j['id'],
+							'op'     => 'tick',
+						),
+						__( 'Advance now', 'semantic-seo-engine-vi-en' )
+					);
+					$controls .= Ui::action_button(
+						'job_control',
+						array(
+							'job_id' => $j['id'],
+							'op'     => 'pause',
+						),
+						__( 'Pause', 'semantic-seo-engine-vi-en' )
+					);
 				}
 				if ( 'paused' === $j['status'] ) {
-					$controls .= Ui::action_button( 'job_control', array( 'job_id' => $j['id'], 'op' => 'resume' ), __( 'Resume', 'semantic-seo-engine-vi-en' ) );
+					$controls .= Ui::action_button(
+						'job_control',
+						array(
+							'job_id' => $j['id'],
+							'op'     => 'resume',
+						),
+						__( 'Resume', 'semantic-seo-engine-vi-en' )
+					);
 				}
 				if ( in_array( $j['status'], array( 'queued', 'running', 'paused' ), true ) ) {
-					$controls .= Ui::action_button( 'job_control', array( 'job_id' => $j['id'], 'op' => 'cancel' ), __( 'Cancel', 'semantic-seo-engine-vi-en' ), 'button button-link-delete', __( 'Cancel this job?', 'semantic-seo-engine-vi-en' ) );
+					$controls .= Ui::action_button(
+						'job_control',
+						array(
+							'job_id' => $j['id'],
+							'op'     => 'cancel',
+						),
+						__( 'Cancel', 'semantic-seo-engine-vi-en' ),
+						'button button-link-delete',
+						__( 'Cancel this job?', 'semantic-seo-engine-vi-en' )
+					);
 				}
 			}
 			$errors = '';
@@ -106,12 +146,12 @@ final class JobsPage {
 		echo '<section class="sseo-panel" id="sseo-inference" aria-labelledby="sseo-inf-title"><h2 id="sseo-inf-title">' . esc_html__( 'Inference device (Tier 1 — browser)', 'semantic-seo-engine-vi-en' ) . '</h2>';
 		echo '<dl class="sseo-dl">';
 		$facts = array(
-			__( 'Model', 'semantic-seo-engine-vi-en' )            => $p['model_id'] . ' @ ' . substr( $p['revision'], 0, 12 ) . ' (' . __( 'base', 'semantic-seo-engine-vi-en' ) . ' ' . $p['base_model'] . ', ' . $p['license'] . ')',
+			__( 'Model', 'semantic-seo-engine-vi-en' )   => $p['model_id'] . ' @ ' . substr( $p['revision'], 0, 12 ) . ' (' . __( 'base', 'semantic-seo-engine-vi-en' ) . ' ' . $p['base_model'] . ', ' . $p['license'] . ')',
 			__( 'Precision / dimension', 'semantic-seo-engine-vi-en' ) => $p['dtype'] . ' / ' . $p['dimension'] . ' · ' . __( 'pooling', 'semantic-seo-engine-vi-en' ) . ' ' . $p['pooling'] . ' + L2',
 			__( 'Initial download', 'semantic-seo-engine-vi-en' ) => size_format( $p['download_bytes'], 1 ) . ' ' . __( 'from huggingface.co (pinned revision, SHA-256 verified, cached by this browser)', 'semantic-seo-engine-vi-en' ),
-			__( 'Privacy', 'semantic-seo-engine-vi-en' )          => __( 'Only model files are downloaded from Hugging Face. Your post text is processed inside this browser and the vectors are sent only to this WordPress site.', 'semantic-seo-engine-vi-en' ),
-			__( 'Devices', 'semantic-seo-engine-vi-en' )          => __( 'Desktop Chrome/Edge with WebGPU is fastest; WASM works but is slower; many phones (including iPhones) may be unsupported or too slow — the lexical tier keeps working.', 'semantic-seo-engine-vi-en' ),
-			__( 'Queue', 'semantic-seo-engine-vi-en' )            => sprintf( /* translators: 1: pending, 2: leased, 3: done, 4: failed */ __( '%1$d pending · %2$d in progress · %3$d done · %4$d failed', 'semantic-seo-engine-vi-en' ), $queue['pending'], $queue['leased'], $queue['done'], $queue['failed'] ),
+			__( 'Privacy', 'semantic-seo-engine-vi-en' ) => __( 'Only model files are downloaded from Hugging Face. Your post text is processed inside this browser and the vectors are sent only to this WordPress site.', 'semantic-seo-engine-vi-en' ),
+			__( 'Devices', 'semantic-seo-engine-vi-en' ) => __( 'Desktop Chrome/Edge with WebGPU is fastest; WASM works but is slower; many phones (including iPhones) may be unsupported or too slow — the lexical tier keeps working.', 'semantic-seo-engine-vi-en' ),
+			__( 'Queue', 'semantic-seo-engine-vi-en' )   => sprintf( /* translators: 1: pending, 2: leased, 3: done, 4: failed */ __( '%1$d pending · %2$d in progress · %3$d done · %4$d failed', 'semantic-seo-engine-vi-en' ), $queue['pending'], $queue['leased'], $queue['done'], $queue['failed'] ),
 		);
 		foreach ( $facts as $k => $v ) {
 			echo '<dt>' . esc_html( $k ) . '</dt><dd>' . esc_html( $v ) . '</dd>';

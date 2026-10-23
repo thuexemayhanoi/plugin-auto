@@ -19,9 +19,9 @@ defined( 'ABSPATH' ) || exit;
  */
 final class RelatedContent {
 
-	const VERSION      = 'related-1';
-	const CACHE_GROUP  = 'sseo_related';
-	const MMR_LAMBDA   = 0.75;
+	const VERSION     = 'related-1';
+	const CACHE_GROUP = 'sseo_related';
+	const MMR_LAMBDA  = 0.75;
 
 	/**
 	 * Computes and stores the related list for a source document.
@@ -61,7 +61,9 @@ final class RelatedContent {
 		}
 		// Maximal Marginal Relevance for diversity.
 		$selected = array();
-		while ( count( $selected ) < $limit && array() !== $pool ) {
+		$picked   = 0;
+		while ( $picked < $limit && array() !== $pool ) {
+			++$picked;
 			$best_id  = 0;
 			$best_mmr = -INF;
 			foreach ( $pool as $id => $c ) {

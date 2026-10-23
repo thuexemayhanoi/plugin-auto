@@ -47,7 +47,10 @@ final class ClusterTree {
 		}
 		$out = array();
 		$id  = (int) $cluster_id;
-		while ( $id > 0 && ! in_array( $id, $out, true ) && count( $out ) < 10 ) {
+		for ( $guard = 0; $id > 0 && $guard < 10; $guard++ ) {
+			if ( in_array( $id, $out, true ) ) {
+				break; // Defensive: a corrupted parent chain must not loop.
+			}
 			$out[] = $id;
 			$id    = isset( self::$parents[ $id ] ) ? self::$parents[ $id ] : 0;
 		}

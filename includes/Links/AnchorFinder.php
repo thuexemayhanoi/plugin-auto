@@ -29,9 +29,9 @@ final class AnchorFinder {
 	 * @return array<int,array{phrase:string,source:string,quality:float}>
 	 */
 	public static function phrases( array $target ) {
-		$lang    = in_array( $target['locale'], array( 'vi', 'en' ), true ) ? $target['locale'] : '';
-		$out     = array();
-		$add     = static function ( $phrase, $source, $quality ) use ( &$out ) {
+		$lang = in_array( $target['locale'], array( 'vi', 'en' ), true ) ? $target['locale'] : '';
+		$out  = array();
+		$add  = static function ( $phrase, $source, $quality ) use ( &$out ) {
 			$phrase = trim( preg_replace( '/\s+/u', ' ', TextNormalizer::nfc( (string) $phrase ) ) );
 			$key    = TextNormalizer::normalize( $phrase );
 			if ( mb_strlen( $phrase, 'UTF-8' ) < 4 || isset( $out[ $key ] ) || in_array( $key, self::GENERIC, true ) ) {

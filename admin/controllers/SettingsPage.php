@@ -54,22 +54,75 @@ final class SettingsPage {
 		echo '<p><label><input type="checkbox" name="sseo[auto_incremental]" value="1"' . checked( $s['auto_incremental'], true, false ) . '> ' . esc_html__( 'Re-index changed posts automatically (after the first inventory)', 'semantic-seo-engine-vi-en' ) . '</label></p>';
 		echo '<p><label><input type="checkbox" name="sseo[allow_proposals]" value="1"' . checked( $s['allow_proposals'], true, false ) . '> ' . esc_html__( 'Allow change previews (approval is always required to apply)', 'semantic-seo-engine-vi-en' ) . '</label></p>';
 		echo '<p><label><input type="checkbox" name="sseo[verify_http]" value="1"' . checked( $s['verify_http'], true, false ) . '> ' . esc_html__( 'Allow HTTP verification of internal link targets (same host only, no redirects followed)', 'semantic-seo-engine-vi-en' ) . '</label></p>';
-		echo Ui::select( 'sseo[ui_language]', array( 'vi' => 'Tiếng Việt', 'en' => 'English', 'auto' => __( 'Follow WordPress profile language', 'semantic-seo-engine-vi-en' ) ), $s['ui_language'], __( 'Plugin admin language', 'semantic-seo-engine-vi-en' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		Ui::out(
+			Ui::select(
+				'sseo[ui_language]',
+				array(
+					'vi'   => 'Tiếng Việt',
+					'en'   => 'English',
+					'auto' => __( 'Follow WordPress profile language', 'semantic-seo-engine-vi-en' ),
+				),
+				$s['ui_language'],
+				__( 'Plugin admin language', 'semantic-seo-engine-vi-en' )
+			)
+		);
 		echo '</section>';
 
 		echo '<details class="sseo-panel"><summary><strong>' . esc_html__( 'Expert panel (tested defaults — change only with evaluation data)', 'semantic-seo-engine-vi-en' ) . '</strong></summary>';
-		foreach ( array( 'w_lexical' => __( 'Weight: lexical', 'semantic-seo-engine-vi-en' ), 'w_semantic' => __( 'Weight: semantic', 'semantic-seo-engine-vi-en' ), 'w_anchor' => __( 'Weight: anchor quality', 'semantic-seo-engine-vi-en' ), 'w_graph' => __( 'Weight: graph usefulness', 'semantic-seo-engine-vi-en' ), 'link_min_score' => __( 'Minimum link score', 'semantic-seo-engine-vi-en' ), 'related_min_score' => __( 'Minimum related score', 'semantic-seo-engine-vi-en' ), 'cannibal_min_score' => __( 'Overlap topic threshold', 'semantic-seo-engine-vi-en' ), 'near_duplicate' => __( 'Near-duplicate threshold (MinHash)', 'semantic-seo-engine-vi-en' ) ) as $k => $label ) {
+		foreach ( array(
+			'w_lexical'          => __( 'Weight: lexical', 'semantic-seo-engine-vi-en' ),
+			'w_semantic'         => __( 'Weight: semantic', 'semantic-seo-engine-vi-en' ),
+			'w_anchor'           => __( 'Weight: anchor quality', 'semantic-seo-engine-vi-en' ),
+			'w_graph'            => __( 'Weight: graph usefulness', 'semantic-seo-engine-vi-en' ),
+			'link_min_score'     => __( 'Minimum link score', 'semantic-seo-engine-vi-en' ),
+			'related_min_score'  => __( 'Minimum related score', 'semantic-seo-engine-vi-en' ),
+			'cannibal_min_score' => __( 'Overlap topic threshold', 'semantic-seo-engine-vi-en' ),
+			'near_duplicate'     => __( 'Near-duplicate threshold (MinHash)', 'semantic-seo-engine-vi-en' ),
+		) as $k => $label ) {
 			echo '<p><label for="sseo-' . esc_attr( $k ) . '">' . esc_html( $label ) . '</label> <input id="sseo-' . esc_attr( $k ) . '" type="number" step="0.01" min="0" max="1" name="sseo[' . esc_attr( $k ) . ']" value="' . esc_attr( (string) $s[ $k ] ) . '"></p>';
 		}
 		self::number( 'candidate_k', __( 'Candidates per page (BM25 top-k)', 'semantic-seo-engine-vi-en' ), $s, 5, 50 );
 		self::number( 'link_max_per_source', __( 'Max link suggestions per page', 'semantic-seo-engine-vi-en' ), $s, 1, 10 );
-		echo Ui::select( 'sseo[model_dtype]', array( 'q4f16' => 'q4f16 (≈567 MB, WebGPU)', 'q8' => 'q8 (≈614 MB, WASM-friendly)', 'fp16' => 'fp16 (≈1.2 GB)' ), $s['model_dtype'], __( 'Model precision', 'semantic-seo-engine-vi-en' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo ' ' . Ui::select( 'sseo[embedding_dimension]', array( '1024' => '1024', '768' => '768 (MRL)', '512' => '512 (MRL)', '256' => '256 (MRL)' ), (string) $s['embedding_dimension'], __( 'Vector dimension', 'semantic-seo-engine-vi-en' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		Ui::out(
+			Ui::select(
+				'sseo[model_dtype]',
+				array(
+					'q4f16' => 'q4f16 (≈567 MB, WebGPU)',
+					'q8'    => 'q8 (≈614 MB, WASM-friendly)',
+					'fp16'  => 'fp16 (≈1.2 GB)',
+				),
+				$s['model_dtype'],
+				__( 'Model precision', 'semantic-seo-engine-vi-en' )
+			)
+		);
+		Ui::out(
+			' ' . Ui::select(
+				'sseo[embedding_dimension]',
+				array(
+					'1024' => '1024',
+					'768'  => '768 (MRL)',
+					'512'  => '512 (MRL)',
+					'256'  => '256 (MRL)',
+				),
+				(string) $s['embedding_dimension'],
+				__( 'Vector dimension', 'semantic-seo-engine-vi-en' )
+			)
+		);
 		self::number( 'embed_body_chunks', __( 'Body chunks embedded per page', 'semantic-seo-engine-vi-en' ), $s, 0, 8 );
 		echo '<p class="description">' . esc_html__( 'Changing precision or dimension changes the model key: existing vectors are kept but ignored until you re-run embeddings.', 'semantic-seo-engine-vi-en' ) . '</p></details>';
 
 		echo '<section class="sseo-panel"><h2>' . esc_html__( 'Uninstall policy', 'semantic-seo-engine-vi-en' ) . '</h2>';
-		echo Ui::select( 'sseo[uninstall_policy]', array( 'preserve' => __( 'Preserve all plugin data (default)', 'semantic-seo-engine-vi-en' ), 'delete' => __( 'Delete all plugin data when the plugin is deleted', 'semantic-seo-engine-vi-en' ) ), $s['uninstall_policy'], __( 'When the plugin is deleted', 'semantic-seo-engine-vi-en' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		Ui::out(
+			Ui::select(
+				'sseo[uninstall_policy]',
+				array(
+					'preserve' => __( 'Preserve all plugin data (default)', 'semantic-seo-engine-vi-en' ),
+					'delete'   => __( 'Delete all plugin data when the plugin is deleted', 'semantic-seo-engine-vi-en' ),
+				),
+				$s['uninstall_policy'],
+				__( 'When the plugin is deleted', 'semantic-seo-engine-vi-en' )
+			)
+		);
 		echo ' <label for="sseo-cd">' . esc_html__( 'Type DELETE to confirm the delete policy', 'semantic-seo-engine-vi-en' ) . '</label> <input id="sseo-cd" type="text" name="confirm_delete" size="8" autocomplete="off">';
 		echo '<p class="description">' . esc_html__( 'Deleting plugin data also deletes the change log and rollback snapshots. WordPress posts are never deleted.', 'semantic-seo-engine-vi-en' ) . '</p></section>';
 		echo '<p><button class="button button-primary">' . esc_html__( 'Save settings', 'semantic-seo-engine-vi-en' ) . '</button></p></form>';
@@ -122,7 +175,17 @@ final class SettingsPage {
 		);
 		Ui::form_open( 'lock' );
 		echo '<input type="hidden" name="scope" value="url_pattern"><label for="sseo-lp">' . esc_html__( 'Lock a URL path fragment', 'semantic-seo-engine-vi-en' ) . '</label> <input id="sseo-lp" type="text" name="value" placeholder="/en/landing/" pattern="/.*"> ';
-		echo Ui::select( 'lock_type', array( 'lock' => __( 'Lock (no proposals)', 'semantic-seo-engine-vi-en' ), 'exclude' => __( 'Exclude from suggestions', 'semantic-seo-engine-vi-en' ) ), 'lock', __( 'Type', 'semantic-seo-engine-vi-en' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		Ui::out(
+			Ui::select(
+				'lock_type',
+				array(
+					'lock'    => __( 'Lock (no proposals)', 'semantic-seo-engine-vi-en' ),
+					'exclude' => __( 'Exclude from suggestions', 'semantic-seo-engine-vi-en' ),
+				),
+				'lock',
+				__( 'Type', 'semantic-seo-engine-vi-en' )
+			)
+		);
 		echo ' <input type="text" name="reason" placeholder="' . esc_attr__( 'Reason', 'semantic-seo-engine-vi-en' ) . '" aria-label="' . esc_attr__( 'Reason', 'semantic-seo-engine-vi-en' ) . '"> <button class="button">' . esc_html__( 'Add', 'semantic-seo-engine-vi-en' ) . '</button></form></section>';
 	}
 

@@ -32,7 +32,7 @@
 	"scripts": {
 		"lint": "find . -path ./vendor -prune -o -path ./node_modules -prune -o -path ./build -prune -o -name '*.php' -print0 | xargs -0 -n1 -P4 php -l",
 		"phpcs": "phpcs",
-		"compat": "phpcs --standard=phpcompat.xml.dist",
+		"compat": "phpcs --standard=PHPCompatibilityWP --runtime-set testVersion 7.4- --extensions=php semantic-seo-engine-vi-en.php uninstall.php includes admin templates",
 		"test:unit": "phpunit -c phpunit-unit.xml.dist",
 		"test:integration": "phpunit -c phpunit.xml.dist",
 		"test": [

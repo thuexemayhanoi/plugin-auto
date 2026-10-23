@@ -76,7 +76,7 @@ final class Plugin {
 	 * @return void
 	 */
 	public static function load_textdomain() {
-		$domain  = 'semantic-seo-engine-vi-en';
+		$domain   = 'semantic-seo-engine-vi-en';
 		self::$mo = null;
 		remove_filter( 'gettext_' . $domain, array( __CLASS__, 'translate_text' ), 10 );
 		remove_filter( 'gettext_with_context_' . $domain, array( __CLASS__, 'translate_with_context' ), 10 );

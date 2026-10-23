@@ -84,7 +84,7 @@ final class ModelProfile {
 		if ( ! isset( self::FILES[ $dtype ] ) ) {
 			$dtype = 'q4f16';
 		}
-		$dim   = (int) Settings::get( 'embedding_dimension', 1024 );
+		$dim     = (int) Settings::get( 'embedding_dimension', 1024 );
 		$files   = array_merge( self::FILES['common'], self::FILES[ $dtype ] );
 		$profile = array(
 			'model_id'           => self::MODEL_ID,

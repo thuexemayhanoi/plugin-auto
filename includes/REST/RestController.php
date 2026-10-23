@@ -146,9 +146,9 @@ final class RestController {
 			$embed,
 			array(
 				'lease_token' => array(
-					'type'      => 'string',
-					'required'  => true,
-					'pattern'   => '^[a-f0-9]{48}$',
+					'type'     => 'string',
+					'required' => true,
+					'pattern'  => '^[a-f0-9]{48}$',
 				),
 				'model_key'   => array(
 					'type'     => 'string',
@@ -295,16 +295,16 @@ final class RestController {
 	/**
 	 * Converts service results into a predictable envelope.
 	 *
-	 * @param callable $fn Function.
+	 * @param callable $callback Function.
 	 * @return callable
 	 */
-	private static function wrap( $fn ) {
-		return static function ( \WP_REST_Request $r ) use ( $fn ) {
+	private static function wrap( $callback ) {
+		return static function ( \WP_REST_Request $r ) use ( $callback ) {
 			if ( strlen( (string) $r->get_body() ) > self::MAX_BODY_SIZE ) {
 				return self::error( new \WP_Error( 'sseo_payload_too_large', __( 'Request body too large.', 'semantic-seo-engine-vi-en' ), array( 'status' => 413 ) ) );
 			}
 			try {
-				$result = call_user_func( $fn, $r );
+				$result = call_user_func( $callback, $r );
 			} catch ( \Throwable $e ) {
 				return self::error( new \WP_Error( 'sseo_internal_error', __( 'Internal error; see the audit log.', 'semantic-seo-engine-vi-en' ), array( 'status' => 500 ) ) );
 			}

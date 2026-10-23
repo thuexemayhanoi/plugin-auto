@@ -77,13 +77,13 @@ final class ContentExtractor {
 		}
 
 		return array(
-			'version'         => self::VERSION,
-			'text'            => $text,
-			'word_count'      => count( $words ),
-			'detected_lang'   => $detected,
-			'headings'        => $headings,
-			'links'           => $links,
-			'images_no_alt'   => count(
+			'version'           => self::VERSION,
+			'text'              => $text,
+			'word_count'        => count( $words ),
+			'detected_lang'     => $detected,
+			'headings'          => $headings,
+			'links'             => $links,
+			'images_no_alt'     => count(
 				array_filter(
 					$scan['images'],
 					static function ( $img ) {
@@ -91,15 +91,15 @@ final class ContentExtractor {
 					}
 				)
 			),
-			'images'          => count( $scan['images'] ),
+			'images'            => count( $scan['images'] ),
 			'jsonld_in_content' => $scan['jsonld'],
-			'first_paragraph' => $first_paragraph,
-			'entities'        => self::entities( $title, $headings, $text ),
-			'attributes'      => self::attributes( $title . "\n" . $text ),
-			'repetition'      => self::repetition( $words ),
-			'minhash'         => self::minhash( $words ),
-			'chunks'          => self::chunks( $title, $description, $excerpt, $headings, $scan, $content ),
-			'slug'            => $slug,
+			'first_paragraph'   => $first_paragraph,
+			'entities'          => self::entities( $title, $headings, $text ),
+			'attributes'        => self::attributes( $title . "\n" . $text ),
+			'repetition'        => self::repetition( $words ),
+			'minhash'           => self::minhash( $words ),
+			'chunks'            => self::chunks( $title, $description, $excerpt, $headings, $scan, $content ),
+			'slug'              => $slug,
 		);
 	}
 
@@ -277,7 +277,7 @@ final class ContentExtractor {
 		$opening = implode( ' ', array_slice( preg_split( '/\s+/u', $scan['text'] ), 0, 120 ) );
 		$summary = trim( implode( "\n", array_filter( array( $title, '' !== $description ? $description : $excerpt, implode( '; ', array_slice( $h_texts, 0, 12 ) ), $opening ) ) ) );
 
-		$chunks   = array(
+		$chunks    = array(
 			array(
 				'kind'    => 'summary',
 				'heading' => $title,
@@ -286,8 +286,8 @@ final class ContentExtractor {
 				'text'    => Util::truncate( $summary, 2400 ),
 			),
 		);
-		$sections = array();
-		$current  = array(
+		$sections  = array();
+		$current   = array(
 			'heading' => $title,
 			'start'   => 0,
 			'parts'   => array(),
@@ -298,10 +298,11 @@ final class ContentExtractor {
 			$h_offsets[ $h['start'] ] = $h['text'];
 		}
 		ksort( $h_offsets );
-		$h_keys = array_keys( $h_offsets );
-		$h_idx  = 0;
+		$h_keys  = array_keys( $h_offsets );
+		$h_count = count( $h_keys );
+		$h_idx   = 0;
 		foreach ( $scan['segments'] as $seg ) {
-			while ( $h_idx < count( $h_keys ) && $h_keys[ $h_idx ] <= $seg['start'] ) {
+			while ( $h_idx < $h_count && $h_keys[ $h_idx ] <= $seg['start'] ) {
 				if ( array() !== $current['parts'] ) {
 					$sections[] = $current;
 				}
@@ -344,4 +345,3 @@ final class ContentExtractor {
 		return $chunks;
 	}
 }
-

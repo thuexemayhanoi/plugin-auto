@@ -46,9 +46,31 @@ final class CannibalizationPage {
 			$args['document_id'] = (int) Ui::get( 'doc' );
 		}
 		echo '<form method="get" class="sseo-filters"><input type="hidden" name="page" value="sseo-cannibalization">';
-		echo Ui::select( 'category', $cats, $args['category'], __( 'Category', 'semantic-seo-engine-vi-en' ) ) . ' '; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo Ui::select( 'locale', array( '' => __( 'All', 'semantic-seo-engine-vi-en' ), 'vi' => 'VI', 'en' => 'EN' ), $args['locale'], __( 'Locale', 'semantic-seo-engine-vi-en' ) ) . ' '; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo Ui::select( 'status', array( 'open' => Ui::term( 'open' ), 'accepted' => Ui::term( 'accepted' ), 'dismissed' => Ui::term( 'dismissed' ) ), $args['status'], __( 'Status', 'semantic-seo-engine-vi-en' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		Ui::out( Ui::select( 'category', $cats, $args['category'], __( 'Category', 'semantic-seo-engine-vi-en' ) ) . ' ' );
+		Ui::out(
+			Ui::select(
+				'locale',
+				array(
+					''   => __( 'All', 'semantic-seo-engine-vi-en' ),
+					'vi' => 'VI',
+					'en' => 'EN',
+				),
+				$args['locale'],
+				__( 'Locale', 'semantic-seo-engine-vi-en' )
+			) . ' '
+		); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		Ui::out(
+			Ui::select(
+				'status',
+				array(
+					'open'      => Ui::term( 'open' ),
+					'accepted'  => Ui::term( 'accepted' ),
+					'dismissed' => Ui::term( 'dismissed' ),
+				),
+				$args['status'],
+				__( 'Status', 'semantic-seo-engine-vi-en' )
+			)
+		); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo ' <button class="button">' . esc_html__( 'Filter', 'semantic-seo-engine-vi-en' ) . '</button></form>';
 		$res = Api::cannibalization( $args );
 		if ( is_wp_error( $res ) ) {
@@ -76,17 +98,45 @@ final class CannibalizationPage {
 				echo '<li>' . esc_html( $n ) . '</li>';
 			}
 			echo '</ul><div class="sseo-meters">';
-			echo Ui::meter( $e['topic'], __( 'Topic', 'semantic-seo-engine-vi-en' ) ) . Ui::meter( $e['lexical'], __( 'Lexical', 'semantic-seo-engine-vi-en' ) ) . Ui::meter( $e['semantic'], __( 'Semantic', 'semantic-seo-engine-vi-en' ) ) . Ui::meter( $e['title_overlap'], __( 'Title overlap', 'semantic-seo-engine-vi-en' ) ) . Ui::meter( $e['near_duplicate'], __( 'Shingle overlap', 'semantic-seo-engine-vi-en' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			Ui::out( Ui::meter( $e['topic'], __( 'Topic', 'semantic-seo-engine-vi-en' ) ) . Ui::meter( $e['lexical'], __( 'Lexical', 'semantic-seo-engine-vi-en' ) ) . Ui::meter( $e['semantic'], __( 'Semantic', 'semantic-seo-engine-vi-en' ) ) . Ui::meter( $e['title_overlap'], __( 'Title overlap', 'semantic-seo-engine-vi-en' ) ) . Ui::meter( $e['near_duplicate'], __( 'Shingle overlap', 'semantic-seo-engine-vi-en' ) ) );
 			echo '</div><p><small>' . esc_html( sprintf( /* translators: 1: intents, 2: shared terms */ __( 'Intents: %1$s · Shared terms: %2$s', 'semantic-seo-engine-vi-en' ), implode( ' / ', array_map( array( Ui::class, 'term' ), (array) $e['intents'] ) ), implode( ', ', (array) $e['shared_terms'] ) ) ) . '</small></p>';
 			echo '<p class="description">' . esc_html( $e['never_automatic'] ) . '</p>';
 			if ( current_user_can( Capabilities::REVIEW ) && 'open' === $f['status'] ) {
-				echo Ui::action_button( 'review_finding', array( 'finding_id' => $f['id'], 'status' => 'accepted' ), __( 'Confirm as issue to fix editorially', 'semantic-seo-engine-vi-en' ) ) . ' ' . Ui::action_button( 'review_finding', array( 'finding_id' => $f['id'], 'status' => 'dismissed' ), __( 'Not a problem', 'semantic-seo-engine-vi-en' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				Ui::out(
+					Ui::action_button(
+						'review_finding',
+						array(
+							'finding_id' => $f['id'],
+							'status'     => 'accepted',
+						),
+						__( 'Confirm as issue to fix editorially', 'semantic-seo-engine-vi-en' )
+					) . ' ' . Ui::action_button(
+						'review_finding',
+						array(
+							'finding_id' => $f['id'],
+							'status'     => 'dismissed',
+						),
+						__( 'Not a problem', 'semantic-seo-engine-vi-en' )
+					)
+				); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
 			echo '</article>';
 		}
 		echo '</div>';
 		if ( ! empty( $res['next_cursor'] ) ) {
-			echo '<p><a class="button" href="' . esc_url( Ui::url( 'sseo-cannibalization', array_filter( array( 'category' => $args['category'], 'locale' => $args['locale'], 'status' => $args['status'], 'cursor' => $res['next_cursor'] ) ) ) ) . '">' . esc_html__( 'More ›', 'semantic-seo-engine-vi-en' ) . '</a></p>';
+			echo '<p><a class="button" href="' . esc_url(
+				Ui::url(
+					'sseo-cannibalization',
+					array_filter(
+						array(
+							'category' => $args['category'],
+							'locale'   => $args['locale'],
+							'status'   => $args['status'],
+							'cursor'   => $res['next_cursor'],
+						)
+					)
+				)
+			) . '">' . esc_html__( 'More ›', 'semantic-seo-engine-vi-en' ) . '</a></p>';
 		}
 		Ui::footer();
 	}

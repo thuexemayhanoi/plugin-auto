@@ -10,7 +10,7 @@ require_once $sseo_root . '/vendor/autoload.php';
 
 $sseo_tests_dir = getenv( 'WP_TESTS_DIR' ) ? getenv( 'WP_TESTS_DIR' ) : '/opt/wp/wpdev-7.1.3/tests/phpunit';
 if ( ! file_exists( $sseo_tests_dir . '/includes/functions.php' ) ) {
-	fwrite( STDERR, "WordPress test library not found in {$sseo_tests_dir}. Run bin/install-wp-tests.sh or set WP_TESTS_DIR.\n" ); // phpcs:ignore
+	fwrite( STDERR, "WordPress test library not found in {$sseo_tests_dir}. Run bin/install-wp-tests.sh <version> and export the printed variables.\n" ); // phpcs:ignore
 	exit( 1 );
 }
 if ( ! defined( 'WP_TESTS_CONFIG_FILE_PATH' ) ) {

@@ -13,7 +13,7 @@ if ( ! function_exists( 'sseo_get_related_posts' ) ) {
 	 * array when M6 output is disabled, the post was not analyzed, or nothing qualifies.
 	 *
 	 * @param int   $post_id Post ID.
-	 * @param array $args    { @type int $limit Max items (1–10). @type bool $ignore_setting Return data even when frontend output is disabled. }
+	 * @param array $args    { @type int $limit Max items (1–10). @type bool $ignore_setting Return data even when frontend output is disabled. }.
 	 * @return array<int,array{post_id:int,title:string,url:string,score:float}>
 	 */
 	function sseo_get_related_posts( $post_id, $args = array() ) {

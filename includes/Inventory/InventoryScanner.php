@@ -192,9 +192,9 @@ final class InventoryScanner {
 		$sql  = 'SELECT ID FROM {posts} WHERE ID > %d AND post_type IN (' . Db::in( $types, '%s' ) . ') AND post_status IN (' . Db::in( $statuses, '%s' ) . ')';
 		$args = array_merge( array( $cursor ), $types, $statuses );
 		if ( array() !== $only ) {
-			$only  = array_slice( array_values( array_unique( array_map( 'intval', $only ) ) ), 0, 500 );
-			$sql  .= ' AND ID IN (' . Db::in( $only ) . ')';
-			$args  = array_merge( $args, $only );
+			$only = array_slice( array_values( array_unique( array_map( 'intval', $only ) ) ), 0, 500 );
+			$sql .= ' AND ID IN (' . Db::in( $only ) . ')';
+			$args = array_merge( $args, $only );
 		}
 		$sql   .= ' ORDER BY ID ASC LIMIT %d';
 		$args[] = $batch;
@@ -270,9 +270,9 @@ final class InventoryScanner {
 				)
 			)
 		);
-		$existing = DocumentRepository::by_object( 'post', $post->ID );
-		$now      = Util::now();
-		$excluded = LockService::is_excluded( 'post', $post->ID, $url ) ? 1 : 0;
+		$existing    = DocumentRepository::by_object( 'post', $post->ID );
+		$now         = Util::now();
+		$excluded    = LockService::is_excluded( 'post', $post->ID, $url ) ? 1 : 0;
 		if ( null !== $existing && ! $force && $existing['index_hash'] === $fingerprint && 0 === (int) $existing['dirty'] ) {
 			DocumentRepository::update(
 				(int) $existing['id'],
@@ -327,9 +327,9 @@ final class InventoryScanner {
 	 * @return int Document ID.
 	 */
 	public static function index_term( \WP_Term $term, $force = false ) {
-		$link = get_term_link( $term );
-		$url  = is_wp_error( $link ) ? '' : (string) $link;
-		$loc  = LanguageResolver::term_locale( $term->term_id, $term->taxonomy, $url );
+		$link         = get_term_link( $term );
+		$url          = is_wp_error( $link ) ? '' : (string) $link;
+		$loc          = LanguageResolver::term_locale( $term->term_id, $term->taxonomy, $url );
 		$translations = array();
 		if ( 'polylang' === LanguageResolver::framework() && function_exists( 'pll_get_term_translations' ) ) {
 			foreach ( (array) pll_get_term_translations( $term->term_id ) as $lang => $tid ) {
@@ -421,7 +421,7 @@ final class InventoryScanner {
 				'attributes' => $x['attributes'],
 			)
 		);
-		$tf = LexicalIndex::document_terms(
+		$tf     = LexicalIndex::document_terms(
 			array(
 				'title'       => $d['title'],
 				'focus'       => $seo['focus_keyword'],
@@ -431,7 +431,7 @@ final class InventoryScanner {
 			),
 			$lang_hint
 		);
-		$top = array();
+		$top    = array();
 		foreach ( $tf as $term => $w ) {
 			$term = (string) $term; // Numeric terms ("150", "50") become integer array keys.
 			if ( '~' !== $term[0] ) {
@@ -455,38 +455,38 @@ final class InventoryScanner {
 		}
 
 		$signals = array(
-			'versions'          => array(
+			'versions'              => array(
 				'inventory' => self::VERSION,
 				'extractor' => ContentExtractor::VERSION,
 				'tokenizer' => Tokenizer::VERSION,
 				'lexical'   => LexicalIndex::VERSION,
 				'intent'    => IntentClassifier::VERSION,
 			),
-			'headings'          => array_slice( $x['headings'], 0, 80 ),
-			'entities'          => $x['entities'],
-			'attributes'        => $x['attributes'],
-			'top_terms'         => array_map(
+			'headings'              => array_slice( $x['headings'], 0, 80 ),
+			'entities'              => $x['entities'],
+			'attributes'            => $x['attributes'],
+			'top_terms'             => array_map(
 				static function ( $w ) {
 					return round( $w, 2 );
 				},
 				$top
 			),
-			'repetition'        => $x['repetition'],
-			'minhash'           => $x['minhash'],
-			'first_paragraph'   => $x['first_paragraph'],
-			'detected_lang'     => $x['detected_lang'],
-			'images'            => $x['images'],
-			'images_no_alt'     => $x['images_no_alt'],
-			'jsonld_in_content' => $x['jsonld_in_content'],
-			'intent'            => $intent,
-			'indexability'      => $reasons,
-			'translations'      => $d['translations'],
+			'repetition'            => $x['repetition'],
+			'minhash'               => $x['minhash'],
+			'first_paragraph'       => $x['first_paragraph'],
+			'detected_lang'         => $x['detected_lang'],
+			'images'                => $x['images'],
+			'images_no_alt'         => $x['images_no_alt'],
+			'jsonld_in_content'     => $x['jsonld_in_content'],
+			'intent'                => $intent,
+			'indexability'          => $reasons,
+			'translations'          => $d['translations'],
 			'seo_title_is_template' => ! empty( $seo['title_is_template'] ),
-			'link_count'        => count( $x['links'] ),
-			'slug'              => isset( $x['slug'] ) ? $x['slug'] : '',
+			'link_count'            => count( $x['links'] ),
+			'slug'                  => isset( $x['slug'] ) ? $x['slug'] : '',
 		);
-		$now    = Util::now();
-		$doc_id = DocumentRepository::upsert(
+		$now     = Util::now();
+		$doc_id  = DocumentRepository::upsert(
 			array(
 				'object_type'       => $d['object_type'],
 				'object_id'         => $d['object_id'],
@@ -522,7 +522,7 @@ final class InventoryScanner {
 				'algorithm_version' => self::VERSION,
 			)
 		);
-		$len = LexicalIndex::index_document( $doc_id, $tf );
+		$len     = LexicalIndex::index_document( $doc_id, $tf );
 		DocumentRepository::update( $doc_id, array( 'doc_len' => $len ) );
 		DocumentRepository::replace_chunks( $doc_id, $x['chunks'] );
 		LinkGraph::store_links( $doc_id, $x['links'], $d['url'] );

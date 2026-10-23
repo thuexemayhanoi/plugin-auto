@@ -57,9 +57,9 @@ final class Ui {
 	 * @return void
 	 */
 	public static function queue_notice( $type, $message ) {
-		$key   = 'sseo_notice_' . get_current_user_id();
-		$queue = get_transient( $key );
-		$queue = is_array( $queue ) ? $queue : array();
+		$key     = 'sseo_notice_' . get_current_user_id();
+		$queue   = get_transient( $key );
+		$queue   = is_array( $queue ) ? $queue : array();
 		$queue[] = array(
 			'type'    => $type,
 			'message' => (string) $message,
@@ -188,12 +188,12 @@ final class Ui {
 	 * @param string $caption Caption (screen-reader + visible).
 	 * @param array  $columns key => label.
 	 * @param array  $rows    Rows: key => already-escaped HTML.
-	 * @param string $empty   Empty-state message.
+	 * @param string $empty_text   Empty-state message.
 	 * @return void
 	 */
-	public static function table( $caption, array $columns, array $rows, $empty = '' ) {
+	public static function table( $caption, array $columns, array $rows, $empty_text = '' ) {
 		if ( array() === $rows ) {
-			self::empty_state( '' !== $empty ? $empty : __( 'Nothing to show yet.', 'semantic-seo-engine-vi-en' ) );
+			self::empty_state( '' !== $empty_text ? $empty_text : __( 'Nothing to show yet.', 'semantic-seo-engine-vi-en' ) );
 			return;
 		}
 		echo '<div class="sseo-table-wrap"><table class="widefat striped sseo-table"><caption class="screen-reader-text">' . esc_html( $caption ) . '</caption><thead><tr>';
@@ -205,7 +205,7 @@ final class Ui {
 			echo '<tr>';
 			foreach ( $columns as $key => $label ) {
 				// Cell content is pre-escaped by callers; kses is a second safety net.
-				echo '<td data-label="' . esc_attr( $label ) . '">' . self::kses( isset( $row[ $key ] ) ? $row[ $key ] : '' ) . '</td>';
+				echo '<td data-label="' . esc_attr( $label ) . '">' . self::kses( isset( $row[ $key ] ) ? $row[ $key ] : '' ) . '</td>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- self::kses() is wp_kses().
 			}
 			echo '</tr>';
 		}
@@ -213,7 +213,18 @@ final class Ui {
 	}
 
 	/**
-	 * kses with the post allowlist plus the small form vocabulary used by admin action buttons.
+	 * Prints markup built by the Ui helpers. Every dynamic value is already escaped by the helper;
+	 * kses with the admin vocabulary is applied again as a second safety net.
+	 *
+	 * @param string $html HTML.
+	 * @return void
+	 */
+	public static function out( $html ) {
+		echo self::kses( $html ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_kses() output.
+	}
+
+	/**
+	 * The wp_kses() post allowlist plus the small form vocabulary used by admin action buttons.
 	 *
 	 * @param string $html HTML.
 	 * @return string
@@ -221,15 +232,15 @@ final class Ui {
 	public static function kses( $html ) {
 		static $allowed = null;
 		if ( null === $allowed ) {
-			$allowed           = wp_kses_allowed_html( 'post' );
-			$common            = array(
+			$allowed             = wp_kses_allowed_html( 'post' );
+			$common              = array(
 				'class' => true,
 				'id'    => true,
 				'name'  => true,
 				'value' => true,
 				'type'  => true,
 			);
-			$allowed['form']   = array_merge(
+			$allowed['form']     = array_merge(
 				$common,
 				array(
 					'method'  => true,
@@ -237,20 +248,20 @@ final class Ui {
 					'enctype' => true,
 				)
 			);
-			$allowed['input']  = array_merge(
+			$allowed['input']    = array_merge(
 				$common,
 				array(
-					'checked'  => true,
-					'required' => true,
-					'min'      => true,
-					'max'      => true,
-					'step'     => true,
-					'size'     => true,
+					'checked'     => true,
+					'required'    => true,
+					'min'         => true,
+					'max'         => true,
+					'step'        => true,
+					'size'        => true,
 					'placeholder' => true,
 					'aria-label'  => true,
 				)
 			);
-			$allowed['button'] = array_merge(
+			$allowed['button']   = array_merge(
 				$common,
 				array(
 					'data-sseo-confirm' => true,
@@ -258,12 +269,12 @@ final class Ui {
 					'aria-label'        => true,
 				)
 			);
-			$allowed['select'] = array_merge( $common, array( 'aria-label' => true ) );
-			$allowed['option'] = array(
+			$allowed['select']   = array_merge( $common, array( 'aria-label' => true ) );
+			$allowed['option']   = array(
 				'value'    => true,
 				'selected' => true,
 			);
-			$allowed['label']  = array(
+			$allowed['label']    = array(
 				'for'   => true,
 				'class' => true,
 			);
@@ -285,7 +296,7 @@ final class Ui {
 	 * @return void
 	 */
 	public static function empty_state( $message, $action = '' ) {
-		echo '<div class="sseo-empty"><p>' . esc_html( $message ) . '</p>' . self::kses( $action ) . '</div>';
+		echo '<div class="sseo-empty"><p>' . esc_html( $message ) . '</p>' . self::kses( $action ) . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- self::kses() is wp_kses().
 	}
 
 	/**
@@ -329,12 +340,12 @@ final class Ui {
 	 * Opens an admin-post form with a nonce.
 	 *
 	 * @param string $action Action name (without prefix).
-	 * @param string $class  CSS class.
+	 * @param string $css_class  CSS class.
 	 * @param bool   $upload Multipart.
 	 * @return void
 	 */
-	public static function form_open( $action, $class = '', $upload = false ) {
-		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="sseo-form ' . esc_attr( $class ) . '"' . ( $upload ? ' enctype="multipart/form-data"' : '' ) . '>';
+	public static function form_open( $action, $css_class = '', $upload = false ) {
+		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="sseo-form ' . esc_attr( $css_class ) . '"' . ( $upload ? ' enctype="multipart/form-data"' : '' ) . '>';
 		echo '<input type="hidden" name="action" value="' . esc_attr( 'sseo_' . $action ) . '">';
 		wp_nonce_field( 'sseo_' . $action );
 		$back = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
@@ -347,17 +358,17 @@ final class Ui {
 	 * @param string $action  Action.
 	 * @param array  $fields  Hidden fields.
 	 * @param string $label   Button label.
-	 * @param string $class   Button class.
+	 * @param string $css_class   Button class.
 	 * @param string $confirm Optional confirmation text.
 	 * @return string HTML.
 	 */
-	public static function action_button( $action, array $fields, $label, $class = 'button', $confirm = '' ) {
+	public static function action_button( $action, array $fields, $label, $css_class = 'button', $confirm = '' ) {
 		ob_start();
 		self::form_open( $action, 'sseo-inline-form' );
 		foreach ( $fields as $k => $v ) {
 			echo '<input type="hidden" name="' . esc_attr( $k ) . '" value="' . esc_attr( $v ) . '">';
 		}
-		echo '<button type="submit" class="' . esc_attr( $class ) . '"' . ( '' !== $confirm ? ' data-sseo-confirm="' . esc_attr( $confirm ) . '"' : '' ) . '>' . esc_html( $label ) . '</button></form>';
+		echo '<button type="submit" class="' . esc_attr( $css_class ) . '"' . ( '' !== $confirm ? ' data-sseo-confirm="' . esc_attr( $confirm ) . '"' : '' ) . '>' . esc_html( $label ) . '</button></form>';
 		return (string) ob_get_clean();
 	}
 
@@ -404,8 +415,10 @@ final class Ui {
 		while ( $p < $max && $before[ $p ] === $after[ $p ] ) {
 			++$p;
 		}
-		$s = 0;
-		while ( $s < $max - $p && $before[ strlen( $before ) - 1 - $s ] === $after[ strlen( $after ) - 1 - $s ] ) {
+		$s     = 0;
+		$len_b = strlen( $before );
+		$len_a = strlen( $after );
+		while ( $s < $max - $p && $before[ $len_b - 1 - $s ] === $after[ $len_a - 1 - $s ] ) {
 			++$s;
 		}
 		// Keep UTF-8 sequences intact at the boundaries.
@@ -441,11 +454,11 @@ final class Ui {
 	 * Current request GET value (sanitized key/text).
 	 *
 	 * @param string $key     Key.
-	 * @param string $default Default.
+	 * @param string $fallback Default.
 	 * @return string
 	 */
-	public static function get( $key, $default = '' ) {
+	public static function get( $key, $fallback = '' ) {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only filters.
-		return isset( $_GET[ $key ] ) ? sanitize_text_field( wp_unslash( $_GET[ $key ] ) ) : $default;
+		return isset( $_GET[ $key ] ) ? sanitize_text_field( wp_unslash( $_GET[ $key ] ) ) : $fallback;
 	}
 }

@@ -43,7 +43,7 @@ final class IntentClassifier {
 	 * @return array{intent:string,confidence:string,scores:array,evidence:array,version:string}
 	 */
 	public static function classify( array $doc ) {
-		$fields = array(
+		$fields   = array(
 			'title'    => isset( $doc['title'] ) ? (string) $doc['title'] : '',
 			'slug'     => isset( $doc['slug'] ) ? str_replace( array( '-', '_' ), ' ', urldecode( (string) $doc['slug'] ) ) : '',
 			'headings' => isset( $doc['headings'] ) ? implode( ' | ', (array) $doc['headings'] ) : '',

@@ -34,7 +34,7 @@ final class AgentsPage {
 			echo '<li><strong>' . esc_html( Capabilities::role_label( $role ) ) . '</strong> <code>' . esc_html( $role ) . '</code> — ' . esc_html( implode( ', ', $caps ) ) . ( null === get_role( $role ) ? ' <em>(' . esc_html__( 'not created yet', 'semantic-seo-engine-vi-en' ) . ')</em>' : '' ) . '</li>';
 		}
 		echo '</ul><p class="description">' . esc_html__( 'Agent accounts can never review/approve, manage settings, edit users or change roles — enforced by the capability filter for every transport. Any Application-Password session (even an administrator’s) is treated as an agent.', 'semantic-seo-engine-vi-en' ) . '</p>';
-		echo Ui::action_button( 'agent_roles', array(), __( 'Create / update agent roles', 'semantic-seo-engine-vi-en' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		Ui::out( Ui::action_button( 'agent_roles', array(), __( 'Create / update agent roles', 'semantic-seo-engine-vi-en' ) ) );
 
 		$users   = get_users(
 			array(
@@ -49,12 +49,12 @@ final class AgentsPage {
 		}
 		if ( array() !== $options ) {
 			Ui::form_open( 'assign_agent_role' );
-			echo Ui::select( 'user_id', $options, '', __( 'User', 'semantic-seo-engine-vi-en' ) ) . ' '; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			Ui::out( Ui::select( 'user_id', $options, '', __( 'User', 'semantic-seo-engine-vi-en' ) ) . ' ' );
 			$roles = array( 'none' => __( '(remove agent role)', 'semantic-seo-engine-vi-en' ) );
 			foreach ( array_keys( Capabilities::AGENT_ROLES ) as $r ) {
 				$roles[ $r ] = Capabilities::role_label( $r );
 			}
-			echo Ui::select( 'role', $roles, 'sseo_agent_reader', __( 'Agent role', 'semantic-seo-engine-vi-en' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			Ui::out( Ui::select( 'role', $roles, 'sseo_agent_reader', __( 'Agent role', 'semantic-seo-engine-vi-en' ) ) );
 			echo ' <button class="button">' . esc_html__( 'Assign', 'semantic-seo-engine-vi-en' ) . '</button></form>';
 		} else {
 			echo '<p>' . esc_html__( 'Create a dedicated, non-administrator user for each agent first (Users → Add New).', 'semantic-seo-engine-vi-en' ) . '</p>';
@@ -68,9 +68,9 @@ final class AgentsPage {
 		$rows   = array();
 		foreach ( $agents as $a ) {
 			$rows[] = array(
-				'user'  => esc_html( $a->user_login ),
-				'role'  => esc_html( implode( ', ', array_map( array( Capabilities::class, 'role_label' ), (array) $a->roles ) ) ),
-				'pw'    => '<a href="' . esc_url( get_edit_user_link( $a->ID ) . '#application-passwords-section' ) . '">' . esc_html__( 'Application Passwords', 'semantic-seo-engine-vi-en' ) . '</a>',
+				'user' => esc_html( $a->user_login ),
+				'role' => esc_html( implode( ', ', array_map( array( Capabilities::class, 'role_label' ), (array) $a->roles ) ) ),
+				'pw'   => '<a href="' . esc_url( get_edit_user_link( $a->ID ) . '#application-passwords-section' ) . '">' . esc_html__( 'Application Passwords', 'semantic-seo-engine-vi-en' ) . '</a>',
 			);
 		}
 		Ui::table(

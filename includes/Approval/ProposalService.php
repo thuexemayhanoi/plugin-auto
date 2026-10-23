@@ -153,25 +153,25 @@ final class ProposalService {
 		}
 		$expected = Util::sha256( $after );
 		$payload  = array(
-			'operation'   => 'insert_internal_link',
-			'post_id'     => (int) $source['object_id'],
-			'field'       => 'post_content',
-			'offset'      => (int) $located['offset'],
-			'length'      => (int) $located['length'],
-			'anchor'      => $located['text'],
-			'href'        => $href,
-			'fingerprint' => AnchorFinder::fingerprint( $content, (int) $located['offset'], (int) $located['length'] ),
+			'operation'          => 'insert_internal_link',
+			'post_id'            => (int) $source['object_id'],
+			'field'              => 'post_content',
+			'offset'             => (int) $located['offset'],
+			'length'             => (int) $located['length'],
+			'anchor'             => $located['text'],
+			'href'               => $href,
+			'fingerprint'        => AnchorFinder::fingerprint( $content, (int) $located['offset'], (int) $located['length'] ),
 			'target_document_id' => (int) $target['id'],
 			'source_document_id' => (int) $source['id'],
 		);
 		$diff     = array(
-			'field'        => 'post_content',
-			'operation'    => 'insert_internal_link',
-			'before'       => self::excerpt( $content, (int) $located['offset'], (int) $located['length'] ),
-			'after'        => self::excerpt( $after, (int) $located['offset'], strlen( $insert ) ),
-			'inserted'     => $insert,
-			'offset'       => (int) $located['offset'],
-			'unchanged'    => array( 'title', 'slug', 'headings', 'canonical', 'robots', 'categories', 'seo_metadata' ),
+			'field'     => 'post_content',
+			'operation' => 'insert_internal_link',
+			'before'    => self::excerpt( $content, (int) $located['offset'], (int) $located['length'] ),
+			'after'     => self::excerpt( $after, (int) $located['offset'], strlen( $insert ) ),
+			'inserted'  => $insert,
+			'offset'    => (int) $located['offset'],
+			'unchanged' => array( 'title', 'slug', 'headings', 'canonical', 'robots', 'categories', 'seo_metadata' ),
 		);
 		$hash_src = array(
 			'op'        => 'insert_internal_link',
@@ -224,7 +224,7 @@ final class ProposalService {
 		if ( in_array( (int) $term->term_id, $before, true ) ) {
 			return new \WP_Error( 'sseo_noop', __( 'The post already has this term.', 'semantic-seo-engine-vi-en' ), array( 'status' => 409 ) );
 		}
-		$after = $before;
+		$after   = $before;
 		$after[] = (int) $term->term_id;
 		sort( $after );
 		$base_hash = Util::sha256( $tax . ':' . implode( ',', $before ) );

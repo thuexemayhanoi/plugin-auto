@@ -102,13 +102,13 @@ final class Api {
 				'mcp_enabled'   => (bool) Settings::get( 'mcp_enabled', false ),
 			),
 			'diagnostics'     => array(
-				'wordpress'          => $env['wordpress'],
-				'php'                => $env['php'],
-				'db_schema'          => $env['db_schema'],
-				'seo_primary'        => $env['seo_primary'],
-				'language_framework' => $env['language_framework'],
+				'wordpress'           => $env['wordpress'],
+				'php'                 => $env['php'],
+				'db_schema'           => $env['db_schema'],
+				'seo_primary'         => $env['seo_primary'],
+				'language_framework'  => $env['language_framework'],
 				'translation_mapping' => $env['translation_mapping'],
-				'wp_cron_disabled'   => $env['wp_cron_disabled'],
+				'wp_cron_disabled'    => $env['wp_cron_disabled'],
 			),
 		);
 	}
@@ -214,11 +214,11 @@ final class Api {
 		if ( is_wp_error( $doc ) ) {
 			return $doc;
 		}
-		$s       = DocumentRepository::signals( $doc );
-		$id      = (int) $doc['id'];
-		$profile = ModelProfile::active();
-		$vec     = EmbeddingRepository::summary_vectors( array( $id ), $profile['model_key'] );
-		$qa      = FindingRepository::query(
+		$s        = DocumentRepository::signals( $doc );
+		$id       = (int) $doc['id'];
+		$profile  = ModelProfile::active();
+		$vec      = EmbeddingRepository::summary_vectors( array( $id ), $profile['model_key'] );
+		$qa       = FindingRepository::query(
 			array(
 				'type'        => 'qa',
 				'status'      => 'open',
@@ -228,7 +228,7 @@ final class Api {
 				'order'       => 'severity',
 			)
 		);
-		$links   = FindingRepository::query(
+		$links    = FindingRepository::query(
 			array(
 				'type'        => 'link',
 				'document_id' => $id,
@@ -244,37 +244,37 @@ final class Api {
 				'limit'       => 20,
 			)
 		);
-		$cluster = (int) $doc['cluster_id'] > 0 ? Db::row( 'SELECT id, label, role, locale, recommended_pillar_id, locked, review_state FROM {clusters} WHERE id = %d', array( (int) $doc['cluster_id'] ) ) : null;
-		$related = Db::rows( 'SELECT r.related_id, r.score, r.rank_pos, d.title, d.url FROM {related} r JOIN {documents} d ON d.id = r.related_id WHERE r.document_id = %d ORDER BY r.rank_pos ASC', array( $id ) );
-		$out     = Db::rows( 'SELECT target_url, anchor, resolution, target_id, http_status FROM {links} WHERE source_id = %d LIMIT 100', array( $id ) );
-		$in      = Db::rows( 'SELECT l.source_id, d.title, d.url, l.anchor FROM {links} l JOIN {documents} d ON d.id = l.source_id WHERE l.target_id = %d AND l.resolution = %s LIMIT 100', array( $id, 'resolved' ) );
+		$cluster  = (int) $doc['cluster_id'] > 0 ? Db::row( 'SELECT id, label, role, locale, recommended_pillar_id, locked, review_state FROM {clusters} WHERE id = %d', array( (int) $doc['cluster_id'] ) ) : null;
+		$related  = Db::rows( 'SELECT r.related_id, r.score, r.rank_pos, d.title, d.url FROM {related} r JOIN {documents} d ON d.id = r.related_id WHERE r.document_id = %d ORDER BY r.rank_pos ASC', array( $id ) );
+		$out      = Db::rows( 'SELECT target_url, anchor, resolution, target_id, http_status FROM {links} WHERE source_id = %d LIMIT 100', array( $id ) );
+		$in       = Db::rows( 'SELECT l.source_id, d.title, d.url, l.anchor FROM {links} l JOIN {documents} d ON d.id = l.source_id WHERE l.target_id = %d AND l.resolution = %s LIMIT 100', array( $id, 'resolved' ) );
 		return array(
-			'document'        => array(
-				'id'                => $id,
-				'object_type'       => $doc['object_type'],
-				'object_id'         => (int) $doc['object_id'],
-				'subtype'           => $doc['subtype'],
-				'url'               => $doc['url'],
-				'title'             => $doc['title'],
-				'status'            => $doc['status'],
-				'locale'            => $doc['locale'],
-				'locale_source'     => $doc['locale_source'],
-				'canonical'         => $doc['canonical'],
-				'robots'            => $doc['robots'],
-				'indexable'         => (bool) $doc['indexable'],
+			'document'         => array(
+				'id'                 => $id,
+				'object_type'        => $doc['object_type'],
+				'object_id'          => (int) $doc['object_id'],
+				'subtype'            => $doc['subtype'],
+				'url'                => $doc['url'],
+				'title'              => $doc['title'],
+				'status'             => $doc['status'],
+				'locale'             => $doc['locale'],
+				'locale_source'      => $doc['locale_source'],
+				'canonical'          => $doc['canonical'],
+				'robots'             => $doc['robots'],
+				'indexable'          => (bool) $doc['indexable'],
 				'indexability_notes' => isset( $s['indexability'] ) ? $s['indexability'] : array(),
-				'seo_source'        => $doc['seo_source'],
-				'focus_keyword'     => array(
+				'seo_source'         => $doc['seo_source'],
+				'focus_keyword'      => array(
 					'value'  => $doc['focus_keyword'],
 					'source' => '' === $doc['focus_keyword'] ? 'none set' : $doc['seo_source'] . ' focus keyword field',
 				),
-				'translation_group' => $doc['translation_group'],
-				'translations'      => isset( $s['translations'] ) ? $s['translations'] : array(),
-				'excluded'          => (bool) $doc['excluded'],
-				'locked'            => LockService::is_locked( $doc['object_type'], (int) $doc['object_id'], $doc['url'] ),
-				'review_state'      => $doc['review_state'],
+				'translation_group'  => $doc['translation_group'],
+				'translations'       => isset( $s['translations'] ) ? $s['translations'] : array(),
+				'excluded'           => (bool) $doc['excluded'],
+				'locked'             => LockService::is_locked( $doc['object_type'], (int) $doc['object_id'], $doc['url'] ),
+				'review_state'       => $doc['review_state'],
 			),
-			'facts'           => array(
+			'facts'            => array(
 				'word_count'         => (int) $doc['word_count'],
 				'headings'           => isset( $s['headings'] ) ? $s['headings'] : array(),
 				'outbound_internal'  => (int) $doc['outbound_count'],
@@ -287,7 +287,7 @@ final class Api {
 				'attributes'         => isset( $s['attributes'] ) ? $s['attributes'] : array(),
 				'link_coverage_note' => 'Inbound counts include only links observed in post content and term descriptions.',
 			),
-			'inferences'      => array(
+			'inferences'       => array(
 				'intent'            => array(
 					'label'      => '' !== $doc['editorial_intent'] ? $doc['editorial_intent'] : $doc['intent'],
 					'source'     => '' !== $doc['editorial_intent'] ? 'editorial override' : 'heuristic cue matching',
@@ -306,18 +306,18 @@ final class Api {
 				),
 				'detected_language' => isset( $s['detected_lang'] ) ? $s['detected_lang'] : array(),
 			),
-			'semantic'        => array(
-				'model_key'   => $profile['model_key'],
-				'has_vector'  => isset( $vec[ $id ] ),
-				'note'        => isset( $vec[ $id ] ) ? 'Semantic similarity is one evidence component among others.' : 'No vector for the active model profile: lexical evidence only.',
+			'semantic'         => array(
+				'model_key'  => $profile['model_key'],
+				'has_vector' => isset( $vec[ $id ] ),
+				'note'       => isset( $vec[ $id ] ) ? 'Semantic similarity is one evidence component among others.' : 'No vector for the active model profile: lexical evidence only.',
 			),
-			'cluster'         => $cluster,
-			'cluster_role'    => $doc['cluster_role'],
-			'qa_issues'       => $qa['items'],
+			'cluster'          => $cluster,
+			'cluster_role'     => $doc['cluster_role'],
+			'qa_issues'        => $qa['items'],
 			'link_suggestions' => $links['items'],
-			'overlap_risks'   => $cannibal['items'],
-			'related'         => $related,
-			'provenance'      => array(
+			'overlap_risks'    => $cannibal['items'],
+			'related'          => $related,
+			'provenance'       => array(
 				'scanned_at'        => $doc['scanned_at'],
 				'indexed_at'        => $doc['indexed_at'],
 				'analyzed_at'       => $doc['analyzed_at'],
@@ -510,8 +510,8 @@ final class Api {
 			return $doc;
 		}
 		return array(
-			'document_id' => (int) $doc['id'],
-			'items'       => Db::rows( 'SELECT r.related_id, r.rank_pos, r.score, r.evidence, d.title, d.url, d.object_id FROM {related} r JOIN {documents} d ON d.id = r.related_id WHERE r.document_id = %d ORDER BY r.rank_pos ASC', array( (int) $doc['id'] ) ),
+			'document_id'      => (int) $doc['id'],
+			'items'            => Db::rows( 'SELECT r.related_id, r.rank_pos, r.score, r.evidence, d.title, d.url, d.object_id FROM {related} r JOIN {documents} d ON d.id = r.related_id WHERE r.document_id = %d ORDER BY r.rank_pos ASC', array( (int) $doc['id'] ) ),
 			'frontend_enabled' => (bool) Settings::get( 'related_enabled', false ),
 		);
 	}
@@ -603,7 +603,17 @@ final class Api {
 		}
 		Plugin::ensure_maintenance();
 		JobRunner::schedule();
-		AuditLog::record( 'job.started', 'job', (int) $job['id'], 'ok', array( 'type' => $type, 'params' => array_keys( $params ), 'reused' => ! empty( $job['reused'] ) ) );
+		AuditLog::record(
+			'job.started',
+			'job',
+			(int) $job['id'],
+			'ok',
+			array(
+				'type'   => $type,
+				'params' => array_keys( $params ),
+				'reused' => ! empty( $job['reused'] ),
+			)
+		);
 		return JobRepository::to_public( $job );
 	}
 
@@ -633,7 +643,7 @@ final class Api {
 		if ( null === $job ) {
 			return new \WP_Error( 'sseo_not_found', __( 'Job not found.', 'semantic-seo-engine-vi-en' ), array( 'status' => 404 ) );
 		}
-		if ( AuthContext::is_agent_context() && (int) $job['owner_id'] !== get_current_user_id() ) {
+		if ( AuthContext::is_agent_context() && get_current_user_id() !== (int) $job['owner_id'] ) {
 			return new \WP_Error( 'sseo_forbidden', __( 'Agents can only control their own jobs.', 'semantic-seo-engine-vi-en' ), array( 'status' => 403 ) );
 		}
 		$ok = true;
@@ -649,8 +659,8 @@ final class Api {
 				JobRunner::schedule();
 				break;
 			case 'tick':
-				$res = JobRunner::tick( min( 15, (int) Settings::get( 'time_budget', 20 ) ), (int) $job_id );
-				$out = JobRepository::to_public( JobRepository::get( (int) $job_id ) );
+				$res         = JobRunner::tick( min( 15, (int) Settings::get( 'time_budget', 20 ) ), (int) $job_id );
+				$out         = JobRepository::to_public( JobRepository::get( (int) $job_id ) );
 				$out['tick'] = $res;
 				return $out;
 		}
@@ -709,7 +719,7 @@ final class Api {
 		}
 		$out = array();
 		foreach ( $ids as $id ) {
-			$p = ProposalService::from_finding( $id );
+			$p     = ProposalService::from_finding( $id );
 			$out[] = is_wp_error( $p )
 				? array(
 					'finding_id' => $id,
@@ -880,7 +890,17 @@ final class Api {
 		$source = isset( $args['source'] ) && 'worker' === $args['source'] ? 'worker' : 'browser';
 		$res    = EmbeddingQueue::complete( get_current_user_id(), isset( $args['lease_token'] ) ? (string) $args['lease_token'] : '', isset( $args['model_key'] ) ? (string) $args['model_key'] : '', isset( $args['results'] ) && is_array( $args['results'] ) ? $args['results'] : array(), $source );
 		if ( ! is_wp_error( $res ) && $res['stored'] > 0 ) {
-			AuditLog::record( 'embedding.stored', '', 0, 'ok', array( 'stored' => $res['stored'], 'rejected' => count( $res['rejected'] ), 'source' => $source ) );
+			AuditLog::record(
+				'embedding.stored',
+				'',
+				0,
+				'ok',
+				array(
+					'stored'   => $res['stored'],
+					'rejected' => count( $res['rejected'] ),
+					'source'   => $source,
+				)
+			);
 		}
 		return $res;
 	}
@@ -1004,7 +1024,16 @@ final class Api {
 			list( $ot, $oid ) = explode( ':', $value );
 			Db::query( 'UPDATE {documents} SET excluded = 1 WHERE object_type = %s AND object_id = %d', array( $ot, (int) $oid ) );
 		}
-		AuditLog::record( 'lock.added', $scope, 0, 'ok', array( 'value' => $value, 'type' => $type ) );
+		AuditLog::record(
+			'lock.added',
+			$scope,
+			0,
+			'ok',
+			array(
+				'value' => $value,
+				'type'  => $type,
+			)
+		);
 		return array( 'id' => $id );
 	}
 

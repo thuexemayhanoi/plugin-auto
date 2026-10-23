@@ -129,7 +129,16 @@ final class RollbackService {
 				array( 'id' => (int) $p['id'] )
 			);
 			DocumentRepository::mark_dirty( 'post', (int) $c['object_id'] );
-			AuditLog::record( 'change.rolled_back', $c['object_type'], (int) $c['object_id'], 'ok', array( 'change_id' => (int) $c['id'], 'mode' => $mode ) );
+			AuditLog::record(
+				'change.rolled_back',
+				$c['object_type'],
+				(int) $c['object_id'],
+				'ok',
+				array(
+					'change_id' => (int) $c['id'],
+					'mode'      => $mode,
+				)
+			);
 			return ChangeExecutor::present( Db::row( 'SELECT * FROM {changes} WHERE id = %d', array( (int) $c['id'] ) ) );
 		} finally {
 			Mutex::release( 'object_' . $c['object_type'] . '_' . (int) $c['object_id'], $mutex );

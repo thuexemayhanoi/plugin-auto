@@ -123,54 +123,62 @@ final class MatrixPage {
 		}
 		echo '<form method="get" class="sseo-filters" role="search"><input type="hidden" name="page" value="sseo-matrix">';
 		echo '<label for="sseo-s">' . esc_html__( 'Search title or URL', 'semantic-seo-engine-vi-en' ) . '</label> <input id="sseo-s" type="search" name="s" value="' . esc_attr( $a['search'] ) . '"> ';
-		echo Ui::select( 'locale', $locales, $a['locale'], __( 'Locale', 'semantic-seo-engine-vi-en' ) ) . ' '; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo Ui::select( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			'intent',
-			array(
-				''              => __( 'All', 'semantic-seo-engine-vi-en' ),
-				'informational' => Ui::term( 'informational' ),
-				'transactional' => Ui::term( 'transactional' ),
-				'commercial'    => Ui::term( 'commercial' ),
-				'navigational'  => Ui::term( 'navigational' ),
-				'unknown'       => Ui::term( 'unknown' ),
-			),
-			$a['intent'],
-			__( 'Intent', 'semantic-seo-engine-vi-en' )
-		) . ' ';
-		echo Ui::select( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			'role',
-			array(
-				''           => __( 'All', 'semantic-seo-engine-vi-en' ),
-				'pillar'     => Ui::term( 'pillar' ),
-				'hub'        => Ui::term( 'hub' ),
-				'supporting' => Ui::term( 'supporting' ),
-			),
-			$a['role'],
-			__( 'Role', 'semantic-seo-engine-vi-en' )
-		) . ' ';
-		echo Ui::select( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			'sort',
-			array(
-				'id'          => __( 'Inventory order', 'semantic-seo-engine-vi-en' ),
-				'title'       => __( 'Title', 'semantic-seo-engine-vi-en' ),
-				'risk'        => __( 'Overlap risk', 'semantic-seo-engine-vi-en' ),
-				'qa'          => __( 'QA issues', 'semantic-seo-engine-vi-en' ),
-				'inbound'     => __( 'Inbound links', 'semantic-seo-engine-vi-en' ),
-				'suggestions' => __( 'Link suggestions', 'semantic-seo-engine-vi-en' ),
-				'words'       => __( 'Word count', 'semantic-seo-engine-vi-en' ),
-				'modified'    => __( 'Modified', 'semantic-seo-engine-vi-en' ),
-			),
-			$a['sort'],
-			__( 'Sort', 'semantic-seo-engine-vi-en' )
-		) . ' ';
-		echo Ui::select( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			'order',
-			array(
-				'asc'  => __( 'Ascending', 'semantic-seo-engine-vi-en' ),
-				'desc' => __( 'Descending', 'semantic-seo-engine-vi-en' ),
-			),
-			$a['order'],
-			__( 'Order', 'semantic-seo-engine-vi-en' )
+		Ui::out( Ui::select( 'locale', $locales, $a['locale'], __( 'Locale', 'semantic-seo-engine-vi-en' ) ) . ' ' );
+		Ui::out(
+			Ui::select( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				'intent',
+				array(
+					''              => __( 'All', 'semantic-seo-engine-vi-en' ),
+					'informational' => Ui::term( 'informational' ),
+					'transactional' => Ui::term( 'transactional' ),
+					'commercial'    => Ui::term( 'commercial' ),
+					'navigational'  => Ui::term( 'navigational' ),
+					'unknown'       => Ui::term( 'unknown' ),
+				),
+				$a['intent'],
+				__( 'Intent', 'semantic-seo-engine-vi-en' )
+			) . ' '
+		);
+		Ui::out(
+			Ui::select( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				'role',
+				array(
+					''           => __( 'All', 'semantic-seo-engine-vi-en' ),
+					'pillar'     => Ui::term( 'pillar' ),
+					'hub'        => Ui::term( 'hub' ),
+					'supporting' => Ui::term( 'supporting' ),
+				),
+				$a['role'],
+				__( 'Role', 'semantic-seo-engine-vi-en' )
+			) . ' '
+		);
+		Ui::out(
+			Ui::select( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				'sort',
+				array(
+					'id'          => __( 'Inventory order', 'semantic-seo-engine-vi-en' ),
+					'title'       => __( 'Title', 'semantic-seo-engine-vi-en' ),
+					'risk'        => __( 'Overlap risk', 'semantic-seo-engine-vi-en' ),
+					'qa'          => __( 'QA issues', 'semantic-seo-engine-vi-en' ),
+					'inbound'     => __( 'Inbound links', 'semantic-seo-engine-vi-en' ),
+					'suggestions' => __( 'Link suggestions', 'semantic-seo-engine-vi-en' ),
+					'words'       => __( 'Word count', 'semantic-seo-engine-vi-en' ),
+					'modified'    => __( 'Modified', 'semantic-seo-engine-vi-en' ),
+				),
+				$a['sort'],
+				__( 'Sort', 'semantic-seo-engine-vi-en' )
+			) . ' '
+		);
+		Ui::out(
+			Ui::select( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				'order',
+				array(
+					'asc'  => __( 'Ascending', 'semantic-seo-engine-vi-en' ),
+					'desc' => __( 'Descending', 'semantic-seo-engine-vi-en' ),
+				),
+				$a['order'],
+				__( 'Order', 'semantic-seo-engine-vi-en' )
+			)
 		);
 		echo ' <label><input type="checkbox" name="orphan" value="1"' . checked( $a['orphan'], true, false ) . '> ' . esc_html__( 'Orphan candidates', 'semantic-seo-engine-vi-en' ) . '</label>';
 		echo ' <label><input type="checkbox" name="has_qa" value="1"' . checked( $a['has_qa'], true, false ) . '> ' . esc_html__( 'Has QA issues', 'semantic-seo-engine-vi-en' ) . '</label>';

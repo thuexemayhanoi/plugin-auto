@@ -1,6 +1,6 @@
 <?php
 /**
- * admin-post.php handlers for Human Mode. Every handler verifies a nonce, then calls the shared
+ * Handlers for admin-post.php (Human Mode). Every handler verifies a nonce, then calls the shared
  * service layer (which re-checks capabilities, locks and rate limits).
  *
  * @package SemanticSEO
@@ -103,7 +103,7 @@ final class Actions {
 			'type'         => self::p( 'type' ),
 			'then_analyze' => '1' === self::p( 'then_analyze' ),
 		);
-		$ids = preg_split( '/[\s,]+/', self::p( 'post_ids' ), -1, PREG_SPLIT_NO_EMPTY );
+		$ids  = preg_split( '/[\s,]+/', self::p( 'post_ids' ), -1, PREG_SPLIT_NO_EMPTY );
 		if ( array() !== $ids ) {
 			$args['post_ids'] = array_map( 'intval', $ids );
 		}
@@ -278,7 +278,7 @@ final class Actions {
 		if ( '1' === self::p( 'lock' ) ) {
 			return self::do_lock_value( 'cluster', (string) $cid );
 		}
-		$id = (int) Db::value( "SELECT id FROM {locks} WHERE scope_type = 'cluster' AND scope_value = %s AND lock_type = 'lock'", array( (string) $cid ) );
+		$id  = (int) Db::value( "SELECT id FROM {locks} WHERE scope_type = 'cluster' AND scope_value = %s AND lock_type = 'lock'", array( (string) $cid ) );
 		$res = Api::remove_lock( $id );
 		return is_wp_error( $res ) ? $res : __( 'Cluster unlocked.', 'semantic-seo-engine-vi-en' );
 	}
@@ -349,7 +349,7 @@ final class Actions {
 		}
 		foreach ( array( 'post_types', 'taxonomies' ) as $list_key ) {
 			if ( isset( $raw[ $list_key ] ) ) {
-				$joined            = is_array( $raw[ $list_key ] ) ? implode( ',', $raw[ $list_key ] ) : (string) $raw[ $list_key ];
+				$joined           = is_array( $raw[ $list_key ] ) ? implode( ',', $raw[ $list_key ] ) : (string) $raw[ $list_key ];
 				$raw[ $list_key ] = array_values( array_filter( array_map( 'trim', explode( ',', $joined ) ) ) );
 			}
 		}
@@ -419,7 +419,7 @@ final class Actions {
 		if ( ! $user instanceof \WP_User ) {
 			return new \WP_Error( 'sseo_invalid', __( 'User not found.', 'semantic-seo-engine-vi-en' ) );
 		}
-		if ( (int) $user->ID === get_current_user_id() || user_can( $user, 'manage_options' ) || is_super_admin( $user->ID ) ) {
+		if ( get_current_user_id() === (int) $user->ID || user_can( $user, 'manage_options' ) || is_super_admin( $user->ID ) ) {
 			return new \WP_Error( 'sseo_invalid', __( 'Use a dedicated, low-privilege account for agents — administrators and your own account cannot become agent accounts.', 'semantic-seo-engine-vi-en' ) );
 		}
 		if ( 'none' === $role ) {
@@ -534,7 +534,8 @@ final class Actions {
 				}
 			}
 		}
-		$preview = MatrixImporter::preview( $csv, $map, '1' === self::p( 'overwrite' ) );
+		$overwrite = '1' === self::p( 'overwrite' );
+		$preview   = MatrixImporter::preview( $csv, $map, $overwrite );
 		if ( is_wp_error( $preview ) ) {
 			return $preview;
 		}

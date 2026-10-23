@@ -132,26 +132,26 @@ final class Scorer {
 			&& TextNormalizer::normalize( $a['focus_keyword'] ) === TextNormalizer::normalize( $b['focus_keyword'] );
 
 		return array(
-			'lexical'         => round( $lexical, 4 ),
-			'semantic'        => null === $semantic ? null : round( $semantic, 4 ),
-			'topic'           => round( $topic, 4 ),
-			'title_overlap'   => round( self::jaccard( $a['title_set'], $b['title_set'] ), 4 ),
+			'lexical'           => round( $lexical, 4 ),
+			'semantic'          => null === $semantic ? null : round( $semantic, 4 ),
+			'topic'             => round( $topic, 4 ),
+			'title_overlap'     => round( self::jaccard( $a['title_set'], $b['title_set'] ), 4 ),
 			'title_containment' => round( self::containment( $a['title_set'], $b['title_set'] ), 4 ),
-			'heading_overlap' => round( self::jaccard( $a['heading_set'], $b['heading_set'] ), 4 ),
-			'near_duplicate'  => round( ContentExtractor::minhash_similarity( $a['minhash'], $b['minhash'] ), 4 ),
-			'same_intent'     => $a['intent'] === $b['intent'] && 'unknown' !== $a['intent'],
-			'intents'         => array( $a['intent'], $b['intent'] ),
-			'intent_conf'     => array( $a['intent_confidence'], $b['intent_confidence'] ),
-			'focus_same'      => $focus_same,
-			'shared_terms'    => LexicalIndex::shared_terms( $a['lexvec'], $b['lexvec'], 8 ),
-			'title_shared'    => $shared,
-			'title_only_a'    => $only_a,
-			'title_only_b'    => $only_b,
-			'same_cluster'    => $a['cluster_id'] > 0 && $a['cluster_id'] === $b['cluster_id'],
-			'roles'           => array( $a['cluster_role'], $b['cluster_role'] ),
-			'gsc_overlap'     => (int) $gsc_overlap,
-			'gsc_available'   => (bool) $gsc_available,
-			'exact_duplicate' => '' !== $a['content_hash'] && $a['content_hash'] === $b['content_hash'] && $a['word_count'] > 20,
+			'heading_overlap'   => round( self::jaccard( $a['heading_set'], $b['heading_set'] ), 4 ),
+			'near_duplicate'    => round( ContentExtractor::minhash_similarity( $a['minhash'], $b['minhash'] ), 4 ),
+			'same_intent'       => $a['intent'] === $b['intent'] && 'unknown' !== $a['intent'],
+			'intents'           => array( $a['intent'], $b['intent'] ),
+			'intent_conf'       => array( $a['intent_confidence'], $b['intent_confidence'] ),
+			'focus_same'        => $focus_same,
+			'shared_terms'      => LexicalIndex::shared_terms( $a['lexvec'], $b['lexvec'], 8 ),
+			'title_shared'      => $shared,
+			'title_only_a'      => $only_a,
+			'title_only_b'      => $only_b,
+			'same_cluster'      => $a['cluster_id'] > 0 && $a['cluster_id'] === $b['cluster_id'],
+			'roles'             => array( $a['cluster_role'], $b['cluster_role'] ),
+			'gsc_overlap'       => (int) $gsc_overlap,
+			'gsc_available'     => (bool) $gsc_available,
+			'exact_duplicate'   => '' !== $a['content_hash'] && $a['content_hash'] === $b['content_hash'] && $a['word_count'] > 20,
 		);
 	}
 
@@ -180,7 +180,7 @@ final class Scorer {
 	 * @return array{score:float,components:array}
 	 */
 	public static function link_score( array $features, $anchor, $graph ) {
-		$w = array(
+		$w     = array(
 			'lexical'  => (float) Settings::get( 'w_lexical', 0.45 ),
 			'semantic' => null === $features['semantic'] ? 0.0 : (float) Settings::get( 'w_semantic', 0.35 ),
 			'anchor'   => (float) Settings::get( 'w_anchor', 0.10 ),

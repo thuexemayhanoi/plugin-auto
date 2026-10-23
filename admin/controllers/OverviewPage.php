@@ -130,7 +130,17 @@ final class OverviewPage {
 
 		if ( current_user_can( Capabilities::ANALYZE ) ) {
 			echo '<section class="sseo-panel"><h2>' . esc_html__( 'Run analysis', 'semantic-seo-engine-vi-en' ) . '</h2><p>' . esc_html__( 'Inventory and analysis are read-only and run in small background batches. Large sites take several minutes.', 'semantic-seo-engine-vi-en' ) . '</p>';
-			echo Ui::action_button( 'start_job', array( 'type' => 'inventory', 'then_analyze' => '1' ), __( 'Full inventory + analysis', 'semantic-seo-engine-vi-en' ), 'button button-primary' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built with escaping.
+			Ui::out(
+				Ui::action_button(
+					'start_job',
+					array(
+						'type'         => 'inventory',
+						'then_analyze' => '1',
+					),
+					__( 'Full inventory + analysis', 'semantic-seo-engine-vi-en' ),
+					'button button-primary'
+				)
+			); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built with escaping.
 			echo ' ' . Ui::action_button( 'start_job', array( 'type' => 'analyze' ), __( 'Re-run analysis only', 'semantic-seo-engine-vi-en' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo '</section>';
 		}

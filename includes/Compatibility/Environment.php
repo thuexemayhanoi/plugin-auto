@@ -86,8 +86,8 @@ final class Environment {
 		$related = array();
 		foreach (
 			array(
-				'Jetpack Related Posts'   => class_exists( 'Jetpack_RelatedPosts' ),
-				'YARPP'                   => defined( 'YARPP_VERSION' ),
+				'Jetpack Related Posts'    => class_exists( 'Jetpack_RelatedPosts' ),
+				'YARPP'                    => defined( 'YARPP_VERSION' ),
 				'Contextual Related Posts' => defined( 'CRP_PLUGIN_VERSION' ),
 			) as $name => $active
 		) {
@@ -120,36 +120,36 @@ final class Environment {
 		global $wp_version, $wpdb;
 		$detected = self::detected_plugins();
 		return array(
-			'plugin_version'      => SSEO_VERSION,
-			'wordpress'           => $wp_version,
-			'php'                 => PHP_VERSION,
-			'database'            => $wpdb->db_server_info(),
-			'db_schema'           => array(
+			'plugin_version'        => SSEO_VERSION,
+			'wordpress'             => $wp_version,
+			'php'                   => PHP_VERSION,
+			'database'              => $wpdb->db_server_info(),
+			'db_schema'             => array(
 				'installed' => Migrator::installed_version(),
 				'expected'  => Schema::VERSION,
 				'missing'   => Migrator::missing_tables(),
 			),
-			'intl'                => TextNormalizer::has_intl(),
-			'mbstring'            => function_exists( 'mb_strtolower' ),
-			'memory_limit'        => (string) ini_get( 'memory_limit' ),
-			'max_execution_time'  => (int) ini_get( 'max_execution_time' ),
-			'wp_cron_disabled'    => defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON,
-			'abilities_api'       => self::abilities_available(),
-			'mcp_adapter'         => self::mcp_adapter_available(),
-			'mcp_adapter_version' => self::mcp_adapter_version(),
+			'intl'                  => TextNormalizer::has_intl(),
+			'mbstring'              => function_exists( 'mb_strtolower' ),
+			'memory_limit'          => (string) ini_get( 'memory_limit' ),
+			'max_execution_time'    => (int) ini_get( 'max_execution_time' ),
+			'wp_cron_disabled'      => defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON,
+			'abilities_api'         => self::abilities_available(),
+			'mcp_adapter'           => self::mcp_adapter_available(),
+			'mcp_adapter_version'   => self::mcp_adapter_version(),
 			'application_passwords' => function_exists( 'wp_is_application_passwords_available' ) && wp_is_application_passwords_available(),
-			'https'               => is_ssl() || 0 === strpos( home_url(), 'https://' ),
-			'seo_plugins'         => $detected['seo'],
-			'seo_primary'         => SeoAdapter::primary(),
-			'language_framework'  => LanguageResolver::framework(),
-			'translation_mapping' => LanguageResolver::has_translation_mapping(),
-			'languages'           => LanguageResolver::languages(),
-			'cache_plugins'       => $detected['cache'],
-			'related_plugins'     => $detected['related'],
-			'cron_tools'          => $detected['cron'],
-			'permalink_structure' => (string) get_option( 'permalink_structure' ),
-			'blog_public'         => (bool) get_option( 'blog_public', 1 ),
-			'core_sitemaps'       => function_exists( 'wp_sitemaps_get_server' ) && (bool) apply_filters( 'wp_sitemaps_enabled', (bool) get_option( 'blog_public', 1 ) ),
+			'https'                 => is_ssl() || 0 === strpos( home_url(), 'https://' ),
+			'seo_plugins'           => $detected['seo'],
+			'seo_primary'           => SeoAdapter::primary(),
+			'language_framework'    => LanguageResolver::framework(),
+			'translation_mapping'   => LanguageResolver::has_translation_mapping(),
+			'languages'             => LanguageResolver::languages(),
+			'cache_plugins'         => $detected['cache'],
+			'related_plugins'       => $detected['related'],
+			'cron_tools'            => $detected['cron'],
+			'permalink_structure'   => (string) get_option( 'permalink_structure' ),
+			'blog_public'           => (bool) get_option( 'blog_public', 1 ),
+			'core_sitemaps'         => function_exists( 'wp_sitemaps_get_server' ) && (bool) apply_filters( 'wp_sitemaps_enabled', (bool) get_option( 'blog_public', 1 ) ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- core filter, read only.
 		);
 	}
 }

@@ -45,13 +45,13 @@ final class FindingRepository {
 	 * @return int Finding ID.
 	 */
 	public static function upsert( array $f, $run_id ) {
-		$type   = (string) $f['type'];
-		$check  = isset( $f['check_id'] ) ? (string) $f['check_id'] : '';
-		$doc    = isset( $f['document_id'] ) ? (int) $f['document_id'] : 0;
-		$target = isset( $f['target_id'] ) ? (int) $f['target_id'] : 0;
-		$fp     = self::fingerprint( $type, $check, $doc, $target );
-		$now    = Util::now();
-		$data   = array(
+		$type     = (string) $f['type'];
+		$check    = isset( $f['check_id'] ) ? (string) $f['check_id'] : '';
+		$doc      = isset( $f['document_id'] ) ? (int) $f['document_id'] : 0;
+		$target   = isset( $f['target_id'] ) ? (int) $f['target_id'] : 0;
+		$fp       = self::fingerprint( $type, $check, $doc, $target );
+		$now      = Util::now();
+		$data     = array(
 			'type'              => $type,
 			'check_id'          => substr( $check, 0, 64 ),
 			'document_id'       => $doc,

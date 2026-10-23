@@ -23,8 +23,8 @@ final class LinkGraph {
 	/**
 	 * Replaces the outbound links of a source document.
 	 *
-	 * @param int   $source_id Source document ID.
-	 * @param array $links     Links from ContentExtractor.
+	 * @param int    $source_id Source document ID.
+	 * @param array  $links     Links from ContentExtractor.
 	 * @param string $base_url Source URL (resolves relative links).
 	 * @return void
 	 */
@@ -119,7 +119,7 @@ final class LinkGraph {
 		$rows = Db::rows( 'SELECT id, target_url FROM {links} WHERE is_internal = 1 AND id > %d ORDER BY id ASC LIMIT %d', array( (int) $after, (int) $limit ) );
 		$last = (int) $after;
 		foreach ( $rows as $r ) {
-			$last = (int) $r['id'];
+			$last                        = (int) $r['id'];
 			list( $target, $resolution ) = self::resolve_url( (string) $r['target_url'] );
 			Db::update(
 				'links',
@@ -243,12 +243,12 @@ final class LinkGraph {
 	 */
 	public static function coverage() {
 		return array(
-			'documents_scanned'   => (int) Db::value( "SELECT COUNT(*) FROM {documents} WHERE status = 'publish' AND scanned_at IS NOT NULL" ),
-			'internal_links'      => (int) Db::value( 'SELECT COUNT(*) FROM {links} WHERE is_internal = 1' ),
-			'resolved_links'      => (int) Db::value( "SELECT COUNT(*) FROM {links} WHERE resolution = 'resolved'" ),
-			'unresolved_links'    => (int) Db::value( "SELECT COUNT(*) FROM {links} WHERE is_internal = 1 AND resolution IN ('unresolved','broken','non_public','not_in_scope')" ),
-			'observed_sources'    => 'post_content and term descriptions only',
-			'not_observed'        => 'navigation menus, widgets, theme templates, JavaScript-rendered links, other plugins\' output',
+			'documents_scanned' => (int) Db::value( "SELECT COUNT(*) FROM {documents} WHERE status = 'publish' AND scanned_at IS NOT NULL" ),
+			'internal_links'    => (int) Db::value( 'SELECT COUNT(*) FROM {links} WHERE is_internal = 1' ),
+			'resolved_links'    => (int) Db::value( "SELECT COUNT(*) FROM {links} WHERE resolution = 'resolved'" ),
+			'unresolved_links'  => (int) Db::value( "SELECT COUNT(*) FROM {links} WHERE is_internal = 1 AND resolution IN ('unresolved','broken','non_public','not_in_scope')" ),
+			'observed_sources'  => 'post_content and term descriptions only',
+			'not_observed'      => 'navigation menus, widgets, theme templates, JavaScript-rendered links, other plugins\' output',
 		);
 	}
 

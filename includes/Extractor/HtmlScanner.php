@@ -48,7 +48,7 @@ final class HtmlScanner {
 		$masks = self::shortcode_ranges( $html );
 
 		while ( $i < $len ) {
-			$lt = strpos( $html, '<', $i );
+			$lt       = strpos( $html, '<', $i );
 			$end_text = false === $lt ? $len : $lt;
 			if ( $end_text > $i ) {
 				self::add_text( $html, $i, $end_text, $stack, $masks, $segments, $open_a, $open_h, $text_buf );
@@ -272,7 +272,7 @@ final class HtmlScanner {
 				if ( 0 === $i ) {
 					continue; // Tag name.
 				}
-				$val                           = isset( $a[4] ) && '' !== $a[4] ? $a[4] : ( isset( $a[3] ) && '' !== $a[3] ? $a[3] : ( isset( $a[2] ) ? $a[2] : '' ) );
+				$val                          = isset( $a[4] ) && '' !== $a[4] ? $a[4] : ( isset( $a[3] ) && '' !== $a[3] ? $a[3] : ( isset( $a[2] ) ? $a[2] : '' ) );
 				$attrs[ strtolower( $a[1] ) ] = $val;
 			}
 		}

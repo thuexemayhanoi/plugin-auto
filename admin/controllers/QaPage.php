@@ -42,9 +42,32 @@ final class QaPage {
 			$args['document_id'] = (int) Ui::get( 'doc' );
 		}
 		echo '<form method="get" class="sseo-filters"><input type="hidden" name="page" value="sseo-qa">';
-		echo Ui::select( 'label', array( '' => __( 'All labels', 'semantic-seo-engine-vi-en' ), 'verified_error' => Ui::term( 'verified_error' ), 'warning' => Ui::term( 'warning' ), 'suggestion' => Ui::term( 'suggestion' ) ), $args['label'], __( 'Label', 'semantic-seo-engine-vi-en' ) ) . ' '; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo Ui::select( 'check', $checks, $args['check_id'], __( 'Check', 'semantic-seo-engine-vi-en' ) ) . ' '; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo Ui::select( 'locale', array( '' => __( 'All', 'semantic-seo-engine-vi-en' ), 'vi' => 'VI', 'en' => 'EN' ), $args['locale'], __( 'Locale', 'semantic-seo-engine-vi-en' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		Ui::out(
+			Ui::select(
+				'label',
+				array(
+					''               => __( 'All labels', 'semantic-seo-engine-vi-en' ),
+					'verified_error' => Ui::term( 'verified_error' ),
+					'warning'        => Ui::term( 'warning' ),
+					'suggestion'     => Ui::term( 'suggestion' ),
+				),
+				$args['label'],
+				__( 'Label', 'semantic-seo-engine-vi-en' )
+			) . ' '
+		); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		Ui::out( Ui::select( 'check', $checks, $args['check_id'], __( 'Check', 'semantic-seo-engine-vi-en' ) ) . ' ' );
+		Ui::out(
+			Ui::select(
+				'locale',
+				array(
+					''   => __( 'All', 'semantic-seo-engine-vi-en' ),
+					'vi' => 'VI',
+					'en' => 'EN',
+				),
+				$args['locale'],
+				__( 'Locale', 'semantic-seo-engine-vi-en' )
+			)
+		); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo ' <button class="button">' . esc_html__( 'Filter', 'semantic-seo-engine-vi-en' ) . '</button></form>';
 		$res = Api::qa_issues( $args );
 		if ( is_wp_error( $res ) ) {
@@ -56,7 +79,10 @@ final class QaPage {
 		$rows = array();
 		foreach ( $res['items'] as $f ) {
 			$e    = (array) $f['evidence'];
-			$doc  = isset( $meta[ (int) $f['document_id'] ] ) ? $meta[ (int) $f['document_id'] ] : array( 'title' => '?', 'url' => '' );
+			$doc  = isset( $meta[ (int) $f['document_id'] ] ) ? $meta[ (int) $f['document_id'] ] : array(
+				'title' => '?',
+				'url'   => '',
+			);
 			$info = $e;
 			unset( $info['check'] );
 			$rows[] = array(
@@ -64,7 +90,14 @@ final class QaPage {
 				'page'    => Ui::doc_link( $f['document_id'], $doc['title'], $doc['url'] ),
 				'check'   => esc_html( isset( $e['check'] ) ? $e['check'] : $f['check_id'] ),
 				'detail'  => '<code class="sseo-evidence-json">' . esc_html( (string) wp_json_encode( $info, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) ) . '</code>',
-				'actions' => current_user_can( Capabilities::REVIEW ) && 'open' === $f['status'] ? Ui::action_button( 'review_finding', array( 'finding_id' => $f['id'], 'status' => 'dismissed' ), __( 'Dismiss', 'semantic-seo-engine-vi-en' ) ) : Ui::badge( $f['status'], 'status' ),
+				'actions' => current_user_can( Capabilities::REVIEW ) && 'open' === $f['status'] ? Ui::action_button(
+					'review_finding',
+					array(
+						'finding_id' => $f['id'],
+						'status'     => 'dismissed',
+					),
+					__( 'Dismiss', 'semantic-seo-engine-vi-en' )
+				) : Ui::badge( $f['status'], 'status' ),
 			);
 		}
 		/* translators: %d: total */
@@ -82,7 +115,19 @@ final class QaPage {
 			__( 'No QA issues for these filters.', 'semantic-seo-engine-vi-en' )
 		);
 		if ( ! empty( $res['next_cursor'] ) ) {
-			echo '<p><a class="button" href="' . esc_url( Ui::url( 'sseo-qa', array_filter( array( 'label' => $args['label'], 'check' => $args['check_id'], 'locale' => $args['locale'], 'cursor' => $res['next_cursor'] ) ) ) ) . '">' . esc_html__( 'More ›', 'semantic-seo-engine-vi-en' ) . '</a></p>';
+			echo '<p><a class="button" href="' . esc_url(
+				Ui::url(
+					'sseo-qa',
+					array_filter(
+						array(
+							'label'  => $args['label'],
+							'check'  => $args['check_id'],
+							'locale' => $args['locale'],
+							'cursor' => $res['next_cursor'],
+						)
+					)
+				)
+			) . '">' . esc_html__( 'More ›', 'semantic-seo-engine-vi-en' ) . '</a></p>';
 		}
 		Ui::footer();
 	}

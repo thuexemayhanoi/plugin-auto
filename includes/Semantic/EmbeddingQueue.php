@@ -39,8 +39,8 @@ final class EmbeddingQueue {
 		$chunks  = (int) Settings::get( 'embed_body_chunks', 2 );
 		// MySQL evaluates ON DUPLICATE KEY assignments left to right: attempts and status are
 		// computed from the old row before content_hash is overwritten.
-		$sql     = "SELECT id, locale FROM {documents} WHERE status = 'publish' AND excluded = 0 AND id > %d";
-		$args    = array( (int) $after );
+		$sql  = "SELECT id, locale FROM {documents} WHERE status = 'publish' AND excluded = 0 AND id > %d";
+		$args = array( (int) $after );
 		if ( array() !== $doc_ids ) {
 			$doc_ids = array_slice( array_map( 'intval', $doc_ids ), 0, 500 );
 			$sql    .= ' AND id IN (' . Db::in( $doc_ids ) . ')';
@@ -150,8 +150,8 @@ final class EmbeddingQueue {
 		if ( ! hash_equals( $profile['model_key'], (string) $model_key ) ) {
 			return new \WP_Error( 'sseo_model_mismatch', __( 'Vectors were produced with a different model profile and were rejected.', 'semantic-seo-engine-vi-en' ), array( 'status' => 409 ) );
 		}
-		$hash  = Util::sha256( (string) $token );
-		$out   = array(
+		$hash = Util::sha256( (string) $token );
+		$out  = array(
 			'stored'   => 0,
 			'rejected' => array(),
 		);
@@ -265,7 +265,7 @@ final class EmbeddingQueue {
 	 * @return array<string,int>
 	 */
 	public static function counts( $job_id = 0 ) {
-		$out = array(
+		$out  = array(
 			'pending' => 0,
 			'leased'  => 0,
 			'done'    => 0,
