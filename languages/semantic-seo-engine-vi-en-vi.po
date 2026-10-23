@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Semantic SEO Engine VI–EN 1.0.0-beta.1\n"
-"Report-Msgid-Bugs-To: https://github.com/thuexemayhanoi/plugin-auto/issues\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/semantic-seo-engine-vi-en\n"
 "Language: vi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1418,8 +1418,8 @@ msgstr "WebAssembly (CPU) — chậm hơn"
 #. translators: %s: precision such as q4f16
 #: admin/controllers/Menu.php:154
 #, php-format
-msgid "WASM with %s may be slow or fail on this device; q8 precision is recommended for CPU-only devices (Settings & Diagnostics)."
-msgstr "WASM với %s có thể chậm hoặc lỗi trên thiết bị này; nên dùng độ chính xác q8 cho thiết bị chỉ có CPU (Cài đặt & Chẩn đoán)."
+msgid "No WebGPU with 16-bit shaders on this device: %s runs on the CPU (WebAssembly), which is slower. For many pages, a desktop browser with WebGPU or the private worker is faster."
+msgstr "Thiết bị này không có WebGPU hỗ trợ shader 16-bit: %s sẽ chạy bằng CPU (WebAssembly), chậm hơn. Với nhiều trang, trình duyệt máy tính có WebGPU hoặc máy xử lý riêng sẽ nhanh hơn."
 
 #: admin/controllers/Menu.php:155
 msgid "Worker error:"
@@ -1439,15 +1439,21 @@ msgstr "Đã lưu %1$d, từ chối %2$d (%3$d ms) — tổng %4$d"
 msgid "from cache"
 msgstr "từ bộ nhớ đệm"
 
-#: admin/controllers/Menu.php:160
+#. translators: 1: free browser storage, 2: model download size
+#: admin/controllers/Menu.php:161
+#, php-format
+msgid "Browser storage has %1$s free but the model needs %2$s: it will work, but may be downloaded again next time."
+msgstr "Bộ nhớ trình duyệt còn trống %1$s nhưng mô hình cần %2$s: vẫn chạy được, nhưng lần sau có thể phải tải lại."
+
+#: admin/controllers/Menu.php:162
 msgid "Stopped; claimed items were returned to the queue."
 msgstr "Đã dừng; các mục đã nhận được trả lại hàng đợi."
 
-#: admin/controllers/Menu.php:178
+#: admin/controllers/Menu.php:180
 msgid "Agent-native WordPress Abilities are unavailable on this WordPress version (6.9+ required). The REST API and all modules still work."
 msgstr "WordPress Abilities cho agent không có trên phiên bản WordPress này (cần 6.9+). REST API và mọi mô-đun vẫn hoạt động."
 
-#: admin/controllers/Menu.php:180
+#: admin/controllers/Menu.php:182
 msgid "MCP exposure is enabled but the official MCP Adapter plugin is not active, so no MCP client can connect."
 msgstr "Đã bật MCP nhưng plugin MCP Adapter chính thức chưa kích hoạt, nên không client MCP nào kết nối được."
 
@@ -1746,7 +1752,7 @@ msgstr "Hiển thị ngoài website đang tắt (mặc định). Shortcode và b
 msgid "Enable related content output"
 msgstr "Bật hiển thị bài viết liên quan"
 
-#: admin/controllers/RelatedPage.php:34
+#: admin/controllers/RelatedPage.php:34 assets/js/related-block.js:29
 msgid "Number of items"
 msgstr "Số mục"
 
@@ -1985,8 +1991,8 @@ msgid "Default language (when no language plugin applies)"
 msgstr "Ngôn ngữ mặc định (khi không có plugin ngôn ngữ)"
 
 #: admin/controllers/SettingsPage.php:41
-msgid "URL prefix rules (one per line, e.g. en=/en/) — used only without Polylang/WPML"
-msgstr "Quy tắc tiền tố URL (mỗi dòng một quy tắc, ví dụ en=/en/) — chỉ dùng khi không có Polylang/WPML"
+msgid "URL prefix rules (one per line, e.g. en=/en/) — used only when no language plugin (Polylang, WPML, Nguyen Ha VI-EN Core) is detected"
+msgstr "Quy tắc tiền tố URL (mỗi dòng một quy tắc, ví dụ en=/en/) — chỉ dùng khi không phát hiện plugin ngôn ngữ nào (Polylang, WPML, Nguyen Ha VI-EN Core)"
 
 #: admin/controllers/SettingsPage.php:42
 msgid "Excluded post IDs"
@@ -2080,11 +2086,15 @@ msgstr "Ngưỡng chồng lấn chủ đề"
 msgid "Near-duplicate threshold (MinHash)"
 msgstr "Ngưỡng gần trùng lặp (MinHash)"
 
-#: admin/controllers/SettingsPage.php:84
+#: admin/controllers/SettingsPage.php:81
+msgid "Possible-translation threshold (cross-language similarity)"
+msgstr "Ngưỡng gợi ý bản dịch (tương đồng đa ngôn ngữ)"
+
+#: admin/controllers/SettingsPage.php:85
 msgid "Candidates per page (BM25 top-k)"
 msgstr "Số ứng viên mỗi trang (BM25 top-k)"
 
-#: admin/controllers/SettingsPage.php:85
+#: admin/controllers/SettingsPage.php:86
 msgid "Max link suggestions per page"
 msgstr "Số gợi ý liên kết tối đa mỗi trang"
 
@@ -2788,6 +2798,14 @@ msgstr "Đã có tác vụ cùng loại đang chờ hoặc đang chạy."
 msgid "Could not create the job."
 msgstr "Không tạo được tác vụ."
 
+#: includes/Language/LanguageResolver.php:82
+msgid "URL prefix rules"
+msgstr "Quy tắc tiền tố URL"
+
+#: includes/Language/LanguageResolver.php:83
+msgid "Site default language only"
+msgstr "Chỉ ngôn ngữ mặc định của site"
+
 #: includes/Locks/LockService.php:43
 msgid "Invalid lock scope or type."
 msgstr "Phạm vi hoặc loại khóa không hợp lệ."
@@ -2827,6 +2845,110 @@ msgstr "Hãy ánh xạ ít nhất một trường có thể nhập."
 #: includes/Matrix/MatrixImporter.php:188
 msgid "The import preview expired or does not belong to you. Upload the file again."
 msgstr "Bản xem trước nhập đã hết hạn hoặc không thuộc về bạn. Hãy tải tệp lên lại."
+
+#: includes/Quality/QaChecker.php:64
+msgid "Missing title"
+msgstr "Thiếu tiêu đề"
+
+#: includes/Quality/QaChecker.php:65
+msgid "Title length outside 15–65 characters (heuristic)"
+msgstr "Độ dài tiêu đề ngoài khoảng 15–65 ký tự (ước lượng)"
+
+#: includes/Quality/QaChecker.php:66
+msgid "Duplicate title in the same locale"
+msgstr "Trùng tiêu đề trong cùng ngôn ngữ"
+
+#: includes/Quality/QaChecker.php:67
+msgid "Missing meta description (SEO plugin active)"
+msgstr "Thiếu meta description (plugin SEO đang hoạt động)"
+
+#: includes/Quality/QaChecker.php:68
+msgid "Duplicate meta description in the same locale"
+msgstr "Trùng meta description trong cùng ngôn ngữ"
+
+#: includes/Quality/QaChecker.php:69
+msgid "H1 heading inside content"
+msgstr "Có thẻ H1 trong nội dung"
+
+#: includes/Quality/QaChecker.php:70
+msgid "Heading level skipped"
+msgstr "Nhảy cấp heading"
+
+#: includes/Quality/QaChecker.php:71
+msgid "Long content without H2 subheadings"
+msgstr "Nội dung dài nhưng không có tiêu đề phụ H2"
+
+#: includes/Quality/QaChecker.php:72
+msgid "Internal link to a non-public or deleted object"
+msgstr "Liên kết nội bộ trỏ tới nội dung không công khai hoặc đã xóa"
+
+#: includes/Quality/QaChecker.php:73
+msgid "Internal link not matched to an inventoried URL"
+msgstr "Liên kết nội bộ không khớp URL nào trong danh sách kiểm kê"
+
+#: includes/Quality/QaChecker.php:74
+msgid "Internal link returned an HTTP error when verified"
+msgstr "Liên kết nội bộ trả về lỗi HTTP khi kiểm tra"
+
+#: includes/Quality/QaChecker.php:75
+msgid "Internal link points to an old URL that redirects"
+msgstr "Liên kết nội bộ trỏ tới URL cũ đang chuyển hướng"
+
+#: includes/Quality/QaChecker.php:76
+msgid "Missing translation in another site language"
+msgstr "Chưa có bản dịch ở ngôn ngữ còn lại của site"
+
+#: includes/Quality/QaChecker.php:77
+msgid "Possible translation in another language, not linked yet (cross-language semantic similarity)"
+msgstr "Có thể là bản dịch ở ngôn ngữ kia nhưng chưa được liên kết (tương đồng ngữ nghĩa đa ngôn ngữ)"
+
+#: includes/Quality/QaChecker.php:78
+msgid "Canonical points to a different URL"
+msgstr "Canonical trỏ tới URL khác"
+
+#: includes/Quality/QaChecker.php:79
+msgid "Canonical points to a page in another locale"
+msgstr "Canonical trỏ tới trang ở ngôn ngữ khác"
+
+#: includes/Quality/QaChecker.php:80
+msgid "Noindex page receives internal links"
+msgstr "Trang noindex vẫn nhận liên kết nội bộ"
+
+#: includes/Quality/QaChecker.php:81
+msgid "Detected text language differs from assigned locale"
+msgstr "Ngôn ngữ phát hiện trong văn bản khác ngôn ngữ được gán"
+
+#: includes/Quality/QaChecker.php:82
+msgid "Near-duplicate content (same locale)"
+msgstr "Nội dung gần trùng lặp (cùng ngôn ngữ)"
+
+#: includes/Quality/QaChecker.php:83
+msgid "Excessively repeated phrase"
+msgstr "Cụm từ lặp lại quá nhiều"
+
+#: includes/Quality/QaChecker.php:84
+msgid "Short content relative to heuristic intent"
+msgstr "Nội dung ngắn so với ý định tìm kiếm ước lượng"
+
+#: includes/Quality/QaChecker.php:85
+msgid "No observed inbound internal links"
+msgstr "Không thấy liên kết nội bộ nào trỏ đến"
+
+#: includes/Quality/QaChecker.php:86
+msgid "Few links to pages in the same topic cluster"
+msgstr "Ít liên kết tới các trang cùng cụm chủ đề"
+
+#: includes/Quality/QaChecker.php:87
+msgid "Possible duplicate structured data"
+msgstr "Có thể trùng dữ liệu có cấu trúc"
+
+#: includes/Quality/QaChecker.php:88
+msgid "Images without alt text"
+msgstr "Ảnh thiếu văn bản thay thế (alt)"
+
+#: includes/Quality/QaChecker.php:89
+msgid "Long informational article without any outside source (E-E-A-T heuristic)"
+msgstr "Bài thông tin dài nhưng không dẫn nguồn bên ngoài nào (ước lượng E-E-A-T)"
 
 #: includes/REST/RestController.php:212 includes/Services/Guard.php:31
 msgid "Authentication required."
@@ -2953,6 +3075,18 @@ msgstr "Cần phần mở rộng PHP mbstring."
 #: semantic-seo-engine-vi-en.php:58
 msgid "The plugin is inactive until these requirements are met."
 msgstr "Plugin sẽ không hoạt động cho đến khi đáp ứng các yêu cầu này."
+
+#: assets/js/related-block.js:27
+msgid "Related content"
+msgstr "Bài viết liên quan"
+
+#: assets/js/related-block.js:36
+msgid "Heading (optional)"
+msgstr "Tiêu đề (không bắt buộc)"
+
+#: assets/js/related-block.js:46
+msgid "No related content to show (output disabled in Semantic SEO settings, or this post has not been analyzed yet)."
+msgstr "Không có bài liên quan để hiển thị (đang tắt hiển thị trong cài đặt Semantic SEO, hoặc bài này chưa được phân tích)."
 
 #: blocks/related-content/block.json
 msgctxt "block title"

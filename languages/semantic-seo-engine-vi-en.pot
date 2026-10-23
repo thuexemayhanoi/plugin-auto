@@ -3,8 +3,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Semantic SEO Engine VI–EN 1.0.0-beta.1\n"
-"Report-Msgid-Bugs-To: https://github.com/thuexemayhanoi/plugin-auto/issues\n"
-"POT-Creation-Date: 2026-10-23T00:55:46+00:00\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/semantic-seo-engine-vi-en\n"
+"POT-Creation-Date: 2026-10-23T01:45:53+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1565,8 +1565,9 @@ msgstr ""
 #: admin/controllers/Menu.php:154
 #, php-format
 msgid ""
-"WASM with %s may be slow or fail on this device; q8 precision is recommended"
-" for CPU-only devices (Settings & Diagnostics)."
+"No WebGPU with 16-bit shaders on this device: %s runs on the CPU "
+"(WebAssembly), which is slower. For many pages, a desktop browser with "
+"WebGPU or the private worker is faster."
 msgstr ""
 
 #: admin/controllers/Menu.php:155
@@ -1587,17 +1588,25 @@ msgstr ""
 msgid "from cache"
 msgstr ""
 
-#: admin/controllers/Menu.php:160
+#. translators: 1: free browser storage, 2: model download size
+#: admin/controllers/Menu.php:161
+#, php-format
+msgid ""
+"Browser storage has %1$s free but the model needs %2$s: it will work, but "
+"may be downloaded again next time."
+msgstr ""
+
+#: admin/controllers/Menu.php:162
 msgid "Stopped; claimed items were returned to the queue."
 msgstr ""
 
-#: admin/controllers/Menu.php:178
+#: admin/controllers/Menu.php:180
 msgid ""
 "Agent-native WordPress Abilities are unavailable on this WordPress version "
 "(6.9+ required). The REST API and all modules still work."
 msgstr ""
 
-#: admin/controllers/Menu.php:180
+#: admin/controllers/Menu.php:182
 msgid ""
 "MCP exposure is enabled but the official MCP Adapter plugin is not active, "
 "so no MCP client can connect."
@@ -1925,7 +1934,7 @@ msgstr ""
 msgid "Enable related content output"
 msgstr ""
 
-#: admin/controllers/RelatedPage.php:34
+#: admin/controllers/RelatedPage.php:34 assets/js/related-block.js:29
 msgid "Number of items"
 msgstr ""
 
@@ -2176,8 +2185,8 @@ msgstr ""
 
 #: admin/controllers/SettingsPage.php:41
 msgid ""
-"URL prefix rules (one per line, e.g. en=/en/) — used only without "
-"Polylang/WPML"
+"URL prefix rules (one per line, e.g. en=/en/) — used only when no language "
+"plugin (Polylang, WPML, Nguyen Ha VI-EN Core) is detected"
 msgstr ""
 
 #: admin/controllers/SettingsPage.php:42
@@ -2274,11 +2283,15 @@ msgstr ""
 msgid "Near-duplicate threshold (MinHash)"
 msgstr ""
 
-#: admin/controllers/SettingsPage.php:84
-msgid "Candidates per page (BM25 top-k)"
+#: admin/controllers/SettingsPage.php:81
+msgid "Possible-translation threshold (cross-language similarity)"
 msgstr ""
 
 #: admin/controllers/SettingsPage.php:85
+msgid "Candidates per page (BM25 top-k)"
+msgstr ""
+
+#: admin/controllers/SettingsPage.php:86
 msgid "Max link suggestions per page"
 msgstr ""
 
@@ -3044,6 +3057,14 @@ msgstr ""
 msgid "Could not create the job."
 msgstr ""
 
+#: includes/Language/LanguageResolver.php:82
+msgid "URL prefix rules"
+msgstr ""
+
+#: includes/Language/LanguageResolver.php:83
+msgid "Site default language only"
+msgstr ""
+
 #: includes/Locks/LockService.php:43
 msgid "Invalid lock scope or type."
 msgstr ""
@@ -3083,6 +3104,113 @@ msgstr ""
 #: includes/Matrix/MatrixImporter.php:188
 msgid ""
 "The import preview expired or does not belong to you. Upload the file again."
+msgstr ""
+
+#: includes/Quality/QaChecker.php:64
+msgid "Missing title"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:65
+msgid "Title length outside 15–65 characters (heuristic)"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:66
+msgid "Duplicate title in the same locale"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:67
+msgid "Missing meta description (SEO plugin active)"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:68
+msgid "Duplicate meta description in the same locale"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:69
+msgid "H1 heading inside content"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:70
+msgid "Heading level skipped"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:71
+msgid "Long content without H2 subheadings"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:72
+msgid "Internal link to a non-public or deleted object"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:73
+msgid "Internal link not matched to an inventoried URL"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:74
+msgid "Internal link returned an HTTP error when verified"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:75
+msgid "Internal link points to an old URL that redirects"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:76
+msgid "Missing translation in another site language"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:77
+msgid ""
+"Possible translation in another language, not linked yet (cross-language "
+"semantic similarity)"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:78
+msgid "Canonical points to a different URL"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:79
+msgid "Canonical points to a page in another locale"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:80
+msgid "Noindex page receives internal links"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:81
+msgid "Detected text language differs from assigned locale"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:82
+msgid "Near-duplicate content (same locale)"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:83
+msgid "Excessively repeated phrase"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:84
+msgid "Short content relative to heuristic intent"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:85
+msgid "No observed inbound internal links"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:86
+msgid "Few links to pages in the same topic cluster"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:87
+msgid "Possible duplicate structured data"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:88
+msgid "Images without alt text"
+msgstr ""
+
+#: includes/Quality/QaChecker.php:89
+msgid ""
+"Long informational article without any outside source (E-E-A-T heuristic)"
 msgstr ""
 
 #: includes/REST/RestController.php:212 includes/Services/Guard.php:31
@@ -3218,6 +3346,20 @@ msgstr ""
 
 #: semantic-seo-engine-vi-en.php:58
 msgid "The plugin is inactive until these requirements are met."
+msgstr ""
+
+#: assets/js/related-block.js:27
+msgid "Related content"
+msgstr ""
+
+#: assets/js/related-block.js:36
+msgid "Heading (optional)"
+msgstr ""
+
+#: assets/js/related-block.js:46
+msgid ""
+"No related content to show (output disabled in Semantic SEO settings, or "
+"this post has not been analyzed yet)."
 msgstr ""
 
 #: blocks/related-content/block.json

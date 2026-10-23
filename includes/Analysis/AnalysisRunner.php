@@ -18,6 +18,7 @@ use SemanticSEO\Lexical\LexicalIndex;
 use SemanticSEO\Links\LinkSuggester;
 use SemanticSEO\Quality\QaChecker;
 use SemanticSEO\Recommendations\RelatedContent;
+use SemanticSEO\Semantic\CrossLanguage;
 use SemanticSEO\Semantic\EmbeddingRepository;
 use SemanticSEO\Semantic\ModelProfile;
 use SemanticSEO\Settings;
@@ -177,6 +178,13 @@ final class AnalysisRunner {
 
 			case 'finalize':
 				$scope = ! empty( $params['doc_ids'] ) ? self::scope_ids( $params ) : array();
+				if ( array() === $scope ) {
+					// Site-wide only: cross-language pairs need every page of both languages.
+					foreach ( CrossLanguage::findings( ModelProfile::active()['model_key'] ) as $f ) {
+						FindingRepository::upsert( $f, $run_id );
+						$state['counts']['qa'] = ( isset( $state['counts']['qa'] ) ? $state['counts']['qa'] : 0 ) + 1;
+					}
+				}
 				FindingRepository::resolve_stale( array( 'link', 'cannibalization', 'qa', 'classification' ), $run_id, $scope );
 				self::group_cannibalization();
 				if ( array() === $scope ) {

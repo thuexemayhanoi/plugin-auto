@@ -16,6 +16,7 @@ namespace SemanticSEO\Tests\Integration;
 use SemanticSEO\Capabilities;
 use SemanticSEO\Jobs\JobRepository;
 use SemanticSEO\Jobs\JobRunner;
+use SemanticSEO\Semantic\CrossLanguage;
 use SemanticSEO\Semantic\EmbeddingQueue;
 use SemanticSEO\Semantic\EmbeddingRepository;
 use SemanticSEO\Semantic\ModelProfile;
@@ -205,6 +206,31 @@ final class HybridEvaluationTest extends TestCase {
 			}
 		}
 
+		// Cross-language "possible translation" rule on the real vectors: every fixture translation is
+		// linked, so with include_linked a suggested pair is correct when it is a known translation.
+		$true_pairs = count( $translations );
+		$xlang      = array();
+		foreach ( array( 0.60, 0.65, 0.70, 0.75, 0.80 ) as $t ) {
+			Settings::update( array( 'translation_min_similarity' => $t ) );
+			$c       = CrossLanguage::candidates( $profile['model_key'], true );
+			$correct = count(
+				array_filter(
+					$c['pairs'],
+					static function ( $p ) {
+						return $p['linked'];
+					}
+				)
+			);
+			$xlang[] = array(
+				'threshold'  => $t,
+				'suggested'  => count( $c['pairs'] ),
+				'correct'    => $correct,
+				'precision'  => count( $c['pairs'] ) ? round( $correct / count( $c['pairs'] ), 3 ) : null,
+				'recall'     => $true_pairs ? round( $correct / $true_pairs, 3 ) : null,
+			);
+		}
+		Settings::update( array( 'translation_min_similarity' => 0.70 ) );
+
 		// Hybrid analysis for a grid of semantic weights (0 = lexical topic score with vectors stored).
 		$grid = array();
 		$by_w = array();
@@ -238,6 +264,7 @@ final class HybridEvaluationTest extends TestCase {
 				'overlap' => array_diff_key( $baseline['overlap'], array( 'pairs' => 1 ) ),
 			),
 			'hybrid_grid'      => $grid,
+			'possible_translation_rule' => $xlang,
 			'similarity'       => array(
 				'same_locale_relevant_pairs'      => self::stats( $relevant ),
 				'same_locale_other_pairs'         => self::stats( $other ),

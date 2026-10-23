@@ -38,6 +38,7 @@ final class QaChecker {
 		'http_error_link'            => 'Internal link returned an HTTP error when verified',
 		'redirected_internal_link'   => 'Internal link points to an old URL that redirects',
 		'missing_translation'        => 'Missing translation in another site language',
+		'possible_translation_pair'  => 'Possible translation in another language, not linked yet (cross-language semantic similarity)',
 		'canonical_conflict'         => 'Canonical points to a different URL',
 		'canonical_cross_locale'     => 'Canonical points to a page in another locale',
 		'noindex_linked'             => 'Noindex page receives internal links',
@@ -49,7 +50,49 @@ final class QaChecker {
 		'few_cluster_links'          => 'Few links to pages in the same topic cluster',
 		'schema_duplication_risk'    => 'Possible duplicate structured data',
 		'images_missing_alt'         => 'Images without alt text',
+		'no_external_sources'        => 'Long informational article without any outside source (E-E-A-T heuristic)',
 	);
+
+	/**
+	 * Translated, human-readable name of a check (the CHECKS text stays English in evidence and API).
+	 *
+	 * @param string $check_id Check ID.
+	 * @return string
+	 */
+	public static function label( $check_id ) {
+		$labels = array(
+			'missing_title'              => __( 'Missing title', 'semantic-seo-engine-vi-en' ),
+			'title_length'               => __( 'Title length outside 15–65 characters (heuristic)', 'semantic-seo-engine-vi-en' ),
+			'duplicate_title'            => __( 'Duplicate title in the same locale', 'semantic-seo-engine-vi-en' ),
+			'missing_meta_description'   => __( 'Missing meta description (SEO plugin active)', 'semantic-seo-engine-vi-en' ),
+			'duplicate_meta_description' => __( 'Duplicate meta description in the same locale', 'semantic-seo-engine-vi-en' ),
+			'h1_in_content'              => __( 'H1 heading inside content', 'semantic-seo-engine-vi-en' ),
+			'heading_skip'               => __( 'Heading level skipped', 'semantic-seo-engine-vi-en' ),
+			'no_subheadings'             => __( 'Long content without H2 subheadings', 'semantic-seo-engine-vi-en' ),
+			'broken_internal_link'       => __( 'Internal link to a non-public or deleted object', 'semantic-seo-engine-vi-en' ),
+			'unresolved_internal_link'   => __( 'Internal link not matched to an inventoried URL', 'semantic-seo-engine-vi-en' ),
+			'http_error_link'            => __( 'Internal link returned an HTTP error when verified', 'semantic-seo-engine-vi-en' ),
+			'redirected_internal_link'   => __( 'Internal link points to an old URL that redirects', 'semantic-seo-engine-vi-en' ),
+			'missing_translation'        => __( 'Missing translation in another site language', 'semantic-seo-engine-vi-en' ),
+			'possible_translation_pair'  => __( 'Possible translation in another language, not linked yet (cross-language semantic similarity)', 'semantic-seo-engine-vi-en' ),
+			'canonical_conflict'         => __( 'Canonical points to a different URL', 'semantic-seo-engine-vi-en' ),
+			'canonical_cross_locale'     => __( 'Canonical points to a page in another locale', 'semantic-seo-engine-vi-en' ),
+			'noindex_linked'             => __( 'Noindex page receives internal links', 'semantic-seo-engine-vi-en' ),
+			'language_mismatch'          => __( 'Detected text language differs from assigned locale', 'semantic-seo-engine-vi-en' ),
+			'near_duplicate'             => __( 'Near-duplicate content (same locale)', 'semantic-seo-engine-vi-en' ),
+			'repetitive_phrasing'        => __( 'Excessively repeated phrase', 'semantic-seo-engine-vi-en' ),
+			'thin_for_intent'            => __( 'Short content relative to heuristic intent', 'semantic-seo-engine-vi-en' ),
+			'orphan'                     => __( 'No observed inbound internal links', 'semantic-seo-engine-vi-en' ),
+			'few_cluster_links'          => __( 'Few links to pages in the same topic cluster', 'semantic-seo-engine-vi-en' ),
+			'schema_duplication_risk'    => __( 'Possible duplicate structured data', 'semantic-seo-engine-vi-en' ),
+			'images_missing_alt'         => __( 'Images without alt text', 'semantic-seo-engine-vi-en' ),
+			'no_external_sources'        => __( 'Long informational article without any outside source (E-E-A-T heuristic)', 'semantic-seo-engine-vi-en' ),
+		);
+		if ( isset( $labels[ $check_id ] ) ) {
+			return $labels[ $check_id ];
+		}
+		return isset( self::CHECKS[ $check_id ] ) ? self::CHECKS[ $check_id ] : (string) $check_id;
+	}
 
 	/**
 	 * Site-wide context built once per analysis run.
@@ -336,6 +379,26 @@ final class QaChecker {
 				),
 				$det['confidence']
 			);
+		}
+
+		// E-E-A-T signal observable in the content (heuristic, not a quality verdict): a long
+		// informational post that cites no outside source.
+		if ( $is_post && 'post' === $p['subtype'] ) {
+			if ( 'informational' === $p['intent'] && $p['word_count'] >= 600 ) {
+				$external = (int) Db::value( 'SELECT COUNT(*) FROM {links} WHERE source_id = %d AND is_internal = 0', array( $p['id'] ) );
+				if ( 0 === $external ) {
+					$add(
+						'no_external_sources',
+						'suggestion',
+						'info',
+						array(
+							'word_count' => $p['word_count'],
+							'note'       => 'No link to an outside source in a long informational article. Citing primary sources (regulations, official prices, maps) can support trust; add them only where they genuinely help the reader.',
+						),
+						'low'
+					);
+				}
+			}
 		}
 
 		// Duplication, repetition, length.

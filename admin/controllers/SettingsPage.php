@@ -70,14 +70,15 @@ final class SettingsPage {
 
 		echo '<details class="sseo-panel"><summary><strong>' . esc_html__( 'Expert panel (tested defaults — change only with evaluation data)', 'semantic-seo-engine-vi-en' ) . '</strong></summary>';
 		foreach ( array(
-			'w_lexical'          => __( 'Weight: lexical', 'semantic-seo-engine-vi-en' ),
-			'w_semantic'         => __( 'Weight: semantic', 'semantic-seo-engine-vi-en' ),
-			'w_anchor'           => __( 'Weight: anchor quality', 'semantic-seo-engine-vi-en' ),
-			'w_graph'            => __( 'Weight: graph usefulness', 'semantic-seo-engine-vi-en' ),
-			'link_min_score'     => __( 'Minimum link score', 'semantic-seo-engine-vi-en' ),
-			'related_min_score'  => __( 'Minimum related score', 'semantic-seo-engine-vi-en' ),
-			'cannibal_min_score' => __( 'Overlap topic threshold', 'semantic-seo-engine-vi-en' ),
-			'near_duplicate'     => __( 'Near-duplicate threshold (MinHash)', 'semantic-seo-engine-vi-en' ),
+			'w_lexical'                  => __( 'Weight: lexical', 'semantic-seo-engine-vi-en' ),
+			'w_semantic'                 => __( 'Weight: semantic', 'semantic-seo-engine-vi-en' ),
+			'w_anchor'                   => __( 'Weight: anchor quality', 'semantic-seo-engine-vi-en' ),
+			'w_graph'                    => __( 'Weight: graph usefulness', 'semantic-seo-engine-vi-en' ),
+			'link_min_score'             => __( 'Minimum link score', 'semantic-seo-engine-vi-en' ),
+			'related_min_score'          => __( 'Minimum related score', 'semantic-seo-engine-vi-en' ),
+			'cannibal_min_score'         => __( 'Overlap topic threshold', 'semantic-seo-engine-vi-en' ),
+			'near_duplicate'             => __( 'Near-duplicate threshold (MinHash)', 'semantic-seo-engine-vi-en' ),
+			'translation_min_similarity' => __( 'Possible-translation threshold (cross-language similarity)', 'semantic-seo-engine-vi-en' ),
 		) as $k => $label ) {
 			echo '<p><label for="sseo-' . esc_attr( $k ) . '">' . esc_html( $label ) . '</label> <input id="sseo-' . esc_attr( $k ) . '" type="number" step="0.01" min="0" max="1" name="sseo[' . esc_attr( $k ) . ']" value="' . esc_attr( (string) $s[ $k ] ) . '"></p>';
 		}

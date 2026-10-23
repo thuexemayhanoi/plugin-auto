@@ -27,8 +27,8 @@ final class QaPage {
 	public static function render() {
 		Ui::header( __( 'Content QA', 'semantic-seo-engine-vi-en' ), __( 'Verified errors are objective facts; warnings are rules needing judgement; suggestions are heuristic hints. No quality score and no fact-checking are produced.', 'semantic-seo-engine-vi-en' ) );
 		$checks = array( '' => __( 'All checks', 'semantic-seo-engine-vi-en' ) );
-		foreach ( QaChecker::CHECKS as $k => $label ) {
-			$checks[ $k ] = $label;
+		foreach ( array_keys( QaChecker::CHECKS ) as $k ) {
+			$checks[ $k ] = QaChecker::label( $k );
 		}
 		$args = array(
 			'label'    => Ui::get( 'label' ),
@@ -88,7 +88,7 @@ final class QaPage {
 			$rows[] = array(
 				'label'   => Ui::badge( $f['label'], 'label' ),
 				'page'    => Ui::doc_link( $f['document_id'], $doc['title'], $doc['url'] ),
-				'check'   => esc_html( isset( $e['check'] ) ? $e['check'] : $f['check_id'] ),
+				'check'   => esc_html( QaChecker::label( (string) $f['check_id'] ) ),
 				'detail'  => '<code class="sseo-evidence-json">' . esc_html( (string) wp_json_encode( $info, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) ) . '</code>',
 				'actions' => current_user_can( Capabilities::REVIEW ) && 'open' === $f['status'] ? Ui::action_button(
 					'review_finding',
