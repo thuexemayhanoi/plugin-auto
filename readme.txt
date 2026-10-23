@@ -4,7 +4,7 @@ Tags: seo, internal links, cannibalization, vietnamese, semantic search
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.0-beta.1
+Stable tag: 1.0.0-beta.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -34,7 +34,7 @@ Every write is a proposal with an exact diff. A human with the review capability
 
 == Installation ==
 
-1. Plugins → Add New → Upload Plugin → choose `semantic-seo-engine-vi-en-1.0.0-beta.1.zip` → Install → Activate.
+1. Plugins → Add New → Upload Plugin → choose `semantic-seo-engine-vi-en-1.0.0-beta.2.zip` → Install → Activate.
 2. Open **Semantic SEO → Overview & Setup** and follow the five-step wizard (scope → pilot on the latest posts → review).
 3. Optional: **Jobs & Inference Device** → check this device → tick the download consent → load the model and run the self-test.
 
@@ -78,11 +78,21 @@ Model weights are not bundled.
 
 == Changelog ==
 
+= 1.0.0-beta.2 =
+* Security: the kses filters suspended for an approved write are restored in a finally block; an exception in another plugin's hook is reverted and reported; no other post field may change during a write.
+* Embeddings are stored only after the server itself has checked the device's self-test vectors (24 h pass per account and model profile); older workers get HTTP 428 and must be updated.
+* Every proposal states its URL, post ID and risk; term proposals are refused when the permalink contains the taxonomy (a URL could change).
+* Overlap report: different places in titles are distinct facets, different intents are information, vector-only pairs are the weakest tier. "Missing translation" only for content types the site pairs, never for posts the language plugin declares standalone.
+* Faster analysis (fewer queries), reproducible ZIP builds.
+
 = 1.0.0-beta.1 =
 * First public beta. Lexical tier, M1–M6, Human Mode approvals with rollback, REST API, Abilities (WP 6.9+), opt-in MCP exposure of read-only abilities, browser inference worker with pinned and verified model files, private worker (Python) for self-hosted embeddings.
 * Real Qwen3-Embedding-0.6B (q4f16 default, fp16 option) verified in CI: model-card self-test, browser worker, private worker and hybrid evaluation. Beta until tried on a staging copy of a real site. See docs/TEST-REPORT.md.
 
 == Upgrade Notice ==
+
+= 1.0.0-beta.2 =
+Update the private worker together with the plugin (it now sends its self-test to the server). Read-only by default; back up your database before approving any change.
 
 = 1.0.0-beta.1 =
 First beta. Read-only by default; back up your database before approving any change.

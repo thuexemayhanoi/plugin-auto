@@ -1,11 +1,11 @@
-# Test report — Semantic SEO Engine VI–EN 1.0.0-beta.1
+# Test report — Semantic SEO Engine VI–EN 1.0.0-beta.2
 
 Date: 2026-10-23. Branch `claude/semantic-seo-engine-vi-en`. Every number below comes from a
 command that was actually run; raw results are in [`docs/evidence/`](evidence/) and screenshots in
 [`docs/screenshots/`](screenshots/). Nothing was installed on, or written to, any live site; the
 only contact with blog.rentbikehanoi.com was the read-only census/pilot in §7 (public GET requests).
 
-**Release decision: BETA (1.0.0-beta.1), all 20 acceptance criteria PASS with evidence.** The real
+**Release decision: BETA (1.0.0-beta.2), all 20 acceptance criteria PASS with evidence.** The real
 Qwen3-Embedding-0.6B model now runs end-to-end (browser worker, private worker, plugin queue,
 hybrid analysis) in GitHub Actions with the pinned, SHA-256-verified files (§6). It stays a beta
 because the owner has not yet installed it on a staging copy of the blog, real GPU (WebGPU) speed and

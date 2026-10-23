@@ -1,6 +1,6 @@
 {
   "name": "semantic-seo-engine-vi-en",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0-beta.2",
   "private": true,
   "description": "Build and test tooling for the Semantic SEO Engine VI-EN WordPress plugin (browser worker runtime, JS tests, e2e).",
   "license": "GPL-2.0-or-later",

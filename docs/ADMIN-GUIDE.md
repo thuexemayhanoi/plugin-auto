@@ -1,4 +1,4 @@
-# Hướng dẫn quản trị — Semantic SEO Engine VI–EN (1.0.0-beta.1)
+# Hướng dẫn quản trị — Semantic SEO Engine VI–EN (1.0.0-beta.2)
 
 Tài liệu cho **người quản trị website** (không cần biết lập trình) và cho **người/AI vận hành thay
 mặt quản trị viên** qua giao diện WordPress Admin. Hướng dẫn sử dụng từng màn hình nằm ở

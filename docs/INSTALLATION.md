@@ -1,4 +1,4 @@
-# Installation guide — Semantic SEO Engine VI–EN 1.0.0-beta.1
+# Installation guide — Semantic SEO Engine VI–EN 1.0.0-beta.2
 
 > Tiếng Việt: xem [USER-GUIDE-VI.md](USER-GUIDE-VI.md) mục 1 cho phần cài đặt tóm tắt.
 
@@ -21,9 +21,9 @@ Shared hosting is enough for everything except embeddings: the semantic model ne
 
 ## 3. Install from the ZIP
 
-1. Download `semantic-seo-engine-vi-en-1.0.0-beta.1.zip` (and its `.sha256`). Optional check: `sha256sum -c semantic-seo-engine-vi-en-1.0.0-beta.1.zip.sha256`.
+1. Download `semantic-seo-engine-vi-en-1.0.0-beta.2.zip` (and its `.sha256`). Optional check: `sha256sum -c semantic-seo-engine-vi-en-1.0.0-beta.2.zip.sha256`.
 2. WP Admin → **Plugins → Add New → Upload Plugin** → choose the ZIP → **Install Now** → **Activate**.
-   *WP-CLI:* `wp plugin install semantic-seo-engine-vi-en-1.0.0-beta.1.zip --activate`
+   *WP-CLI:* `wp plugin install semantic-seo-engine-vi-en-1.0.0-beta.2.zip --activate`
 3. What activation does (verified by `tests/e2e/smoke-zip.sh` on WordPress 6.5.13, 6.9.10 and 7.1.3):
    * creates 16 tables `{prefix}sseo_*` and the options `sseo_settings`, `sseo_db_version`, `sseo_migration_log`;
    * does **not** change posts, post meta, terms, users, roles, other options, rewrite rules or front-end HTML (byte-identical before/after);

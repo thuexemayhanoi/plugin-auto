@@ -11,7 +11,9 @@ never required: the plugin's lexical tier works without it. It is not included i
    (`huggingface.co`), streaming each one and verifying **size and SHA-256**; cached files are
    re-verified on every start.
 3. Reproduces the model-card reference similarities (**self-test**). If they differ beyond the
-   tolerance for the configured precision, it exits without uploading anything.
+   tolerance for the configured precision, it exits without uploading anything. It then sends the
+   reference vectors to `POST /embeddings/selftest`: the **server** recomputes the matrix and only
+   its pass (valid 24 h for this account and model profile) lets `complete` store vectors.
 4. Loops: `claim` (≤ 16 items, single-use lease) → tokenize → ONNX Runtime (CPU) → last-token
    pooling → L2 → MRL truncation → `complete`. On any error it `release`s the lease.
 

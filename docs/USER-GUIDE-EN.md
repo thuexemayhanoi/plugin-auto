@@ -1,4 +1,4 @@
-# User guide — Semantic SEO Engine VI–EN 1.0.0-beta.1
+# User guide — Semantic SEO Engine VI–EN 1.0.0-beta.2
 
 For site administrators and editors. Vietnamese version: [USER-GUIDE-VI.md](USER-GUIDE-VI.md).
 The plugin's admin screens default to Vietnamese; switch to English in *Settings & Diagnostics →

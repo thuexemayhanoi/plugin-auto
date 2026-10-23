@@ -1,12 +1,12 @@
 # Semantic SEO Engine VI–EN — WordPress Plugin
 ## Master Engineering Specification / README for Claude & AI Coding Agents
 
-> **Status: IMPLEMENTED AS 1.0.0-beta.1 on branch `claude/semantic-seo-engine-vi-en` — BETA, all 20 acceptance criteria with evidence.**
+> **Status: IMPLEMENTED AS 1.0.0-beta.2 on branch `claude/semantic-seo-engine-vi-en` — BETA, all 20 acceptance criteria with evidence.**
 > The plugin, tests, CI and installable ZIP exist and were verified on disposable WordPress 6.5.13 / 6.9.10 / 7.1.3 sites and in CI. The real Qwen3-Embedding-0.6B model (pinned revision, SHA-256-verified files) runs in GitHub Actions: model-card self-test, browser worker (Chromium, WASM), private worker over REST and the hybrid evaluation (AC06 PASS). A read-only census and pilot of blog.rentbikehanoi.com ran on a disposable copy of its public content. Nothing has been installed on any live site; it stays a beta until the owner tries it on a staging copy. Evidence: [docs/TEST-REPORT.md](docs/TEST-REPORT.md).
 >
 > | Documentation | |
 > | --- | --- |
-> | Install / build | [docs/INSTALLATION.md](docs/INSTALLATION.md) · [readme.txt](readme.txt) · [CHANGELOG.md](CHANGELOG.md) · [release notes](docs/RELEASE-NOTES-1.0.0-beta.1.md) |
+> | Install / build | [docs/INSTALLATION.md](docs/INSTALLATION.md) · [readme.txt](readme.txt) · [CHANGELOG.md](CHANGELOG.md) · [release notes](docs/RELEASE-NOTES-1.0.0-beta.2.md) |
 > | Human guides | [Tiếng Việt](docs/USER-GUIDE-VI.md) · [English](docs/USER-GUIDE-EN.md) |
 > | Agents | [docs/AI-AGENT-INTEGRATION.md](docs/AI-AGENT-INTEGRATION.md) · [private worker](tools/private-worker/README.md) |
 > | Engineering | [architecture](docs/ARCHITECTURE.md) · [data schema & migrations](docs/DATA-SCHEMA.md) · [security / threat model](docs/SECURITY.md) · [operations & troubleshooting](docs/OPERATIONS.md) |

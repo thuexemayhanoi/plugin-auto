@@ -35,7 +35,7 @@ Enforced for every transport (verified over real HTTP in `tests/e2e/http-agent.m
 Authentication: HTTP Basic with the Application Password. Every response is an envelope:
 
 ```json
-{ "ok": true, "data": { … }, "meta": { "api_version": "1", "plugin_version": "1.0.0-beta.1", "generated_at": "…" } }
+{ "ok": true, "data": { … }, "meta": { "api_version": "1", "plugin_version": "1.0.0-beta.2", "generated_at": "…" } }
 { "ok": false, "error": { "code": "sseo_quota", "message": "…", "data": {} }, "meta": { … } }
 ```
 
@@ -61,7 +61,7 @@ Lists use `limit` (≤ 100) and an opaque `cursor` → `next_cursor`.
 | `POST /changes/preview` | analyze | `{finding_ids: [1–10]}` → exact, hash-bound diff previews; writes nothing |
 | `POST /changes/apply` | apply | `{proposal_id, approval_id, idempotency_key}` — only a **human-approved** proposal |
 | `POST /changes/rollback` | apply | `{change_id}` — agents need a separate human-issued rollback approval |
-| `GET /embeddings/profile`, `POST /embeddings/claim|complete|release` | embed | worker protocol (single-use leases) |
+| `GET /embeddings/profile`, `POST /embeddings/selftest|claim|complete|release` | embed | worker protocol: server-checked self-test first (`complete` answers 428 without it), then single-use leases |
 
 ### Examples
 

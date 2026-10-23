@@ -2,9 +2,32 @@
 
 All notable changes to Semantic SEO Engine VI–EN. Versions follow semantic versioning.
 
+## [1.0.0-beta.2] — 2026-10-23
+
+Final audit of the beta. Release notes: [docs/RELEASE-NOTES-1.0.0-beta.2.md](docs/RELEASE-NOTES-1.0.0-beta.2.md).
+
+### Security
+- ChangeExecutor: kses filters suspended for a verified write are restored exactly in a `finally`
+  block; exceptions from WordPress or other plugins' hooks become errors and are reverted; other
+  post fields are verified unchanged (`ChangeExecutorSafetyTest`, fails on beta.1).
+- Embeddings: server-side check of the device's self-test vectors before any upload (`428`
+  without it; `DeviceVerificationTest`).
+- Proposals carry URL, post ID and risk; term proposals refused when the permalink contains the
+  taxonomy, re-checked before applying.
+
+### Changed
+- Overlap classification: places in titles (`Language\Places`), different intent as information,
+  vector-only pairs as confidence `low` (`CannibalizationRulesTest`).
+- "Missing translation" limited to content types with pairs and to posts not declared standalone
+  (`QaTranslationScopeTest`, `NhVienLanguageTest`).
+- Performance: single-statement finding upsert, multi-row related insert, cached anchor title
+  counts, batched embedding enqueue.
+- Reproducible ZIP (sorted entries, fixed permissions and timestamp); CI checks it, the shipped
+  licenses, and coexistence with WooCommerce, Yoast SEO and Polylang.
+
 ## [1.0.0-beta.1] — 2026-10-23
 
-First beta. Release notes: [docs/RELEASE-NOTES-1.0.0-beta.1.md](docs/RELEASE-NOTES-1.0.0-beta.1.md).
+First beta (built from the branch, never released separately).
 
 ### Added
 - Read-only inventory of posts, pages and category archives with locale detection (Polylang,

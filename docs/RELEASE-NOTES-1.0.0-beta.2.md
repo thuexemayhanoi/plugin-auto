@@ -1,4 +1,4 @@
-# Release notes — 1.0.0-beta.1 (2026-10-23)
+# Release notes — 1.0.0-beta.2 (2026-10-23)
 
 **Status: BETA — all 20 acceptance criteria PASS with evidence.** The lexical engine, the six
 modules, Human Mode, Agent Mode (REST, Abilities, MCP), packaging and both inference tiers are
@@ -8,17 +8,34 @@ beta until the owner has tried it on a staging copy of the blog.
 
 ## Artifact
 
-* `dist/semantic-seo-engine-vi-en-1.0.0-beta.1.zip` (one root folder `semantic-seo-engine-vi-en/`,
+* `dist/semantic-seo-engine-vi-en-1.0.0-beta.2.zip` (one root folder `semantic-seo-engine-vi-en/`,
   ≈ 10.9 MB, of which ≈ 41 MB uncompressed is the bundled ONNX Runtime Web WASM), plus `.sha256`.
   The ZIP is rebuilt by CI (`Build release ZIP + install smoke test` job artifact) and locally by
   `bin/build-zip.sh`. It is not committed to git.
 * Requirements: WordPress 6.5+, PHP 7.4+ (`mbstring`).
 
+## Changes since 1.0.0-beta.1 (final audit)
+
+* **Security:** the kses filters suspended for an approved write are restored exactly in a
+  `finally` block; an exception thrown by WordPress or another plugin during a write is reverted
+  and reported; any change to another post field (title, slug, status…) is detected.
+* **Model evidence:** vectors are stored only after the server itself recomputed the device's
+  self-test matrix (`POST /embeddings/selftest`, 24 h pass per account and model profile); a
+  device's own "passed" is no longer trusted. Update the private worker with the plugin.
+* **SEO protection:** every proposal states URL, post ID and risk; term proposals are refused when
+  the permalink contains the taxonomy.
+* **Overlap report:** different places in titles → distinct facets; different intents →
+  information; vector-only pairs → weakest tier. "Missing translation" only for content types the
+  site pairs and never for posts the language plugin declares standalone (copy of the blog:
+  1,006 → 5 suggestions).
+* **Performance:** fewer queries (100 synthetic posts: 6,307 → 4,387 per analysis; enqueue three
+  queries per batch); reproducible ZIP builds.
+
 ## Highlights
 
 * Read-only by default; activation leaves content, SEO data, URLs and front-end HTML byte-identical
   (verified on WordPress 6.5.13, 6.9.10, 7.1.3).
-* Vietnamese-first admin (complete translation, 744 strings), English available.
+* Vietnamese-first admin (complete translation, 756 strings), English available.
 * Real Qwen3-Embedding-0.6B (pinned revision, SHA-256-verified): q4f16 default (567 MB), fp16
   option; precision chosen from measurements (q8 removed: least accurate, not reproducible across
   runtimes). Hybrid scoring found 70% of expected links vs 24% lexical-only on the labelled fixture.

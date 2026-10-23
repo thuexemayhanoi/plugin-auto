@@ -45,6 +45,8 @@ into agent accounts from the UI.
 | SSRF | agent-supplied URLs are only resolved against the local inventory; the only outbound HTTP (optional link verification) uses `wp_safe_remote_head` to the site's own host without redirects | `http-agent` SSRF (metadata IP, localhost port, `file://`, external host) |
 | Oversized payloads / DoS | 512 KB body cap (413), ≤ 100 rows per page, ≤ 200 targets per job, ≤ 16 vectors per claim, per-user rate limits (429 + `Retry-After`) | `http-agent` 413/429, `RestApiTest` |
 | Embedding replay / poisoning | single-use leases (hash only), owner-bound, 180 s expiry; model key, dimension, finite values and unit norm validated; stale content rejected | `EmbeddingQueueTest`, `http-agent` embedding lease |
+| Device claims a model it does not run (mock, wrong model or pipeline) | a device's own "self-test passed" is not trusted: it must send its reference vectors to `/embeddings/selftest`; the server recomputes the similarity matrix, compares it with the matrix measured for the precision and keeps a 24 h pass per user and model profile; `complete` answers 428 without a pass; a failed re-check revokes it | `DeviceVerificationTest`, `http-agent` 428, real model in `HybridEvaluationTest` and the private-worker e2e |
+| A hook or plugin throws during an approved write | the kses filters suspended for the verified write are restored in a `finally` block (exact priority); the exception becomes an error → automatic revert; other post fields (title, excerpt, status, slug, parent, author, password, menu order, type) must stay unchanged or the change is reported as needing manual recovery | `ChangeExecutorSafetyTest` (fails on the previous code) |
 | Secret leakage | audit redaction of secret-named keys, Application-Password-shaped strings and bearer tokens; IPs stored as HMAC; responses scanned for every test credential | `http-agent` (each response checked for all secrets), `bin/scan-secrets.sh` |
 | Supply chain (browser runtime) | runtime bundled same-origin (no CDN), pinned versions, `manifest.json` with SHA-256, `npm` install scripts disabled (`.npmrc`) | `worker-fixture` "no request leaves the allow-list" |
 | Model download abuse | fetch allow-list: only pinned files of the pinned revision from the profile host; unknown paths 404 without network; downloads larger than the pin are aborted | `tests/js/embedder-core.test.mjs`, `worker-fixture` tampered-file test |
@@ -66,8 +68,13 @@ into agent accounts from the UI.
   tampered file (rejected).
 * Rate limiting uses transients (per site, per user/IP-hash, fixed window); a persistent object
   cache makes it cluster-wide, otherwise it is per database.
-* `unfiltered_html` semantics: approved link insertions are written with kses temporarily
-  bypassed **only** for the exact verified content computed from the approved diff; the inserted
-  markup is `<a href="esc_url(target)">existing anchor text</a>`.
+* `unfiltered_html` semantics: approved link insertions are written with the post-field kses
+  filters temporarily removed **only** for the exact verified content computed from the approved
+  diff, and restored in a `finally` block whatever happens; the inserted markup is
+  `<a href="esc_url(target)">existing anchor text</a>`.
+* The server-side self-test proves that a device's pipeline reproduces the pinned model; it cannot
+  prove that a dishonest account with the embedding role computed every later vector the same way
+  (it could submit precomputed reference vectors). Uploads are therefore limited to a dedicated
+  least-privilege worker account or an administrator's browser session.
 * An administrator can still give an agent the `sseo_apply` capability (opt-in); approvals remain
   human-only regardless.
