@@ -8,6 +8,7 @@
 namespace SemanticSEO\Inventory;
 
 use SemanticSEO\Database\Db;
+use SemanticSEO\Lexical\LexicalIndex;
 use SemanticSEO\Support\Util;
 
 defined( 'ABSPATH' ) || exit;
@@ -237,6 +238,7 @@ final class DocumentRepository {
 			Db::delete( $t, array( 'document_id' => $doc_id ) );
 		}
 		Db::delete( 'postings', array( 'document_id' => $doc_id ) );
+		LexicalIndex::flush_cache();
 		Db::delete( 'links', array( 'source_id' => $doc_id ) );
 		Db::query( 'UPDATE {links} SET target_id = 0, resolution = %s WHERE target_id = %d', array( 'unresolved', $doc_id ) );
 		Db::delete( 'related', array( 'document_id' => $doc_id ) );

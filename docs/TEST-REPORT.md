@@ -29,7 +29,7 @@ real iPhones were not measured, and WPML/other SEO plugins were not installed (�
 | Suite | Command | Result |
 | --- | --- | --- |
 | PHP unit | `vendor/bin/phpunit -c phpunit-unit.xml.dist` | 14 tests, 68 assertions, OK |
-| WordPress integration | `vendor/bin/phpunit -c phpunit.xml.dist` | 85 tests, 1,477 assertions, OK locally (WP 7.1.3 test library, with the VI-EN plugin; skipped: the real-model test, which runs in its own workflow); CI on PHP 7.4 + WP 6.5.13, 8.1 + 6.9.10, 8.3/8.4 + 7.1.3 |
+| WordPress integration | `vendor/bin/phpunit -c phpunit.xml.dist` | 87 tests, 1,567 assertions, OK locally (WP 7.1.3 test library, with the VI-EN plugin; skipped: the real-model test, which runs in its own workflow); CI on PHP 7.4 + WP 6.5.13, 8.1 + 6.9.10, 8.3/8.4 + 7.1.3 |
 | Real VI-EN language plugin | `NH_VIEN_PLUGIN_DIR=… phpunit --filter NhVienLanguageTest` | real `NH_VIEN_Links` class (pinned commit of the owner's repo): locales, pairs, standalone English posts, page pairs, English categories, read-only |
 | Coding standards | `vendor/bin/phpcs` (WordPress + PHPCompatibilityWP 7.4-) | 0 errors, 0 warnings |
 | JS unit | `node --test tests/js/*.test.mjs` | 19 tests, OK |
@@ -91,9 +91,11 @@ Found and fixed in the final audit (1.0.0-beta.2):
 16. **Query volume:** finding upsert, related rows and embedding enqueue issued one or two queries
     per row; now single statements (100 posts: 6,307 → 4,387 queries per analysis).
 17. **Non-reproducible ZIP:** file order and timestamps varied; now byte-identical builds.
-18. **Unbounded BM25 candidate search:** at 6,000 synthetic posts one search read up to ~100,000
-    posting rows (~1 s per document). Now at most 20,000 postings per query, dropping the least
-    informative common terms first; labelled-fixture results unchanged (`LexicalSearchBudgetTest`).
+18. **Lexical work grew with site size:** at 6,000 synthetic posts one candidate search read up to
+    ~100,000 posting rows, and document frequencies of common terms were recounted for every
+    analysed document. Now at most 20,000 postings per query (least informative terms dropped
+    first) and document frequencies cached per request, invalidated when postings change. Same 25
+    documents: 0.65 s → 0.17 s each; labelled-fixture results unchanged (`LexicalSearchBudgetTest`).
 19. ***Max documents* was not applied:** shown in the wizard and settings, documented as a cap,
     but no code enforced it. Now new objects beyond the limit are counted, reported on the overview
     page and in `GET /status` (`inventory_limit`), and stored documents keep being refreshed

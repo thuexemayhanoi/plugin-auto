@@ -56,4 +56,27 @@ final class LexicalSearchBudgetTest extends TestCase {
 		$this->assertNotEmpty( $bounded, 'the five strongest terms always stay' );
 		$this->assertSame( LexicalIndex::search( $top5, 'vi', 50 ), $bounded, 'only the weakest terms are dropped' );
 	}
+
+	public function test_document_frequencies_are_cached_until_postings_change() {
+		global $wpdb;
+		$this->load_corpus();
+		$this->run_full_pipeline();
+		$terms   = Db::col( "SELECT p.term FROM {postings} p JOIN {documents} d ON d.id = p.document_id WHERE d.status = 'publish' AND d.locale = 'vi' GROUP BY p.term ORDER BY COUNT(*) DESC, p.term LIMIT 30" );
+		$terms[] = 'no-such-term-xyz';
+		LexicalIndex::flush_cache();
+		$first = LexicalIndex::df( $terms, 'vi' );
+		$this->assertArrayNotHasKey( 'no-such-term-xyz', $first, 'absent terms are not returned' );
+		foreach ( array_slice( $terms, 0, 30 ) as $t ) {
+			$this->assertSame( (int) Db::value( "SELECT COUNT(*) FROM {postings} p JOIN {documents} d ON d.id = p.document_id WHERE d.status = 'publish' AND d.locale = 'vi' AND p.term = %s", array( $t ) ), $first[ $t ], $t );
+		}
+		$queries = $wpdb->num_queries;
+		$this->assertSame( $first, LexicalIndex::df( $terms, 'vi' ) );
+		$this->assertSame( $queries, $wpdb->num_queries, 'second lookup served from the cache' );
+
+		// Removing one document's postings invalidates the cache.
+		$term = $terms[0];
+		$doc  = (int) Db::value( "SELECT p.document_id FROM {postings} p JOIN {documents} d ON d.id = p.document_id WHERE d.locale = 'vi' AND d.status = 'publish' AND p.term = %s LIMIT 1", array( $term ) );
+		LexicalIndex::delete_document( $doc );
+		$this->assertSame( $first[ $term ] - 1, LexicalIndex::df( array( $term ), 'vi' )[ $term ] );
+	}
 }

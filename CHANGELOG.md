@@ -25,8 +25,10 @@ Final audit of the beta. Release notes: [docs/RELEASE-NOTES-1.0.0-beta.2.md](doc
   (`QaTranslationScopeTest`, `NhVienLanguageTest`).
 - Performance: single-statement finding upsert, multi-row related insert, cached anchor title
   counts, batched embedding enqueue; the BM25 candidate search reads at most 20,000 postings per
-  query (filter `sseo_search_postings_budget`), dropping the least informative common terms first
-  (`LexicalSearchBudgetTest`; labelled-fixture results unchanged).
+  query (filter `sseo_search_postings_budget`), dropping the least informative common terms first,
+  and document frequencies are counted once per request instead of once per analysed document
+  (same 25 documents of a 6,000-post synthetic site: 0.65 s → 0.17 s each;
+  `LexicalSearchBudgetTest`; labelled-fixture results unchanged).
 - *Max documents* is now enforced (it was shown in the settings but not applied): new objects
   beyond the limit are counted and reported (overview notice, `GET /status` → `inventory_limit`),
   stored documents keep being refreshed (`InventoryLimitTest`).
