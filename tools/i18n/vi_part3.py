@@ -163,6 +163,12 @@ T = {
     # Block metadata (block.json).
     "Related content (Semantic SEO)": "Bài viết liên quan (Semantic SEO)",
     "Precomputed related articles from Semantic SEO Engine VI–EN. Renders nothing until related content output is enabled in the plugin settings.": "Bài viết liên quan đã tính sẵn từ Semantic SEO Engine VI–EN. Không hiển thị gì cho đến khi bật hiển thị bài liên quan trong cài đặt plugin.",
+    # Server-side self-test check.
+    "This device has no valid server-checked self-test for the current model profile; send the reference vectors to /embeddings/selftest first.": "Thiết bị này chưa có lần tự kiểm thử hợp lệ được máy chủ kiểm tra cho hồ sơ model hiện tại; hãy gửi vector tham chiếu tới /embeddings/selftest trước.",
+    "Invalid self-test vector (%1$s %2$d): %3$s": "Vector tự kiểm thử không hợp lệ (%1$s %2$d): %3$s",
+    "The self-test was computed with a different model profile.": "Lần tự kiểm thử được tính bằng một hồ sơ model khác.",
+    "Send one vector per reference query and per reference document.": "Gửi một vector cho mỗi truy vấn tham chiếu và mỗi tài liệu tham chiếu.",
+    "checked by the server, max Δ": "máy chủ đã kiểm tra, Δ tối đa",
 }
 
 # Plural entries: Vietnamese has a single form (nplurals=1).

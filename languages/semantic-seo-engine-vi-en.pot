@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Semantic SEO Engine VI–EN 1.0.0-beta.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/semantic-seo-engine-vi-en\n"
-"POT-Creation-Date: 2026-10-23T01:45:53+00:00\n"
+"POT-Creation-Date: 2026-10-23T06:48:11+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,7 +42,7 @@ msgstr ""
 msgid "Unknown action."
 msgstr ""
 
-#: admin/controllers/Actions.php:58 includes/REST/RestController.php:214
+#: admin/controllers/Actions.php:58 includes/REST/RestController.php:242
 #: includes/Services/Guard.php:44
 msgid "You do not have permission for this action."
 msgstr ""
@@ -1513,56 +1513,60 @@ msgid ""
 msgstr ""
 
 #: admin/controllers/Menu.php:142
-msgid "Queue empty — nothing to embed."
+msgid "checked by the server, max Δ"
 msgstr ""
 
 #: admin/controllers/Menu.php:143
+msgid "Queue empty — nothing to embed."
+msgstr ""
+
+#: admin/controllers/Menu.php:144
 msgid ""
 "Keep this tab open and the device awake; closing the tab or locking an "
 "iPhone interrupts processing (claimed items are returned to the queue "
 "automatically)."
 msgstr ""
 
-#: admin/controllers/Menu.php:144
+#: admin/controllers/Menu.php:145
 msgid ""
 "The browser runtime files are not bundled in this build; browser inference "
 "is unavailable."
 msgstr ""
 
-#: admin/controllers/Menu.php:145 admin/controllers/SemanticPage.php:87
+#: admin/controllers/Menu.php:146 admin/controllers/SemanticPage.php:87
 msgid "yes"
 msgstr ""
 
-#: admin/controllers/Menu.php:146 admin/controllers/SemanticPage.php:87
+#: admin/controllers/Menu.php:147 admin/controllers/SemanticPage.php:87
 msgid "no"
 msgstr ""
 
-#: admin/controllers/Menu.php:147
+#: admin/controllers/Menu.php:148
 msgid "no shader-f16"
 msgstr ""
 
-#: admin/controllers/Menu.php:148
+#: admin/controllers/Menu.php:149
 msgid "Threads"
 msgstr ""
 
-#: admin/controllers/Menu.php:149
+#: admin/controllers/Menu.php:150
 msgid "1 (page is not cross-origin isolated)"
 msgstr ""
 
-#: admin/controllers/Menu.php:150
+#: admin/controllers/Menu.php:151
 msgid "Device memory"
 msgstr ""
 
-#: admin/controllers/Menu.php:151
+#: admin/controllers/Menu.php:152
 msgid "yes — may be too slow or run out of memory; keep the screen on"
 msgstr ""
 
-#: admin/controllers/Menu.php:152
+#: admin/controllers/Menu.php:153
 msgid "WebAssembly (CPU) — slower"
 msgstr ""
 
 #. translators: %s: precision such as q4f16
-#: admin/controllers/Menu.php:154
+#: admin/controllers/Menu.php:155
 #, php-format
 msgid ""
 "No WebGPU with 16-bit shaders on this device: %s runs on the CPU "
@@ -1570,43 +1574,43 @@ msgid ""
 "WebGPU or the private worker is faster."
 msgstr ""
 
-#: admin/controllers/Menu.php:155
+#: admin/controllers/Menu.php:156
 msgid "Worker error:"
 msgstr ""
 
-#: admin/controllers/Menu.php:156
+#: admin/controllers/Menu.php:157
 msgid "The model profile changed on the server; reload this page."
 msgstr ""
 
 #. translators: 1: stored, 2: rejected, 3: milliseconds, 4: running total
-#: admin/controllers/Menu.php:158
+#: admin/controllers/Menu.php:159
 #, php-format
 msgid "%1$d stored, %2$d rejected (%3$d ms) — total %4$d"
 msgstr ""
 
-#: admin/controllers/Menu.php:159
+#: admin/controllers/Menu.php:160
 msgid "from cache"
 msgstr ""
 
 #. translators: 1: free browser storage, 2: model download size
-#: admin/controllers/Menu.php:161
+#: admin/controllers/Menu.php:162
 #, php-format
 msgid ""
 "Browser storage has %1$s free but the model needs %2$s: it will work, but "
 "may be downloaded again next time."
 msgstr ""
 
-#: admin/controllers/Menu.php:162
+#: admin/controllers/Menu.php:163
 msgid "Stopped; claimed items were returned to the queue."
 msgstr ""
 
-#: admin/controllers/Menu.php:180
+#: admin/controllers/Menu.php:181
 msgid ""
 "Agent-native WordPress Abilities are unavailable on this WordPress version "
 "(6.9+ required). The REST API and all modules still work."
 msgstr ""
 
-#: admin/controllers/Menu.php:182
+#: admin/controllers/Menu.php:183
 msgid ""
 "MCP exposure is enabled but the official MCP Adapter plugin is not active, "
 "so no MCP client can connect."
@@ -2924,11 +2928,11 @@ msgstr ""
 msgid "A concurrent apply with the same idempotency key is in progress."
 msgstr ""
 
-#: includes/Approval/ChangeExecutor.php:218
+#: includes/Approval/ChangeExecutor.php:229
 msgid "The write could not be verified and was reverted automatically."
 msgstr ""
 
-#: includes/Approval/ChangeExecutor.php:218
+#: includes/Approval/ChangeExecutor.php:229
 msgid ""
 "The write could not be verified and the automatic revert also failed: manual"
 " recovery is needed (see change log)."
@@ -2993,7 +2997,7 @@ msgid ""
 "analysis."
 msgstr ""
 
-#: includes/Approval/ProposalService.php:209 includes/Services/Api.php:973
+#: includes/Approval/ProposalService.php:209 includes/Services/Api.php:995
 msgid "Document not found."
 msgstr ""
 
@@ -3041,7 +3045,7 @@ msgstr ""
 msgid "Missing required columns. Required: %s."
 msgstr ""
 
-#: includes/Jobs/JobRepository.php:69 includes/Services/Api.php:568
+#: includes/Jobs/JobRepository.php:69 includes/Services/Api.php:569
 msgid "Unknown job type."
 msgstr ""
 
@@ -3213,15 +3217,15 @@ msgid ""
 "Long informational article without any outside source (E-E-A-T heuristic)"
 msgstr ""
 
-#: includes/REST/RestController.php:212 includes/Services/Guard.php:31
+#: includes/REST/RestController.php:240 includes/Services/Guard.php:31
 msgid "Authentication required."
 msgstr ""
 
-#: includes/REST/RestController.php:307
+#: includes/REST/RestController.php:335
 msgid "Request body too large."
 msgstr ""
 
-#: includes/REST/RestController.php:312
+#: includes/REST/RestController.php:340
 msgid "Internal error; see the audit log."
 msgstr ""
 
@@ -3252,69 +3256,89 @@ msgid ""
 "snapshot is in the change log)."
 msgstr ""
 
-#: includes/Semantic/EmbeddingQueue.php:151
+#: includes/Semantic/DeviceVerification.php:48
+msgid "The self-test was computed with a different model profile."
+msgstr ""
+
+#: includes/Semantic/DeviceVerification.php:54
+msgid "Send one vector per reference query and per reference document."
+msgstr ""
+
+#. translators: 1: queries/documents, 2: index, 3: reason.
+#: includes/Semantic/DeviceVerification.php:69
+#, php-format
+msgid "Invalid self-test vector (%1$s %2$d): %3$s"
+msgstr ""
+
+#: includes/Semantic/EmbeddingQueue.php:164
 msgid ""
 "Vectors were produced with a different model profile and were rejected."
 msgstr ""
 
-#: includes/Services/Api.php:187
+#: includes/Semantic/EmbeddingQueue.php:168
+msgid ""
+"This device has no valid server-checked self-test for the current model "
+"profile; send the reference vectors to /embeddings/selftest first."
+msgstr ""
+
+#: includes/Services/Api.php:188
 msgid "Only URLs of this site are accepted."
 msgstr ""
 
-#: includes/Services/Api.php:191
+#: includes/Services/Api.php:192
 msgid "Provide post_id, document_id or url."
 msgstr ""
 
-#: includes/Services/Api.php:194 includes/Services/Api.php:197
+#: includes/Services/Api.php:195 includes/Services/Api.php:198
 msgid "This URL is not in the inventory (run an inventory first)."
 msgstr ""
 
-#: includes/Services/Api.php:532 includes/Services/Api.php:644
+#: includes/Services/Api.php:533 includes/Services/Api.php:645
 msgid "Job not found."
 msgstr ""
 
 #. translators: %d: max
-#: includes/Services/Api.php:574
+#: includes/Services/Api.php:575
 #, php-format
 msgid "At most %d targets per request."
 msgstr ""
 
-#: includes/Services/Api.php:581
+#: includes/Services/Api.php:582
 msgid "None of these posts is in the inventory yet; run an inventory first."
 msgstr ""
 
-#: includes/Services/Api.php:598
+#: includes/Services/Api.php:599
 msgid "Agents may run one job at a time."
 msgstr ""
 
-#: includes/Services/Api.php:647
+#: includes/Services/Api.php:648
 msgid "Agents can only control their own jobs."
 msgstr ""
 
-#: includes/Services/Api.php:685
+#: includes/Services/Api.php:686
 msgid ""
 "Set confirm=true to rebuild. Derived data is recomputed in the background; "
 "WordPress content is not modified."
 msgstr ""
 
-#: includes/Services/Api.php:689
+#: includes/Services/Api.php:690
 msgid ""
 "model_version must match the active pinned profile (model key or revision)."
 msgstr ""
 
-#: includes/Services/Api.php:718
+#: includes/Services/Api.php:719
 msgid "Provide 1–10 finding IDs."
 msgstr ""
 
-#: includes/Services/Api.php:924
+#: includes/Services/Api.php:946
 msgid "Provide lease_token or all_mine=true."
 msgstr ""
 
-#: includes/Services/Api.php:946
+#: includes/Services/Api.php:968
 msgid "Invalid finding or status."
 msgstr ""
 
-#: includes/Services/Api.php:995
+#: includes/Services/Api.php:1017
 msgid "No valid fields."
 msgstr ""
 

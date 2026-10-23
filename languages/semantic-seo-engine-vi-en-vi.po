@@ -34,7 +34,7 @@ msgstr "thuexemayhanoi"
 msgid "Unknown action."
 msgstr "Thao tác không hợp lệ."
 
-#: admin/controllers/Actions.php:58 includes/REST/RestController.php:214 includes/Services/Guard.php:44
+#: admin/controllers/Actions.php:58 includes/REST/RestController.php:242 includes/Services/Guard.php:44
 msgid "You do not have permission for this action."
 msgstr "Bạn không có quyền thực hiện thao tác này."
 
@@ -1372,88 +1372,92 @@ msgid "Self-test failed: results differ from the reference; vectors will not be 
 msgstr "Tự kiểm thử không đạt: kết quả khác giá trị tham chiếu; vector sẽ không được gửi lên."
 
 #: admin/controllers/Menu.php:142
+msgid "checked by the server, max Δ"
+msgstr "máy chủ đã kiểm tra, Δ tối đa"
+
+#: admin/controllers/Menu.php:143
 msgid "Queue empty — nothing to embed."
 msgstr "Hàng đợi trống — không có gì để nhúng."
 
-#: admin/controllers/Menu.php:143
+#: admin/controllers/Menu.php:144
 msgid "Keep this tab open and the device awake; closing the tab or locking an iPhone interrupts processing (claimed items are returned to the queue automatically)."
 msgstr "Giữ tab này mở và thiết bị không ngủ; đóng tab hoặc khóa màn hình iPhone sẽ làm gián đoạn xử lý (các mục đã nhận tự động được trả lại hàng đợi)."
 
-#: admin/controllers/Menu.php:144
+#: admin/controllers/Menu.php:145
 msgid "The browser runtime files are not bundled in this build; browser inference is unavailable."
 msgstr "Bản build này không kèm tệp runtime cho trình duyệt; không thể suy luận trong trình duyệt."
 
-#: admin/controllers/Menu.php:145 admin/controllers/SemanticPage.php:87
+#: admin/controllers/Menu.php:146 admin/controllers/SemanticPage.php:87
 msgid "yes"
 msgstr "có"
 
-#: admin/controllers/Menu.php:146 admin/controllers/SemanticPage.php:87
+#: admin/controllers/Menu.php:147 admin/controllers/SemanticPage.php:87
 msgid "no"
 msgstr "không"
 
-#: admin/controllers/Menu.php:147
+#: admin/controllers/Menu.php:148
 msgid "no shader-f16"
 msgstr "không có shader-f16"
 
-#: admin/controllers/Menu.php:148
+#: admin/controllers/Menu.php:149
 msgid "Threads"
 msgstr "Luồng"
 
-#: admin/controllers/Menu.php:149
+#: admin/controllers/Menu.php:150
 msgid "1 (page is not cross-origin isolated)"
 msgstr "1 (trang không ở chế độ cross-origin isolated)"
 
-#: admin/controllers/Menu.php:150
+#: admin/controllers/Menu.php:151
 msgid "Device memory"
 msgstr "Bộ nhớ thiết bị"
 
-#: admin/controllers/Menu.php:151
+#: admin/controllers/Menu.php:152
 msgid "yes — may be too slow or run out of memory; keep the screen on"
 msgstr "có — có thể quá chậm hoặc hết bộ nhớ; hãy giữ màn hình luôn sáng"
 
-#: admin/controllers/Menu.php:152
+#: admin/controllers/Menu.php:153
 msgid "WebAssembly (CPU) — slower"
 msgstr "WebAssembly (CPU) — chậm hơn"
 
 #. translators: %s: precision such as q4f16
-#: admin/controllers/Menu.php:154
+#: admin/controllers/Menu.php:155
 #, php-format
 msgid "No WebGPU with 16-bit shaders on this device: %s runs on the CPU (WebAssembly), which is slower. For many pages, a desktop browser with WebGPU or the private worker is faster."
 msgstr "Thiết bị này không có WebGPU hỗ trợ shader 16-bit: %s sẽ chạy bằng CPU (WebAssembly), chậm hơn. Với nhiều trang, trình duyệt máy tính có WebGPU hoặc máy xử lý riêng sẽ nhanh hơn."
 
-#: admin/controllers/Menu.php:155
+#: admin/controllers/Menu.php:156
 msgid "Worker error:"
 msgstr "Lỗi worker:"
 
-#: admin/controllers/Menu.php:156
+#: admin/controllers/Menu.php:157
 msgid "The model profile changed on the server; reload this page."
 msgstr "Hồ sơ mô hình trên máy chủ đã thay đổi; hãy tải lại trang."
 
 #. translators: 1: stored, 2: rejected, 3: milliseconds, 4: running total
-#: admin/controllers/Menu.php:158
+#: admin/controllers/Menu.php:159
 #, php-format
 msgid "%1$d stored, %2$d rejected (%3$d ms) — total %4$d"
 msgstr "Đã lưu %1$d, từ chối %2$d (%3$d ms) — tổng %4$d"
 
-#: admin/controllers/Menu.php:159
+#: admin/controllers/Menu.php:160
 msgid "from cache"
 msgstr "từ bộ nhớ đệm"
 
 #. translators: 1: free browser storage, 2: model download size
-#: admin/controllers/Menu.php:161
+#: admin/controllers/Menu.php:162
 #, php-format
 msgid "Browser storage has %1$s free but the model needs %2$s: it will work, but may be downloaded again next time."
 msgstr "Bộ nhớ trình duyệt còn trống %1$s nhưng mô hình cần %2$s: vẫn chạy được, nhưng lần sau có thể phải tải lại."
 
-#: admin/controllers/Menu.php:162
+#: admin/controllers/Menu.php:163
 msgid "Stopped; claimed items were returned to the queue."
 msgstr "Đã dừng; các mục đã nhận được trả lại hàng đợi."
 
-#: admin/controllers/Menu.php:180
+#: admin/controllers/Menu.php:181
 msgid "Agent-native WordPress Abilities are unavailable on this WordPress version (6.9+ required). The REST API and all modules still work."
 msgstr "WordPress Abilities cho agent không có trên phiên bản WordPress này (cần 6.9+). REST API và mọi mô-đun vẫn hoạt động."
 
-#: admin/controllers/Menu.php:182
+#: admin/controllers/Menu.php:183
 msgid "MCP exposure is enabled but the official MCP Adapter plugin is not active, so no MCP client can connect."
 msgstr "Đã bật MCP nhưng plugin MCP Adapter chính thức chưa kích hoạt, nên không client MCP nào kết nối được."
 
@@ -2680,11 +2684,11 @@ msgstr "Kết quả tính toán không khớp diff đã phê duyệt; chưa ghi 
 msgid "A concurrent apply with the same idempotency key is in progress."
 msgstr "Đang có một lần áp dụng đồng thời với cùng idempotency key."
 
-#: includes/Approval/ChangeExecutor.php:218
+#: includes/Approval/ChangeExecutor.php:229
 msgid "The write could not be verified and was reverted automatically."
 msgstr "Không xác minh được lần ghi nên đã tự động hoàn nguyên."
 
-#: includes/Approval/ChangeExecutor.php:218
+#: includes/Approval/ChangeExecutor.php:229
 msgid "The write could not be verified and the automatic revert also failed: manual recovery is needed (see change log)."
 msgstr "Không xác minh được lần ghi và tự động hoàn nguyên cũng thất bại: cần khôi phục thủ công (xem nhật ký thay đổi)."
 
@@ -2736,7 +2740,7 @@ msgstr "Không tìm thấy anchor tự nhiên; gợi ý này cần biên tập v
 msgid "The anchor text is no longer present in an editable position; re-run the analysis."
 msgstr "Anchor không còn ở vị trí có thể sửa; hãy chạy lại phân tích."
 
-#: includes/Approval/ProposalService.php:209 includes/Services/Api.php:973
+#: includes/Approval/ProposalService.php:209 includes/Services/Api.php:995
 msgid "Document not found."
 msgstr "Không tìm thấy tài liệu."
 
@@ -2782,7 +2786,7 @@ msgstr "Cần khoảng thời gian báo cáo hợp lệ (ngày bắt đầu ≤ 
 msgid "Missing required columns. Required: %s."
 msgstr "Thiếu cột bắt buộc. Cần có: %s."
 
-#: includes/Jobs/JobRepository.php:69 includes/Services/Api.php:568
+#: includes/Jobs/JobRepository.php:69 includes/Services/Api.php:569
 msgid "Unknown job type."
 msgstr "Loại tác vụ không hợp lệ."
 
@@ -2950,15 +2954,15 @@ msgstr "Ảnh thiếu văn bản thay thế (alt)"
 msgid "Long informational article without any outside source (E-E-A-T heuristic)"
 msgstr "Bài thông tin dài nhưng không dẫn nguồn bên ngoài nào (ước lượng E-E-A-T)"
 
-#: includes/REST/RestController.php:212 includes/Services/Guard.php:31
+#: includes/REST/RestController.php:240 includes/Services/Guard.php:31
 msgid "Authentication required."
 msgstr "Cần xác thực."
 
-#: includes/REST/RestController.php:307
+#: includes/REST/RestController.php:335
 msgid "Request body too large."
 msgstr "Dữ liệu gửi lên quá lớn."
 
-#: includes/REST/RestController.php:312
+#: includes/REST/RestController.php:340
 msgid "Internal error; see the audit log."
 msgstr "Lỗi nội bộ; xem nhật ký kiểm toán."
 
@@ -2986,65 +2990,83 @@ msgstr "Thiếu đề xuất gốc; cần khôi phục thủ công."
 msgid "Rollback could not be verified; manual recovery is needed (the before snapshot is in the change log)."
 msgstr "Không xác minh được việc hoàn tác; cần khôi phục thủ công (bản lưu trước khi đổi nằm trong nhật ký thay đổi)."
 
-#: includes/Semantic/EmbeddingQueue.php:151
+#: includes/Semantic/DeviceVerification.php:48
+msgid "The self-test was computed with a different model profile."
+msgstr "Lần tự kiểm thử được tính bằng một hồ sơ model khác."
+
+#: includes/Semantic/DeviceVerification.php:54
+msgid "Send one vector per reference query and per reference document."
+msgstr "Gửi một vector cho mỗi truy vấn tham chiếu và mỗi tài liệu tham chiếu."
+
+#. translators: 1: queries/documents, 2: index, 3: reason.
+#: includes/Semantic/DeviceVerification.php:69
+#, php-format
+msgid "Invalid self-test vector (%1$s %2$d): %3$s"
+msgstr "Vector tự kiểm thử không hợp lệ (%1$s %2$d): %3$s"
+
+#: includes/Semantic/EmbeddingQueue.php:164
 msgid "Vectors were produced with a different model profile and were rejected."
 msgstr "Vector được tạo bằng hồ sơ mô hình khác nên đã bị từ chối."
 
-#: includes/Services/Api.php:187
+#: includes/Semantic/EmbeddingQueue.php:168
+msgid "This device has no valid server-checked self-test for the current model profile; send the reference vectors to /embeddings/selftest first."
+msgstr "Thiết bị này chưa có lần tự kiểm thử hợp lệ được máy chủ kiểm tra cho hồ sơ model hiện tại; hãy gửi vector tham chiếu tới /embeddings/selftest trước."
+
+#: includes/Services/Api.php:188
 msgid "Only URLs of this site are accepted."
 msgstr "Chỉ chấp nhận URL của website này."
 
-#: includes/Services/Api.php:191
+#: includes/Services/Api.php:192
 msgid "Provide post_id, document_id or url."
 msgstr "Hãy cung cấp post_id, document_id hoặc url."
 
-#: includes/Services/Api.php:194 includes/Services/Api.php:197
+#: includes/Services/Api.php:195 includes/Services/Api.php:198
 msgid "This URL is not in the inventory (run an inventory first)."
 msgstr "URL này chưa có trong danh sách kiểm kê (hãy chạy kiểm kê trước)."
 
-#: includes/Services/Api.php:532 includes/Services/Api.php:644
+#: includes/Services/Api.php:533 includes/Services/Api.php:645
 msgid "Job not found."
 msgstr "Không tìm thấy tác vụ."
 
 #. translators: %d: max
-#: includes/Services/Api.php:574
+#: includes/Services/Api.php:575
 #, php-format
 msgid "At most %d targets per request."
 msgstr "Tối đa %d mục tiêu mỗi yêu cầu."
 
-#: includes/Services/Api.php:581
+#: includes/Services/Api.php:582
 msgid "None of these posts is in the inventory yet; run an inventory first."
 msgstr "Chưa bài nào trong số này có trong danh sách kiểm kê; hãy chạy kiểm kê trước."
 
-#: includes/Services/Api.php:598
+#: includes/Services/Api.php:599
 msgid "Agents may run one job at a time."
 msgstr "Mỗi agent chỉ được chạy một tác vụ tại một thời điểm."
 
-#: includes/Services/Api.php:647
+#: includes/Services/Api.php:648
 msgid "Agents can only control their own jobs."
 msgstr "Agent chỉ được điều khiển tác vụ của chính mình."
 
-#: includes/Services/Api.php:685
+#: includes/Services/Api.php:686
 msgid "Set confirm=true to rebuild. Derived data is recomputed in the background; WordPress content is not modified."
 msgstr "Đặt confirm=true để xây dựng lại. Dữ liệu dẫn xuất được tính lại ở nền; nội dung WordPress không bị sửa."
 
-#: includes/Services/Api.php:689
+#: includes/Services/Api.php:690
 msgid "model_version must match the active pinned profile (model key or revision)."
 msgstr "model_version phải khớp hồ sơ mô hình cố định đang dùng (khóa mô hình hoặc revision)."
 
-#: includes/Services/Api.php:718
+#: includes/Services/Api.php:719
 msgid "Provide 1–10 finding IDs."
 msgstr "Hãy cung cấp 1–10 ID phát hiện."
 
-#: includes/Services/Api.php:924
+#: includes/Services/Api.php:946
 msgid "Provide lease_token or all_mine=true."
 msgstr "Hãy cung cấp lease_token hoặc all_mine=true."
 
-#: includes/Services/Api.php:946
+#: includes/Services/Api.php:968
 msgid "Invalid finding or status."
 msgstr "Phát hiện hoặc trạng thái không hợp lệ."
 
-#: includes/Services/Api.php:995
+#: includes/Services/Api.php:1017
 msgid "No valid fields."
 msgstr "Không có trường hợp lệ."
 
