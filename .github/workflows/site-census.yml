@@ -30,7 +30,7 @@ jobs:
   census:
     name: Census (sitemaps + REST totals) and read-only pilot on a disposable copy
     runs-on: ubuntu-latest
-    timeout-minutes: 150
+    timeout-minutes: 240
     services:
       mysql:
         image: mariadb:10.11
@@ -48,8 +48,8 @@ jobs:
       - name: URL census from the site's own sitemaps and REST totals (GET only)
         run: python -I tests/site/census.py --site "$SITE" --out tests/e2e/artifacts/site-census.json
 
-      - name: Export the public content (GET only; stays on the runner, never uploaded)
-        run: python -I tests/site/export_public.py --site "$SITE" --out "$RUNNER_TEMP/site.json"
+      - name: Export the public content and the hreflang of English pages (GET only; stays on the runner, never uploaded)
+        run: python -I tests/site/export_public.py --site "$SITE" --out "$RUNNER_TEMP/site.json" --hreflang
 
       - uses: shivammathur/setup-php@v2
         with:
@@ -109,6 +109,15 @@ jobs:
           SSEO_APP_PASSWORD="$APP" python -I tools/private-worker/sseo_worker.py --site http://127.0.0.1:8080 --user pilot_worker --allow-http --once --batch 16 --threads 4 --cache-dir "$HOME/.cache/sseo-worker" --quiet
           echo "embedding seconds: $(( $(date +%s) - START ))"
           for _ in 1 2 3; do $WP eval '\SemanticSEO\Jobs\JobRunner::tick( 15 );' > /dev/null; done
+          # Comparison: overlap gate with the model's fixed calibration floor only (site baseline off).
+          mkdir -p "$RUNNER_TEMP/pilot/wp-content/mu-plugins"
+          echo '<?php add_filter( "sseo_similarity_baseline_enabled", "__return_false" );' > "$RUNNER_TEMP/pilot/wp-content/mu-plugins/pilot-model-floor.php"
+          START=$(date +%s)
+          $WP sseo start analyze --run --user=admin > /dev/null
+          echo "hybrid re-analysis (model floor only) seconds: $(( $(date +%s) - START ))"
+          $WP eval-file tests/site/pilot-report.php | tee tests/e2e/artifacts/site-pilot-hybrid-model-floor.json
+          rm "$RUNNER_TEMP/pilot/wp-content/mu-plugins/pilot-model-floor.php"
+          # Default: floor raised to the site's median similarity per language.
           START=$(date +%s)
           $WP sseo start analyze --run --user=admin > /dev/null
           echo "hybrid re-analysis seconds: $(( $(date +%s) - START ))"
@@ -123,7 +132,7 @@ jobs:
       - name: Summary (aggregates only)
         if: always()
         run: |
-          for f in tests/e2e/artifacts/site-census.json tests/e2e/artifacts/site-pilot-lexical.json tests/e2e/artifacts/site-pilot-hybrid.json; do
+          for f in tests/e2e/artifacts/site-census.json tests/e2e/artifacts/site-pilot-lexical.json tests/e2e/artifacts/site-pilot-hybrid-model-floor.json tests/e2e/artifacts/site-pilot-hybrid.json; do
             [ -f "$f" ] && { echo "== $f"; python -c "import json,sys; d=json.load(open(sys.argv[1])); d.pop('sitemaps', None); print(json.dumps(d, separators=(',', ':')))" "$f"; }
           done
       - uses: actions/upload-artifact@v4

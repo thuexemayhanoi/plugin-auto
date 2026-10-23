@@ -12,6 +12,7 @@ use SemanticSEO\Language\TextNormalizer;
 use SemanticSEO\Lexical\LexicalIndex;
 use SemanticSEO\Lexical\Tokenizer;
 use SemanticSEO\Semantic\ModelProfile;
+use SemanticSEO\Semantic\SimilarityBaseline;
 use SemanticSEO\Semantic\VectorMath;
 use SemanticSEO\Settings;
 
@@ -23,7 +24,14 @@ defined( 'ABSPATH' ) || exit;
  */
 final class Scorer {
 
-	const VERSION = 'score-2';
+	const VERSION = 'score-3';
+
+	/**
+	 * Active model key per precision (request cache).
+	 *
+	 * @var array<string,string>
+	 */
+	private static $model_keys = array();
 
 	/**
 	 * Decodes a document row into an analysis profile.
@@ -121,12 +129,14 @@ final class Scorer {
 	public static function features( array $a, array $b, $vec_a = null, $vec_b = null, $gsc_overlap = 0, $gsc_available = false ) {
 		$lexical  = LexicalIndex::cosine( $a['lexvec'], $b['lexvec'] );
 		$semantic = ( is_array( $vec_a ) && is_array( $vec_b ) && array() !== $vec_a && array() !== $vec_b ) ? max( 0.0, VectorMath::dot( $vec_a, $vec_b ) ) : null;
-		$sem_cal  = null === $semantic ? null : self::calibrate( $semantic );
+		$cal      = null === $semantic ? null : self::calibration( $a['locale'] );
+		$sem_cal  = null === $semantic ? null : self::calibrate( $semantic, $cal );
 		$w_lex    = (float) Settings::get( 'w_lexical', 0.45 );
 		$w_sem    = (float) Settings::get( 'w_semantic', 0.35 );
 		// Ranking (links, related, candidate order) uses the raw cosine: measured better on the labelled
 		// fixture with the real model. The overlap-risk gate uses the calibrated value, which keeps the
-		// cosine floor of unrelated pages from turning every pair into a "risk" (see ModelProfile::CALIBRATION).
+		// cosine floor of unrelated pages — and, on a one-topic site, the similarity every page shares
+		// with every other — from turning every pair into a "risk" (ModelProfile::CALIBRATION, SimilarityBaseline).
 		$topic     = null === $semantic ? $lexical : ( $w_lex * $lexical + $w_sem * $semantic ) / max( 0.0001, $w_lex + $w_sem );
 		$topic_cal = null === $sem_cal ? $lexical : ( $w_lex * $lexical + $w_sem * $sem_cal ) / max( 0.0001, $w_lex + $w_sem );
 
@@ -143,6 +153,7 @@ final class Scorer {
 			'semantic_calibrated' => null === $sem_cal ? null : round( $sem_cal, 4 ),
 			'topic'               => round( $topic, 4 ),
 			'topic_calibrated'    => round( $topic_cal, 4 ),
+			'calibration'         => null === $semantic ? null : $cal,
 			'title_overlap'       => round( self::jaccard( $a['title_set'], $b['title_set'] ), 4 ),
 			'title_containment'   => round( self::containment( $a['title_set'], $b['title_set'] ), 4 ),
 			'heading_overlap'     => round( self::jaccard( $a['heading_set'], $b['heading_set'] ), 4 ),
@@ -164,17 +175,56 @@ final class Scorer {
 	}
 
 	/**
-	 * Calibrated semantic score (raw cosine when the active profile has no calibration).
+	 * Calibration for same-language pairs of a locale: the model's floor/ceiling, with the floor
+	 * raised to the site's median similarity of that language when it is higher (one-topic sites).
 	 *
-	 * @param float $cosine Raw cosine.
+	 * @param string $locale Locale of the pair.
+	 * @return array{floor: float, ceiling: float, source: string}|null Null = raw cosine.
+	 */
+	public static function calibration( $locale ) {
+		$dtype = (string) Settings::get( 'model_dtype', 'q4f16' );
+		$cal   = ModelProfile::calibration( $dtype );
+		if ( null === $cal ) {
+			return null;
+		}
+		$cal['source'] = 'model';
+		if ( ! isset( self::$model_keys[ $dtype ] ) ) {
+			self::$model_keys[ $dtype ] = ModelProfile::active()['model_key'];
+		}
+		$median = SimilarityBaseline::median( (string) $locale, self::$model_keys[ $dtype ] );
+		if ( null !== $median && $median > $cal['floor'] ) {
+			// Keep a usable range below the ceiling.
+			$cal['floor']  = round( min( $median, $cal['ceiling'] - 0.10 ), 4 );
+			$cal['source'] = 'site_median';
+		}
+		return $cal;
+	}
+
+	/**
+	 * Calibrated semantic score (raw cosine when there is no calibration).
+	 *
+	 * @param float      $cosine Raw cosine.
+	 * @param array|null $cal    Calibration from calibration(); defaults to the model's own.
 	 * @return float 0..1
 	 */
-	public static function calibrate( $cosine ) {
-		$cal = ModelProfile::calibration( (string) Settings::get( 'model_dtype', 'q4f16' ) );
+	public static function calibrate( $cosine, $cal = false ) {
+		if ( false === $cal ) {
+			$cal = ModelProfile::calibration( (string) Settings::get( 'model_dtype', 'q4f16' ) );
+		}
 		if ( null === $cal ) {
 			return (float) $cosine;
 		}
 		return max( 0.0, min( 1.0, ( (float) $cosine - $cal['floor'] ) / ( $cal['ceiling'] - $cal['floor'] ) ) );
+	}
+
+	/**
+	 * Forgets request caches (tests).
+	 *
+	 * @return void
+	 */
+	public static function reset() {
+		self::$model_keys = array();
+		SimilarityBaseline::reset();
 	}
 
 	/**

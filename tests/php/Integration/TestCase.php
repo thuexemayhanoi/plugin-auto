@@ -59,6 +59,8 @@ abstract class TestCase extends \WP_UnitTestCase {
 		update_option( \SemanticSEO\Database\Migrator::VERSION_OPTION, Schema::VERSION );
 		delete_option( 'sseo_settings' );
 		delete_option( 'sseo_state' );
+		delete_option( 'sseo_similarity_baseline' );
+		\SemanticSEO\Analysis\Scorer::reset();
 		Settings::flush();
 		Settings::install_defaults();
 		LockService::flush();

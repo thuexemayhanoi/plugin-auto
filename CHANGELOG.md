@@ -15,7 +15,7 @@ First beta. Release notes: [docs/RELEASE-NOTES-1.0.0-beta.1.md](docs/RELEASE-NOT
   near-duplicates, link graph with offsets and resolution status.
 - Modules M1–M6: SEO Matrix (CSV/XLSX export, safe-preview import, Search Console import),
   internal-link suggestions with exact anchor offsets, cannibalization review (never across
-  translations), Pillar–Hub–Silo clusters, 24 content-QA rules, related content (shortcode,
+  translations), Pillar–Hub–Silo clusters, 26 content-QA rules, related content (shortcode,
   block, PHP API, off by default).
 - Human Mode: exact hash-bound diff previews, human-only single-use approvals, idempotent apply
   with object mutex, stale check, readback verification and auto-revert, exact/surgical rollback,
@@ -30,6 +30,14 @@ First beta. Release notes: [docs/RELEASE-NOTES-1.0.0-beta.1.md](docs/RELEASE-NOT
   Python private worker.
 - WP-CLI `wp sseo …`, installable ZIP build, CI (PHP 7.4–8.4, WordPress 6.5–7.1), e2e suites,
   benchmark harness and labelled evaluation.
+- Precision chosen from real-model measurements: q4f16 default, fp16 option (q8 removed); each
+  precision's self-test is compared with its own measured matrix.
+- Overlap-risk gate calibration: raw cosine for ranking; for the overlap gate the similarity above
+  the model floor, raised to the site's own median similarity per language (`sseo_similarity_baseline`,
+  re-measured at every site-wide analysis). Found on a copy of a one-topic blog, where nearly every
+  pair of pages looks "related" to the model.
+- Read-only adapter for the "Nguyen Ha VI-EN Core" language plugin; cross-language "possible
+  translation, not linked yet" suggestions (never linked automatically); E-E-A-T source heuristic.
 
 ### Fixed during development (found by the test suites)
 - BM25 candidate retrieval ignored the shared terms (related-content recall 0.27 → 0.79 on the

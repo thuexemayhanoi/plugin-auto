@@ -13,6 +13,7 @@ via `wp_update_post`, or a category assignment via `wp_set_post_terms`) and its 
 | `sseo_db_version` | yes | schema version (`1`) |
 | `sseo_migration_log` | no | last migration runs (time, from → to, steps, result) |
 | `sseo_state` | no | inventory/analysis timestamps and summary counters |
+| `sseo_similarity_baseline` | no | per language: median (and p10/p90/p99) cosine of sampled same-language page pairs, with the model key it was measured with; re-measured at every site-wide analysis |
 
 Transients: `sseo_notice_<user>` (admin notices), `sseo_import_view_<user>` / import tokens
 (CSV preview, short-lived), rate-limit buckets (`sseo_rl_*`). Mutex rows: `sseo_mutex_<name>`

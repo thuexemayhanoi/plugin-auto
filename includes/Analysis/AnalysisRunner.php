@@ -21,6 +21,7 @@ use SemanticSEO\Recommendations\RelatedContent;
 use SemanticSEO\Semantic\CrossLanguage;
 use SemanticSEO\Semantic\EmbeddingRepository;
 use SemanticSEO\Semantic\ModelProfile;
+use SemanticSEO\Semantic\SimilarityBaseline;
 use SemanticSEO\Settings;
 use SemanticSEO\Support\Util;
 
@@ -146,6 +147,11 @@ final class AnalysisRunner {
 				break;
 
 			case 'clusters':
+				if ( empty( $params['doc_ids'] ) ) {
+					// Site-wide run: re-measure how similar this site's pages usually are (scoped runs reuse it).
+					$baseline                   = SimilarityBaseline::compute( ModelProfile::active()['model_key'] );
+					$state['semantic_baseline'] = $baseline['locales'];
+				}
 				$state['counts']['clusters'] = ClusterBuilder::build( $run_id );
 				$phase                       = 'pairs';
 				$cursor                      = 0;
@@ -197,6 +203,7 @@ final class AnalysisRunner {
 					'counts'    => isset( $state['counts'] ) ? $state['counts'] : array(),
 					'coverage'  => LinkGraph::coverage(),
 					'semantic'  => EmbeddingRepository::stats( ModelProfile::active()['model_key'] ),
+					'baseline'  => isset( $state['semantic_baseline'] ) ? $state['semantic_baseline'] : null,
 					'algorithm' => array(
 						'analysis' => self::VERSION,
 						'scorer'   => Scorer::VERSION,
@@ -204,6 +211,7 @@ final class AnalysisRunner {
 						'cannibal' => CannibalizationAnalyzer::VERSION,
 						'clusters' => ClusterBuilder::VERSION,
 						'qa'       => QaChecker::VERSION,
+						'baseline' => SimilarityBaseline::VERSION,
 						'related'  => RelatedContent::VERSION,
 					),
 				);

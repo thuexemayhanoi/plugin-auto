@@ -9,10 +9,13 @@
  *   content, categories, page parents) are recreated.
  * - Links to the public site inside the content are rewritten to the copied objects so the link
  *   graph resolves as it does on the real site; other links to the site stay internal.
- * - Language: content published below /en/ is English. English posts are registered as standalone
- *   English posts and English categories as English categories in "Nguyen Ha VI-EN Core" (the
- *   site's language plugin, installed on this disposable copy), because its VI⇔EN pairs are not
- *   public; so no translation pairs exist in the copy.
+ * - Language: content published below /en/ is English, registered in "Nguyen Ha VI-EN Core" (the
+ *   site's language plugin, installed on this disposable copy). VI⇔EN pairs come from the
+ *   hreflang tags the site publishes on its English pages (export with --hreflang): a paired
+ *   English post/page is registered as the pair, any other English post as a standalone English
+ *   post, English categories as English categories.
+ * - WordPress' own sample content of the empty copy ("Hello world!", "Sample Page", draft privacy
+ *   page) is removed first so the copy holds only the site's content.
  * - Yoast data visible to visitors (meta description, noindex, canonical) is copied into Yoast's
  *   post meta; focus keywords are not public and stay empty.
  *
@@ -28,6 +31,14 @@ if ( ! is_array( $data ) ) {
 }
 $prod = rtrim( $data['site'], '/' );
 $home = rtrim( home_url(), '/' );
+
+// 0. Sample content of a fresh install.
+foreach ( array( array( 'hello-world', 'post' ), array( 'sample-page', 'page' ), array( 'privacy-policy', 'page' ) ) as $sample ) {
+	$p = get_page_by_path( $sample[0], OBJECT, $sample[1] );
+	if ( $p ) {
+		wp_delete_post( $p->ID, true );
+	}
+}
 
 $is_en = static function ( $link ) use ( $prod ) {
 	$path = (string) wp_parse_url( $link, PHP_URL_PATH );
@@ -147,8 +158,39 @@ foreach ( $yoast as $id => $y ) {
 	}
 }
 
-// 4. Language plugin data (standalone English posts and English categories; pairs are not public).
-update_option( 'nh_vien_independent_en_posts_v1', array_values( $en_posts ), false );
+// 4. Language plugin data: pairs announced by hreflang, other English posts standalone, English categories.
+$norm       = static function ( $url ) {
+	$u = wp_parse_url( (string) $url );
+	return strtolower( isset( $u['host'] ) ? $u['host'] : '' ) . rtrim( rawurldecode( isset( $u['path'] ) ? $u['path'] : '/' ), '/' );
+};
+$by_norm    = array();
+foreach ( $post_link as $link => $id ) {
+	$by_norm[ $norm( $link ) ] = $id;
+}
+$post_pairs = array();
+$page_pairs = array();
+$unmatched  = 0;
+foreach ( isset( $data['hreflang'] ) ? (array) $data['hreflang'] : array() as $h ) {
+	if ( empty( $h['vi'] ) ) {
+		continue;
+	}
+	$en = isset( $by_norm[ $norm( $h['en'] ) ] ) ? $by_norm[ $norm( $h['en'] ) ] : 0;
+	$vi = isset( $by_norm[ $norm( $h['vi'] ) ] ) ? $by_norm[ $norm( $h['vi'] ) ] : 0;
+	if ( ! $en || ! $vi || $en === $vi || get_post_type( $en ) !== get_post_type( $vi ) ) {
+		++$unmatched;
+		continue;
+	}
+	if ( 'page' === get_post_type( $en ) ) {
+		if ( ! isset( $page_pairs[ $vi ] ) && ! in_array( $en, $page_pairs, true ) ) {
+			$page_pairs[ $vi ] = $en;
+		}
+	} elseif ( ! isset( $post_pairs[ $vi ] ) && ! in_array( $en, $post_pairs, true ) && ! in_array( $vi, $en_posts, true ) ) {
+		$post_pairs[ $vi ] = $en;
+	}
+}
+update_option( 'nh_vien_translation_pairs_v1', $post_pairs, false );
+update_option( 'nh_vien_page_pairs_v1', $page_pairs, false );
+update_option( 'nh_vien_independent_en_posts_v1', array_values( array_diff( $en_posts, array_values( $post_pairs ) ) ), false );
 update_option( 'nh_vien_english_categories_v1', array_values( array_unique( $en_cats ) ), false );
 
 // 5. Rewrite links to the public site so they point at the copies.
@@ -199,6 +241,10 @@ WP_CLI::line(
 				return 0 === strpos( $k, 'page:' );
 			} ) ),
 			'english_posts'        => count( $en_posts ),
+			'hreflang_pages_read'  => isset( $data['hreflang'] ) ? count( $data['hreflang'] ) : 0,
+			'post_pairs'           => count( $post_pairs ),
+			'page_pairs'           => count( $page_pairs ),
+			'hreflang_unmatched'   => $unmatched,
 			'english_categories'   => count( array_unique( $en_cats ) ),
 			'noindex'              => $noindex,
 			'contents_rewritten'   => $rewritten,

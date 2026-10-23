@@ -24,7 +24,7 @@ defined( 'ABSPATH' ) || exit;
  */
 final class CannibalizationAnalyzer {
 
-	const VERSION = 'cannibal-3';
+	const VERSION = 'cannibal-4';
 
 	const FACET_WORDS = array( 'giờ', 'ngày', 'tuần', 'tháng', 'năm', 'hour', 'hourly', 'day', 'daily', 'week', 'weekly', 'month', 'monthly', 'year', 'yearly', 'annual' );
 
@@ -133,7 +133,9 @@ final class CannibalizationAnalyzer {
 				'topic_calibrated'  => isset( $f['topic_calibrated'] ) ? $f['topic_calibrated'] : null,
 				'lexical'           => $f['lexical'],
 				'semantic'          => $f['semantic'],
+				'calibration'       => isset( $f['calibration'] ) ? $f['calibration'] : null,
 				'title_overlap'     => $f['title_overlap'],
+				'title_containment' => isset( $f['title_containment'] ) ? $f['title_containment'] : null,
 				'heading_overlap'   => $f['heading_overlap'],
 				'near_duplicate'    => $f['near_duplicate'],
 				'intents'           => $f['intents'],
