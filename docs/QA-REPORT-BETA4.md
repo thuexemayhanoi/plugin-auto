@@ -229,7 +229,28 @@ Benchmark A/B 1.000 bài (beta.4 và beta.3 chạy lần lượt trên cùng má
 khác) được ghi ở [`evidence/bench-1000-beta4.json`](evidence/bench-1000-beta4.json) và
 [`evidence/bench-1000-beta3-ab.json`](evidence/bench-1000-beta3-ab.json):
 
-<!-- BENCH-AB -->
+Cấu hình: WP 7.1.3, PHP 8.3.6, MariaDB 10.11.14, máy 4 vCPU, 1.009 tài liệu trong phạm vi.
+
+| Đo | beta.3 | **beta.4** |
+| --- | --- | --- |
+| Một lượt nền (tick) | 14,31 s, 59,3 MB | **14,33 s, 59,3 MB** |
+| Kiểm kê + phân tích toàn bộ (1 tiến trình CLI) | 118,6 s | **118,5 s** |
+| RSS tối đa | 107,2 MB | **107,5 MB** |
+| Số phát hiện / postings | 16.462 / 323.749 | **16.462 / 323.749** (kết quả phân tích giống hệt) |
+| REST `/status` (trung vị / p95) | 43 / 61 ms | 53 / 95 ms |
+| REST `/inventory?limit=20` | 37 / 44 ms | 37 / 42 ms |
+| REST `/qa?limit=20` | 30 / 37 ms | 32 / 52 ms |
+| REST `/health` (mới) | — | 149 / 179 ms |
+| REST `/priorities?limit=25` (mới) | — | 164 / 178 ms |
+| REST `/scans` (mới) | — | 26 / 29 ms |
+
+Kết luận: beta.4 **không làm chậm** việc phân tích. Thời gian, bộ nhớ và kết quả đều như beta.3.
+`/health` và `/priorities` gộp nhiều số đếm nên mất khoảng 0,15 s ở quy mô 1.000 trang; chỉ người
+quản trị hoặc agent gọi hai endpoint này, khách truy cập không bao giờ gọi.
+
+Ghi chú: báo cáo audit trước ghi 94,2 s cho 1.000 bài. Con số đó đo trên một bộ dữ liệu sinh khác
+(201.564 postings), nên không so trực tiếp được. Bảng trên chạy hai phiên bản lần lượt trên cùng
+dữ liệu, cùng máy.
 
 Lượt thử 20 bài và quét toàn site 37 trang qua REST (MariaDB 11.8.9):
 

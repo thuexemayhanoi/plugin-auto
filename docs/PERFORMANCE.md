@@ -13,6 +13,16 @@ All numbers below are **measured**, not estimated, with `tests/bench/run-bench.s
   hand-written site would.
 * **Tier:** lexical (no model). Embeddings are computed outside PHP (browser or private worker).
 
+## 1.0.0-beta.4: A/B against beta.3
+
+Both releases run one after the other on the same machine and the same 1,000-post synthetic corpus
+(MariaDB 10.11.14, no language plugin): full inventory + analysis 118.6 s (beta.3) vs 118.5 s
+(beta.4), max RSS 107.2 MB vs 107.5 MB, identical findings (16,462). New endpoints at 1,000 posts:
+`/health` 149 / 179 ms, `/priorities?limit=25` 164 / 178 ms, `/scans` 26 / 29 ms (median / p95).
+Raw: [`bench-1000-beta4.json`](evidence/bench-1000-beta4.json),
+[`bench-1000-beta3-ab.json`](evidence/bench-1000-beta3-ab.json). Details:
+[QA-REPORT-BETA4.md](QA-REPORT-BETA4.md) §6.
+
 ## Independent audit (1.0.0-beta.3): large sites
 
 Measured on the same machine; details in [QA-AUDIT-REPORT.md](QA-AUDIT-REPORT.md) §6 and
