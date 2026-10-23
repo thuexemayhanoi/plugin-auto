@@ -169,27 +169,38 @@ final class ChangeExecutor {
 		if ( $change_id <= 0 ) {
 			return new \WP_Error( 'sseo_conflict', __( 'A concurrent apply with the same idempotency key is in progress.', 'semantic-seo-engine-vi-en' ), array( 'status' => 409 ) );
 		}
-		$write = self::write( $p, $after );
-		$read  = self::current_hash( $p );
-		$ok    = ! is_wp_error( $write ) && $read === $p['expected_hash'];
-		$now   = Util::now();
+		$fields_before = self::post_fields( $post_id );
+		$write         = self::write( $p, $after );
+		$read          = self::current_hash( $p );
+		$changed       = self::changed_fields( $fields_before, self::post_fields( $post_id ) );
+		$ok            = ! is_wp_error( $write ) && $read === $p['expected_hash'] && array() === $changed;
+		$now           = Util::now();
 		if ( ! $ok ) {
 			// Automatic revert to the snapshot.
 			$revert      = self::write( $p, $before, true );
 			$reverted_to = self::current_hash( $p );
-			$status      = $reverted_to === $p['base_hash'] ? 'failed' : 'rollback_failed';
+			$still       = self::changed_fields( $fields_before, self::post_fields( $post_id ) );
+			$status      = $reverted_to === $p['base_hash'] && array() === $still ? 'failed' : 'rollback_failed';
+			if ( is_wp_error( $write ) ) {
+				$error = $write->get_error_message();
+			} elseif ( array() !== $changed ) {
+				$error = 'other post fields changed during the write (' . implode( ', ', $changed ) . ')';
+			} else {
+				$error = 'readback hash mismatch (another filter changed the saved value)';
+			}
 			Db::update(
 				'changes',
 				array(
 					'status' => $status,
-					'error'  => is_wp_error( $write ) ? $write->get_error_message() : 'readback hash mismatch (another filter changed the saved value)',
+					'error'  => $error,
 					'verify' => Util::json(
 						array(
-							'readback_hash'   => $read,
-							'expected_hash'   => $p['expected_hash'],
-							'reverted'        => 'failed' === $status,
-							'revert_error'    => is_wp_error( $revert ) ? $revert->get_error_message() : '',
-							'manual_recovery' => 'rollback_failed' === $status ? 'Restore the "before" snapshot from the change log or a WordPress revision.' : '',
+							'readback_hash'       => $read,
+							'expected_hash'       => $p['expected_hash'],
+							'other_fields_change' => $changed,
+							'reverted'            => 'failed' === $status,
+							'revert_error'        => is_wp_error( $revert ) ? $revert->get_error_message() : '',
+							'manual_recovery'     => 'rollback_failed' === $status ? 'Restore the "before" snapshot from the change log or a WordPress revision' . ( array() !== $still ? ' and check: ' . implode( ', ', $still ) : '' ) . '.' : '',
 						)
 					),
 				),
@@ -232,6 +243,7 @@ final class ChangeExecutor {
 						'readback_hash' => $read,
 						'expected_hash' => $p['expected_hash'],
 						'readback'      => true,
+						'other_fields'  => 'unchanged',
 						'public_url'    => (string) get_permalink( $post_id ),
 						'public_check'  => 'not performed server-side (enable link verification to check HTTP status)',
 					)
@@ -267,9 +279,58 @@ final class ChangeExecutor {
 	}
 
 	/**
+	 * Post fields that a change must never alter (only post_content or the term list may change).
+	 *
+	 * @param int $post_id Post ID.
+	 * @return array<string,string>
+	 */
+	private static function post_fields( $post_id ) {
+		clean_post_cache( (int) $post_id );
+		$post = get_post( (int) $post_id );
+		if ( ! $post ) {
+			return array();
+		}
+		$out = array();
+		foreach ( array( 'post_title', 'post_excerpt', 'post_status', 'post_name', 'post_parent', 'post_author', 'post_password', 'menu_order', 'post_type' ) as $f ) {
+			$out[ $f ] = (string) $post->$f;
+		}
+		return $out;
+	}
+
+	/**
+	 * Names of fields that differ.
+	 *
+	 * @param array $before Fields before.
+	 * @param array $after  Fields after.
+	 * @return string[]
+	 */
+	private static function changed_fields( array $before, array $after ) {
+		$out = array();
+		foreach ( $before as $k => $v ) {
+			if ( ! array_key_exists( $k, $after ) || $after[ $k ] !== $v ) {
+				$out[] = $k;
+			}
+		}
+		return $out;
+	}
+
+	/**
+	 * Post-field kses filters suspended for a verified write (hook => callback).
+	 */
+	const KSES_FILTERS = array(
+		'title_save_pre'            => 'wp_filter_kses',
+		'content_save_pre'          => 'wp_filter_post_kses',
+		'excerpt_save_pre'          => 'wp_filter_post_kses',
+		'content_filtered_save_pre' => 'wp_filter_post_kses',
+	);
+
+	/**
 	 * Writes a value through WordPress APIs (revisions and hooks run). KSES is bypassed only for
 	 * this verified write: the rest of the content is byte-identical to what is already stored,
-	 * and the only new markup is an escaped internal link.
+	 * and the only new markup is an escaped internal link. The kses filters that were active are
+	 * restored exactly (same priority) in a finally block, so an exception thrown by WordPress or
+	 * by another plugin's hook can never leave kses disabled for the rest of the request; the
+	 * exception is returned as an error and handled like a failed write (verify → revert).
 	 *
 	 * @param array  $p      Proposal.
 	 * @param string $value  New value (content or JSON term list).
@@ -281,30 +342,76 @@ final class ChangeExecutor {
 		$payload = $p['payload'];
 		$post_id = (int) $payload['post_id'];
 		if ( 'insert_internal_link' === $p['type'] ) {
-			$kses = false !== has_filter( 'content_save_pre', 'wp_filter_post_kses' );
-			if ( $kses ) {
-				kses_remove_filters();
+			$suspended = self::suspend_kses();
+			try {
+				$res = wp_update_post(
+					array(
+						'ID'           => $post_id,
+						'post_content' => wp_slash( $value ),
+					),
+					true
+				);
+			} catch ( \Throwable $e ) {
+				$res = self::exception_error( $e );
+			} finally {
+				self::restore_kses( $suspended );
+				clean_post_cache( $post_id );
 			}
-			$res = wp_update_post(
-				array(
-					'ID'           => $post_id,
-					'post_content' => wp_slash( $value ),
-				),
-				true
-			);
-			if ( $kses ) {
-				kses_init_filters();
-			}
-			clean_post_cache( $post_id );
 			return is_wp_error( $res ) ? $res : true;
 		}
 		if ( 'assign_category' === $p['type'] ) {
-			$ids = array_map( 'intval', (array) json_decode( $value, true ) );
-			$res = wp_set_object_terms( $post_id, $ids, (string) $payload['taxonomy'], false );
-			clean_object_term_cache( $post_id, get_post_type( $post_id ) );
+			try {
+				$ids = array_map( 'intval', (array) json_decode( $value, true ) );
+				$res = wp_set_object_terms( $post_id, $ids, (string) $payload['taxonomy'], false );
+			} catch ( \Throwable $e ) {
+				$res = self::exception_error( $e );
+			} finally {
+				clean_object_term_cache( $post_id, get_post_type( $post_id ) );
+			}
 			return is_wp_error( $res ) ? $res : true;
 		}
 		return new \WP_Error( 'sseo_unsupported', 'Unsupported operation.' );
+	}
+
+	/**
+	 * Removes the active post-field kses filters and returns them for restore_kses().
+	 *
+	 * @return array<int,array{0:string,1:string,2:int}> [hook, callback, priority].
+	 */
+	private static function suspend_kses() {
+		$suspended = array();
+		foreach ( self::KSES_FILTERS as $hook => $callback ) {
+			$priority = has_filter( $hook, $callback );
+			if ( false !== $priority ) {
+				remove_filter( $hook, $callback, $priority );
+				$suspended[] = array( $hook, $callback, (int) $priority );
+			}
+		}
+		return $suspended;
+	}
+
+	/**
+	 * Restores exactly the filters suspend_kses() removed.
+	 *
+	 * @param array $suspended From suspend_kses().
+	 * @return void
+	 */
+	private static function restore_kses( array $suspended ) {
+		foreach ( $suspended as $f ) {
+			if ( false === has_filter( $f[0], $f[1] ) ) {
+				add_filter( $f[0], $f[1], $f[2] );
+			}
+		}
+	}
+
+	/**
+	 * An exception raised during a write, as an error (message truncated, no stack trace).
+	 *
+	 * @param \Throwable $e Exception.
+	 * @return \WP_Error
+	 */
+	private static function exception_error( \Throwable $e ) {
+		return new \WP_Error( 'sseo_write_exception', 'The write raised ' . get_class( $e ) . ': ' . Util::truncate( $e->getMessage(), 200 ) );
 	}
 
 	/**
