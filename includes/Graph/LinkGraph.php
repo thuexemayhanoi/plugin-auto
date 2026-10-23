@@ -195,7 +195,8 @@ final class LinkGraph {
 	public static function recount() {
 		Db::query( 'UPDATE {documents} SET inbound_count = 0, outbound_count = 0' );
 		Db::query(
-			"UPDATE {documents} d JOIN (SELECT target_id, COUNT(DISTINCT source_id) AS n FROM {links} WHERE is_internal = 1 AND target_id > 0 AND resolution = 'resolved' AND target_id <> source_id GROUP BY target_id) x ON x.target_id = d.id SET d.inbound_count = x.n"
+			// Only links on published pages count: visitors and crawlers never see a draft's links.
+			"UPDATE {documents} d JOIN (SELECT * FROM (SELECT l.target_id, COUNT(DISTINCT l.source_id) AS n FROM {links} l JOIN {documents} s ON s.id = l.source_id AND s.status = 'publish' WHERE l.is_internal = 1 AND l.target_id > 0 AND l.resolution = 'resolved' AND l.target_id <> l.source_id GROUP BY l.target_id) y) x ON x.target_id = d.id SET d.inbound_count = x.n"
 		);
 		Db::query(
 			"UPDATE {documents} d JOIN (SELECT source_id, COUNT(DISTINCT target_id) AS n FROM {links} WHERE is_internal = 1 AND target_id > 0 AND resolution = 'resolved' AND target_id <> source_id GROUP BY source_id) x ON x.source_id = d.id SET d.outbound_count = x.n"

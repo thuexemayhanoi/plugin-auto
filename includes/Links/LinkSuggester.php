@@ -8,6 +8,7 @@
 namespace SemanticSEO\Links;
 
 use SemanticSEO\Analysis\Scorer;
+use SemanticSEO\Cannibalization\CannibalizationAnalyzer;
 use SemanticSEO\Clustering\ClusterTree;
 use SemanticSEO\Graph\LinkGraph;
 use SemanticSEO\Language\TextNormalizer;
@@ -60,6 +61,13 @@ final class LinkSuggester {
 			}
 			if ( $f['exact_duplicate'] || $f['near_duplicate'] >= (float) Settings::get( 'near_duplicate', 0.80 ) ) {
 				continue; // Linking to a near-copy is not a useful suggestion (see cannibalization report).
+			}
+			$overlap = CannibalizationAnalyzer::classify( $source, $target, $f );
+			if ( null !== $overlap && 'potential_competition' === $overlap['check_id']
+				&& ( ! in_array( $target['cluster_role'], array( 'pillar', 'hub' ), true ) || in_array( $source['cluster_role'], array( 'pillar', 'hub' ), true ) ) ) {
+				// Pages that may compete for one query: exact-match links between them in both
+				// directions split the signal further. Only a link up to the pair's pillar/hub is kept.
+				continue;
 			}
 			$phrases = AnchorFinder::phrases( $target );
 			$anchor  = AnchorFinder::find( $content, $phrases );

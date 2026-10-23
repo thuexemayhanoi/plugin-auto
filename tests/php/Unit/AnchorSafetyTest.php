@@ -93,6 +93,13 @@ final class AnchorSafetyTest extends TestCase {
 		$this->assertNotNull( $this->find( $void, 'thuê xe máy hà nội' ), 'a self-closing block opens nothing' );
 	}
 
+	public function test_text_inside_an_enclosing_shortcode_is_protected() {
+		$html = '[caption id="a" align="alignnone" width="300"]<img src="x.jpg" alt="a"/> Thuê xe máy Hà Nội <em>2024</em>[/caption]<p>Dịch vụ thuê xe máy Hà Nội.</p>';
+		$a    = $this->find( $html, 'thuê xe máy hà nội' );
+		$this->assertNotNull( $a );
+		$this->assertGreaterThan( strpos( $html, '[/caption]' ), $a['offset'], 'not the caption text' );
+	}
+
 	public function test_a_capitalised_name_is_not_cut() {
 		$this->assertNull( $this->find( '<p>Dịch vụ thuê xe máy Hà Đông giá rẻ.</p>', 'thuê xe máy hà' ), '"Hà" of "Hà Đông"' );
 		$this->assertNull( $this->find( '<p>Khách ở Hồ Hoàn Kiếm thường đi bộ.</p>', 'hoàn kiếm thường' ) );

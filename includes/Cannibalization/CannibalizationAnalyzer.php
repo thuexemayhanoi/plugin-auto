@@ -28,6 +28,12 @@ final class CannibalizationAnalyzer {
 
 	const VERSION = 'cannibal-5';
 
+	/**
+	 * Syllables of generic modifiers ("giá rẻ", "uy tín", "tốt nhất", "cheap", "best"…): adding them
+	 * to a head query does not narrow its topic.
+	 */
+	const GENERIC_MODIFIERS = array( 'rẻ', 'tốt', 'nhất', 'uy', 'tín', 'chất', 'lượng', 'nhanh', 'chóng', 'chuyên', 'nghiệp', 'top', 'cheap', 'cheapest', 'best', 'good', 'great', 'affordable', 'reliable', 'trusted', 'quality' );
+
 	const FACET_WORDS = array( 'giờ', 'ngày', 'tuần', 'tháng', 'năm', 'hour', 'hourly', 'day', 'daily', 'week', 'weekly', 'month', 'monthly', 'year', 'yearly', 'annual' );
 
 	const RISK_ORDER = array(
@@ -81,11 +87,9 @@ final class CannibalizationAnalyzer {
 			$notes[]  = 'Estimated shingle overlap (MinHash) ' . $f['near_duplicate'] . '.';
 		} elseif ( self::overlap_topic( $f ) < $threshold && $f['title_overlap'] < 0.6 && ! self::title_contained( $f ) && ! $f['focus_same'] && $f['gsc_overlap'] < 1 ) {
 			return null;
-		} elseif ( self::is_pillar_supporting( $a, $b, $f ) ) {
-			$category = 'pillar_supporting';
-			$conf     = 'medium';
-			$notes[]  = 'One page is the recommended pillar/hub of the shared cluster; the other supports it.';
 		} elseif ( $f['gsc_overlap'] >= 1 && $f['same_intent'] ) {
+			// Query-level evidence (real impressions, declared focus keyword) comes before the cluster
+			// roles: a supporting page that receives the pillar's queries competes with it.
 			$category = 'potential_competition';
 			$conf     = 'high';
 			$notes[]  = 'Real Search Console data shows both pages receiving impressions for ' . $f['gsc_overlap'] . ' shared queries in the imported period.';
@@ -93,6 +97,10 @@ final class CannibalizationAnalyzer {
 			$category = 'potential_competition';
 			$conf     = $f['same_intent'] ? 'high' : 'medium';
 			$notes[]  = 'Both pages declare the same focus keyword in the SEO plugin.';
+		} elseif ( self::is_pillar_supporting( $a, $b, $f ) ) {
+			$category = 'pillar_supporting';
+			$conf     = 'medium';
+			$notes[]  = 'One page is the recommended pillar/hub of the shared cluster; the other supports it.';
 		} elseif ( ! $f['same_intent'] && self::confident( $f['intent_conf'] ) ) {
 			$category = 'same_topic_different_intent';
 			$conf     = 'medium';
@@ -247,7 +255,9 @@ final class CannibalizationAnalyzer {
 		}
 		// The supporting page must narrow the pillar's topic. A page that only adds a generic modifier
 		// ("giá rẻ", "cheap") to the pillar's head query targets the same query and may compete.
-		$unique = 'supporting' === $a['cluster_role'] ? $f['title_only_a'] : $f['title_only_b'];
+		$unique  = 'supporting' === $a['cluster_role'] ? $f['title_only_a'] : $f['title_only_b'];
+		$generic = in_array( 'rẻ', $unique, true ) ? array_merge( self::GENERIC_MODIFIERS, array( 'giá' ) ) : self::GENERIC_MODIFIERS;
+		$unique  = array_diff( $unique, $generic );
 		return count( $unique ) >= 2 || self::has_facet_token( $unique );
 	}
 

@@ -237,6 +237,13 @@ final class HtmlScanner {
 				$ranges[] = array( $hit[1], $hit[1] + strlen( $hit[0] ) );
 			}
 		}
+		// Everything between an enclosing shortcode's tags ([caption]…[/caption], [embed]…[/embed])
+		// belongs to the shortcode, which may render or parse it differently.
+		if ( false !== strpos( $html, '[/' ) && preg_match_all( '/\[([a-zA-Z][\w\-]*)\b[^\]]*\].*?\[\/\1\]/s', $html, $m, PREG_OFFSET_CAPTURE ) ) {
+			foreach ( $m[0] as $hit ) {
+				$ranges[] = array( $hit[1], $hit[1] + strlen( $hit[0] ) );
+			}
+		}
 		return $ranges;
 	}
 
