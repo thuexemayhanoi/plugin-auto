@@ -263,13 +263,18 @@ Môi trường: 4 vCPU, 16 GB RAM, MariaDB 10.11.14, PHP 8.3.6, WP 7.1.3. Tái l
 | Worker Python riêng | cục bộ | **ĐẠT** 89/89 vector, Δ 4,5e-8 |
 | Giao diện quản trị (Playwright, axe, giả lập mobile) | cục bộ | **ĐẠT** 11/11 |
 | Probe đồng thời qua HTTP | cục bộ | **ĐẠT** (§5) |
-| CI 18 job (lint ×6, unit ×4, integration ×4, WPCS, JS, ZIP, coexistence) | GitHub Actions | CI_RESULT |
+| CI 18 job (lint ×6, unit ×4, integration ×4, WPCS, JS, ZIP, coexistence) | GitHub Actions | **ĐẠT** 18/18 trên `609999b` và `01bd4bc`. Trên `7a310b4`, job WPCS báo lỗi định dạng ở `ClusterBuilder` (`count()` trong điều kiện vòng lặp) và đã sửa ở commit cuối; kết quả cuối xem các check của PR #2 |
 | Mô hình Qwen3 thật (run 39962364490) | GitHub Actions | **ĐẠT** (9/9 kiểm tra trình duyệt, hybrid, worker riêng 89/89) |
 | Benchmark 20.000 bài chạy trọn | — | **CHƯA CHẠY TRỌN** (dừng chủ động, §6) |
 | GPU thật, iPhone thật, ChatGPT/MCP client thật, staging của site thật | — | **CHƯA KIỂM CHỨNG** |
 
-ZIP: `dist/semantic-seo-engine-vi-en-1.0.0-beta.3.zip`, 111 tệp, SHA-256
-`137598025416b3b8fcc9812fbdadf8685a10ab2831d742f3894932dcaee3d040`. Build lần hai cho cùng SHA.
+ZIP cuối: `dist/semantic-seo-engine-vi-en-1.0.0-beta.3.zip`, 111 tệp, SHA-256
+`9d0ca8c5cf175bff7db1eaf7e2e969bd597b2a5040cd63425a63ce7c74bf8e1c`. Build lần hai từ cùng commit cho
+cùng SHA. ZIP không được commit vào repository; build lại bằng `bin/build-zip.sh`.
+
+* Toàn bộ e2e (10/10 bước) chạy trên ZIP `75372a40…`, code của commit `674d72a`.
+* Commit cuối chỉ sửa định dạng WPCS trong `ClusterBuilder` (dùng biến cho điều kiện vòng lặp, căn
+  thẳng dấu `=`). Trên ZIP cuối đã chạy lại smoke 7.1.3 (27/27) và toàn bộ PHPUnit (117 test).
 
 ## 11. Việc cần người vận hành quyết định
 
