@@ -127,7 +127,7 @@ final class OverviewPage {
 		echo '</ul><p><a href="' . esc_url( Ui::url( 'sseo-qa' ) ) . '">' . esc_html__( 'Review QA issues', 'semantic-seo-engine-vi-en' ) . '</a></p></section>';
 
 		$links = isset( $f['link']['suggestion'] ) ? (int) $f['link']['suggestion'] : 0;
-		$risk  = isset( $f['cannibalization']['risk_hypothesis'] ) ? (int) $f['cannibalization']['risk_hypothesis'] : 0;
+		$risk  = ( isset( $f['cannibalization']['risk_hypothesis'] ) ? (int) $f['cannibalization']['risk_hypothesis'] : 0 ) + ( isset( $f['cannibalization']['warning'] ) ? (int) $f['cannibalization']['warning'] : 0 );
 		echo '<section class="sseo-card"><h2>' . esc_html__( 'Links & overlap', 'semantic-seo-engine-vi-en' ) . '</h2><p>' . esc_html( sprintf( /* translators: %s: number */ __( '%s open internal-link suggestions', 'semantic-seo-engine-vi-en' ), number_format_i18n( $links ) ) ) . '</p><p>' . esc_html( sprintf( /* translators: %s: number */ __( '%s same-locale overlap hypotheses', 'semantic-seo-engine-vi-en' ), number_format_i18n( $risk ) ) ) . '</p>';
 		echo '<p class="description">' . esc_html( sprintf( /* translators: 1: scanned docs, 2: links */ __( 'Coverage: %1$d documents scanned, %2$d internal links observed in content (menus/widgets/templates not observed).', 'semantic-seo-engine-vi-en' ), (int) $s['link_coverage']['documents_scanned'], (int) $s['link_coverage']['internal_links'] ) ) . '</p>';
 		echo '<p><a href="' . esc_url( Ui::url( 'sseo-links' ) ) . '">' . esc_html__( 'Link suggestions', 'semantic-seo-engine-vi-en' ) . '</a> · <a href="' . esc_url( Ui::url( 'sseo-cannibalization' ) ) . '">' . esc_html__( 'Overlap review', 'semantic-seo-engine-vi-en' ) . '</a></p></section>';
