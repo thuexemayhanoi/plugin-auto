@@ -5,51 +5,284 @@
   "39884170101": "quantization survey (all 8 ONNX variants), Python + browser",
   "39885301413": "per-precision self-test + negative controls; browser q4f16/fp16/q8 vs Python (cancelled after the browser scenarios had passed)",
   "39888434060": "first full green run: browser, hybrid grid (calibrated everywhere vs raw), private worker over REST",
-  "39891925814": "final scoring (raw ranking, calibrated overlap gate): browser, hybrid grid, private worker over REST — all green"
+  "39891925814": "final scoring (raw ranking, calibrated overlap gate): browser, hybrid grid, private worker over REST — all green",
+  "39896404879": "site-baseline overlap gate (default): browser, hybrid grid incl. model-floor-only and raw comparisons, private worker over REST — all green"
  },
  "pins": "every plugin pin (3 common files + q4f16 + fp16 graphs and external data) matched the Hub metadata of the pinned revision; every downloaded byte verified (SHA-256, git blob SHA-1 for small JSON files)",
  "selftest_vs_model_card_onnxruntime_cpu": {
-  "fp32": {"max_abs_diff": 0.0, "matrix": [[0.76456, 0.14143], [0.1355, 0.59996]]},
-  "fp16": {"max_abs_diff": 0.00048},
-  "q8": {"max_abs_diff": 0.11493},
-  "int8": {"max_abs_diff": 0.0928},
-  "uint8": {"max_abs_diff": 0.11493},
-  "q4": {"max_abs_diff": 0.09134},
-  "q4f16": {"max_abs_diff": 0.0937},
-  "bnb4": {"max_abs_diff": 0.06771}
+  "fp32": {
+   "max_abs_diff": 0.0,
+   "matrix": [
+    [
+     0.76456,
+     0.14143
+    ],
+    [
+     0.1355,
+     0.59996
+    ]
+   ]
+  },
+  "fp16": {
+   "max_abs_diff": 0.00048
+  },
+  "q8": {
+   "max_abs_diff": 0.11493
+  },
+  "int8": {
+   "max_abs_diff": 0.0928
+  },
+  "uint8": {
+   "max_abs_diff": 0.11493
+  },
+  "q4": {
+   "max_abs_diff": 0.09134
+  },
+  "q4f16": {
+   "max_abs_diff": 0.0937
+  },
+  "bnb4": {
+   "max_abs_diff": 0.06771
+  }
  },
  "agreement_with_fp32_on_fixture_corpus": {
-  "fp16": {"cosine_min": 1.0, "cosine_mean": 1.0, "top5_neighbour_overlap": 1.0, "bytes": 1200510818},
-  "q8": {"cosine_min": 0.7486, "cosine_mean": 0.8362, "top5_neighbour_overlap": 0.869, "bytes": 613527631},
-  "int8": {"cosine_min": 0.7543, "cosine_mean": 0.8306, "top5_neighbour_overlap": 0.877},
-  "q4": {"cosine_min": 0.8883, "cosine_mean": 0.926, "top5_neighbour_overlap": 0.931, "bytes": 914121462},
-  "q4f16": {"cosine_min": 0.8877, "cosine_mean": 0.9261, "top5_neighbour_overlap": 0.938, "bytes": 567458583},
-  "bnb4": {"cosine_min": 0.9262, "cosine_mean": 0.9444, "top5_neighbour_overlap": 0.908}
+  "fp16": {
+   "cosine_min": 1.0,
+   "cosine_mean": 1.0,
+   "top5_neighbour_overlap": 1.0,
+   "bytes": 1200510818
+  },
+  "q8": {
+   "cosine_min": 0.7486,
+   "cosine_mean": 0.8362,
+   "top5_neighbour_overlap": 0.869,
+   "bytes": 613527631
+  },
+  "int8": {
+   "cosine_min": 0.7543,
+   "cosine_mean": 0.8306,
+   "top5_neighbour_overlap": 0.877
+  },
+  "q4": {
+   "cosine_min": 0.8883,
+   "cosine_mean": 0.926,
+   "top5_neighbour_overlap": 0.931,
+   "bytes": 914121462
+  },
+  "q4f16": {
+   "cosine_min": 0.8877,
+   "cosine_mean": 0.9261,
+   "top5_neighbour_overlap": 0.938,
+   "bytes": 567458583
+  },
+  "bnb4": {
+   "cosine_min": 0.9262,
+   "cosine_mean": 0.9444,
+   "top5_neighbour_overlap": 0.908
+  }
  },
  "negative_controls_rejected_by_selftest": {
-  "fp32": {"no_query_instruction": 0.1933, "mean_pooling": 0.4359, "first_token_pooling": 0.813, "last_token_without_eos": 0.1077},
-  "fp16": {"no_query_instruction": 0.1933, "mean_pooling": 0.4361, "first_token_pooling": 0.8133, "last_token_without_eos": 0.1082},
-  "q4f16": {"no_query_instruction": 0.1374, "mean_pooling": 0.3764, "first_token_pooling": 0.7988, "last_token_without_eos": 0.1426},
+  "fp32": {
+   "no_query_instruction": 0.1933,
+   "mean_pooling": 0.4359,
+   "first_token_pooling": 0.813,
+   "last_token_without_eos": 0.1077
+  },
+  "fp16": {
+   "no_query_instruction": 0.1933,
+   "mean_pooling": 0.4361,
+   "first_token_pooling": 0.8133,
+   "last_token_without_eos": 0.1082
+  },
+  "q4f16": {
+   "no_query_instruction": 0.1374,
+   "mean_pooling": 0.3764,
+   "first_token_pooling": 0.7988,
+   "last_token_without_eos": 0.1426
+  },
   "all_rejected": true
  },
  "browser_chromium_headless": {
-  "q4f16_wasm": {"download_from": "huggingface.co + us.aws.cdn.hf.co only", "first_load_ms": 8236, "selftest_max_abs_diff_vs_measured_q4f16": 0.0054, "cosine_vs_python_min": 0.999269, "cached_reload_ms": 4222, "cached_reload_remote_requests": 0, "storage_quota_mb": 88631},
-  "fp16_wasm": {"selftest_max_abs_diff": 0.0005, "cosine_vs_python_min": 1.0},
-  "q8_wasm_not_offered": {"selftest_max_abs_diff_vs_card": 0.1406, "cosine_vs_python_min": 0.8852},
-  "q4_wasm_not_offered": {"cosine_vs_python_min": 0.9991},
-  "bnb4_wasm_not_offered": {"cosine_vs_python_min": 1.0},
-  "webgpu_swiftshader_q4": {"selftest_max_abs_diff_vs_card": 0.0923, "note": "software adapter, no GPU"}
+  "q4f16_wasm": {
+   "download_from": "huggingface.co + us.aws.cdn.hf.co only",
+   "first_load_ms": 8236,
+   "selftest_max_abs_diff_vs_measured_q4f16": 0.0054,
+   "cosine_vs_python_min": 0.999269,
+   "cached_reload_ms": 4222,
+   "cached_reload_remote_requests": 0,
+   "storage_quota_mb": 88631
+  },
+  "fp16_wasm": {
+   "selftest_max_abs_diff": 0.0005,
+   "cosine_vs_python_min": 1.0
+  },
+  "q8_wasm_not_offered": {
+   "selftest_max_abs_diff_vs_card": 0.1406,
+   "cosine_vs_python_min": 0.8852
+  },
+  "q4_wasm_not_offered": {
+   "cosine_vs_python_min": 0.9991
+  },
+  "bnb4_wasm_not_offered": {
+   "cosine_vs_python_min": 1.0
+  },
+  "webgpu_swiftshader_q4": {
+   "selftest_max_abs_diff_vs_card": 0.0923,
+   "note": "software adapter, no GPU"
+  }
  },
- "cross_language_fp32_document_level": {"translation_pairs": {"min": 0.74, "mean": 0.7865, "max": 0.8449}, "non_pairs_max": 0.7775, "top1_translation_retrieval": "9/9"},
+ "cross_language_fp32_document_level": {
+  "translation_pairs": {
+   "min": 0.74,
+   "mean": 0.7865,
+   "max": 0.8449
+  },
+  "non_pairs_max": 0.7775,
+  "top1_translation_retrieval": "9/9"
+ },
  "hybrid_evaluation_q4f16_labelled_fixture": {
   "embedded_items": 85,
-  "lexical_baseline": {"links": {"precision@3": 0.229, "recall@3": 0.244, "precision_of_returned": 0.786}, "related": {"precision@3": 0.604, "recall@5": 0.794, "precision@5": 0.425}, "overlap_pairs": 23, "false_positives_on_controls": 0},
-  "default_w0.35_raw_ranking_calibrated_overlap_gate": {"links": {"precision@3": 0.521, "recall@3": 0.702, "precision_of_returned": 0.694, "sources_with_output": "16/16"}, "related": {"precision@3": 0.563, "recall@3": 0.709, "precision@5": 0.475, "recall@5": 0.888}, "overlap_pairs": 31, "false_positives_on_controls": 0, "expected_overlaps_found": "3/3", "cross_locale_pairs": 0},
-  "raw_everywhere_w0.35": {"overlap_pairs": 42},
-  "calibrated_everywhere_w0.35": {"links": {"precision@3": 0.354, "recall@3": 0.39}, "related": {"precision@5": 0.425, "recall@5": 0.794}, "overlap_pairs": 31},
-  "possible_translation_rule": {"threshold_0.70": {"suggested": 7, "correct": 7, "recall": 0.778}, "threshold_0.75": {"suggested": 5, "correct": 5}, "threshold_0.80": {"suggested": 0}},
-  "summary_vector_similarity": {"same_locale_relevant_mean": 0.6228, "same_locale_other_mean": 0.4229, "vi_en_translation_pairs": {"min": 0.6998, "max": 0.788}, "vi_en_non_pairs_max": 0.7511}
+  "lexical_baseline": {
+   "links": {
+    "precision@3": 0.229,
+    "recall@3": 0.244,
+    "precision_of_returned": 0.786
+   },
+   "related": {
+    "precision@3": 0.604,
+    "recall@5": 0.794,
+    "precision@5": 0.425
+   },
+   "overlap_pairs": 23,
+   "false_positives_on_controls": 0
+  },
+  "default_w0.35_raw_ranking_calibrated_overlap_gate": {
+   "links": {
+    "precision@3": 0.521,
+    "recall@3": 0.702,
+    "precision_of_returned": 0.694,
+    "sources_with_output": "16/16"
+   },
+   "related": {
+    "precision@3": 0.563,
+    "recall@3": 0.709,
+    "precision@5": 0.475,
+    "recall@5": 0.888
+   },
+   "overlap_pairs": 31,
+   "false_positives_on_controls": 0,
+   "expected_overlaps_found": "3/3",
+   "cross_locale_pairs": 0
+  },
+  "raw_everywhere_w0.35": {
+   "overlap_pairs": 42
+  },
+  "calibrated_everywhere_w0.35": {
+   "links": {
+    "precision@3": 0.354,
+    "recall@3": 0.39
+   },
+   "related": {
+    "precision@5": 0.425,
+    "recall@5": 0.794
+   },
+   "overlap_pairs": 31
+  },
+  "possible_translation_rule": {
+   "threshold_0.70": {
+    "suggested": 7,
+    "correct": 7,
+    "recall": 0.778
+   },
+   "threshold_0.75": {
+    "suggested": 5,
+    "correct": 5
+   },
+   "threshold_0.80": {
+    "suggested": 0
+   }
+  },
+  "summary_vector_similarity": {
+   "same_locale_relevant_mean": 0.6228,
+   "same_locale_other_mean": 0.4229,
+   "vi_en_translation_pairs": {
+    "min": 0.6998,
+    "max": 0.788
+   },
+   "vi_en_non_pairs_max": 0.7511
+  },
+  "site_baseline_measured_on_fixture": {
+   "vi": {
+    "documents": 17,
+    "pairs": 136,
+    "p10": 0.2796,
+    "p50": 0.4216,
+    "p90": 0.7536,
+    "p99": 0.919
+   },
+   "en": "fewer than 10 pages: model floor 0.40"
+  },
+  "default_w0.35_site_baseline_overlap_gate": {
+   "links": {
+    "precision@3": 0.521,
+    "recall@3": 0.702,
+    "precision_of_returned": 0.694
+   },
+   "related": {
+    "precision@3": 0.563,
+    "recall@3": 0.709,
+    "precision@5": 0.475,
+    "recall@5": 0.888
+   },
+   "overlap_pairs": 30,
+   "false_positives_on_controls": 0,
+   "expected_overlaps_found": "3/3",
+   "cross_locale_pairs": 0
+  },
+  "model_floor_only_w0.35": {
+   "overlap_pairs": 31,
+   "false_positives_on_controls": 0,
+   "expected_overlaps_found": "3/3"
+  },
+  "raw_everywhere_w0.5": {
+   "overlap_pairs": 52
+  },
+  "weight_grid_site_baseline": {
+   "0.0": {
+    "links_R@3": 0.244,
+    "related_R@5": 0.794,
+    "overlap_pairs": 23
+   },
+   "0.2": {
+    "links_R@3": 0.468,
+    "related_R@5": 0.903,
+    "overlap_pairs": 27
+   },
+   "0.35": {
+    "links_R@3": 0.702,
+    "related_R@5": 0.888,
+    "overlap_pairs": 30
+   },
+   "0.5": {
+    "links_R@3": 0.723,
+    "related_R@5": 0.867,
+    "overlap_pairs": 33
+   },
+   "0.7": {
+    "links_R@3": 0.702,
+    "related_R@5": 0.867,
+    "overlap_pairs": 34
+   },
+   "note": "0 false positives on the 7 controls and 3/3 expected overlaps at every weight"
+  }
  },
- "private_worker_over_rest_q4f16": {"wordpress": "7.1.3", "queued": 89, "stored": 89, "not_done": 0, "seconds": 76.62, "max_abs_diff_vs_independent_recompute": 0.0},
+ "private_worker_over_rest_q4f16": {
+  "wordpress": "7.1.3",
+  "queued": 89,
+  "stored": 89,
+  "not_done": 0,
+  "seconds": 76.62,
+  "max_abs_diff_vs_independent_recompute": 0.0
+ },
  "cpu_variation": "the q4f16 self-test differed by 4.9e-6 on one runner CPU and 0.006 on another (different ONNX Runtime kernels), inside the 0.03 tolerance"
 }

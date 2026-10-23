@@ -29,7 +29,7 @@ real iPhones were not measured, and WPML/other SEO plugins were not installed (�
 | Suite | Command | Result |
 | --- | --- | --- |
 | PHP unit | `vendor/bin/phpunit -c phpunit-unit.xml.dist` | 14 tests, 68 assertions, OK |
-| WordPress integration | `vendor/bin/phpunit -c phpunit.xml.dist` | 62 tests, 1,171 assertions, OK (local WP 6.9.10; 1 skipped = the real-model test, which runs in its own workflow); CI on PHP 7.4 + WP 6.5.13, 8.1 + 6.9.10, 8.3/8.4 + 7.1.3 |
+| WordPress integration | `vendor/bin/phpunit -c phpunit.xml.dist` | 65 tests OK locally (WP 7.1.3 test library; skipped: the real-model test, which runs in its own workflow, and the VI-EN plugin test when `NH_VIEN_PLUGIN_DIR` is unset); CI on PHP 7.4 + WP 6.5.13, 8.1 + 6.9.10, 8.3/8.4 + 7.1.3 |
 | Real VI-EN language plugin | `NH_VIEN_PLUGIN_DIR=… phpunit --filter NhVienLanguageTest` | real `NH_VIEN_Links` class (pinned commit of the owner's repo): locales, pairs, standalone English posts, page pairs, English categories, read-only |
 | Coding standards | `vendor/bin/phpcs` (WordPress + PHPCompatibilityWP 7.4-) | 0 errors, 0 warnings |
 | JS unit | `node --test tests/js/*.test.mjs` | 19 tests, OK |
@@ -39,10 +39,10 @@ real iPhones were not measured, and WPML/other SEO plugins were not installed (�
 | Private worker e2e | `tests/e2e/private-worker.sh 7.1.3 …` | 89/89 vectors stored, max \|Δ\| vs NumPy 4.5e-8 |
 | Browser UI e2e (Playwright) | `tests/e2e/prepare-ui-site.sh` + `node tests/e2e/ui-e2e.mjs` | see §4 |
 | Relevance evaluation | `vendor/bin/phpunit --filter EvaluationTest` (lexical) and `--group real-model` (hybrid, real vectors) | see §5 and §6 |
-| Real model | workflow "Real Qwen3-Embedding-0.6B" | see §6; final green run [39891925814](https://github.com/thuexemayhanoi/plugin-auto/actions/runs/39891925814) |
+| Real model | workflow "Real Qwen3-Embedding-0.6B" | see §6; latest green run [39896404879](https://github.com/thuexemayhanoi/plugin-auto/actions/runs/39896404879) |
 | Real site (read-only) | workflow "Read-only site census + pilot" | see §7 |
 | Performance | `tests/bench/run-bench.sh 10|100|1000` | see [PERFORMANCE.md](PERFORMANCE.md) |
-| CI | GitHub Actions run [39880430340](https://github.com/thuexemayhanoi/plugin-auto/actions/runs/39880430340) | 17/17 jobs green (lint ×6, WPCS, unit ×4, integration ×4, JS, ZIP + smoke) |
+| CI | GitHub Actions run [39896590578](https://github.com/thuexemayhanoi/plugin-auto/actions/runs/39896590578) (commit `5a9cf4d`) | 17/17 jobs green (lint ×6, WPCS, unit ×4, integration ×4 incl. the site's VI-EN plugin, JS, ZIP + smoke) |
 
 All e2e suites together: `tests/e2e/run-all.sh` (log: `tests/e2e/artifacts/run-all.log`).
 
@@ -131,11 +131,16 @@ Apache-2.0). Transcribed results: [`evidence/real-model-ci.json`](evidence/real-
 | --- | --- | --- |
 | Link suggestions P@3 / R@3 / precision of returned | 0.229 / 0.244 / 0.786 | **0.521 / 0.702** / 0.694 |
 | Related content P@3 / P@5 / R@5 | 0.604 / 0.425 / 0.794 | 0.563 / **0.475 / 0.888** |
-| Overlap pairs reported; false positives on 7 controls; expected found | 23; 0; 3/3 | 31; 0; 3/3 |
+| Overlap pairs reported; false positives on 7 controls; expected found | 23; 0; 3/3 | 30; 0; 3/3 |
 | Cross-locale pairs compared | 0 | 0 |
 
-  Raw cosine everywhere reported 42 overlap pairs; calibration everywhere cut link recall@3 to 0.390 —
-  hence raw cosine for ranking and the calibrated value for the overlap gate.
+  Overlap gate variants at the same weight: raw cosine 42 pairs (52 at weight 0.5); model floor only
+  31; site baseline (default, Vietnamese median of the fixture 0.42) 30 — always 0 false positives and
+  3/3 expected. Calibration everywhere (also for ranking) cut link recall@3 to 0.390, hence raw cosine
+  for ranking. Weight grid with the default gate (link R@3 / related R@5 / overlap pairs): 0 →
+  0.244 / 0.794 / 23; 0.2 → 0.468 / 0.903 / 27; 0.35 → 0.702 / 0.888 / 30; 0.5 → 0.723 / 0.867 / 33;
+  0.7 → 0.702 / 0.867 / 34. Default 0.35. Run
+  [39896404879](https://github.com/thuexemayhanoi/plugin-auto/actions/runs/39896404879).
 * **Cross-language:** translations are each other's nearest page (fp32 9/9); the possible-translation
   rule at threshold 0.70 suggested 7 pairs, 7 correct (7/9 found).
 
@@ -189,7 +194,7 @@ comparison run with the model floor only): *in progress* — run
 | AC03 Inventory discovers real Post/Page/Category records and locales | **PASS** | real WordPress objects + real Polylang and the site's real VI-EN plugin: `PipelineTest`, `NhVienLanguageTest`, smoke, http-agent; **copy of the real blog: 1,083 documents = 1,001 posts + 37 pages + 43 categories (+ WP sample post/page), locales from the VI-EN plugin (§7)**; census of the live site: 1,083 sitemap URLs |
 | AC04 Matrix paginates, searches, filters, exports, imports by safe preview | **PASS** | `OperationsTest` (matrix query, CSV/XLSX export, import preview/apply/conflicts), http-agent cursor pagination, `wp sseo export`, UI matrix page |
 | AC05 Lexical mode useful without a model | **PASS** | §5 evaluation (all lexical), golden cases in `PipelineTest` |
-| AC06 Real Qwen embedding demonstrated or clearly blocked | **PASS** | real pinned model in GitHub Actions (§6): model-card self-test (fp32 exact), browser worker downloading from huggingface.co with vectors equal to Python, private worker over REST, hybrid evaluation through the plugin queue; runs 39884170101, 39888434060, 39891925814; `evidence/real-model-ci.json` |
+| AC06 Real Qwen embedding demonstrated or clearly blocked | **PASS** | real pinned model in GitHub Actions (§6): model-card self-test (fp32 exact), browser worker downloading from huggingface.co with vectors equal to Python, private worker over REST, hybrid evaluation through the plugin queue; runs 39884170101, 39888434060, 39891925814, 39896404879; `evidence/real-model-ci.json` |
 | AC07 Unsupported WebGPU/mobile handled without fatal failure | **PASS** | UI test "unsupported device"; iOS warning (emulated UA); JS `chooseDevice` tests. No real iPhone tested |
 | AC08 M1–M6 outputs with evidence, provenance, review workflow | **PASS** | findings carry evidence components, algorithm version, label, confidence; `url_analysis` provenance; review/dismiss/accept, locks; UI screenshots |
 | AC09 VI–EN translations not flagged as cannibalization | **PASS** | 0 cross-locale pairs (evaluation, `PipelineTest`), control pairs `vi-pillar`/`en-pillar`, `vi-ngay`/`en-daily` not reported |
