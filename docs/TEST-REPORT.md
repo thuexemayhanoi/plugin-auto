@@ -41,7 +41,10 @@ real iPhones were not measured, and WPML/other SEO plugins were not installed (�
 | Relevance evaluation | `vendor/bin/phpunit --filter EvaluationTest` (lexical) and `--group real-model` (hybrid, real vectors) | see §5 and §6 |
 | Real model | workflow "Real Qwen3-Embedding-0.6B" | see §6; latest green run [39896404879](https://github.com/thuexemayhanoi/plugin-auto/actions/runs/39896404879) |
 | Real site (read-only) | workflow "Read-only site census + pilot" | see §7 |
-| Performance | `tests/bench/run-bench.sh 10|100|1000` | see [PERFORMANCE.md](PERFORMANCE.md) |
+| Write safety, device verification, overlap rules | `phpunit --filter 'ChangeExecutorSafetyTest|DeviceVerificationTest|CannibalizationRulesTest|QaTranslationScopeTest'` | part of the integration suite |
+| Coexistence with WooCommerce, Yoast SEO, Polylang | CI job "Coexistence…" (`tests/e2e/compat-plugins.sh`) | see §8 |
+| Reproducible ZIP + licenses | CI "Build release ZIP" job; locally two builds | identical SHA-256 |
+| Performance | `tests/bench/run-bench.sh 10|100|1000|6000` | see [PERFORMANCE.md](PERFORMANCE.md) |
 | CI | GitHub Actions run [39896590578](https://github.com/thuexemayhanoi/plugin-auto/actions/runs/39896590578) (commit `5a9cf4d`) | 17/17 jobs green (lint ×6, WPCS, unit ×4, integration ×4 incl. the site's VI-EN plugin, JS, ZIP + smoke) |
 
 All e2e suites together: `tests/e2e/run-all.sh` (log: `tests/e2e/artifacts/run-all.log`).
@@ -66,6 +69,28 @@ All e2e suites together: `tests/e2e/run-all.sh` (log: `tests/e2e/artifacts/run-a
    inflated overlap reports → calibrated overlap gate.
 10. The blog's own language plugin (Nguyen Ha VI-EN Core) was not recognised → read-only adapter;
     "missing translation" was a warning on selectively translated sites → now a suggestion.
+
+Found and fixed in the final audit (1.0.0-beta.2):
+
+11. **Write path not exception-safe (security):** an exception thrown during `wp_update_post()` by
+    WordPress or another plugin's hook left kses disabled for the rest of the request and the change
+    in `applying` without revert. Now exact restore in `finally`, error → automatic revert, other
+    post fields verified unchanged. `ChangeExecutorSafetyTest`: 4 tests, all fail on the old code.
+12. **Self-test was only a client claim:** the server stored vectors from any embedding account
+    with a matching model key. Now the server recomputes the device's reference matrix before any
+    upload (`DeviceVerificationTest`, HTTP 428 in `http-agent`).
+13. **Proposals lacked URL and risk; a category assignment could move a URL** when the permalink
+    contains `%category%`: now URL, post ID and risk in every proposal, and term proposals refused
+    (and re-checked at apply) when the taxonomy is in the permalink.
+14. **"Missing translation" noise on the real blog:** 1,006 suggestions because the blog pairs no
+    post; now limited to content types with pairs and never for posts declared standalone (copy
+    of the blog: 5 suggestions, run 3).
+15. **Overlap noise on the real blog:** raw cosine 2,323 groups → calibrated gate 898; titles naming
+    different places, complementary intents and vector-only pairs now classified separately
+    (`CannibalizationRulesTest`, pilot run 4 in §7).
+16. **Query volume:** finding upsert, related rows and embedding enqueue issued one or two queries
+    per row; now single statements (100 posts: 6,307 → 4,387 queries per analysis).
+17. **Non-reproducible ZIP:** file order and timestamps varied; now byte-identical builds.
 
 ## 4. Browser UI (real Chromium, WordPress 7.1.3, Polylang 3.9.1)
 
