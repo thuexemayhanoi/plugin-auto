@@ -19,7 +19,7 @@ WP="wp --allow-root --path=$DIR"
 OUT="$ROOT/tests/e2e/artifacts"
 mkdir -p "$OUT"
 
-"$ROOT/tests/e2e/setup-site.sh" 7.1.3 "$PORT" "$DIR" >/dev/null
+SSEO_DB_NAME="${SSEO_DB_NAME:-sseo_bench_$N}" "$ROOT/tests/e2e/setup-site.sh" 7.1.3 "$PORT" "$DIR" >/dev/null
 if [ -n "${POLYLANG_DIR:-}" ] && [ -d "$POLYLANG_DIR" ]; then
 	cp -R "$POLYLANG_DIR" "$DIR/wp-content/plugins/polylang"
 	$WP plugin activate polylang >/dev/null

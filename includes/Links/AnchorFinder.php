@@ -117,14 +117,13 @@ final class AnchorFinder {
 				if ( $hay !== $raw ) {
 					continue; // Non-NFC source text: byte offsets would not map back.
 				}
-				$pos = self::find_word_bounded( $hay, $needle );
-				if ( null === $pos ) {
+				$hit = self::find_word_bounded( $hay, $needle );
+				if ( null === $hit ) {
 					continue;
 				}
-				$bytes_before = strlen( mb_substr( $hay, 0, $pos, 'UTF-8' ) );
-				$match        = mb_substr( $hay, $pos, mb_strlen( $needle, 'UTF-8' ), 'UTF-8' );
-				$offset       = $seg['start'] + $bytes_before;
-				$length       = strlen( $match );
+				list( $bytes_before, $match ) = $hit;
+				$offset                       = $seg['start'] + $bytes_before;
+				$length                       = strlen( $match );
 				if ( substr( $content, $offset, $length ) !== $match ) {
 					continue; // Defensive: never return an offset that does not map exactly.
 				}
@@ -173,25 +172,68 @@ final class AnchorFinder {
 	}
 
 	/**
-	 * Case-insensitive, word-bounded search on a normalized needle.
+	 * Case-insensitive, word-bounded search on a normalized needle, on the original bytes (no
+	 * lowercased copy whose length could differ). A match is skipped when it is part of a URL or
+	 * an e-mail address (it would break an embed or a bare link) or when it cuts a capitalised name
+	 * ("thuê xe máy Hà" in "thuê xe máy Hà Đông").
 	 *
 	 * @param string $hay    Haystack (NFC).
 	 * @param string $needle Lowercase needle (NFC).
-	 * @return int|null Character position.
+	 * @return array{0:int,1:string}|null Byte offset and matched text.
 	 */
 	private static function find_word_bounded( $hay, $needle ) {
-		$lower = mb_strtolower( $hay, 'UTF-8' );
-		$from  = 0;
-		$nlen  = mb_strlen( $needle, 'UTF-8' );
-		while ( false !== ( $pos = mb_strpos( $lower, $needle, $from, 'UTF-8' ) ) ) { // phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
-			$before = $pos > 0 ? mb_substr( $lower, $pos - 1, 1, 'UTF-8' ) : ' ';
-			$after  = mb_substr( $lower, $pos + $nlen, 1, 'UTF-8' );
-			if ( ! preg_match( '/[\p{L}\p{N}]/u', $before ) && ( '' === $after || ! preg_match( '/[\p{L}\p{N}]/u', $after ) ) ) {
-				return $pos;
+		$pattern = '/(?<![\p{L}\p{N}])' . preg_quote( $needle, '/' ) . '(?![\p{L}\p{N}])/iu';
+		if ( ! preg_match_all( $pattern, $hay, $hits, PREG_OFFSET_CAPTURE ) ) {
+			return null;
+		}
+		$urls = array();
+		if ( preg_match_all( '~(?:[a-z][a-z0-9+.\-]*://|www\.)[^\s<>"\']+|[\w.+\-]+@[\w\-]+\.[\w.\-]+~iu', $hay, $um, PREG_OFFSET_CAPTURE ) ) {
+			foreach ( $um[0] as $u ) {
+				$urls[] = array( $u[1], $u[1] + strlen( $u[0] ) );
 			}
-			$from = $pos + 1;
+		}
+		foreach ( $hits[0] as $h ) {
+			list( $text, $at ) = $h;
+			$end               = $at + strlen( $text );
+			if ( mb_strtolower( $text, 'UTF-8' ) !== $needle ) {
+				continue;
+			}
+			foreach ( $urls as $u ) {
+				if ( $at < $u[1] && $end > $u[0] ) {
+					continue 2;
+				}
+			}
+			if ( self::cuts_name( $hay, $at, $end, $text ) ) {
+				continue;
+			}
+			return array( $at, $text );
 		}
 		return null;
+	}
+
+	/**
+	 * Whether a match starts or ends inside a run of capitalised words (a place or brand name):
+	 * its first word is capitalised and directly follows a capitalised word, or its last word is
+	 * capitalised and directly precedes one.
+	 *
+	 * @param string $hay  Haystack.
+	 * @param int    $at   Match start (bytes).
+	 * @param int    $end  Match end (bytes).
+	 * @param string $text Matched text.
+	 * @return bool
+	 */
+	private static function cuts_name( $hay, $at, $end, $text ) {
+		$words = preg_split( '/\s+/u', trim( $text ) );
+		$upper = static function ( $w ) {
+			return 1 === preg_match( '/^\p{Lu}/u', (string) $w );
+		};
+		if ( $upper( end( $words ) ) && preg_match( '/^[ \x{00A0}]+(\p{Lu}\p{L}*)/u', substr( $hay, $end ) ) ) {
+			return true;
+		}
+		if ( $upper( $words[0] ) && preg_match( '/(\p{Lu}\p{L}*)[ \x{00A0}]+$/u', substr( $hay, 0, $at ) ) ) {
+			return true;
+		}
+		return false;
 	}
 
 	/**

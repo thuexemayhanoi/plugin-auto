@@ -23,6 +23,7 @@ import {
 	formatQuery,
 	l2normalize,
 	lastTokenPool,
+	restoreEndToken,
 	maskRows,
 	mrlTruncate,
 	float32ToBase64,
@@ -86,7 +87,9 @@ async function init( msg ) {
 	const opts = { revision: p.revision };
 	const tokenizer = await T.AutoTokenizer.from_pretrained( p.model_id, opts );
 	const model = await T.AutoModel.from_pretrained( p.model_id, Object.assign( {}, opts, { dtype: p.dtype, device: msg.device } ) );
-	state = { tokenizer, model, profile: p, device: msg.device };
+	// The token the tokenizer's post-processor appends (it may differ from config.eos_token).
+	const probe = tokenizer( 'a' ).input_ids.data;
+	state = { tokenizer, model, profile: p, device: msg.device, endId: Number( probe[ probe.length - 1 ] ) };
 	self.postMessage( { type: 'ready', device: msg.device, dtype: p.dtype, ms: Math.round( performance.now() - started ) } );
 }
 
@@ -100,6 +103,7 @@ async function embedTexts( texts ) {
 	const out = [];
 	for ( const group of batches( texts, BATCH ) ) {
 		const inputs = state.tokenizer( group, { padding: true, truncation: true, max_length: state.profile.max_tokens } );
+		restoreEndToken( inputs.input_ids, inputs.attention_mask, state.endId );
 		const outputs = await state.model( inputs );
 		let hidden = outputs.last_hidden_state;
 		if ( hidden.type !== 'float32' ) {

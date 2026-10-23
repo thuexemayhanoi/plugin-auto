@@ -51,7 +51,23 @@ final class Operations {
 		if ( ! $ok ) {
 			return new \WP_Error( 'sseo_protected_position', __( 'The position is inside a heading, link, shortcode, code or other protected element.', 'semantic-seo-engine-vi-en' ), array( 'status' => 422 ) );
 		}
-		return substr( $content, 0, $offset ) . self::link_markup( $href, $anchor ) . substr( $content, $offset + $length );
+		$markup = self::link_markup( $href, $anchor );
+		$out    = substr( $content, 0, $offset ) . $markup . substr( $content, $offset + $length );
+		// The result must parse as the same links plus exactly this one, starting at the offset: a
+		// link nested in another link (or swallowed by markup the scanner misread) is refused.
+		$before = HtmlScanner::scan( $content )['links'];
+		$after  = HtmlScanner::scan( $out )['links'];
+		$found  = false;
+		foreach ( $after as $l ) {
+			if ( $l['start'] === $offset && $l['end'] === $offset + strlen( $markup ) ) {
+				$found = true;
+				break;
+			}
+		}
+		if ( ! $found || count( $after ) !== count( $before ) + 1 ) {
+			return new \WP_Error( 'sseo_protected_position', __( 'The position is inside a heading, link, shortcode, code or other protected element.', 'semantic-seo-engine-vi-en' ), array( 'status' => 422 ) );
+		}
+		return $out;
 	}
 
 	/**

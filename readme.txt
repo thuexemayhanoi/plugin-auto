@@ -4,7 +4,7 @@ Tags: seo, internal links, cannibalization, vietnamese, semantic search
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.0-beta.2
+Stable tag: 1.0.0-beta.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -34,7 +34,7 @@ Every write is a proposal with an exact diff. A human with the review capability
 
 == Installation ==
 
-1. Plugins → Add New → Upload Plugin → choose `semantic-seo-engine-vi-en-1.0.0-beta.2.zip` → Install → Activate.
+1. Plugins → Add New → Upload Plugin → choose `semantic-seo-engine-vi-en-1.0.0-beta.3.zip` → Install → Activate.
 2. Open **Semantic SEO → Overview & Setup** and follow the five-step wizard (scope → pilot on the latest posts → review).
 3. Optional: **Jobs & Inference Device** → check this device → tick the download consent → load the model and run the self-test.
 
@@ -78,6 +78,14 @@ Model weights are not bundled.
 
 == Changelog ==
 
+= 1.0.0-beta.3 =
+* Data integrity: an approved link now changes post_content only, with a compare-and-set write. Before, the write re-saved the whole post and could change the slug/URL, unpublish a post dated in the future, add the default category, re-resolve tags and overwrite an edit saved at the same moment. Apply re-checks that the source and the target are still published; a rollback cannot run twice; an interrupted change is recovered.
+* Links are never inserted inside an existing link (apostrophes in attributes), an embed or bare URL, a block rebuilt from attributes (e.g. FAQ blocks), a caption, or in the middle of a name.
+* Large sites: the cluster step no longer loads every document at once (20,000 posts: 159 s / 759 MB before, 10.7 s / 156 MB now) and background ticks keep to their time budget.
+* Background jobs: a job whose ticks keep crashing fails after its attempts instead of blocking its type; a batch whose database writes failed is retried, never reported as done; WP-CLI waits for WP-Cron instead of spinning; embedding items can no longer get stuck.
+* Agents no longer see drafts or private posts that link to a page, nor the text of password-protected posts (no longer stored).
+* Overlap report: Search Console and focus-keyword evidence come before cluster roles; "giá rẻ" no longer makes a supporting page; competing pages are not cross-linked; links on drafts do not count as inbound; exact duplicates count as overlap risk in the SEO Matrix. Browser worker keeps the end-of-text token when it truncates long texts (model profile key changes: re-embed).
+
 = 1.0.0-beta.2 =
 * Security: the kses filters suspended for an approved write are restored in a finally block; an exception in another plugin's hook is reverted and reported; no other post field may change during a write.
 * Embeddings are stored only after the server itself has checked the device's self-test vectors (24 h pass per account and model profile); older workers get HTTP 428 and must be updated.
@@ -91,6 +99,9 @@ Model weights are not bundled.
 * Real Qwen3-Embedding-0.6B (q4f16 default, fp16 option) verified in CI: model-card self-test, browser worker, private worker and hybrid evaluation. Beta until tried on a staging copy of a real site. See docs/TEST-REPORT.md.
 
 == Upgrade Notice ==
+
+= 1.0.0-beta.3 =
+Fixes found by an independent audit, including P0 data-integrity issues of the approved-change write path: update before approving any change. The browser model profile changes (long-text truncation fix), so browser-computed embeddings are recomputed. Read-only by default; back up your database before approving any change.
 
 = 1.0.0-beta.2 =
 Update the private worker together with the plugin (it now sends its self-test to the server). The plugin's own tables get new indexes automatically (schema 3, data kept). Read-only by default; back up your database before approving any change.

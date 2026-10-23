@@ -16,6 +16,41 @@ defined( 'ABSPATH' ) || exit;
 final class Db {
 
 	/**
+	 * Database errors seen since the last take_errors() (most recent last, at most 20).
+	 *
+	 * @var string[]
+	 */
+	private static $errors = array();
+
+	/**
+	 * Records the error of the query that just ran, if any. $wpdb never throws: a lock timeout,
+	 * lost connection or full disk only sets last_error, so callers that must not report success
+	 * after a failed write (the job runner) check take_errors().
+	 *
+	 * @return void
+	 */
+	private static function note_error() {
+		global $wpdb;
+		if ( '' !== (string) $wpdb->last_error ) {
+			self::$errors[] = (string) $wpdb->last_error;
+			if ( count( self::$errors ) > 20 ) {
+				self::$errors = array_slice( self::$errors, -20 );
+			}
+		}
+	}
+
+	/**
+	 * Returns and clears the recorded database errors.
+	 *
+	 * @return string[]
+	 */
+	public static function take_errors() {
+		$errors       = self::$errors;
+		self::$errors = array();
+		return $errors;
+	}
+
+	/**
 	 * Table name helper.
 	 *
 	 * @param string $name Logical table.
@@ -36,6 +71,7 @@ final class Db {
 		global $wpdb;
 		self::assert_columns( array_keys( $data ) );
 		$ok = $wpdb->insert( self::t( $table ), $data ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+		self::note_error();
 		return false === $ok ? 0 : (int) $wpdb->insert_id;
 	}
 
@@ -51,6 +87,7 @@ final class Db {
 		global $wpdb;
 		self::assert_columns( array_merge( array_keys( $data ), array_keys( $where ) ) );
 		$res = $wpdb->update( self::t( $table ), $data, $where ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		self::note_error();
 		return false === $res ? -1 : (int) $res;
 	}
 
@@ -65,6 +102,7 @@ final class Db {
 		global $wpdb;
 		self::assert_columns( array_keys( $where ) );
 		$res = $wpdb->delete( self::t( $table ), $where ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		self::note_error();
 		return false === $res ? -1 : (int) $res;
 	}
 
@@ -80,6 +118,7 @@ final class Db {
 		$sql = self::expand( $sql );
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.NotPrepared
 		$res = $wpdb->get_results( array() === $args ? $sql : $wpdb->prepare( $sql, $args ), ARRAY_A );
+		self::note_error();
 		return is_array( $res ) ? $res : array();
 	}
 
@@ -95,6 +134,7 @@ final class Db {
 		$sql = self::expand( $sql );
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.NotPrepared
 		$res = $wpdb->get_row( array() === $args ? $sql : $wpdb->prepare( $sql, $args ), ARRAY_A );
+		self::note_error();
 		return is_array( $res ) ? $res : null;
 	}
 
@@ -110,6 +150,7 @@ final class Db {
 		$sql = self::expand( $sql );
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.NotPrepared
 		$res = $wpdb->get_var( array() === $args ? $sql : $wpdb->prepare( $sql, $args ) );
+		self::note_error();
 		return null === $res ? null : (string) $res;
 	}
 
@@ -125,6 +166,7 @@ final class Db {
 		$sql = self::expand( $sql );
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.NotPrepared
 		$res = $wpdb->get_col( array() === $args ? $sql : $wpdb->prepare( $sql, $args ) );
+		self::note_error();
 		return is_array( $res ) ? $res : array();
 	}
 
@@ -140,6 +182,7 @@ final class Db {
 		$sql = self::expand( $sql );
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.NotPrepared
 		$res = $wpdb->query( array() === $args ? $sql : $wpdb->prepare( $sql, $args ) );
+		self::note_error();
 		return false === $res ? -1 : (int) $res;
 	}
 
@@ -218,7 +261,7 @@ final class Db {
 		return (string) preg_replace_callback(
 			'/\{([a-z_]+)\}/',
 			static function ( $m ) {
-				if ( 'posts' === $m[1] || 'term_taxonomy' === $m[1] || 'terms' === $m[1] || 'options' === $m[1] ) {
+				if ( 'posts' === $m[1] || 'postmeta' === $m[1] || 'term_taxonomy' === $m[1] || 'terms' === $m[1] || 'options' === $m[1] ) {
 					global $wpdb;
 					return $wpdb->{$m[1]};
 				}

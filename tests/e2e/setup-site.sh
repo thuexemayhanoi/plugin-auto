@@ -11,7 +11,8 @@ V="$1"
 PORT="$2"
 DIR="$3"
 SRC="${WP_SOURCE:-/opt/wp/wp-$V}"
-DB="sseo_e2e_${V//./_}"
+# SSEO_DB_NAME lets a long benchmark use its own database next to the e2e sites.
+DB="${SSEO_DB_NAME:-sseo_e2e_${V//./_}}"
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 WP="wp --allow-root --path=$DIR"
 

@@ -14,6 +14,7 @@ import {
 	maskRows,
 	mrlTruncate,
 	pinnedFileFor,
+	restoreEndToken,
 	sha256Hex,
 	verifyPinned,
 	wasmSuffix,
@@ -243,4 +244,39 @@ test( 'pinned fetch: tampered or oversized downloads are rejected and never cach
 test( 'pinned fetch: works without a cache', async () => {
 	const { f } = pinnedSetup( 'abc', { cache: null } );
 	assert.equal( await ( await f( URL_TOK ) ).text(), 'abc' );
+} );
+
+test( 'restoreEndToken puts the end token back on truncated rows only (left and right padding)', () => {
+	const END = 7;
+	// Left padding: row 0 truncated (ends with content id 42), row 1 short (already ends with END).
+	const ids = { dims: [ 2, 4 ], data: BigInt64Array.from( [ 11n, 12n, 13n, 42n, 0n, 0n, 21n, 7n ] ) };
+	const mask = { dims: [ 2, 4 ], data: BigInt64Array.from( [ 1n, 1n, 1n, 1n, 0n, 0n, 1n, 1n ] ) };
+	assert.equal( restoreEndToken( ids, mask, END ), 1 );
+	assert.deepEqual( Array.from( ids.data, Number ), [ 11, 12, 13, 7, 0, 0, 21, 7 ] );
+	// Right padding: the last real token is before the padding.
+	const r = { dims: [ 1, 4 ], data: BigInt64Array.from( [ 31n, 32n, 0n, 0n ] ) };
+	const rm = { dims: [ 1, 4 ], data: BigInt64Array.from( [ 1n, 1n, 0n, 0n ] ) };
+	assert.equal( restoreEndToken( r, rm, END ), 1 );
+	assert.deepEqual( Array.from( r.data, Number ), [ 31, 7, 0, 0 ] );
+	assert.equal( restoreEndToken( r, rm, END ), 0, 'idempotent' );
+} );
+
+test( 'truncated fixture-tokenizer input ends with the end token, as the Python worker produces', async () => {
+	const { AutoTokenizer, env } = await import( '../../node_modules/@huggingface/transformers/dist/transformers.node.mjs' );
+	const { fileURLToPath } = await import( 'node:url' );
+	env.allowRemoteModels = false;
+	env.allowLocalModels = true;
+	env.localModelPath = fileURLToPath( new URL( '../fixtures/tiny-qwen3/', import.meta.url ) );
+	const tok = await AutoTokenizer.from_pretrained( 'repo' );
+	const text = 'xe máy thuê giá rẻ tại Hà Nội giao xe tận nơi thủ tục đơn giản đặt cọc theo loại xe kiểm tra phanh đèn lốp';
+	const full = Array.from( tok( text ).input_ids.data, Number );
+	const end = full[ full.length - 1 ];
+	assert.ok( full.length > 16, 'the text is longer than the cut' );
+	const cut = tok( [ text, 'ngắn' ], { padding: true, truncation: true, max_length: 16 } );
+	restoreEndToken( cut.input_ids, cut.attention_mask, end );
+	const row0 = Array.from( cut.input_ids.data.slice( 0, 16 ), Number );
+	// Rust tokenizers (private worker): the first 15 content tokens, then the end token.
+	assert.deepEqual( row0, full.slice( 0, 15 ).concat( [ end ] ) );
+	const row1 = Array.from( cut.input_ids.data.slice( 16, 32 ), Number );
+	assert.equal( row1[ 15 ], end, 'short row unchanged and still ends with the end token' );
 } );

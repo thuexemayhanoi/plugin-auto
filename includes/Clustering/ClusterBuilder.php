@@ -8,7 +8,6 @@
 namespace SemanticSEO\Clustering;
 
 use SemanticSEO\Analysis\FindingRepository;
-use SemanticSEO\Analysis\Scorer;
 use SemanticSEO\Database\Db;
 use SemanticSEO\Lexical\LexicalIndex;
 use SemanticSEO\Locks\LockService;
@@ -23,6 +22,21 @@ defined( 'ABSPATH' ) || exit;
 final class ClusterBuilder {
 
 	const VERSION = 'clusters-2';
+
+	/**
+	 * Posts read per query; only slim profiles are kept, so memory does not grow with page size.
+	 */
+	const PAGE = 500;
+
+	/**
+	 * Members per link-count query.
+	 */
+	const COUNT_CHUNK = 1000;
+
+	/**
+	 * Post meta keys of SEO plugins' primary category.
+	 */
+	const PRIMARY_KEYS = array( '_yoast_wpseo_primary_category', 'rank_math_primary_category' );
 
 	/**
 	 * Builds clusters for every locale.
@@ -106,35 +120,54 @@ final class ClusterBuilder {
 			}
 		}
 
-		// 2. Assign posts to their primary (or deepest) term's cluster unless locked.
-		$posts    = Db::rows( "SELECT * FROM {documents} WHERE object_type = 'post' AND status = 'publish' AND locale = %s", array( $locale ) );
+		// 2. Assign posts to their primary (or deepest) term's cluster unless locked. Posts are read in
+		// pages and only a slim profile is kept (on a 20,000-post site, all full rows and profiles at
+		// once needed about 760 MB and broke a 256 MB WP-Cron request).
 		$profiles = array();
 		$members  = array();
-		foreach ( $posts as $row ) {
-			$p                    = Scorer::profile( $row );
-			$profiles[ $p['id'] ] = $p;
-			if ( (int) $row['cluster_locked'] && (int) $row['cluster_id'] > 0 ) {
-				$members[ (int) $row['cluster_id'] ][] = $p['id'];
-				continue;
-			}
-			$term_id = self::primary_term( $p, $terms, $default_cat );
-			$cid     = ( $term_id > 0 && isset( $cluster_of[ $term_id ] ) ) ? $cluster_of[ $term_id ] : 0;
-			if ( $cid > 0 && LockService::is_cluster_locked( $cid ) && (int) $row['cluster_id'] !== $cid ) {
-				$cid = (int) $row['cluster_id']; // Locked cluster: membership frozen.
-			}
-			$profiles[ $p['id'] ]['cluster_id'] = $cid;
-			if ( $cid > 0 ) {
-				$members[ $cid ][] = $p['id'];
-			}
-			Db::update(
-				'documents',
-				array(
-					'cluster_id'   => $cid,
-					'cluster_role' => $cid > 0 ? 'supporting' : '',
-				),
-				array( 'id' => $p['id'] )
+		$after    = 0;
+		do {
+			$page    = Db::rows(
+				"SELECT id, object_id, subtype, word_count, excluded, cluster_id, cluster_locked, terms_json, signals FROM {documents} WHERE object_type = 'post' AND status = 'publish' AND locale = %s AND id > %d ORDER BY id ASC LIMIT %d",
+				array( $locale, $after, self::PAGE )
 			);
-		}
+			$fetched = count( $page );
+			$primary = self::primary_meta( array_map( 'intval', array_column( $page, 'object_id' ) ) );
+			foreach ( $page as $row ) {
+				$after                = (int) $row['id'];
+				$p                    = self::slim_profile( $row );
+				$profiles[ $p['id'] ] = $p;
+				if ( (int) $row['cluster_locked'] && (int) $row['cluster_id'] > 0 ) {
+					$members[ (int) $row['cluster_id'] ][] = $p['id'];
+					continue;
+				}
+				$terms_json = json_decode( (string) $row['terms_json'], true );
+				$term_id    = self::primary_term(
+					array(
+						'terms'   => is_array( $terms_json ) ? $terms_json : array(),
+						'primary' => isset( $primary[ $p['object_id'] ] ) ? $primary[ $p['object_id'] ] : array(),
+					),
+					$terms,
+					$default_cat
+				);
+				$cid        = ( $term_id > 0 && isset( $cluster_of[ $term_id ] ) ) ? $cluster_of[ $term_id ] : 0;
+				if ( $cid > 0 && LockService::is_cluster_locked( $cid ) && (int) $row['cluster_id'] !== $cid ) {
+					$cid = (int) $row['cluster_id']; // Locked cluster: membership frozen.
+				}
+				$profiles[ $p['id'] ]['cluster_id'] = $cid;
+				if ( $cid > 0 ) {
+					$members[ $cid ][] = $p['id'];
+				}
+				Db::update(
+					'documents',
+					array(
+						'cluster_id'   => $cid,
+						'cluster_role' => $cid > 0 ? 'supporting' : '',
+					),
+					array( 'id' => $p['id'] )
+				);
+			}
+		} while ( self::PAGE === $fetched );
 
 		// 3. Centroids, recommended pillar/hub page per cluster. Pillars are linked from (and link to)
 		// pages of the whole subtree, not only from direct members, so links are counted per subtree.
@@ -154,31 +187,26 @@ final class ClusterBuilder {
 		};
 		$centroids = array();
 		foreach ( Db::rows( 'SELECT * FROM {clusters} WHERE locale = %s', array( $locale ) ) as $c ) {
-			$cid               = (int) $c['id'];
-			$ids               = isset( $members[ $cid ] ) ? $members[ $cid ] : array();
-			$cent              = self::centroid( $ids, $profiles );
-			$centroids[ $cid ] = array(
+			$cid                            = (int) $c['id'];
+			$ids                            = isset( $members[ $cid ] ) ? $members[ $cid ] : array();
+			$cent                           = self::centroid( $ids, $profiles );
+			$centroids[ $cid ]              = array(
 				'vec'   => $cent,
 				'label' => $c['label'],
 				'term'  => (int) $c['term_id'],
 				'tax'   => (string) $c['taxonomy'],
 				'role'  => (string) $c['role'],
 			);
-			$best              = 0;
-			$best_score        = -1.0;
-			$evidence          = array();
-			$tree              = array() === $ids ? array() : array_values( array_unique( $subtree( $cid ) ) );
+			$best                           = 0;
+			$best_score                     = -1.0;
+			$evidence                       = array();
+			$tree                           = array() === $ids ? array() : array_values( array_unique( $subtree( $cid ) ) );
+			list( $in_counts, $out_counts ) = self::subtree_link_counts( $ids, $tree );
 			foreach ( $ids as $id ) {
 				$p               = $profiles[ $id ];
-				$inbound         = (int) Db::value(
-					'SELECT COUNT(DISTINCT source_id) FROM {links} WHERE target_id = %d AND source_id IN (' . Db::in( $tree ) . ')',
-					array_merge( array( $id ), $tree )
-				);
-				$outbound        = (int) Db::value(
-					'SELECT COUNT(DISTINCT target_id) FROM {links} WHERE source_id = %d AND target_id IN (' . Db::in( $tree ) . ')',
-					array_merge( array( $id ), $tree )
-				);
-				$central         = LexicalIndex::cosine( $p['lexvec'], $cent );
+				$inbound         = isset( $in_counts[ $id ] ) ? $in_counts[ $id ] : 0;
+				$outbound        = isset( $out_counts[ $id ] ) ? $out_counts[ $id ] : 0;
+				$central         = LexicalIndex::cosine( self::lexvec( $p ), $cent );
 				$score           = 2 * $inbound + 1.5 * $outbound + 3 * $central + ( 'page' === $p['subtype'] ? 0.5 : 0 ) + min( 1.0, $p['word_count'] / 1500 );
 				$evidence[ $id ] = array(
 					'inbound_from_cluster' => $inbound,
@@ -224,13 +252,14 @@ final class ClusterBuilder {
 		// 4. Classification suggestions for uncategorized / possibly miscategorized posts.
 		$suggested = 0;
 		foreach ( $profiles as $id => $p ) {
-			if ( $p['excluded'] || array() === $p['lexvec'] ) {
+			$lexvec = self::lexvec( $p );
+			if ( $p['excluded'] || array() === $lexvec ) {
 				continue;
 			}
 			$scores = array();
 			foreach ( $centroids as $cid => $c ) {
 				if ( array() !== $c['vec'] ) {
-					$scores[ $cid ] = LexicalIndex::cosine( $p['lexvec'], $c['vec'] );
+					$scores[ $cid ] = LexicalIndex::cosine( $lexvec, $c['vec'] );
 				}
 			}
 			if ( array() === $scores ) {
@@ -292,6 +321,90 @@ final class ClusterBuilder {
 	}
 
 	/**
+	 * The fields of a post the clustering needs; the lexical vector is kept JSON-encoded.
+	 *
+	 * @param array $row Document row (selected columns).
+	 * @return array
+	 */
+	private static function slim_profile( array $row ) {
+		$signals = json_decode( (string) $row['signals'], true );
+		$lexvec  = is_array( $signals ) && isset( $signals['lexvec'] ) && is_array( $signals['lexvec'] ) ? $signals['lexvec'] : array();
+		return array(
+			'id'         => (int) $row['id'],
+			'object_id'  => (int) $row['object_id'],
+			'subtype'    => (string) $row['subtype'],
+			'word_count' => (int) $row['word_count'],
+			'excluded'   => (int) $row['excluded'],
+			'cluster_id' => (int) $row['cluster_id'],
+			'lex'        => array() === $lexvec ? '' : (string) wp_json_encode( $lexvec ),
+		);
+	}
+
+	/**
+	 * Decoded lexical vector of a slim profile.
+	 *
+	 * @param array $p Slim profile.
+	 * @return array<string,float>
+	 */
+	private static function lexvec( array $p ) {
+		if ( '' === $p['lex'] ) {
+			return array();
+		}
+		$v = json_decode( $p['lex'], true );
+		return is_array( $v ) ? $v : array();
+	}
+
+	/**
+	 * SEO plugins' primary category of a page of posts, in one query (first value per key, as
+	 * get_post_meta() returns it), without filling the object cache with every post's meta.
+	 *
+	 * @param int[] $post_ids Post IDs.
+	 * @return array<int,array<string,int>>
+	 */
+	private static function primary_meta( array $post_ids ) {
+		$out = array();
+		if ( array() === $post_ids ) {
+			return $out;
+		}
+		$rows = Db::rows(
+			'SELECT post_id, meta_key, meta_value FROM {postmeta} WHERE post_id IN (' . Db::in( $post_ids ) . ') AND meta_key IN (' . Db::in( self::PRIMARY_KEYS, '%s' ) . ') ORDER BY meta_id ASC',
+			array_merge( $post_ids, self::PRIMARY_KEYS )
+		);
+		foreach ( $rows as $m ) {
+			if ( ! isset( $out[ (int) $m['post_id'] ][ $m['meta_key'] ] ) ) {
+				$out[ (int) $m['post_id'] ][ $m['meta_key'] ] = (int) $m['meta_value'];
+			}
+		}
+		return $out;
+	}
+
+	/**
+	 * Links from the cluster subtree to each member and from each member to the subtree, counted
+	 * with a few grouped queries per cluster (it was two queries per member).
+	 *
+	 * @param int[] $ids  Members.
+	 * @param int[] $tree Subtree documents.
+	 * @return array{0:array<int,int>,1:array<int,int>} Inbound and outbound counts by member.
+	 */
+	private static function subtree_link_counts( array $ids, array $tree ) {
+		$in  = array();
+		$out = array();
+		if ( array() === $ids || array() === $tree ) {
+			return array( $in, $out );
+		}
+		foreach ( array_chunk( $ids, self::COUNT_CHUNK ) as $chunk ) {
+			$args = array_merge( $chunk, $tree );
+			foreach ( Db::rows( 'SELECT target_id AS id, COUNT(DISTINCT source_id) AS n FROM {links} WHERE target_id IN (' . Db::in( $chunk ) . ') AND source_id IN (' . Db::in( $tree ) . ') GROUP BY target_id', $args ) as $r ) {
+				$in[ (int) $r['id'] ] = (int) $r['n'];
+			}
+			foreach ( Db::rows( 'SELECT source_id AS id, COUNT(DISTINCT target_id) AS n FROM {links} WHERE source_id IN (' . Db::in( $chunk ) . ') AND target_id IN (' . Db::in( $tree ) . ') GROUP BY source_id', $args ) as $r ) {
+				$out[ (int) $r['id'] ] = (int) $r['n'];
+			}
+		}
+		return array( $in, $out );
+	}
+
+	/**
 	 * Depth of a term in its hierarchy.
 	 *
 	 * @param int   $term_id Term ID.
@@ -312,7 +425,7 @@ final class ClusterBuilder {
 	/**
 	 * Primary term: SEO plugin primary category when set, else the deepest assigned term.
 	 *
-	 * @param array $p           Profile.
+	 * @param array $p           Assigned terms and SEO plugins' primary category meta of the post.
 	 * @param array $terms       Term map (in-scope term documents of this locale).
 	 * @param int   $default_cat Default ("Uncategorized") category ID.
 	 * @return int
@@ -328,8 +441,8 @@ final class ClusterBuilder {
 		if ( array() === $assigned ) {
 			return 0;
 		}
-		foreach ( array( '_yoast_wpseo_primary_category', 'rank_math_primary_category' ) as $key ) {
-			$primary = (int) get_post_meta( $p['object_id'], $key, true );
+		foreach ( self::PRIMARY_KEYS as $key ) {
+			$primary = isset( $p['primary'][ $key ] ) ? (int) $p['primary'][ $key ] : 0;
 			if ( $primary > 0 && in_array( $primary, $assigned, true ) ) {
 				return $primary;
 			}
@@ -354,7 +467,7 @@ final class ClusterBuilder {
 	private static function centroid( array $ids, array $profiles ) {
 		$sum = array();
 		foreach ( $ids as $id ) {
-			foreach ( $profiles[ $id ]['lexvec'] as $t => $w ) {
+			foreach ( self::lexvec( $profiles[ $id ] ) as $t => $w ) {
 				$sum[ $t ] = ( isset( $sum[ $t ] ) ? $sum[ $t ] : 0.0 ) + $w;
 			}
 		}

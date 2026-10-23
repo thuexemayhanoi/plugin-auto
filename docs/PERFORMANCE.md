@@ -13,6 +13,32 @@ All numbers below are **measured**, not estimated, with `tests/bench/run-bench.s
   hand-written site would.
 * **Tier:** lexical (no model). Embeddings are computed outside PHP (browser or private worker).
 
+## Independent audit (1.0.0-beta.3): large sites
+
+Measured on the same machine; details in [QA-AUDIT-REPORT.md](QA-AUDIT-REPORT.md) §6 and
+[`audit-bench-20000-partial.json`](evidence/audit-bench-20000-partial.json),
+[`audit-cluster-step-20000.json`](evidence/audit-cluster-step-20000.json),
+[`bench-1000-beta3.json`](evidence/bench-1000-beta3.json),
+[`audit-neardup-1500.json`](evidence/audit-neardup-1500.json).
+
+* **Corrected claim:** before 1.0.0-beta.3, a background tick did **not** always stay within its
+  budget. Batches were fixed at 25 objects, and the budget was only checked between batches. On
+  20,000 posts, one tick with a 20 s budget took 68 s. Batches are now sized from the measured time
+  per item: 20.5–22.1 s per 20 s tick.
+* **Cluster step**, 20,000 posts:
+  * before: one step, 159 s, 759 MB peak, fatal under a 256 MB WP-Cron request;
+  * now: 10.7 s, 156 MB, identical results.
+* **Still slow at 20,000 posts (not fixed; needs a df-statistics redesign):** the pairs phase takes
+  0.52 s per document in one CLI process (≈ 3 h in total) and ≈ 5 s per document in WP-Cron ticks,
+  where every request starts with cold document-frequency caches. At 6,000 posts it is 0.17–0.26 s
+  per document. The reference blog has ≈ 1,083 URLs.
+* **1,000 posts (beta.3):** 94.2 s for a full CLI run, 131 MB. **6,000 posts (beta.3 before the
+  cluster/tick fixes):** 1,999 s, 303 MB, `/status` median 86 ms
+  ([`bench-6000-beta3.json`](evidence/bench-6000-beta3.json); other tests ran on the machine part of
+  the time).
+* **1,500 near-duplicate posts:** 295 s, 167 MB, 37,362 overlap pairs (24.9 per post; candidate
+  search is bounded, not all-pairs).
+
 ## Analysis throughput and memory
 
 | Posts | Documents (posts + terms) | One background tick (budget 20 s) | Full inventory + analysis (one CLI process) | Peak RSS of that process | Plugin tables |
@@ -26,8 +52,8 @@ rows, 14,894 findings.
 
 What this means in practice:
 
-* Background work never exceeds the per-tick time budget (default 20 s, configurable 3–50 s)
-  and the default batch of 25 objects; a WP-Cron tick stays well under typical PHP limits
+* Background work stays within the per-tick time budget (default 20 s, configurable 3–50 s); since
+  1.0.0-beta.3 batches are sized from the measured time per object (at most 25 by default); a WP-Cron tick stays well under typical PHP limits
   (`max_execution_time` 30 s) and memory limits (≥ 64 MB was enough; WordPress' default admin
   limit is 256 MB).
 * A 1,000-post site is fully analysed in ≈ 3.5 minutes of background work. Time per post grows

@@ -1,0 +1,15 @@
+{
+  "fixture": "1,500 SYNTHETIC near-duplicate VI posts (scratchpad/probes/gen_dups.php): one template, only a number and one modifier word differ",
+  "commit": "c9f46bf",
+  "wordpress": "7.1.3",
+  "inventory_seconds": 18,
+  "analysis_seconds": 276,
+  "full_cli_wall_seconds": 295.07,
+  "full_cli_max_rss_mb": 167.3,
+  "jobs": "inventory completed 1504/1504, analyze completed 4515/4515, attempts 0",
+  "open_findings": {"cannibalization/near_duplicate": 37362, "cannibalization/distinct_facet": 91, "qa/orphan": 1502, "qa/near_duplicate": 1500, "qa/language_mismatch": 1500, "qa/thin_for_intent": 1500, "qa/few_cluster_links": 1500},
+  "pairs_per_post": 24.9,
+  "pairs_if_all_compared": 1124250,
+  "overlap_groups": 1,
+  "latency_ms": {"matrix sort=risk page 1": 1395, "matrix has_risk": 1039, "api cannibalization limit 50": 39, "api url_analysis": 13, "api list_urls has_risk": 620}
+}

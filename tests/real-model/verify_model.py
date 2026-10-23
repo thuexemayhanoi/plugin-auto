@@ -103,6 +103,12 @@ def main():
     corpus = export("corpus")
     docs = [d for d in corpus["docs"]]
     texts = [d["text"] for d in docs]
+    # Longer than max_tokens (Qwen splits every digit into its own token): the browser must keep the
+    # end-of-text token when it truncates, as the private worker's tokenizer does. Synthetic test text.
+    long_text = "Mẫu kiểm thử bảng số liệu. " + " ".join(
+        "Dòng %d: mẫu xe %d, %d.%03d.000 đồng mỗi ngày, %d.%03d.000 đồng mỗi tuần, đặt cọc %d.%03d.000 đồng." % (i, i * 7, i % 9 + 1, i * 13 % 1000, i % 7 + 2, i * 29 % 1000, i % 5 + 2, i * 31 % 1000)
+        for i in range(1, 61)
+    )
     offered = [d for d in prof["files"] if d != "common"]
 
     report = {
@@ -151,8 +157,9 @@ def main():
             vectors[dtype] = vecs
             if dtype in ("q4f16", "fp16", "q8", "q4", "bnb4"):
                 q = [emb.format_query(x) for x in prof["reference"]["queries"]]
-                inputs = [{"text": x, "role": "query"} for x in prof["reference"]["queries"]] + [{"text": x, "role": "document"} for x in prof["reference"]["documents"]] + [{"text": d["text"], "role": "document"} for d in docs[:4]]
-                ref_vecs = emb.embed(q) + emb.embed(list(prof["reference"]["documents"])) + [v for v in vecs[:4]]
+                inputs = [{"text": x, "role": "query"} for x in prof["reference"]["queries"]] + [{"text": x, "role": "document"} for x in prof["reference"]["documents"]] + [{"text": d["text"], "role": "document"} for d in docs[:4]] + [{"text": long_text, "role": "document"}]
+                ref_vecs = emb.embed(q) + emb.embed(list(prof["reference"]["documents"])) + [v for v in vecs[:4]] + emb.embed([long_text])
+                report["long_text_tokens"] = len(emb.tok.encode(long_text).ids)
                 browser_vectors["items"] = inputs
                 browser_vectors["vectors"][dtype] = [[float(x) for x in v] for v in ref_vecs]
         except Exception as e:  # noqa: BLE001 - recorded, not hidden

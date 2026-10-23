@@ -89,7 +89,8 @@ final class MatrixQuery {
 		// A document is on either side of an overlap pair. Each side is looked up through its own
 		// index: one `document_id = d.id OR target_id = d.id` condition scanned every open overlap
 		// finding for each row (measured: 459 ms for 20 rows at 1,000 synthetic posts).
-		$risk  = "SELECT MAX(c.score) FROM {findings} c WHERE c.%s = d.id AND c.type = 'cannibalization' AND c.status = 'open' AND c.label = 'risk_hypothesis'";
+		// Exact duplicates are labelled 'warning' (a fact, not a hypothesis): they are risks too.
+		$risk  = "SELECT MAX(c.score) FROM {findings} c WHERE c.%s = d.id AND c.type = 'cannibalization' AND c.status = 'open' AND c.label IN ('risk_hypothesis','warning')";
 		$group = "SELECT c2.group_key FROM {findings} c2 WHERE c2.%s = d.id AND c2.type = 'cannibalization' AND c2.status = 'open' AND LEFT(c2.group_key, 3) = 'cg-' LIMIT 1";
 		return "(SELECT COUNT(*) FROM {findings} q WHERE q.document_id = d.id AND q.type = 'qa' AND q.status = 'open') AS qa_count,
 			(SELECT COUNT(*) FROM {findings} l WHERE l.document_id = d.id AND l.type = 'link' AND l.status IN ('open','proposed')) AS link_count,
@@ -155,7 +156,7 @@ final class MatrixQuery {
 			$w[] = "EXISTS (SELECT 1 FROM {findings} q WHERE q.document_id = d.id AND q.type = 'qa' AND q.status = 'open')";
 		}
 		if ( ! empty( $f['has_risk'] ) ) {
-			$w[] = "(EXISTS (SELECT 1 FROM {findings} c WHERE c.document_id = d.id AND c.type = 'cannibalization' AND c.status = 'open' AND c.label = 'risk_hypothesis') OR EXISTS (SELECT 1 FROM {findings} c WHERE c.target_id = d.id AND c.type = 'cannibalization' AND c.status = 'open' AND c.label = 'risk_hypothesis'))";
+			$w[] = "(EXISTS (SELECT 1 FROM {findings} c WHERE c.document_id = d.id AND c.type = 'cannibalization' AND c.status = 'open' AND c.label IN ('risk_hypothesis','warning')) OR EXISTS (SELECT 1 FROM {findings} c WHERE c.target_id = d.id AND c.type = 'cannibalization' AND c.status = 'open' AND c.label IN ('risk_hypothesis','warning')))";
 		}
 		if ( isset( $f['excluded'] ) && '' !== (string) $f['excluded'] ) {
 			$w[]    = 'd.excluded = %d';

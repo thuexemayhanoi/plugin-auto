@@ -375,6 +375,38 @@ export function createPinnedFetch( o ) {
 }
 
 /**
+ * Puts the end-of-text token back as the last real token of every row that does not end with it.
+ *
+ * Transformers.js truncates after the end token was appended, so an input longer than max_length
+ * ended on a content token and last-token pooling read the wrong position. The Rust tokenizer used
+ * by the private worker keeps max_length - 1 content tokens and the end token; this reproduces it.
+ * Works for left and right padding; returns the number of rows changed (0 for short inputs).
+ *
+ * @param {{dims: number[], data: BigInt64Array|Int32Array|number[]}} ids  input_ids tensor.
+ * @param {{dims: number[], data: ArrayLike<number|bigint>}}          mask attention_mask tensor.
+ * @param {number}                                                     endId End token id.
+ * @return {number}
+ */
+export function restoreEndToken( ids, mask, endId ) {
+	const [ b, s ] = ids.dims;
+	let changed = 0;
+	for ( let i = 0; i < b; i++ ) {
+		let last = -1;
+		for ( let j = s - 1; j >= 0; j-- ) {
+			if ( Number( mask.data[ i * s + j ] ) === 1 ) {
+				last = i * s + j;
+				break;
+			}
+		}
+		if ( last >= 0 && Number( ids.data[ last ] ) !== endId ) {
+			ids.data[ last ] = typeof ids.data[ last ] === 'bigint' ? BigInt( endId ) : endId;
+			++changed;
+		}
+	}
+	return changed;
+}
+
+/**
  * Converts an attention-mask tensor (int64 BigInt data) to number rows.
  *
  * @param {{dims: number[], data: ArrayLike<number|bigint>}} t Tensor.

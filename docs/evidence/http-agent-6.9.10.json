@@ -2,7 +2,7 @@
  "wordpress": "6.9.10",
  "abilities": true,
  "mcp_adapter": true,
- "when": "2026-10-23T11:54:06.325Z",
+ "when": "2026-10-23T14:19:24.706Z",
  "results": [
   {
    "name": "guest is refused (401) on every read route",
@@ -47,7 +47,7 @@
   {
    "name": "analyst can create an exact-diff preview (proposal), which writes nothing",
    "ok": true,
-   "detail": "proposal #1, diff_hash 6fc67d1aa352"
+   "detail": "proposal #1, diff_hash 4c66ff0fa164"
   },
   {
    "name": "no REST route exists to approve (agents can never approve)",
@@ -97,12 +97,12 @@
   {
    "name": "rate limiting returns 429 with Retry-After",
    "ok": true,
-   "detail": "Retry-After 57"
+   "detail": "Retry-After 39"
   },
   {
    "name": "audit log records agent actions without secrets; agents only see their own entries",
    "ok": true,
-   "detail": "4 own entries"
+   "detail": "3 own entries"
   },
   {
    "name": "Abilities: registered but not exposed over REST until opted in",

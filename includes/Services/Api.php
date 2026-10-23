@@ -267,9 +267,12 @@ final class Api {
 			)
 		);
 		$cluster  = (int) $doc['cluster_id'] > 0 ? Db::row( 'SELECT id, label, role, locale, recommended_pillar_id, locked, review_state FROM {clusters} WHERE id = %d', array( (int) $doc['cluster_id'] ) ) : null;
-		$related  = Db::rows( 'SELECT r.related_id, r.score, r.rank_pos, d.title, d.url FROM {related} r JOIN {documents} d ON d.id = r.related_id WHERE r.document_id = %d ORDER BY r.rank_pos ASC', array( $id ) );
-		$out      = Db::rows( 'SELECT target_url, anchor, resolution, target_id, http_status FROM {links} WHERE source_id = %d LIMIT 100', array( $id ) );
-		$in       = Db::rows( 'SELECT l.source_id, d.title, d.url, l.anchor FROM {links} l JOIN {documents} d ON d.id = l.source_id WHERE l.target_id = %d AND l.resolution = %s LIMIT 100', array( $id, 'resolved' ) );
+		// Titles and URLs of drafts, private or pending posts are only shown to people who can edit
+		// them (never to agent accounts), as for the document itself.
+		$public  = self::can_see_private() ? '' : " AND d.status = 'publish'";
+		$related = Db::rows( 'SELECT r.related_id, r.score, r.rank_pos, d.title, d.url FROM {related} r JOIN {documents} d ON d.id = r.related_id WHERE r.document_id = %d' . $public . ' ORDER BY r.rank_pos ASC', array( $id ) );
+		$out     = Db::rows( 'SELECT target_url, anchor, resolution, target_id, http_status FROM {links} WHERE source_id = %d LIMIT 100', array( $id ) );
+		$in      = Db::rows( 'SELECT l.source_id, d.title, d.url, l.anchor FROM {links} l JOIN {documents} d ON d.id = l.source_id WHERE l.target_id = %d AND l.resolution = %s' . $public . ' LIMIT 100', array( $id, 'resolved' ) );
 		return array(
 			'document'         => array(
 				'id'                 => $id,

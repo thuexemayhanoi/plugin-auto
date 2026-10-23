@@ -1,7 +1,7 @@
 <?php
 /**
- * Exception safety of the write path: kses is always restored, failed writes are reverted and
- * reported honestly, and no other post field may change.
+ * Exception safety of the write path: kses filters stay active (the write never removes them),
+ * failed writes are reverted and reported honestly, and no other post field may change.
  *
  * @package SemanticSEO
  */
@@ -112,15 +112,15 @@ final class ChangeExecutorSafetyTest extends TestCase {
 		$before        = get_post_field( 'post_content', $this->post_id, 'raw' );
 		kses_init_filters();
 		$thrown = 0;
-		$filter = static function ( $data ) use ( &$thrown ) {
+		// pre_post_update is the last hook before the row is written.
+		$hook = static function () use ( &$thrown ) {
 			if ( 0 === $thrown++ ) {
-				throw new \LogicException( 'filter failed' );
+				throw new \LogicException( 'pre_post_update failed' );
 			}
-			return $data;
 		};
-		add_filter( 'wp_insert_post_data', $filter );
+		add_action( 'pre_post_update', $hook );
 		$res = $this->apply( $p, $a );
-		remove_filter( 'wp_insert_post_data', $filter );
+		remove_action( 'pre_post_update', $hook );
 
 		$this->assertWPError( $res );
 		$this->assert_kses_active();
@@ -133,15 +133,17 @@ final class ChangeExecutorSafetyTest extends TestCase {
 		$before        = get_post_field( 'post_content', $this->post_id, 'raw' );
 		$title         = get_post_field( 'post_title', $this->post_id, 'raw' );
 		$changed       = 0;
-		$filter        = static function ( $data ) use ( &$changed ) {
+		// Another plugin reacts to the update by changing the title.
+		$hook = static function ( $post_id ) use ( &$changed ) {
+			global $wpdb;
 			if ( 0 === $changed++ ) {
-				$data['post_title'] = 'Changed by another plugin';
+				$wpdb->update( $wpdb->posts, array( 'post_title' => 'Changed by another plugin' ), array( 'ID' => $post_id ) );
+				clean_post_cache( $post_id );
 			}
-			return $data;
 		};
-		add_filter( 'wp_insert_post_data', $filter );
+		add_action( 'save_post', $hook );
 		$res = $this->apply( $p, $a );
-		remove_filter( 'wp_insert_post_data', $filter );
+		remove_action( 'save_post', $hook );
 
 		$this->assertWPError( $res );
 		$this->assertSame( $before, get_post_field( 'post_content', $this->post_id, 'raw' ), 'content reverted' );
