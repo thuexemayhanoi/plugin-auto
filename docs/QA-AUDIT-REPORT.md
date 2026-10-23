@@ -16,9 +16,9 @@ và trong các bài test được nêu tên trong báo cáo.
 
 | Câu hỏi | Trả lời |
 | --- | --- |
-| Đã chứng minh bao nhiêu lỗi nghiêm trọng? | **22 lỗi nghiêm trọng** (8 P0 và 14 P1), cộng thêm 6 lỗi P2 và 3 lỗi P3. Tổng cộng 31 lỗi. Mỗi lỗi có một bài test **thất bại trên code cũ** ([`audit-regressions.json`](evidence/audit-regressions.json)). Riêng E1 (worker trình duyệt) được kiểm chứng bằng mô hình thật trong CI. |
-| Đã sửa bao nhiêu? | **31/31.** Mỗi bản sửa có test hồi quy. Không xóa test nào, không nới ngưỡng nào. |
-| Có kiến trúc nào cần thiết kế lại không? | **Có, hai chỗ.** (1) **Đường ghi thay đổi đã được thiết kế lại** trong đợt này: thay `wp_update_post()` bằng phép ghi so-sánh-rồi-ghi (compare-and-set) chỉ chạm `post_content`. (2) **Cách tính thống kê từ vựng (df/BM25) cần thiết kế lại cho site từ khoảng 10.000 bài trở lên.** Đo được thời gian phân tích tăng nhanh hơn tuyến tính (§6), và việc này **chưa làm** vì cần đổi schema. |
+| Đã chứng minh bao nhiêu lỗi nghiêm trọng? | **24 lỗi nghiêm trọng** (8 P0 và 16 P1), cộng thêm 6 lỗi P2 và 3 lỗi P3. Tổng cộng 33 lỗi. Mỗi lỗi có một bài test **thất bại trên code cũ** ([`audit-regressions.json`](evidence/audit-regressions.json)). Riêng E1 (worker trình duyệt) được kiểm chứng bằng mô hình thật trong CI. |
+| Đã sửa bao nhiêu? | **33/33.** Mỗi bản sửa có test hồi quy. Không xóa test nào, không nới ngưỡng nào. |
+| Có kiến trúc nào cần thiết kế lại không? | **Có, hai chỗ.** (1) **Đường ghi thay đổi đã được thiết kế lại** trong đợt này: thay `wp_update_post()` bằng phép ghi so-sánh-rồi-ghi (compare-and-set) chỉ chạm `post_content`. (2) **Cách tính thống kê từ vựng (df/BM25) cần thiết kế lại cho site từ khoảng 10.000 bài trở lên.** Đo được thời gian phân tích tăng nhanh hơn tuyến tính (§6), và việc này **chưa làm** vì cần đổi schema. Riêng bước dựng cụm, bước làm vỡ giới hạn bộ nhớ của WP-Cron, **đã được sửa** (§3.6). |
 | Test nào ĐẠT / LỖI / CHƯA CHẠY? | Xem §10. Tất cả bộ test chạy được đều ĐẠT, không có LỖI. CHƯA CHẠY: GPU thật, iPhone thật, ChatGPT hoặc ứng dụng MCP thật, staging của site thật, và benchmark 20.000 bài chạy trọn vẹn (chỉ chạy một phần, có ghi rõ). |
 | Plugin đã an toàn để thử trên staging chưa? | **Có, với bản 1.0.0-beta.3, trên một bản sao staging có backup.** **Không** dùng bản 1.0.0-beta.2 để áp dụng thay đổi: các lỗi P0 của nó có thể làm đổi URL, gỡ xuất bản bài, hoặc ghi đè bài đang được biên tập. Production: chưa, vẫn là BETA. |
 | Việc nào cần người vận hành quyết định? | Xem §11. |
@@ -137,13 +137,20 @@ Không tìm thấy lỗi P0/P1 nào về phân quyền: xem §5, kịch bản "n
 * Bài liên quan: P@3 0,604.
 * Chồng lấn: tìm thấy 3/3 cặp kỳ vọng, 0 dương tính giả trên 7 cặp đối chứng.
 
+### 3.6 Site lớn: 2 lỗi, commit `a55bd3e`, `674d72a`
+
+| # | Mức | Lỗi | Test / bằng chứng |
+| --- | --- | --- | --- |
+| 32 | P1 | Bước dựng cụm đọc **mọi** tài liệu cùng profile đầy đủ vào bộ nhớ một lúc, và chạy 2 truy vấn đếm liên kết cho mỗi thành viên. Ở 20.000 bài: 159 giây, đỉnh 759 MB, và **fatal "Allowed memory size of 268435456 bytes exhausted"** khi chạy như một request WP-Cron giới hạn 256 MB. Phân tích nền vì thế không bao giờ hoàn tất. | `ClusterScaleTest` (48 truy vấn so với tối đa 16). Ở 20.000 bài: **10,7 giây, 156 MB** dưới giới hạn 256 MB; cụm, cụm của từng tài liệu trong 20.010 tài liệu, và bằng chứng pillar đều **giống hệt (MD5)** bản cũ ([`audit-cluster-step-20000.json`](evidence/audit-cluster-step-20000.json)) |
+| 33 | P1 | Tick chạy lô cố định 25 mục, chỉ kiểm tra ngân sách thời gian giữa các lô. Ở 20.000 bài, một tick ngân sách 20 giây chạy tới **68 giây**, đủ để giới hạn thời gian request của host ngắt nó trước khi tiến độ kịp được lưu. | `TickBudgetTest` (5,00 giây cho ngân sách 1 giây trước khi sửa). Ở 20.000 bài: 20,5–22,1 giây mỗi tick 20 giây, đỉnh 54 MB |
+
 ## 4. Giả thuyết chưa sửa (có lý do)
 
 | Hạng mục | Trạng thái | Lý do / đề xuất |
 | --- | --- | --- |
 | Anchor cắt ngang từ ghép: "thuê xe máy" bên trong "thuê xe máy **điện**" (P2) | **Đã tái hiện**, chưa sửa | Cần từ điển từ ghép tiếng Việt. Bản xem trước hiển thị `…[thuê xe máy] điện…` và luôn cần người duyệt. Cần quyết định có thêm từ điển hay không. |
 | Cờ "dirty" bị ghi đè khi bài được sửa đúng lúc job incremental đang chạy (P2) | **Đã tái hiện** (probe F5), chưa sửa | Phân tích của bài đó cũ cho đến lần sửa sau hoặc lần chạy đầy đủ tiếp theo. Cách sửa đúng cần cột thời điểm "dirty" (đổi schema). |
-| Hiệu năng phân tích ở 20.000 bài; RSS của tiến trình CLI chạy dài đạt khoảng 780 MB (P1 cho site rất lớn) | **Đo được** (§6), chưa sửa | Cần thiết kế lại phần thống kê df (bảng df theo locale, cập nhật khi đánh chỉ mục) và phép join hẹp hơn. WP-Cron chạy theo tick, mỗi request là một tiến trình mới nên không tích lũy bộ nhớ. |
+| Tốc độ phân tích cặp ở 20.000 bài (P1 cho site rất lớn): CLI 0,52 giây/bài; **WP-Cron 5 giây/bài**, vì mỗi tick là một request mới và phải dựng lại cache df từ đầu. Ước tính khoảng 28 giờ tick nền. | **Đo được** (§6), chưa sửa | Cần thiết kế lại phần thống kê df: bảng df theo locale, cập nhật khi đánh chỉ mục, và phép join hẹp hơn. **Blog thật có khoảng 1.083 URL** (census), thuộc nhóm 1.000 bài, nơi hiệu năng ổn. Bộ nhớ 780 MB đo được trước đây của tiến trình CLI chủ yếu đến từ bước dựng cụm (#32, đã sửa). |
 | Lease embedding cố định 180 giây, không gia hạn, tải lên theo kiểu tất cả hoặc không (P2). Self-test hết hạn sau 24 giờ. Vector hằng số vẫn được chấp nhận (P3). | Chưa sửa | Thiết bị chậm có thể phải làm lại một lô. Tài khoản worker gian lận vẫn có thể gửi vector sai: đây là giới hạn đã ghi trong `SECURITY.md`. |
 | Agent đọc được job của người khác; phát hiện của bài đã bị gỡ xuất bản vẫn đọc được cho đến lần phân tích sau; analyst mở lại được phát hiện đã bỏ qua (P3) | Chưa sửa | Rủi ro thấp: chỉ là siêu dữ liệu, trong phạm vi vai trò đã được cấp. |
 | Gợi ý "có thể là bản dịch" cho bài EN khai báo độc lập (P2). Một truy vấn GSC duy nhất cũng bị coi là cạnh tranh cao (P2). Broken link báo sai khi post type đã bị xóa hoặc slug đã vào thùng rác (P2). Template meta của Rank Math không được đọc (P2). | Chưa sửa | Cần dữ liệu thật và quyết định nghiệp vụ. Tất cả chỉ là *gợi ý*, không tự ghi gì. |
@@ -175,7 +182,7 @@ Môi trường: 4 vCPU, 16 GB RAM, MariaDB 10.11.14, PHP 8.3.6, WP 7.1.3. Tái l
 | 1.000 (**beta.3**) | **94,2 giây** | 131 MB | 49 ms | [`bench-1000-beta3.json`](evidence/bench-1000-beta3.json) |
 | 6.000 (beta.2) | 1.852,6 giây | 295 MB | 108 ms | `bench-6000` (PR #1) |
 | 6.000 (**beta.3**) | BENCH6_BETA3 | | | |
-| 20.000 (một phần) | Kiểm kê 301 giây; phân tích cặp **0,52 giây/bài** (trung vị, đo riêng 150 bài) ⇒ ước tính khoảng **3 giờ** cho 20.010 bài | 73 MB (150 bài); **773–791 MB** với tiến trình CLI chạy 42 phút | 950 ms *(đo trong lúc phân tích đang chạy)* | [`audit-bench-20000-partial.json`](evidence/audit-bench-20000-partial.json) |
+| 20.000 (một phần) | Kiểm kê 301 giây; phân tích cặp **0,52 giây/bài** qua CLI (trung vị, đo riêng 150 bài) ⇒ ước tính khoảng **3 giờ** cho 20.010 bài; qua tick kiểu WP-Cron **5 giây/bài** | 73 MB (150 bài); **773–791 MB** với tiến trình CLI chạy 42 phút trước khi sửa #32; bước dựng cụm 759 MB ⇒ 156 MB | 950 ms *(đo trong lúc phân tích đang chạy)* | [`audit-bench-20000-partial.json`](evidence/audit-bench-20000-partial.json), [`audit-cluster-step-20000.json`](evidence/audit-cluster-step-20000.json) |
 
 **Kết luận hiệu năng:**
 
@@ -185,7 +192,11 @@ Môi trường: 4 vCPU, 16 GB RAM, MariaDB 10.11.14, PHP 8.3.6, WP 7.1.3. Tái l
   * **Ứng viên BM25:** 0,35 giây/bài. Truy vấn này join `postings` với `documents`, phải tra từng
     dòng `documents` rất rộng.
   * **Đếm df:** 0,17 giây/bài.
-* Đây là giới hạn kiến trúc nêu ở §1: cần một bảng df riêng và một phép join hẹp hơn.
+* Qua WP-Cron, mỗi tick là một request mới nên phải dựng lại cache df từ đầu: khoảng 5 giây/bài ở
+  20.000 bài. Sau bản sửa #33, mỗi tick giữ đúng ngân sách thời gian, nhưng tổng thời gian chạy nền
+  vẫn dài.
+* Đây là giới hạn kiến trúc nêu ở §1: cần một bảng df riêng và một phép join hẹp hơn. Bước dựng cụm
+  (từng không chạy xong được dưới WP-Cron) đã được sửa (#32).
 * Bản 20.000 bài **không được chạy trọn**: đã dừng chủ động, và mọi con số trên đều là số đo thật,
   phần ước tính có ghi rõ là ước tính.
 
@@ -200,7 +211,11 @@ Môi trường: 4 vCPU, 16 GB RAM, MariaDB 10.11.14, PHP 8.3.6, WP 7.1.3. Tái l
   số bị tách thành rất nhiều token (Qwen tách từng chữ số), nên dễ chạm giới hạn độ dài.
   * Workflow mô hình thật thêm `long_text` vào phép so sánh A3 (trình duyệt so với Python, yêu cầu
     cosine ≥ 0,99).
-  * Kết quả trên beta.3: REALMODEL_RESULT.
+  * Kết quả trên beta.3: **ĐẠT** (run [39962364490](https://github.com/thuexemayhanoi/plugin-auto/actions/runs/39962364490), commit `01bd4bc`, tiền xử lý `p2`):
+    * trình duyệt so với Python ONNX Runtime: cosine nhỏ nhất **0,999269 trên 9 văn bản** (có `long_text`);
+    * self-test q4f16: |Δ| 0,0054 (dung sai 0,03); fp16: |Δ| 0,0005;
+    * đánh giá hybrid: liên kết R@3 0,702, P@3 0,521; chồng lấn 30 cặp, 0 dương tính giả, 3/3 cặp kỳ vọng; cặp bản dịch: precision 1,0, recall 0,778 ở ngưỡng 0,70;
+    * worker riêng dùng mô hình thật: 89/89 vector, Δ 0,0 so với tính lại độc lập.
 * **VI/EN:** chỉ so sánh trong cùng locale. Cặp có thể là bản dịch được tính riêng bằng phương pháp
   mutual-best, với ngưỡng 0,70.
 * **Giới hạn thiết bị:**
@@ -249,7 +264,7 @@ Môi trường: 4 vCPU, 16 GB RAM, MariaDB 10.11.14, PHP 8.3.6, WP 7.1.3. Tái l
 | Giao diện quản trị (Playwright, axe, giả lập mobile) | cục bộ | **ĐẠT** 11/11 |
 | Probe đồng thời qua HTTP | cục bộ | **ĐẠT** (§5) |
 | CI 18 job (lint ×6, unit ×4, integration ×4, WPCS, JS, ZIP, coexistence) | GitHub Actions | CI_RESULT |
-| Mô hình Qwen3 thật | GitHub Actions | REALMODEL_RESULT |
+| Mô hình Qwen3 thật (run 39962364490) | GitHub Actions | **ĐẠT** (9/9 kiểm tra trình duyệt, hybrid, worker riêng 89/89) |
 | Benchmark 20.000 bài chạy trọn | — | **CHƯA CHẠY TRỌN** (dừng chủ động, §6) |
 | GPU thật, iPhone thật, ChatGPT/MCP client thật, staging của site thật | — | **CHƯA KIỂM CHỨNG** |
 

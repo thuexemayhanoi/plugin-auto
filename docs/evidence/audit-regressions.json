@@ -41,6 +41,16 @@
    "test": "tests/php/Integration/SeoLogicTest.php",
    "failing_before": "4/4",
    "fix": "c9f46bf"
+  },
+  {
+   "test": "tests/php/Integration/ClusterScaleTest.php",
+   "failing_before": "1/2 (48 link-count queries for 16 allowed; the primary-category test guards unchanged behaviour)",
+   "fix": "a55bd3e"
+  },
+  {
+   "test": "tests/php/Integration/TickBudgetTest.php",
+   "failing_before": "1/1 (tick 5.00 s for a 1 s budget)",
+   "fix": "674d72a"
   }
  ]
 }
