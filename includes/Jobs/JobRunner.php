@@ -25,6 +25,11 @@ final class JobRunner {
 	const LEASE_TTL = 90;
 
 	/**
+	 * First batch of a job while its time per item is unknown.
+	 */
+	const FIRST_BATCH = 5;
+
+	/**
 	 * Lease held by this process ([job ID, owner]) while a tick runs, for the fatal-error handler.
 	 *
 	 * @var array|null
@@ -122,8 +127,12 @@ final class JobRunner {
 				'message' => 'unknown type',
 			);
 		}
-		$batch = (int) Settings::get( 'batch_size', 25 );
-		$delay = 0;
+		// Batches are sized from the measured time per item (kept in the job state), so one batch
+		// cannot run far past the budget on a large site, where the host's request time limit would
+		// kill the tick before its progress is saved.
+		$max_batch = max( 1, (int) Settings::get( 'batch_size', 25 ) );
+		$batch     = isset( $state['seconds_per_item'] ) ? self::fit_batch( $max_batch, (float) $state['seconds_per_item'], $budget ) : min( $max_batch, self::FIRST_BATCH );
+		$delay     = 0;
 		Db::take_errors();
 		self::watch_fatal( $job_id, $owner );
 		try {
@@ -136,12 +145,21 @@ final class JobRunner {
 			}
 			while ( true ) {
 				$job['state'] = $state;
+				$batch_start  = microtime( true );
 				$res          = call_user_func( array( $class, 'step' ), $job, $batch );
 				// A batch whose writes failed is not progress: fail it (retry with backoff) instead of
 				// saving its state, so a lost write is redone rather than reported as done.
 				self::assert_no_db_error( $job );
 				++$batches;
+				$speed = isset( $state['seconds_per_item'] ) ? (float) $state['seconds_per_item'] : null;
 				$state = $res['state'];
+				if ( (int) $res['done'] > 0 ) {
+					$measured = ( microtime( true ) - $batch_start ) / (int) $res['done'];
+					$speed    = null === $speed ? $measured : ( $speed + $measured ) / 2;
+				}
+				if ( null !== $speed ) {
+					$state['seconds_per_item'] = round( $speed, 4 );
+				}
 				$done += (int) $res['done'];
 				if ( isset( $res['total'] ) ) {
 					$total = (int) $res['total'];
@@ -176,9 +194,11 @@ final class JobRunner {
 					$delay = isset( $res['delay'] ) ? (int) $res['delay'] : 0;
 					break;
 				}
-				if ( ( microtime( true ) - $start ) >= $budget ) {
+				$left = $budget - ( microtime( true ) - $start );
+				if ( $left <= 0 ) {
 					break;
 				}
+				$batch = null === $speed ? $batch : self::fit_batch( $max_batch, $speed, $left );
 			}
 		} catch ( \Throwable $e ) {
 			$status = JobRepository::fail( $job_id, $owner, $e->getMessage() );
@@ -199,6 +219,21 @@ final class JobRunner {
 			'batches' => $batches,
 			'message' => $delay > 0 ? 'waiting for external workers' : 'time budget reached; will resume',
 		);
+	}
+
+	/**
+	 * Items that fit in a number of seconds at a measured speed (at least 1, at most the setting).
+	 *
+	 * @param int   $max     Batch size setting.
+	 * @param float $speed   Seconds per item.
+	 * @param float $seconds Seconds available.
+	 * @return int
+	 */
+	private static function fit_batch( $max, $speed, $seconds ) {
+		if ( $speed <= 0 ) {
+			return $max;
+		}
+		return max( 1, min( $max, (int) floor( $seconds / $speed ) ) );
 	}
 
 	/**
