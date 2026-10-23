@@ -36,7 +36,7 @@ includes/
   Gsc/                          Import of genuine Search Console CSV exports (page, query, metrics, period, source)
   Jobs/                         JobRepository, JobRunner (leases, heartbeat, cursor, retry/backoff, cancel/pause)
   Approval/                     ProposalService (exact diff + diff hash), ApprovalService (human-only, single use, expiry),
-                                ChangeExecutor (mutex, stale check, snapshot, write, readback verify, auto-revert), Operations
+                                ChangeExecutor (mutex, re-validation, snapshot, compare-and-set write, readback verify, own-write undo, reconcile), Operations
   Rollback/                     RollbackService (exact / surgical / manual-recovery)
   Locks/                        LockService (document, cluster and URL-pattern locks/exclusions)
   Audit/                        AuditLog (redacted, IP hashed, retention)
@@ -91,7 +91,7 @@ flowchart LR
 3. **Embeddings** (optional) are queued per document summary/chunk; the browser worker or private worker claims leased items via REST, computes vectors with the pinned model and uploads them. Every vector stores `model_id, revision, dtype, dimension, preprocess_version, locale, content_hash`; a profile change makes old vectors ineligible automatically.
 4. **Proposals** are created from findings (e.g. an internal-link suggestion) as an exact diff against a recorded base content hash; `diff_hash = sha256(canonical JSON)`.
 5. **Approval** can only be created by a human in WP Admin (cookie session + nonce + `sseo_review`), never through Application Passwords or Abilities. It binds proposal ID, object IDs, diff hash, action category, approver and expiry, and is single-use.
-6. **Apply** (human in Admin, or an agent account explicitly allowed by the administrator) atomically consumes the approval, takes an object mutex, re-checks the base hash, snapshots, writes with `wp_update_post`, reads back and verifies the expected hash, auto-reverts on mismatch and logs everything with an idempotency key.
+6. **Apply** (human in Admin, or an agent account explicitly allowed by the administrator) atomically consumes the approval, takes an object mutex, re-checks the base hash, that the source is still published and that the link target is still published at the approved URL, snapshots, then writes `post_content` with a compare-and-set (`UPDATE … WHERE SHA2(post_content) = base hash`: an edit saved at the same moment is never overwritten), reads the stored bytes back, fires the hooks `wp_insert_post()` fires (caches, SEO plugins, revisions), checks that no other post field nor the URL changed (otherwise undoes its own write only, never another edit) and logs everything with an idempotency key. `wp_update_post()` is not used: it re-saves the whole post and can change the slug, status, categories and tags. A change left in `applying` by a process that died is settled from the stored value.
 7. **Rollback** restores the snapshot when the object is unchanged since apply; otherwise performs a verified surgical revert or reports that manual recovery is needed.
 
 ## 4. Storage [§12]

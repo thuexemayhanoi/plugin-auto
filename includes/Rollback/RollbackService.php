@@ -44,6 +44,10 @@ final class RollbackService {
 		if ( null === $c ) {
 			return new \WP_Error( 'sseo_not_found', __( 'Change not found.', 'semantic-seo-engine-vi-en' ), array( 'status' => 404 ) );
 		}
+		if ( 'applying' === $c['status'] ) {
+			ChangeExecutor::reconcile( (int) $c['id'] );
+			$c = Db::row( 'SELECT * FROM {changes} WHERE id = %d', array( (int) $change_id ) );
+		}
 		if ( 'applied' !== $c['status'] ) {
 			return new \WP_Error( 'sseo_invalid_state', __( 'Only applied changes can be rolled back.', 'semantic-seo-engine-vi-en' ), array( 'status' => 409 ) );
 		}
@@ -69,6 +73,11 @@ final class RollbackService {
 			return new \WP_Error( 'sseo_busy', __( 'Another change to this object is in progress.', 'semantic-seo-engine-vi-en' ), array( 'status' => 409 ) );
 		}
 		try {
+			// Another rollback of this change may have completed while this request waited.
+			$c = Db::row( 'SELECT * FROM {changes} WHERE id = %d', array( (int) $c['id'] ) );
+			if ( 'applied' !== $c['status'] ) {
+				return new \WP_Error( 'sseo_invalid_state', __( 'Only applied changes can be rolled back.', 'semantic-seo-engine-vi-en' ), array( 'status' => 409 ) );
+			}
 			$current = ChangeExecutor::current_hash( $p );
 			$mode    = 'exact';
 			if ( $current === $c['after_hash'] ) {
@@ -94,13 +103,23 @@ final class RollbackService {
 					$expect       = Util::sha256( $p['payload']['taxonomy'] . ':' . implode( ',', $ids ) );
 				}
 			}
-			$res  = ChangeExecutor::write( $p, $target_value, true );
-			$read = ChangeExecutor::current_hash( $p );
-			if ( is_wp_error( $res ) || $read !== $expect ) {
-				self::mark( $c, 'rollback_failed', is_wp_error( $res ) ? $res->get_error_message() : 'readback mismatch after rollback' );
+			// Content: compare-and-set from the value just read, so an edit saved meanwhile is never
+			// overwritten. Terms: only this change's term is removed.
+			$res = ChangeExecutor::write( $p, $target_value, $current, true );
+			if ( ! $res['written'] ) {
+				self::mark( $c, 'applied', 'rollback not performed: ' . $res['error']->get_error_message() );
+				AuditLog::record( 'rollback.failed', $c['object_type'], (int) $c['object_id'], 'error', array( 'change_id' => (int) $c['id'] ) );
+				if ( 'sseo_concurrent_edit' === $res['error']->get_error_code() ) {
+					return new \WP_Error( 'sseo_busy', __( 'The post was edited at the same moment; nothing was changed. Try the rollback again.', 'semantic-seo-engine-vi-en' ), array( 'status' => 409 ) );
+				}
+				return new \WP_Error( 'sseo_rollback_failed', __( 'The rollback failed before anything was changed; the change is still applied (see change log).', 'semantic-seo-engine-vi-en' ), array( 'status' => 500 ) );
+			}
+			if ( null !== $res['hook_error'] || ( 'insert_internal_link' === $p['type'] && $res['readback_hash'] !== $expect ) ) {
+				self::mark( $c, 'rollback_failed', null !== $res['hook_error'] ? 'the restored value was written (readback ' . ( $res['readback_hash'] === $expect ? 'verified' : 'mismatch' ) . ') but ' . $res['hook_error']->get_error_message() : 'readback mismatch after rollback' );
 				AuditLog::record( 'rollback.failed', $c['object_type'], (int) $c['object_id'], 'error', array( 'change_id' => (int) $c['id'] ) );
 				return new \WP_Error( 'sseo_rollback_failed', __( 'Rollback could not be verified; manual recovery is needed (the before snapshot is in the change log).', 'semantic-seo-engine-vi-en' ), array( 'status' => 500 ) );
 			}
+			$read = ChangeExecutor::current_hash( $p );
 			Db::update(
 				'changes',
 				array(
@@ -112,8 +131,9 @@ final class RollbackService {
 							Util::json_array( $c['verify'] ),
 							array(
 								'rollback_mode'          => $mode,
-								'rollback_readback_hash' => $read,
+								'rollback_readback_hash' => $res['readback_hash'],
 								'rollback_verified'      => true,
+								'changed_after_rollback' => $read !== $expect,
 							)
 						)
 					),

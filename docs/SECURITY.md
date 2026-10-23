@@ -38,15 +38,15 @@ into agent accounts from the UI.
 | Missing/forged nonce (CSRF) | `check_admin_referer()` on every admin-post action; REST cookie auth requires `X-WP-Nonce` | `AdminUiTest::test_actions_require_valid_nonce`, `http-agent` cookie test |
 | Privilege escalation via agent | capability filter above; no approve route/ability; MCP exposure limited to read-only abilities (filtered server-side) | `http-agent` approve-route 404, operator/admin-app-password 403, MCP write refused; `ChangeLifecycleTest` |
 | Forged / expired / replayed approval | approval lookup by ID **and** proposal **and** scope; `UPDATE … WHERE status='active'` consume; expiry | `ChangeLifecycleTest` (forged, expired, replay, double apply) |
-| Stale content (TOCTOU) | base hash re-checked under an object mutex right before writing; readback verification; auto-revert | `ChangeLifecycleTest` stale cases, UI rollback byte-identical |
+| Stale content (TOCTOU) | base hash re-checked under an object mutex; the write itself is a compare-and-set on the stored content hash, so an edit committed after the check is never overwritten; readback before any hook; an undo only ever reverts this plugin's own write | `ChangeLifecycleTest` stale cases, `WriteIntegrityTest` (concurrent edit before / during the write), UI rollback byte-identical |
 | Double apply / retries | idempotency key (hash stored, unique index); replays return the original change | `ChangeLifecycleTest`, `OperationsTest` |
 | SQL injection | all queries through `Db` helpers using `$wpdb->prepare()`; whitelisted sort columns; schema-validated REST args | `http-agent` SQLi strings, `RestApiTest` |
-| XSS | all admin output escaped or passed through `wp_kses()` (`Ui::out`); REST is JSON with `nosniff`; inserted link markup built with `esc_url`/`esc_html`; kses bypass only for the single verified write and only for the exact computed result | WPCS `EscapeOutput` clean; `http-agent` XSS |
+| XSS | all admin output escaped or passed through `wp_kses()` (`Ui::out`); REST is JSON with `nosniff`; inserted link markup built with `esc_url`/`esc_html`; the write stores exactly the approved result (existing content + that link) and never touches the kses filters | WPCS `EscapeOutput` clean; `http-agent` XSS |
 | SSRF | agent-supplied URLs are only resolved against the local inventory; the only outbound HTTP (optional link verification) uses `wp_safe_remote_head` to the site's own host without redirects | `http-agent` SSRF (metadata IP, localhost port, `file://`, external host) |
 | Oversized payloads / DoS | 512 KB body cap (413), ≤ 100 rows per page, ≤ 200 targets per job, ≤ 16 vectors per claim, per-user rate limits (429 + `Retry-After`) | `http-agent` 413/429, `RestApiTest` |
 | Embedding replay / poisoning | single-use leases (hash only), owner-bound, 180 s expiry; model key, dimension, finite values and unit norm validated; stale content rejected | `EmbeddingQueueTest`, `http-agent` embedding lease |
 | Device claims a model it does not run (mock, wrong model or pipeline) | a device's own "self-test passed" is not trusted: it must send its reference vectors to `/embeddings/selftest`; the server recomputes the similarity matrix, compares it with the matrix measured for the precision and keeps a 24 h pass per user and model profile; `complete` answers 428 without a pass; a failed re-check revokes it | `DeviceVerificationTest`, `http-agent` 428, real model in `HybridEvaluationTest` and the private-worker e2e |
-| A hook or plugin throws during an approved write | the kses filters suspended for the verified write are restored in a `finally` block (exact priority); the exception becomes an error → automatic revert; other post fields (title, excerpt, status, slug, parent, author, password, menu order, type) must stay unchanged or the change is reported as needing manual recovery | `ChangeExecutorSafetyTest` (fails on the previous code) |
+| A hook or plugin throws during an approved write | before the write: nothing is written; after the verified write: the exception becomes an error → this plugin's write is undone (compare-and-set); other post fields (title, excerpt, status, slug, parent, author, password, menu order, type) and the permalink must stay unchanged or the change is reported as needing manual recovery; kses filters are never removed | `ChangeExecutorSafetyTest`, `WriteIntegrityTest` |
 | Secret leakage | audit redaction of secret-named keys, Application-Password-shaped strings and bearer tokens; IPs stored as HMAC; responses scanned for every test credential | `http-agent` (each response checked for all secrets), `bin/scan-secrets.sh` |
 | Supply chain (browser runtime) | runtime bundled same-origin (no CDN), pinned versions, `manifest.json` with SHA-256, `npm` install scripts disabled (`.npmrc`) | `worker-fixture` "no request leaves the allow-list" |
 | Model download abuse | fetch allow-list: only pinned files of the pinned revision from the profile host; unknown paths 404 without network; downloads larger than the pin are aborted | `tests/js/embedder-core.test.mjs`, `worker-fixture` tampered-file test |
@@ -68,10 +68,11 @@ into agent accounts from the UI.
   tampered file (rejected).
 * Rate limiting uses transients (per site, per user/IP-hash, fixed window); a persistent object
   cache makes it cluster-wide, otherwise it is per database.
-* `unfiltered_html` semantics: approved link insertions are written with the post-field kses
-  filters temporarily removed **only** for the exact verified content computed from the approved
-  diff, and restored in a `finally` block whatever happens; the inserted markup is
-  `<a href="esc_url(target)">existing anchor text</a>`.
+* `unfiltered_html` semantics: an approved link insertion stores exactly the verified content
+  computed from the approved diff (the stored content plus
+  `<a href="esc_url(target)">existing anchor text</a>`) with a direct compare-and-set `UPDATE`;
+  `content_save_pre` filters (kses, entity conversion) do not run on it, and no filter is removed
+  for the rest of the request.
 * The server-side self-test proves that a device's pipeline reproduces the pinned model; it cannot
   prove that a dishonest account with the embedding role computed every later vector the same way
   (it could submit precomputed reference vectors). Uploads are therefore limited to a dedicated

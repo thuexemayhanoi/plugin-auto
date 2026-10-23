@@ -3,7 +3,7 @@
 All plugin data lives in 16 custom tables with the prefix `{$wpdb->prefix}sseo_` plus three
 options. WordPress core tables are only **read** (posts, postmeta, terms, term relationships,
 options for SEO plugins), except for the single write path of an approved change (post content
-via `wp_update_post`, or a category assignment via `wp_set_post_terms`) and its rollback.
+via a compare-and-set `UPDATE` of `post_content` and the modified dates only, followed by core's post hooks; or adding one term via `wp_add_object_terms`) and its rollback (the same compare-and-set, or `wp_remove_object_terms`).
 
 ## Options
 
