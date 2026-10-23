@@ -88,6 +88,7 @@
 					delay = Math.min( delay * 2, 60000 );
 					return;
 				}
+				delay = 4000;
 				var job = res.data;
 				var prog = document.querySelector( '[data-sseo-progress="' + id + '"]' );
 				if ( prog ) {

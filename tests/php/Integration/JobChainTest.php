@@ -244,6 +244,27 @@ final class JobChainTest extends TestCase {
 		$this->assertSame( array( 'source_job' => 77 ), get_option( JobRepository::PENDING_OPTION )['params'] );
 	}
 
+	public function test_a_request_kept_pending_after_the_blocking_analysis_ended_starts_at_once() {
+		// The create() of a chained analysis is refused (another process is creating a job), and
+		// no analysis is active any more: the request must not wait for an unrelated job.
+		$lock = \SemanticSEO\Security\Mutex::acquire( 'job_create', 30 );
+		$this->assertNotFalse( $lock );
+		$refused = static function ( $sql ) use ( &$lock ) {
+			if ( false !== $lock && false !== strpos( $sql, 'sseo_pending_analysis' ) && 0 === stripos( ltrim( $sql ), 'INSERT' ) ) {
+				// The pending request is now stored: the other process finishes its job creation.
+				\SemanticSEO\Security\Mutex::release( 'job_create', $lock );
+				$lock = false;
+			}
+			return $sql;
+		};
+		add_filter( 'query', $refused );
+		$job = JobRepository::chain_analysis( array( 'doc_ids' => array( 4 ) ), $this->admin );
+		remove_filter( 'query', $refused );
+		$this->assertIsArray( $job, 'started at once' );
+		$this->assertSame( array( 4 ), $job['params']['doc_ids'] );
+		$this->assertFalse( get_option( JobRepository::PENDING_OPTION ) );
+	}
+
 	public function test_a_pending_request_stored_by_another_process_is_started() {
 		global $wpdb;
 		// This process cached "no pending request"; another process (WP-Cron next to an open

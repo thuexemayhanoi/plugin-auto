@@ -950,7 +950,7 @@ msgid "I understand about %s will be downloaded to this browser from huggingface
 msgstr "Tôi hiểu khoảng %s sẽ được tải về trình duyệt này từ huggingface.co."
 
 #. translators: %s: size
-#: admin/controllers/JobsPage.php:163 admin/controllers/OverviewPage.php:451
+#: admin/controllers/JobsPage.php:163 admin/controllers/OverviewPage.php:458
 msgid "Check this device"
 msgstr "Kiểm tra thiết bị này"
 
@@ -1725,8 +1725,7 @@ msgstr "Số trang đã phân tích"
 msgid "Published pages read by the last scan, by language. Vietnamese and English pages are analyzed separately and never compared as competitors."
 msgstr "Số trang đã xuất bản mà lượt quét gần nhất đã đọc, chia theo ngôn ngữ. Trang tiếng Việt và tiếng Anh được phân tích riêng, không bao giờ bị coi là cạnh tranh nhau."
 
-#. translators: 1: verified errors, 2: heuristic warnings, 3: editorial
-#. suggestions
+#. translators: 1: verified errors, 2: heuristic warnings, 3: editorial suggestions
 #: admin/controllers/OverviewPage.php:339
 #, php-format
 msgid "%1$d verified errors · %2$d warnings to check · %3$d suggestions"
@@ -1740,8 +1739,7 @@ msgstr "Vấn đề theo mức ưu tiên"
 msgid "Verified errors are facts (e.g. a link to a deleted post). Warnings are signals a person should check. Suggestions are editorial ideas."
 msgstr "Lỗi đã xác minh là dữ kiện (ví dụ liên kết tới bài đã xóa). Cảnh báo là tín hiệu cần người kiểm tra. Gợi ý là ý tưởng biên tập."
 
-#. translators: 1: pages with few links in their topic group, 2: link
-#. suggestions
+#. translators: 1: pages with few links in their topic group, 2: link suggestions
 #: admin/controllers/OverviewPage.php:349
 #, php-format
 msgid "%1$d pages with few links inside their topic group · %2$d link suggestions"
@@ -1816,59 +1814,63 @@ msgid "This is the first full scan: the next one will be compared with it."
 msgstr "Đây là lần quét toàn site đầu tiên: lần sau sẽ được so sánh với lần này."
 
 #. translators: 1: new findings, 2: resolved findings
-#: admin/controllers/OverviewPage.php:435
+#: admin/controllers/OverviewPage.php:437
 #, php-format
 msgid "%1$d new findings, %2$d resolved since the previous scan."
 msgstr "%1$d phát hiện mới, %2$d đã hết kể từ lần quét trước."
 
-#: admin/controllers/OverviewPage.php:450
+#: admin/controllers/OverviewPage.php:440
+msgid "Changes per priority since the previous scan:"
+msgstr "Thay đổi theo mức ưu tiên so với lần quét trước:"
+
+#: admin/controllers/OverviewPage.php:457
 msgid "AI model Qwen3-Embedding-0.6B (optional)"
 msgstr "Mô hình AI Qwen3-Embedding-0.6B (tùy chọn)"
 
-#: admin/controllers/OverviewPage.php:452
+#: admin/controllers/OverviewPage.php:459
 msgid "The check reads your browser capabilities only (WebGPU, WebAssembly, memory); nothing is downloaded. No paid AI service or API key is used."
 msgstr "Phép kiểm tra chỉ đọc khả năng của trình duyệt (WebGPU, WebAssembly, bộ nhớ); không tải gì về. Không dùng dịch vụ AI trả phí hay API key nào."
 
-#: admin/controllers/OverviewPage.php:453
+#: admin/controllers/OverviewPage.php:460
 msgid "Start the model on this device"
 msgstr "Chạy mô hình trên thiết bị này"
 
-#: admin/controllers/OverviewPage.php:463
+#: admin/controllers/OverviewPage.php:470
 msgid "What the plugin may do"
 msgstr "Plugin được phép làm gì"
 
-#: admin/controllers/OverviewPage.php:467
+#: admin/controllers/OverviewPage.php:474
 msgid "What it never does on its own"
 msgstr "Những việc plugin không bao giờ tự làm"
 
-#: admin/controllers/OverviewPage.php:481
+#: admin/controllers/OverviewPage.php:488
 msgid "Scope of the analysis (advanced)"
 msgstr "Phạm vi phân tích (nâng cao)"
 
-#: admin/controllers/OverviewPage.php:484
+#: admin/controllers/OverviewPage.php:491
 msgid "Content types"
 msgstr "Loại nội dung"
 
-#: admin/controllers/OverviewPage.php:491
+#: admin/controllers/OverviewPage.php:498
 msgid "Exclude URL path fragments (one per line)"
 msgstr "Loại trừ URL chứa đoạn đường dẫn (mỗi dòng một mục)"
 
-#: admin/controllers/OverviewPage.php:492 admin/controllers/SettingsPage.php:46
+#: admin/controllers/OverviewPage.php:499 admin/controllers/SettingsPage.php:46
 msgid "Batch size"
 msgstr "Kích thước lô"
 
-#: admin/controllers/OverviewPage.php:492 admin/controllers/SettingsPage.php:48
+#: admin/controllers/OverviewPage.php:499 admin/controllers/SettingsPage.php:48
 msgid "Max documents"
 msgstr "Số tài liệu tối đa"
 
 #. translators: 1: posts, 2: terms
-#: admin/controllers/OverviewPage.php:493
+#: admin/controllers/OverviewPage.php:500
 #, php-format
 msgid "In scope now: %1$d posts/pages and %2$d category archives (real database counts)."
 msgstr "Hiện trong phạm vi: %1$d bài viết/trang và %2$d trang chuyên mục (đếm thật từ cơ sở dữ liệu)."
 
 #. translators: 1: posts, 2: terms
-#: admin/controllers/OverviewPage.php:494
+#: admin/controllers/OverviewPage.php:501
 msgid "Save scope"
 msgstr "Lưu phạm vi"
 
@@ -3112,8 +3114,7 @@ msgstr "Nhóm \"%1$s\": %2$d trang; bài trụ cột đề xuất: \"%3$s\"."
 msgid "Anchor \"%1$s\" → \"%2$s\". Why: %3$s."
 msgstr "Anchor \"%1$s\" → \"%2$s\". Lý do: %3$s."
 
-#. translators: 1: other page, 2: topic similarity in percent, 3: shared
-#. terms, 4: analyzer note
+#. translators: 1: other page, 2: topic similarity in percent, 3: shared terms, 4: analyzer note
 #: includes/Analysis/PriorityQueue.php:498
 #, php-format
 msgid "With \"%1$s\": topic similarity %2$d%%; shared terms: %3$s. %4$s"
@@ -3401,7 +3402,7 @@ msgstr "Không tìm thấy anchor tự nhiên; gợi ý này cần biên tập v
 msgid "The anchor text is no longer present in an editable position; re-run the analysis."
 msgstr "Anchor không còn ở vị trí có thể sửa; hãy chạy lại phân tích."
 
-#: includes/Approval/ProposalService.php:215 includes/Services/Api.php:1129
+#: includes/Approval/ProposalService.php:215 includes/Services/Api.php:1131
 msgid "Document not found."
 msgstr "Không tìm thấy tài liệu."
 
@@ -3455,7 +3456,7 @@ msgstr "Thiếu cột bắt buộc. Cần có: %s."
 msgid "None of the requested pages could be added to the inventory (the maximum number of documents is reached, or they are excluded), so no analysis was started. Raise \"Max documents\" or check the excluded URLs in the analysis scope."
 msgstr "Không trang nào được yêu cầu có thể đưa vào kiểm kê (đã đạt số tài liệu tối đa, hoặc các trang này bị loại trừ), nên chưa chạy phân tích. Hãy tăng \"Số tài liệu tối đa\" hoặc kiểm tra các URL bị loại trừ trong phạm vi phân tích."
 
-#: includes/Jobs/JobRepository.php:71 includes/Services/Api.php:603
+#: includes/Jobs/JobRepository.php:71 includes/Services/Api.php:605
 msgid "Unknown job type."
 msgstr "Loại tác vụ không hợp lệ."
 
@@ -3701,57 +3702,57 @@ msgstr "Hãy cung cấp post_id, document_id hoặc url."
 msgid "This URL is not in the inventory (run an inventory first)."
 msgstr "URL này chưa có trong danh sách kiểm kê (hãy chạy kiểm kê trước)."
 
-#: includes/Services/Api.php:567 includes/Services/Api.php:775
+#: includes/Services/Api.php:569 includes/Services/Api.php:777
 msgid "Job not found."
 msgstr "Không tìm thấy tác vụ."
 
-#: includes/Services/Api.php:609
+#: includes/Services/Api.php:611
 msgid "The plugin database is incomplete, so no scan can run. Repair it from the dashboard (Settings & Diagnostics shows the SQL error)."
 msgstr "Database của plugin chưa đầy đủ nên không thể quét. Hãy sửa từ Bảng điều khiển (trang Cài đặt & Chẩn đoán hiển thị lỗi SQL)."
 
 #. translators: %d: max
-#: includes/Services/Api.php:620
+#: includes/Services/Api.php:622
 #, php-format
 msgid "At most %d targets per request."
 msgstr "Tối đa %d mục tiêu mỗi yêu cầu."
 
-#: includes/Services/Api.php:627
+#: includes/Services/Api.php:629
 msgid "None of these posts is in the inventory yet; run an inventory first."
 msgstr "Chưa bài nào trong số này có trong danh sách kiểm kê; hãy chạy kiểm kê trước."
 
-#: includes/Services/Api.php:652
+#: includes/Services/Api.php:654
 msgid "Agents may run one job at a time."
 msgstr "Mỗi agent chỉ được chạy một tác vụ tại một thời điểm."
 
-#: includes/Services/Api.php:729
+#: includes/Services/Api.php:731
 msgid "A work plan ordered by verified errors first, then likely problems, linking work and editorial improvements. It predicts no ranking."
 msgstr "Kế hoạch làm việc sắp xếp theo: lỗi đã xác minh trước, sau đó là vấn đề có khả năng xảy ra, việc liên kết và cải thiện biên tập. Không dự đoán thứ hạng."
 
-#: includes/Services/Api.php:778
+#: includes/Services/Api.php:780
 msgid "Agents can only control their own jobs."
 msgstr "Agent chỉ được điều khiển tác vụ của chính mình."
 
-#: includes/Services/Api.php:820
+#: includes/Services/Api.php:822
 msgid "Set confirm=true to rebuild. Derived data is recomputed in the background; WordPress content is not modified."
 msgstr "Đặt confirm=true để xây dựng lại. Dữ liệu dẫn xuất được tính lại ở nền; nội dung WordPress không bị sửa."
 
-#: includes/Services/Api.php:824
+#: includes/Services/Api.php:826
 msgid "model_version must match the active pinned profile (model key or revision)."
 msgstr "model_version phải khớp hồ sơ mô hình cố định đang dùng (khóa mô hình hoặc revision)."
 
-#: includes/Services/Api.php:853
+#: includes/Services/Api.php:855
 msgid "Provide 1–10 finding IDs."
 msgstr "Hãy cung cấp 1–10 ID phát hiện."
 
-#: includes/Services/Api.php:1080
+#: includes/Services/Api.php:1082
 msgid "Provide lease_token or all_mine=true."
 msgstr "Hãy cung cấp lease_token hoặc all_mine=true."
 
-#: includes/Services/Api.php:1102
+#: includes/Services/Api.php:1104
 msgid "Invalid finding or status."
 msgstr "Phát hiện hoặc trạng thái không hợp lệ."
 
-#: includes/Services/Api.php:1151
+#: includes/Services/Api.php:1153
 msgid "No valid fields."
 msgstr "Không có trường hợp lệ."
 
@@ -3769,8 +3770,7 @@ msgstr "Thao tác này chỉ quản trị viên là con người mới thực hi
 msgid "%1$d/%2$d tables, schema %3$d/%3$d."
 msgstr "%1$d/%2$d bảng, schema %3$d/%3$d."
 
-#. translators: 1: tables present, 2: tables expected, 3: installed version,
-#. 4: expected version, 5: missing objects, 6: SQL errors
+#. translators: 1: tables present, 2: tables expected, 3: installed version, 4: expected version, 5: missing objects, 6: SQL errors
 #: includes/Services/HealthReport.php:58
 #, php-format
 msgid "%1$d/%2$d tables, schema %3$d/%4$d. Missing: %5$s. %6$s"

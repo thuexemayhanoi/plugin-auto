@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Semantic SEO Engine VI–EN 1.0.0-beta.4\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/semantic-seo-engine-vi-en\n"
-"POT-Creation-Date: 2026-10-23T19:33:57+00:00\n"
+"POT-Creation-Date: 2026-10-23T20:04:55+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1058,7 +1058,7 @@ msgid ""
 msgstr ""
 
 #. translators: %s: size
-#: admin/controllers/JobsPage.php:163 admin/controllers/OverviewPage.php:451
+#: admin/controllers/JobsPage.php:163 admin/controllers/OverviewPage.php:458
 msgid "Check this device"
 msgstr ""
 
@@ -2034,57 +2034,61 @@ msgid "This is the first full scan: the next one will be compared with it."
 msgstr ""
 
 #. translators: 1: new findings, 2: resolved findings
-#: admin/controllers/OverviewPage.php:435
+#: admin/controllers/OverviewPage.php:437
 #, php-format
 msgid "%1$d new findings, %2$d resolved since the previous scan."
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:450
+#: admin/controllers/OverviewPage.php:440
+msgid "Changes per priority since the previous scan:"
+msgstr ""
+
+#: admin/controllers/OverviewPage.php:457
 msgid "AI model Qwen3-Embedding-0.6B (optional)"
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:452
+#: admin/controllers/OverviewPage.php:459
 msgid ""
 "The check reads your browser capabilities only (WebGPU, WebAssembly, "
 "memory); nothing is downloaded. No paid AI service or API key is used."
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:453
+#: admin/controllers/OverviewPage.php:460
 msgid "Start the model on this device"
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:463
+#: admin/controllers/OverviewPage.php:470
 msgid "What the plugin may do"
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:467
+#: admin/controllers/OverviewPage.php:474
 msgid "What it never does on its own"
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:481
+#: admin/controllers/OverviewPage.php:488
 msgid "Scope of the analysis (advanced)"
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:484
+#: admin/controllers/OverviewPage.php:491
 msgid "Content types"
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:491
+#: admin/controllers/OverviewPage.php:498
 msgid "Exclude URL path fragments (one per line)"
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:492
+#: admin/controllers/OverviewPage.php:499
 #: admin/controllers/SettingsPage.php:46
 msgid "Batch size"
 msgstr ""
 
-#: admin/controllers/OverviewPage.php:492
+#: admin/controllers/OverviewPage.php:499
 #: admin/controllers/SettingsPage.php:48
 msgid "Max documents"
 msgstr ""
 
 #. translators: 1: posts, 2: terms
-#: admin/controllers/OverviewPage.php:493
+#: admin/controllers/OverviewPage.php:500
 #, php-format
 msgid ""
 "In scope now: %1$d posts/pages and %2$d category archives (real database "
@@ -2092,7 +2096,7 @@ msgid ""
 msgstr ""
 
 #. translators: 1: posts, 2: terms
-#: admin/controllers/OverviewPage.php:494
+#: admin/controllers/OverviewPage.php:501
 msgid "Save scope"
 msgstr ""
 
@@ -3770,7 +3774,7 @@ msgid ""
 "analysis."
 msgstr ""
 
-#: includes/Approval/ProposalService.php:215 includes/Services/Api.php:1129
+#: includes/Approval/ProposalService.php:215 includes/Services/Api.php:1131
 msgid "Document not found."
 msgstr ""
 
@@ -3832,7 +3836,7 @@ msgid ""
 "scope."
 msgstr ""
 
-#: includes/Jobs/JobRepository.php:71 includes/Services/Api.php:603
+#: includes/Jobs/JobRepository.php:71 includes/Services/Api.php:605
 msgid "Unknown job type."
 msgstr ""
 
@@ -4092,64 +4096,64 @@ msgstr ""
 msgid "This URL is not in the inventory (run an inventory first)."
 msgstr ""
 
-#: includes/Services/Api.php:567 includes/Services/Api.php:775
+#: includes/Services/Api.php:569 includes/Services/Api.php:777
 msgid "Job not found."
 msgstr ""
 
-#: includes/Services/Api.php:609
+#: includes/Services/Api.php:611
 msgid ""
 "The plugin database is incomplete, so no scan can run. Repair it from the "
 "dashboard (Settings & Diagnostics shows the SQL error)."
 msgstr ""
 
 #. translators: %d: max
-#: includes/Services/Api.php:620
+#: includes/Services/Api.php:622
 #, php-format
 msgid "At most %d targets per request."
 msgstr ""
 
-#: includes/Services/Api.php:627
+#: includes/Services/Api.php:629
 msgid "None of these posts is in the inventory yet; run an inventory first."
 msgstr ""
 
-#: includes/Services/Api.php:652
+#: includes/Services/Api.php:654
 msgid "Agents may run one job at a time."
 msgstr ""
 
-#: includes/Services/Api.php:729
+#: includes/Services/Api.php:731
 msgid ""
 "A work plan ordered by verified errors first, then likely problems, linking "
 "work and editorial improvements. It predicts no ranking."
 msgstr ""
 
-#: includes/Services/Api.php:778
+#: includes/Services/Api.php:780
 msgid "Agents can only control their own jobs."
 msgstr ""
 
-#: includes/Services/Api.php:820
+#: includes/Services/Api.php:822
 msgid ""
 "Set confirm=true to rebuild. Derived data is recomputed in the background; "
 "WordPress content is not modified."
 msgstr ""
 
-#: includes/Services/Api.php:824
+#: includes/Services/Api.php:826
 msgid ""
 "model_version must match the active pinned profile (model key or revision)."
 msgstr ""
 
-#: includes/Services/Api.php:853
+#: includes/Services/Api.php:855
 msgid "Provide 1–10 finding IDs."
 msgstr ""
 
-#: includes/Services/Api.php:1080
+#: includes/Services/Api.php:1082
 msgid "Provide lease_token or all_mine=true."
 msgstr ""
 
-#: includes/Services/Api.php:1102
+#: includes/Services/Api.php:1104
 msgid "Invalid finding or status."
 msgstr ""
 
-#: includes/Services/Api.php:1151
+#: includes/Services/Api.php:1153
 msgid "No valid fields."
 msgstr ""
 

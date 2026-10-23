@@ -544,9 +544,11 @@ final class Api {
 		if ( is_wp_error( $doc ) ) {
 			return $doc;
 		}
+		// A related page unpublished since the list was built is only shown to people who can edit it.
+		$public = self::can_see_private() ? '' : " AND d.status = 'publish'";
 		return array(
 			'document_id'      => (int) $doc['id'],
-			'items'            => Db::rows( 'SELECT r.related_id, r.rank_pos, r.score, r.evidence, d.title, d.url, d.object_id FROM {related} r JOIN {documents} d ON d.id = r.related_id WHERE r.document_id = %d ORDER BY r.rank_pos ASC', array( (int) $doc['id'] ) ),
+			'items'            => Db::rows( 'SELECT r.related_id, r.rank_pos, r.score, r.evidence, d.title, d.url, d.object_id FROM {related} r JOIN {documents} d ON d.id = r.related_id WHERE r.document_id = %d' . $public . ' ORDER BY r.rank_pos ASC', array( (int) $doc['id'] ) ),
 			'frontend_enabled' => (bool) Settings::get( 'related_enabled', false ),
 		);
 	}

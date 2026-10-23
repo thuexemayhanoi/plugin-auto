@@ -101,10 +101,13 @@ Mỗi lỗi có test hồi quy. Test thất bại trước bản sửa và đạ
 | D10 | P2 | Gộp nhiều yêu cầu phân tích đang chờ vượt 500 trang thì phần dư bị bỏ âm thầm. Nay vượt 500 trang thì chuyển thành phân tích toàn site. | `JobChainTest::test_pending_scopes_merged_beyond_one_analysis_become_site_wide` |
 | D11 | P2 | "Phân tích thử 20 bài" mà không bài nào vào được inventory (đạt giới hạn tài liệu hoặc bị loại trừ) thì tự thành phân tích toàn site. Nay không phân tích, và dashboard báo lý do. | `JobChainTest::test_a_trial_whose_pages_are_not_inventoried…` |
 | D12 | P3 | Yêu cầu phân tích đang chờ có thể bị mất khi hai tiến trình (WP-Cron và dashboard) cùng xử lý, hoặc bị đọc từ cache cũ. Nay có khóa và đọc thẳng từ database. | `JobChainTest::test_a_pending_request_stored_by_another_process_is_started` |
-| D13 | P3 | Người chỉ có quyền đọc mở dashboard thì nhận lỗi 403 mỗi 4 giây và không thấy tiến độ. Nay chỉ theo dõi tiến độ, và giãn nhịp khi bị từ chối. | Kiểm tra code (`admin.js`) |
+| D13 | P3 | Người chỉ có quyền đọc mở dashboard thì nhận lỗi 403 mỗi 4 giây và không thấy tiến độ. Nay họ chỉ theo dõi tiến độ; nhịp gọi giãn ra khi bị từ chối và trở lại bình thường khi thành công. | Kiểm tra code (`admin.js`) |
+| D14 | P2 | `GET /related` (code cũ, beta.3) vẫn trả tiêu đề/URL của trang liên quan đã gỡ xuất bản sau khi danh sách được lập. | `DashboardDataTest::test_related_pages_unpublished_later_are_hidden_from_readers` |
+| D15 | P3 | Yêu cầu phân tích được lưu "chờ" ngay sau khi phân tích đang chặn vừa xong thì nằm im tới lượt cron khác. Nay được thử khởi chạy ngay. | `JobChainTest::test_a_request_kept_pending_after_the_blocking_analysis_ended_starts_at_once` |
 
-Các mục D7–D13 đến từ review tự động của Codex trên PR #3 và một review độc lập. Mỗi mục đã được
-kiểm chứng trên code. Bảy test hồi quy mới đều **thất bại trên code trước bản sửa** và đạt sau bản sửa.
+Các mục D7–D15 đến từ review tự động của Codex trên PR #3 và hai lượt review độc lập; lượt thứ hai
+review riêng các bản sửa. Mỗi mục đã được kiểm chứng trên code. Chín test hồi quy mới đều
+**thất bại trên code trước bản sửa** và đạt sau bản sửa.
 
 Audit theo yêu cầu, không tìm thấy lỗi mới có bằng chứng ở các phần sau:
 - REST: auth, quyền, nonce, SQLi/XSS/CSRF, SSRF, rate limit.
@@ -186,7 +189,7 @@ Bằng chứng của lần chạy cuối, trên code cuối, nằm trong [`evide
 | Bộ test | Kết quả | Môi trường |
 | --- | --- | --- |
 | Unit PHPUnit | 22/22 | PHP 8.3 |
-| Integration PHPUnit (WordPress thật) | **145/145** (2–3 skipped có điều kiện) | WP 7.1.3 test lib + MariaDB **10.11.14**, **11.8.9**, MySQL **8.4** |
+| Integration PHPUnit (WordPress thật) | **147/147** (2–3 skipped có điều kiện) | WP 7.1.3 test lib + MariaDB **10.11.14**, **11.8.9**, MySQL **8.4** |
 | Nâng cấp MariaDB (`upgrade-mariadb.sh`) | **34/34** | beta.3 → beta.4 trên MariaDB 11.8.9 và 10.11.14 |
 | Dashboard trong Chromium (`dashboard-e2e.mjs`) | **10/10** | WP 7.1.3, MariaDB 11.8.9. Thử 20 bài 8,7 s; toàn site 10,3 s có tạm dừng/tiếp tục; CSV 82 dòng, khớp số mục đang lọc; iPhone 13 giả lập 390 px; axe 0 lỗi |
 | Smoke cài ZIP | **27/27**, **27/27**, **26/26** | WP 7.1.3, 6.9.10 (có Polylang), 6.5.13 |
@@ -299,6 +302,10 @@ lease và tiếp tục được sau khi bị dừng.
 - Không có plugin ngôn ngữ (hoặc Nguyen Ha VI–EN) thì mọi bài nhận ngôn ngữ mặc định của site. Plugin
   sẽ báo "ngôn ngữ phát hiện khác ngôn ngữ được gán" thay vì tự đổi.
 - Xuất XLSX chưa có (chỉ CSV).
+- Các trang chi tiết trong wp-admin (Liên kết, QA, Cannibalization; có từ beta.3) hiển thị tiêu đề
+  của trang nháp/private cho mọi tài khoản có quyền `sseo_read`. Mặc định chỉ quản trị viên và các
+  vai trò agent có quyền này, và tài khoản agent dùng REST (đã được lọc) chứ không đăng nhập
+  wp-admin. Chưa sửa trong bản này.
 
 ---
 

@@ -431,8 +431,15 @@ final class OverviewPage {
 			echo '<p>' . esc_html__( 'This is the first full scan: the next one will be compared with it.', 'semantic-seo-engine-vi-en' ) . '</p></section>';
 			return;
 		}
-		/* translators: 1: new findings, 2: resolved findings */
-		echo '<p>' . esc_html( sprintf( __( '%1$d new findings, %2$d resolved since the previous scan.', 'semantic-seo-engine-vi-en' ), (int) $d['new_count'], (int) $d['resolved_count'] ) ) . '</p><ul class="sseo-counts">';
+		echo '<p>';
+		if ( null !== $d['new_count'] ) {
+			/* translators: 1: new findings, 2: resolved findings */
+			echo esc_html( sprintf( __( '%1$d new findings, %2$d resolved since the previous scan.', 'semantic-seo-engine-vi-en' ), (int) $d['new_count'], (int) $d['resolved_count'] ) );
+		} else {
+			// A scan recorded before the comparison was stored: no count rather than a wrong "0 new".
+			echo esc_html__( 'Changes per priority since the previous scan:', 'semantic-seo-engine-vi-en' );
+		}
+		echo '</p><ul class="sseo-counts">';
 		foreach ( (array) $d['priorities'] as $p => $v ) {
 			echo '<li><span class="sseo-prio sseo-prio--' . (int) $p . '">' . esc_html( PriorityQueue::priority_label( (int) $p ) ) . '</span> ' . esc_html( (int) $v['before'] . ' → ' . (int) $v['after'] ) . '</li>';
 		}

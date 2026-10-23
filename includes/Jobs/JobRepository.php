@@ -321,6 +321,13 @@ final class JobRepository {
 		if ( false !== $lock ) {
 			Mutex::release( 'pending_analysis', $lock );
 		}
+		// The blocking analysis may have finished (and found nothing pending) meanwhile: try once
+		// now, so the request does not wait for an unrelated job to wake the runner.
+		$started = self::start_pending_analysis();
+		if ( $started > 0 ) {
+			JobRunner::schedule();
+			return self::get( $started );
+		}
 		return null;
 	}
 

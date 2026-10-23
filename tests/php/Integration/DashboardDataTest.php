@@ -168,6 +168,28 @@ final class DashboardDataTest extends TestCase {
 		wp_set_current_user( $this->admin );
 	}
 
+	public function test_related_pages_unpublished_later_are_hidden_from_readers() {
+		$this->load_corpus();
+		$this->run_full_pipeline();
+		$row = Db::row( 'SELECT document_id, related_id FROM {related} ORDER BY document_id, rank_pos LIMIT 1' );
+		$this->assertNotNull( $row, 'scenario: related lists exist' );
+		// The related page is unpublished after the list was built.
+		Db::query( "UPDATE {documents} SET status = 'private' WHERE id = %d", array( (int) $row['related_id'] ) );
+		do_action( 'rest_api_init' );
+		$ids = static function ( $user ) use ( $row ) {
+			wp_set_current_user( $user );
+			$req = new \WP_REST_Request( 'GET', '/semantic-seo/v1/related' );
+			$req->set_query_params( array( 'document_id' => (int) $row['document_id'] ) );
+			$res = rest_do_request( $req );
+			return array_map( 'intval', wp_list_pluck( $res->get_data()['data']['items'], 'related_id' ) );
+		};
+		$this->assertContains( (int) $row['related_id'], $ids( $this->admin ), 'an editor still sees it' );
+		$reader = self::factory()->user->create( array( 'role' => 'author' ) );
+		( new \WP_User( $reader ) )->add_cap( Capabilities::READ );
+		$this->assertNotContains( (int) $row['related_id'], $ids( $reader ) );
+		wp_set_current_user( $this->admin );
+	}
+
 	public function test_scan_comparison_is_fixed_when_the_scan_ends_and_hides_private_pages() {
 		$this->load_corpus();
 		$this->run_full_pipeline();

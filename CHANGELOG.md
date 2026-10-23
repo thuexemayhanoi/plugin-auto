@@ -43,6 +43,10 @@ Report: [docs/QA-REPORT-BETA4.md](docs/QA-REPORT-BETA4.md).
   the dashboard shows why.
 - Readers without the right to run analyses follow a scan's progress on the dashboard instead of
   receiving 403 every few seconds.
+- `GET /related` no longer lists a related page unpublished after the list was built to readers
+  without the right to edit it.
+- An analysis kept pending just after the blocking one ended is started at once instead of waiting
+  for another job.
 
 ### Added
 - **SEO Dashboard** (first admin page, Vietnamese by default): health banner; quick start in 3
