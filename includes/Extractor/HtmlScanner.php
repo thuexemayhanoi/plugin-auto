@@ -23,6 +23,14 @@ final class HtmlScanner {
 
 	const VOID_TAGS = array( 'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr' );
 
+	/**
+	 * Blocks whose saved HTML is the source of their text, so wrapping words of it in a link is a
+	 * valid edit of the block. Text inside any other block (embeds, custom HTML, shortcodes, blocks of
+	 * other plugins that rebuild their markup from JSON attributes such as FAQ blocks) is protected.
+	 * Container blocks (group, columns, cover…) hold their text in inner blocks of this list.
+	 */
+	const TEXT_BLOCKS = array( 'core/paragraph', 'core/list', 'core/list-item', 'core/quote', 'core/pullquote', 'core/table', 'core/freeform' );
+
 	const BLOCK_TAGS = array( 'p', 'div', 'li', 'ul', 'ol', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'table', 'tr', 'td', 'th', 'section', 'article', 'figure', 'br', 'hr', 'dd', 'dt', 'header', 'footer', 'details', 'summary' );
 
 	/**
@@ -40,6 +48,7 @@ final class HtmlScanner {
 		$images   = array();
 		$jsonld   = 0;
 		$stack    = array();
+		$blocks   = array();
 		$open_a   = null;
 		$open_h   = null;
 		$i        = 0;
@@ -51,7 +60,7 @@ final class HtmlScanner {
 			$lt       = strpos( $html, '<', $i );
 			$end_text = false === $lt ? $len : $lt;
 			if ( $end_text > $i ) {
-				self::add_text( $html, $i, $end_text, $stack, $masks, $segments, $open_a, $open_h, $text_buf );
+				self::add_text( $html, $i, $end_text, $stack, $blocks, $masks, $segments, $open_a, $open_h, $text_buf );
 			}
 			if ( false === $lt ) {
 				break;
@@ -60,11 +69,14 @@ final class HtmlScanner {
 			if ( '<!--' === substr( $html, $lt, 4 ) ) {
 				$close = strpos( $html, '-->', $lt + 4 );
 				$i     = false === $close ? $len : $close + 3;
+				if ( false !== $close ) {
+					self::track_block( substr( $html, $lt + 4, $close - $lt - 4 ), $blocks );
+				}
 				continue;
 			}
 			if ( preg_match( '/\G<(\/?)([a-zA-Z][a-zA-Z0-9\-]*)/A', $html, $m, 0, $lt ) !== 1 ) {
 				// A literal "<" in text.
-				self::add_text( $html, $lt, $lt + 1, $stack, $masks, $segments, $open_a, $open_h, $text_buf );
+				self::add_text( $html, $lt, $lt + 1, $stack, $blocks, $masks, $segments, $open_a, $open_h, $text_buf );
 				$i = $lt + 1;
 				continue;
 			}
@@ -164,6 +176,7 @@ final class HtmlScanner {
 	 * @param int        $start    Start offset.
 	 * @param int        $end      End offset (exclusive).
 	 * @param array      $stack    Open element stack.
+	 * @param array      $blocks   Open block stack (block names).
 	 * @param array      $masks    Shortcode ranges.
 	 * @param array      $segments Segments (by reference).
 	 * @param array|null $open_a   Open link (by reference).
@@ -171,7 +184,7 @@ final class HtmlScanner {
 	 * @param array      $text_buf Plain text buffer (by reference).
 	 * @return void
 	 */
-	private static function add_text( $html, $start, $end, array $stack, array $masks, array &$segments, &$open_a, &$open_h, array &$text_buf ) {
+	private static function add_text( $html, $start, $end, array $stack, array $blocks, array $masks, array &$segments, &$open_a, &$open_h, array &$text_buf ) {
 		$raw = substr( $html, $start, $end - $start );
 		if ( null !== $open_a ) {
 			$open_a['anchor'] .= $raw;
@@ -197,11 +210,16 @@ final class HtmlScanner {
 				break;
 			}
 		}
+		$block = array() === $blocks ? '' : $blocks[ count( $blocks ) - 1 ];
+		if ( '' !== $block && ! in_array( $block, self::TEXT_BLOCKS, true ) ) {
+			$protected = true;
+		}
 		$segments[] = array(
 			'start'     => $start,
 			'end'       => $end,
 			'raw'       => $raw,
 			'context'   => array() === $stack ? '' : $stack[ count( $stack ) - 1 ],
+			'block'     => $block,
 			'protected' => $protected,
 		);
 	}
@@ -233,6 +251,32 @@ final class HtmlScanner {
 	}
 
 	/**
+	 * Follows block delimiter comments (<!-- wp:name {…} -->, <!-- /wp:name -->, <!-- wp:name /-->).
+	 *
+	 * @param string $comment Comment body (between "<!--" and "-->").
+	 * @param array  $blocks  Open block stack (by reference).
+	 * @return void
+	 */
+	private static function track_block( $comment, array &$blocks ) {
+		if ( ! preg_match( '#^\s*(/?)wp:([a-z][a-z0-9_\-]*(?:/[a-z][a-z0-9_\-]*)?)(\s.*?)?(/?)\s*$#s', $comment, $m ) ) {
+			return;
+		}
+		$name = false === strpos( $m[2], '/' ) ? 'core/' . $m[2] : $m[2];
+		if ( '/' === $m[1] ) {
+			for ( $b = count( $blocks ) - 1; $b >= 0; $b-- ) {
+				if ( $blocks[ $b ] === $name ) {
+					array_splice( $blocks, $b );
+					break;
+				}
+			}
+			return;
+		}
+		if ( '/' !== $m[4] ) {
+			$blocks[] = $name;
+		}
+	}
+
+	/**
 	 * Finds the end of a tag, honouring quoted attribute values.
 	 *
 	 * @param string $html  HTML.
@@ -240,20 +284,28 @@ final class HtmlScanner {
 	 * @return int|false Offset of ">".
 	 */
 	private static function tag_end( $html, $start ) {
-		$len   = strlen( $html );
-		$quote = '';
-		for ( $j = $start + 1; $j < $len; $j++ ) {
+		$len = strlen( $html );
+		$j   = $start + 1;
+		while ( $j < $len ) {
 			$c = $html[ $j ];
-			if ( '' !== $quote ) {
-				if ( $c === $quote ) {
-					$quote = '';
-				}
+			if ( '>' === $c ) {
+				return $j;
+			}
+			++$j;
+			if ( '=' !== $c ) {
 				continue;
 			}
-			if ( '"' === $c || "'" === $c ) {
-				$quote = $c;
-			} elseif ( '>' === $c ) {
-				return $j;
+			// As in browsers, a quote only opens a value right after "=": an apostrophe elsewhere
+			// (alt='Hanoi's bikes', an unquoted value) is a literal character.
+			while ( $j < $len && false !== strpos( " \t\n\r\f", $html[ $j ] ) ) {
+				++$j;
+			}
+			if ( $j < $len && ( '"' === $html[ $j ] || "'" === $html[ $j ] ) ) {
+				$close = strpos( $html, $html[ $j ], $j + 1 );
+				if ( false === $close ) {
+					return false;
+				}
+				$j = $close + 1;
 			}
 		}
 		return false;
