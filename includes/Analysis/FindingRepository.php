@@ -153,8 +153,16 @@ final class FindingRepository {
 		$total  = (int) Db::value( "SELECT COUNT(*) FROM {findings} WHERE {$w}", $args );
 		$limit  = Util::clamp_int( isset( $f['limit'] ) ? $f['limit'] : 20, 1, 100 );
 		$offset = max( 0, isset( $f['offset'] ) ? (int) $f['offset'] : 0 );
-		$order  = isset( $f['order'] ) && 'severity' === $f['order'] ? "FIELD(severity,'error','warning','info'), score DESC, id ASC" : 'score DESC, id ASC';
-		$rows   = Db::rows( "SELECT * FROM {findings} WHERE {$w} ORDER BY {$order} LIMIT %d OFFSET %d", array_merge( $args, array( $limit, $offset ) ) );
+		$order  = 'score DESC, id ASC';
+		if ( isset( $f['order'] ) && 'severity' === $f['order'] ) {
+			$order = "FIELD(severity,'error','warning','info'), score DESC, id ASC";
+		} elseif ( isset( $f['order'] ) && 'tier' === $f['order'] ) {
+			// Overlap review order: likely competition first, then pairs needing a judgement, then
+			// pairs only the vectors connect, then information (complementary intents, pillar +
+			// supporting). On a copy of the blog, 95 of 966 overlap findings were competition pairs.
+			$order = "CASE WHEN check_id IN ('exact_duplicate','near_duplicate','potential_competition','translation_mapping_conflict') THEN 0 WHEN check_id = 'distinct_facet' OR (check_id = 'manual_review' AND confidence <> 'low') THEN 1 WHEN check_id = 'manual_review' THEN 2 ELSE 3 END, score DESC, id ASC";
+		}
+		$rows = Db::rows( "SELECT * FROM {findings} WHERE {$w} ORDER BY {$order} LIMIT %d OFFSET %d", array_merge( $args, array( $limit, $offset ) ) );
 		return array(
 			'items' => array_map( array( __CLASS__, 'decode' ), $rows ),
 			'total' => $total,

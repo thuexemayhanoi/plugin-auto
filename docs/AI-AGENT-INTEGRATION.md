@@ -48,7 +48,7 @@ Lists use `limit` (≤ 100) and an opaque `cursor` → `next_cursor`.
 | `GET /inventory` | read | SEO Matrix rows (`locale`, `type`, `status`, `intent`, `search`, `has_qa`, `has_risk`, `sort`, `order`) |
 | `GET /analysis?url=…` (or `post_id`, `document_id`) | read | facts vs inferences, QA, link suggestions, overlap risks, related, provenance |
 | `GET /suggestions/links` | read | ranked suggestions with anchor + byte offset + evidence; orphan candidates with scan coverage |
-| `GET /cannibalization` | read | same-locale overlap hypotheses (never across translations); filter `category`, `locale`, `group_key` |
+| `GET /cannibalization` | read | same-locale overlap hypotheses (never across translations), ordered by review tier (competition → judgement needed → vector-only → information) then score; filter `category`, `locale`, `group_key` |
 | `GET /clusters`, `GET /classification` | read | Pillar–Hub–Silo tree, category suggestions |
 | `GET /qa` | read | QA issues labelled `verified_error` / `warning` / `suggestion` |
 | `GET /related?post_id=…` | read | precomputed related content |

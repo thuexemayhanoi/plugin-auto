@@ -392,6 +392,8 @@ final class Api {
 		}
 		if ( 'qa' === $type ) {
 			$f['order'] = 'severity';
+		} elseif ( 'cannibalization' === $type ) {
+			$f['order'] = 'tier';
 		}
 		$res = FindingRepository::query( $f );
 		return array(

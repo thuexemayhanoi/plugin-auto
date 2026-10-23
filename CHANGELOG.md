@@ -17,7 +17,10 @@ Final audit of the beta. Release notes: [docs/RELEASE-NOTES-1.0.0-beta.2.md](doc
 
 ### Changed
 - Overlap classification: places in titles (`Language\Places`), different intent as information,
-  vector-only pairs as confidence `low` (`CannibalizationRulesTest`).
+  vector-only pairs as confidence `low` (`CannibalizationRulesTest`). Overlap lists are ordered by
+  review tier, then score (`OverlapOrderTest`). Copy of the blog with the real model: manual
+  review 563 → 424, 104 vector-only pairs and 36 more different-place pairs in their own tiers,
+  nothing hidden.
 - "Missing translation" limited to content types with pairs and to posts not declared standalone
   (`QaTranslationScopeTest`, `NhVienLanguageTest`).
 - Performance: single-statement finding upsert, multi-row related insert, cached anchor title

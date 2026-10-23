@@ -76,7 +76,8 @@ plugin lên staging sẽ cho đúng danh sách từng trang.
 * 579 bài **không có liên kết đến từ nội dung** bài khác (chưa tính menu, widget, footer).
 * 54 bài thông tin dài (≥ 600 từ) **không trích nguồn bên ngoài** nào (gợi ý E-E-A-T).
 * Gợi ý liên kết nội bộ: 830 (chỉ từ vựng), 2.908 (khi có vector của model).
-* Rà soát chồng lấn: 99 nhóm (chỉ từ vựng), 898 nhóm (khi có vector; xem mục 3 về thứ tự duyệt).
+* Rà soát chồng lấn: 99 nhóm (chỉ từ vựng), 898 nhóm (khi có vector). Trong đó chỉ 95 cặp ở mức
+  "có thể cạnh tranh"; xem mục 3 về thứ tự duyệt.
   Không cặp bản dịch VI–EN nào bị coi là chồng lấn.
 * **Multi AI SEO Content Factory** (repo `wp-plugin`) là sản phẩm khác: nó viết bài nháp bằng AI. Hai
   plugin không trùng tên, bảng hay route. Plugin này không đọc và không ghi meta `_masf_*`.
@@ -117,10 +118,21 @@ phân tích toàn site), mức sàn được nâng lên bằng trung vị ấy. 
 Gợi ý liên kết và bài liên quan vẫn dùng độ tương đồng thô để xếp hạng. Mỗi phát hiện chồng lấn ghi rõ
 mức sàn đã dùng (*Bằng chứng → calibration*).
 
-**Nên duyệt theo thứ tự:** *Có thể cạnh tranh cùng truy vấn* (96 cặp trên bản sao; 54 cặp độ tin cậy
-trung bình) và *trùng lặp / gần trùng lặp* trước. Sau đó đến *khía cạnh riêng*. Nhóm *cần xem xét thủ
-công* (563 cặp) chỉ là giả thuyết dựa trên ngữ nghĩa, không có bằng chứng ở tiêu đề. *Khác ý định*
-(212 cặp) thường là bài bổ trợ cho nhau, không phải cạnh tranh.
+**Thứ tự duyệt.** Danh sách chồng lấn (trang quản trị, REST, Abilities) sắp xếp sẵn theo bốn mức, trong
+mỗi mức theo điểm. Số trong ngoặc đo trên bản sao blog, pilot lần 4, có vector của model:
+
+1. *Trùng lặp / gần trùng lặp / có thể cạnh tranh cùng truy vấn* (95 cặp): xem trước.
+2. *Cần xem xét thủ công* có bằng chứng ngoài vector (424 cặp) và *khía cạnh riêng* (78 cặp, phần lớn
+   là tiêu đề nêu **địa danh khác nhau**, ví dụ Hà Nội và Hội An).
+3. *Chỉ dựa trên vector*, độ tin cậy thấp (104 cặp): tiêu đề và từ vựng gần như không chung, chỉ
+   model thấy giống.
+4. *Thông tin*: khác ý định hoặc trụ cột + bài hỗ trợ (265 cặp). Thường là bài bổ trợ cho nhau,
+   không phải cạnh tranh.
+
+So với pilot lần 2 (cùng dữ liệu, cùng model): nhóm *cần xem xét thủ công* giảm từ 563 xuống 424,
+vì 104 cặp chỉ dựa trên vector được tách sang mức 3 và 36 cặp khác địa danh được tách thành *khía cạnh
+riêng*. 212 cặp *khác ý định* được chuyển từ "giả thuyết rủi ro" sang "thông tin". Không cặp nào bị ẩn:
+mọi cặp vẫn có trong danh sách, chỉ được xếp theo mức.
 
 ## 4. Thiết lập và dùng trên điện thoại (iPhone, iPad, Android)
 
