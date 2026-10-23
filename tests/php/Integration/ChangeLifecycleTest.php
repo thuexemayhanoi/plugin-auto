@@ -437,6 +437,47 @@ final class ChangeLifecycleTest extends TestCase {
 		$this->assertSame( $before, $after );
 	}
 
+	public function test_proposals_state_url_post_id_and_risk_and_never_move_a_url() {
+		$f = $this->link_finding();
+		$p = $this->preview( (int) $f['id'] );
+		$this->assertSame( (int) $p['object_id'], $p['diff']['post_id'] );
+		$this->assertSame( get_permalink( (int) $p['object_id'] ), $p['diff']['url'] );
+		$this->assertSame( 'low', $p['diff']['risk']['level'] );
+		$this->assertNotEmpty( $p['diff']['risk']['reasons'] );
+
+		// Category proposal: medium risk; refused when the taxonomy is part of the permalink.
+		$uncat = self::factory()->post->create(
+			array(
+				'post_title'   => 'Thuê xe máy giá tốt cho sinh viên ở Hà Nội',
+				'post_content' => '<p>Sinh viên có thể thuê xe máy theo tháng với giá thuê ưu đãi, tiền đặt cọc rõ ràng và hợp đồng thuê xe minh bạch. Bảng giá thuê xe máy gồm Honda Wave và Honda Vision.</p>',
+			)
+		);
+		PolylangDouble::set_post_language( $uncat, 'vi', 'g-sv2' );
+		$this->run_full_pipeline();
+		$cf = Db::row( "SELECT * FROM {findings} WHERE type = 'classification' AND document_id = %d", array( $this->doc_for( $uncat ) ) );
+		$this->assertNotNull( $cf );
+		$cp = $this->preview( (int) $cf['id'] );
+		$this->assertSame( 'medium', $cp['diff']['risk']['level'] );
+		$this->set_permalink_structure( '/%category%/%postname%/' );
+		$res = Api::create_change_preview( array( 'finding_ids' => array( (int) $cf['id'] ) ) );
+		$this->assertSame( 'sseo_permalink_risk', $res['previews'][0]['error'], wp_json_encode( $res ) );
+
+		// An approval given before the permalink changed cannot apply either.
+		$this->as_admin_screen();
+		$a   = ApprovalService::approve( $cp['id'] );
+		$url = get_permalink( $uncat );
+		$res = Api::apply_approved_change(
+			array(
+				'proposal_id'     => $cp['id'],
+				'approval_id'     => $a['id'],
+				'idempotency_key' => 'cat-permalink-1',
+			)
+		);
+		$this->assertWPError( $res );
+		$this->assertSame( 'sseo_permalink_risk', $res->get_error_code() );
+		$this->assertSame( $url, get_permalink( $uncat ), 'URL unchanged' );
+	}
+
 	/**
 	 * Document ID for a post ID.
 	 *

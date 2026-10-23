@@ -165,6 +165,12 @@ final class ProposalService {
 			'source_document_id' => (int) $source['id'],
 		);
 		$diff     = array(
+			'post_id'   => (int) $source['object_id'],
+			'url'       => (string) get_permalink( (int) $source['object_id'] ),
+			'risk'      => array(
+				'level'   => 'low',
+				'reasons' => array( 'Adds one internal link around words already in the text; nothing else in the post changes.', 'Reversible: exact rollback while the post is unchanged, surgical removal of the link otherwise.' ),
+			),
 			'field'     => 'post_content',
 			'operation' => 'insert_internal_link',
 			'before'    => self::excerpt( $content, (int) $located['offset'], (int) $located['length'] ),
@@ -212,8 +218,11 @@ final class ProposalService {
 		if ( is_wp_error( $guard ) ) {
 			return $guard;
 		}
-		$sug  = isset( $finding['evidence']['suggested'] ) ? (array) $finding['evidence']['suggested'] : array();
-		$tax  = isset( $sug['taxonomy'] ) ? (string) $sug['taxonomy'] : '';
+		$sug = isset( $finding['evidence']['suggested'] ) ? (array) $finding['evidence']['suggested'] : array();
+		$tax = isset( $sug['taxonomy'] ) ? (string) $sug['taxonomy'] : '';
+		if ( self::taxonomy_in_permalink( $tax ) ) {
+			return new \WP_Error( 'sseo_permalink_risk', __( 'Category proposals are disabled because the permalink structure contains this taxonomy: assigning a term could change the post URL.', 'semantic-seo-engine-vi-en' ), array( 'status' => 409 ) );
+		}
 		$term = isset( $sug['term_id'] ) ? get_term( (int) $sug['term_id'], $tax ) : null;
 		if ( ! $term instanceof \WP_Term || ! in_array( $tax, (array) Settings::get( 'taxonomies', array() ), true ) || ! is_object_in_taxonomy( get_post_type( (int) $source['object_id'] ), $tax ) ) {
 			return new \WP_Error( 'sseo_invalid_term', __( 'The suggested term does not exist or is out of scope. Terms are never created by this plugin.', 'semantic-seo-engine-vi-en' ), array( 'status' => 422 ) );
@@ -251,6 +260,12 @@ final class ProposalService {
 			'object_id'     => (int) $source['object_id'],
 			'payload'       => $payload,
 			'diff'          => array(
+				'post_id'   => (int) $source['object_id'],
+				'url'       => (string) get_permalink( (int) $source['object_id'] ),
+				'risk'      => array(
+					'level'   => 'medium',
+					'reasons' => array( 'Changes the category list of a published post: category archives, breadcrumbs and related-post blocks of the theme may show it in a new place.', 'The permalink structure does not contain this taxonomy (checked again before applying), so the URL does not change.' ),
+				),
 				'field'     => 'terms:' . $tax,
 				'operation' => 'assign_category',
 				'before'    => self::term_names( $before, $tax ),
@@ -263,6 +278,17 @@ final class ProposalService {
 			'expected_hash' => $expected,
 			'rationale'     => 'Classification suggestion: closest existing cluster "' . ( isset( $sug['label'] ) ? $sug['label'] : '' ) . '" (lexical similarity ' . ( isset( $sug['similarity'] ) ? $sug['similarity'] : '?' ) . ').',
 		);
+	}
+
+	/**
+	 * Whether the permalink structure contains a taxonomy (e.g. %category%), so that changing the
+	 * post's terms could change its URL.
+	 *
+	 * @param string $tax Taxonomy.
+	 * @return bool
+	 */
+	public static function taxonomy_in_permalink( $tax ) {
+		return '' !== (string) $tax && false !== strpos( (string) get_option( 'permalink_structure' ), '%' . $tax . '%' );
 	}
 
 	/**

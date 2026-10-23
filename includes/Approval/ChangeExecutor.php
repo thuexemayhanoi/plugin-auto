@@ -144,6 +144,9 @@ final class ChangeExecutor {
 			}
 			$field = 'post_content';
 		} else {
+			if ( ProposalService::taxonomy_in_permalink( (string) $payload['taxonomy'] ) ) {
+				return new \WP_Error( 'sseo_permalink_risk', __( 'The permalink structure now contains this taxonomy: applying could change the post URL; nothing was written.', 'semantic-seo-engine-vi-en' ), array( 'status' => 409 ) );
+			}
 			$before = Util::json( $payload['before'] );
 			$after  = Util::json( $payload['after'] );
 			$field  = 'terms:' . $payload['taxonomy'];

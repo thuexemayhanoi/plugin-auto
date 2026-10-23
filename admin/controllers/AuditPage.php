@@ -96,6 +96,14 @@ final class AuditPage {
 			echo '<p>' . esc_html__( 'Object:', 'semantic-seo-engine-vi-en' ) . ' <a href="' . esc_url( (string) get_edit_post_link( (int) $p['object_id'] ) ) . '">' . esc_html( $post ? $post->post_title : '#' . $p['object_id'] ) . '</a> · ' . esc_html__( 'created via', 'semantic-seo-engine-vi-en' ) . ' ' . esc_html( $p['created_via'] ) . ' · ' . esc_html( $p['created_at'] ) . '</p>';
 			echo '<p><strong>' . esc_html__( 'Why:', 'semantic-seo-engine-vi-en' ) . '</strong> ' . esc_html( (string) $p['rationale'] ) . '</p>';
 			$d = $p['diff'];
+			if ( isset( $d['risk']['level'] ) ) {
+				$risk_label = array(
+					'low'    => __( 'low', 'semantic-seo-engine-vi-en' ),
+					'medium' => __( 'medium', 'semantic-seo-engine-vi-en' ),
+					'high'   => __( 'high', 'semantic-seo-engine-vi-en' ),
+				);
+				echo '<p><strong>' . esc_html__( 'URL:', 'semantic-seo-engine-vi-en' ) . '</strong> <a href="' . esc_url( (string) $d['url'] ) . '">' . esc_html( (string) $d['url'] ) . '</a> · ' . esc_html__( 'Post ID', 'semantic-seo-engine-vi-en' ) . ' ' . (int) $d['post_id'] . ' · <strong>' . esc_html__( 'Risk:', 'semantic-seo-engine-vi-en' ) . '</strong> ' . esc_html( isset( $risk_label[ $d['risk']['level'] ] ) ? $risk_label[ $d['risk']['level'] ] : (string) $d['risk']['level'] ) . ' — ' . esc_html( implode( ' ', (array) $d['risk']['reasons'] ) ) . '</p>';
+			}
 			if ( 'insert_internal_link' === $p['type'] ) {
 				Ui::out( Ui::diff( isset( $d['before'] ) ? $d['before'] : '', isset( $d['after'] ) ? $d['after'] : '' ) );
 			} else {
